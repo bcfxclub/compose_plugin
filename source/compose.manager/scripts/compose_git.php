@@ -34,6 +34,7 @@ Usage:
   compose-git add <name> --url <url> --path <compose file> [--branch <branch>] [--clones-root <folder>] [--description <text>] [--credential <name>]
   compose-git convert <stack> --url <url> --path <compose file> [--branch <branch>] [--clones-root <folder>] [--credential <name>]
   compose-git credential <stack> <name>|--none
+  compose-git auto-deploy <stack> off|notify|deploy
   compose-git deploy-key <stack>
   compose-git trust-host <stack>
   compose-git check <stack>|--all
@@ -53,6 +54,8 @@ read-only deploy key. Its host's keys are pinned when it is added;
 trust-host pins them again after the server's keys change.
 deploy waits for healthy containers when the stack's wait-for-healthy setting says so;
 --wait and --no-wait override it.
+auto-deploy sets what the scheduled check does when a new commit changes the stack: nothing
+(off, the default), send a notification (notify), or deploy it (deploy).
 
 Exit status: 0 success, 1 failed, 2 usage error; for check, 3 a newer commit changes the stack's
 folder, 4 a newer commit changes only files outside it. See 'compose-git check --help'.
@@ -493,6 +496,7 @@ function compose_git_print_status(array $status): void
     if ($status['credential'] !== null) {
         echo '  credential:   ' . $status['credential'] . "\n";
     }
+    echo '  automatic:    ' . $status['autoDeploy'] . "\n";
     echo '  deployed:     ' . $short($status['deployedCommit']) . "\n";
     if ($status['failedCommit'] !== null) {
         echo '  failed:       ' . $short($status['failedCommit']) . " (fix it and deploy again)\n";
@@ -569,6 +573,14 @@ function compose_git_main(array $argv, string $composeRoot, $errors = null): int
                 } else {
                     throw new ComposeGitUsageError('credential needs a stack and either a credential name or --none.');
                 }
+                return COMPOSE_GIT_EXIT_OK;
+
+            case 'auto-deploy':
+                [$positional] = compose_git_parse($args, [], []);
+                if (count($positional) !== 2) {
+                    throw new ComposeGitUsageError('auto-deploy needs a stack and one of: ' . implode(', ', GitStackSettings::AUTO_DEPLOY_CHOICES) . '.');
+                }
+                $manager->setAutoDeploy($positional[0], $positional[1]);
                 return COMPOSE_GIT_EXIT_OK;
 
             case 'deploy-key':

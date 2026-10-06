@@ -40,7 +40,16 @@ final class GitStackSettings
     private const KEYS = ['version', 'url', 'branch', 'composePath', 'cloneId', 'cloneDir', 'recreateOnFolderChange'];
 
     /** @var string[] Keys added later, which a file may leave out. */
-    private const OPTIONAL_KEYS = ['credentialId', 'sshKnownHosts'];
+    private const OPTIONAL_KEYS = ['credentialId', 'sshKnownHosts', 'autoDeploy'];
+
+    /** Automatic deploys (autoDeploy): the scheduled check does nothing for the stack (the default). */
+    public const AUTO_DEPLOY_OFF = 'off';
+    /** The scheduled check sends a notification when a new commit changes the stack. */
+    public const AUTO_DEPLOY_NOTIFY = 'notify';
+    /** The scheduled check deploys a new commit that changes the stack. */
+    public const AUTO_DEPLOY_DEPLOY = 'deploy';
+    /** @var string[] */
+    public const AUTO_DEPLOY_CHOICES = [self::AUTO_DEPLOY_OFF, self::AUTO_DEPLOY_NOTIFY, self::AUTO_DEPLOY_DEPLOY];
 
     /**
      * @param bool $recreateOnFolderChange Recreate the stack's containers when a deploy changes
@@ -51,6 +60,8 @@ final class GitStackSettings
      *     ssh repository, the stack's deploy key.
      * @param string|null $sshKnownHosts The ssh repository host's keys, pinned when the stack was
      *     set up, in known_hosts format; null for an https or local repository.
+     * @param string $autoDeploy What the scheduled check does when a new commit changes the stack:
+     *     one of AUTO_DEPLOY_CHOICES. Off by default (format 1 had no scheduled check).
      */
     private function __construct(
         public readonly string $url,
@@ -60,7 +71,8 @@ final class GitStackSettings
         public readonly string $cloneDir,
         public readonly bool $recreateOnFolderChange,
         public readonly ?string $credentialId = null,
-        public readonly ?string $sshKnownHosts = null
+        public readonly ?string $sshKnownHosts = null,
+        public readonly string $autoDeploy = self::AUTO_DEPLOY_OFF
     ) {
     }
 
@@ -96,7 +108,8 @@ final class GitStackSettings
             $this->cloneDir,
             $recreateOnFolderChange,
             $this->credentialId,
-            $this->sshKnownHosts
+            $this->sshKnownHosts,
+            $this->autoDeploy
         );
     }
 
@@ -115,7 +128,8 @@ final class GitStackSettings
             $this->cloneDir,
             $this->recreateOnFolderChange,
             $credentialId,
-            $this->sshKnownHosts
+            $this->sshKnownHosts,
+            $this->autoDeploy
         );
     }
 
@@ -134,7 +148,28 @@ final class GitStackSettings
             $this->cloneDir,
             $this->recreateOnFolderChange,
             $this->credentialId,
-            $sshKnownHosts
+            $sshKnownHosts,
+            $this->autoDeploy
+        );
+    }
+
+    /**
+     * The same settings with another choice for automatic deploys.
+     *
+     * @throws InvalidArgumentException if it is not one of AUTO_DEPLOY_CHOICES
+     */
+    public function withAutoDeploy(string $autoDeploy): self
+    {
+        return self::fromValues(
+            $this->url,
+            $this->branch,
+            $this->composePath,
+            $this->cloneId,
+            $this->cloneDir,
+            $this->recreateOnFolderChange,
+            $this->credentialId,
+            $this->sshKnownHosts,
+            $autoDeploy
         );
     }
 
@@ -208,6 +243,10 @@ final class GitStackSettings
         if ($sshKnownHosts !== null && !is_string($sshKnownHosts)) {
             throw new RuntimeException("$file: 'sshKnownHosts' must be a string.");
         }
+        $autoDeploy = $data['autoDeploy'] ?? self::AUTO_DEPLOY_OFF;
+        if (!is_string($autoDeploy)) {
+            throw new RuntimeException("$file: 'autoDeploy' must be a string.");
+        }
 
         try {
             return self::fromValues(
@@ -218,7 +257,8 @@ final class GitStackSettings
                 $data['cloneDir'],
                 $data['recreateOnFolderChange'],
                 $credentialId,
-                $sshKnownHosts
+                $sshKnownHosts,
+                $autoDeploy
             );
         } catch (InvalidArgumentException $error) {
             throw new RuntimeException("$file: " . $error->getMessage(), 0, $error);
@@ -277,6 +317,9 @@ final class GitStackSettings
         }
         if ($this->sshKnownHosts !== null) {
             $data['sshKnownHosts'] = $this->sshKnownHosts;
+        }
+        if ($this->autoDeploy !== self::AUTO_DEPLOY_OFF) {
+            $data['autoDeploy'] = $this->autoDeploy;
         }
         $json = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
         if ($json === false) {
@@ -541,7 +584,8 @@ final class GitStackSettings
         string $cloneDir,
         bool $recreateOnFolderChange,
         ?string $credentialId = null,
-        ?string $sshKnownHosts = null
+        ?string $sshKnownHosts = null,
+        string $autoDeploy = self::AUTO_DEPLOY_OFF
     ): self {
         self::validateUrl($url);
         self::validateBranch($branch);
@@ -569,6 +613,12 @@ final class GitStackSettings
             self::validateKnownHosts($sshKnownHosts);
         }
 
-        return new self($url, $branch, $composePath, $cloneId, $cloneDir, $recreateOnFolderChange, $credentialId, $sshKnownHosts);
+        if (!in_array($autoDeploy, self::AUTO_DEPLOY_CHOICES, true)) {
+            throw new InvalidArgumentException(
+                "Automatic deploys must be one of " . implode(', ', self::AUTO_DEPLOY_CHOICES) . ": $autoDeploy"
+            );
+        }
+
+        return new self($url, $branch, $composePath, $cloneId, $cloneDir, $recreateOnFolderChange, $credentialId, $sshKnownHosts, $autoDeploy);
     }
 }

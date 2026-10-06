@@ -1015,6 +1015,23 @@ final class GitStackManagerTest extends TestCase
         $this->assertSame(['debug'], gitDeployProfiles($stack(), ['debug']));
     }
 
+    public function testCommandLineAutoDeployChangesTheStacksSetting(): void
+    {
+        $folder = $this->manager->add('whoami', $this->upstream, 'main', 'whoami/compose.yaml', $this->clonesRoot);
+        $stackDir = $this->composeRoot . '/' . $folder;
+
+        $this->assertSame(0, $this->runCli(['compose-git', 'auto-deploy', $folder, 'deploy']));
+        $this->assertSame(GitStackSettings::AUTO_DEPLOY_DEPLOY, GitStackSettings::load($stackDir)->autoDeploy);
+        $this->assertSame('deploy', $this->manager->status($folder)['autoDeploy']);
+
+        $this->assertSame(1, $this->runCli(['compose-git', 'auto-deploy', $folder, 'always']));
+        $this->assertSame(2, $this->runCli(['compose-git', 'auto-deploy', $folder]));
+        $this->assertSame(GitStackSettings::AUTO_DEPLOY_DEPLOY, GitStackSettings::load($stackDir)->autoDeploy);
+
+        $this->assertSame(0, $this->runCli(['compose-git', 'auto-deploy', $folder, 'off']));
+        $this->assertSame(GitStackSettings::AUTO_DEPLOY_OFF, GitStackSettings::load($stackDir)->autoDeploy);
+    }
+
     public function testCommandLineStatusAsJson(): void
     {
         $this->manager->add('whoami', $this->upstream, 'main', 'whoami/compose.yaml', $this->clonesRoot);

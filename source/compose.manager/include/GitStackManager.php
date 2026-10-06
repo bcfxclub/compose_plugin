@@ -343,7 +343,7 @@ final class GitStackManager
     /**
      * What is known about a git stack locally, without asking the remote.
      *
-     * @return array{stack: string, url: string, branch: string, composePath: string, cloneDir: string, recreateOnFolderChange: bool, credential: ?string, deployedCommit: ?string, failedCommit: ?string, checkedOutCommit: ?string, localChanges: list<string>, commitMadeByHand: bool, problem: ?string}
+     * @return array{stack: string, url: string, branch: string, composePath: string, cloneDir: string, recreateOnFolderChange: bool, autoDeploy: string, credential: ?string, deployedCommit: ?string, failedCommit: ?string, checkedOutCommit: ?string, localChanges: list<string>, commitMadeByHand: bool, problem: ?string}
      */
     public function status(string $folder): array
     {
@@ -369,6 +369,7 @@ final class GitStackManager
             'composePath' => $settings->composePath,
             'cloneDir' => $settings->cloneDir,
             'recreateOnFolderChange' => $settings->recreateOnFolderChange,
+            'autoDeploy' => $settings->autoDeploy,
             'credential' => $settings->credentialId === null ? null : $this->credentialName($settings->credentialId),
             'deployedCommit' => $state->deployedCommit,
             'failedCommit' => $state->failedCommit,
@@ -511,6 +512,28 @@ final class GitStackManager
             throw new RuntimeException("Several deploy keys are named '$nameOrId'. Use the key's id instead.");
         }
         throw $this->notARepositoryDeployKey($folder, $keys);
+    }
+
+    /**
+     * Choose what the scheduled check does when a new commit changes a git
+     * stack: nothing (off), send a notification (notify), or deploy it (deploy).
+     *
+     * @throws RuntimeException|InvalidArgumentException naming why nothing was changed
+     */
+    public function setAutoDeploy(string $folder, string $autoDeploy): void
+    {
+        $this->assertArrayStarted();
+        $stack = $this->stack($folder);
+        $settings = $this->settings($stack);
+
+        $this->withStackLock($stack, function () use ($stack, $settings, $autoDeploy): void {
+            $settings->withAutoDeploy($autoDeploy)->save($stack->path);
+        });
+        ($this->say)(match ($autoDeploy) {
+            GitStackSettings::AUTO_DEPLOY_NOTIFY => "'$folder' sends a notification when a new commit changes it.",
+            GitStackSettings::AUTO_DEPLOY_DEPLOY => "'$folder' is deployed when a new commit changes it.",
+            default => "'$folder' is no longer checked on a schedule.",
+        });
     }
 
     /**

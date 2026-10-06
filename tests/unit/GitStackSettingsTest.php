@@ -269,6 +269,38 @@ final class GitStackSettingsTest extends TestCase
         $this->assertNull(GitStackSettings::load($this->stackDir)?->credentialId);
     }
 
+    public function testAutomaticDeploysAreOffByDefaultAndNotWrittenToTheFile(): void
+    {
+        $settings = $this->makeSettings();
+        $this->assertSame(GitStackSettings::AUTO_DEPLOY_OFF, $settings->autoDeploy);
+
+        $settings->save($this->stackDir);
+
+        // Left out, so a version from before scheduled checks still loads the file.
+        $data = json_decode((string) file_get_contents($this->stackDir . '/git.json'), true);
+        $this->assertArrayNotHasKey('autoDeploy', $data);
+        $this->assertSame(GitStackSettings::AUTO_DEPLOY_OFF, GitStackSettings::load($this->stackDir)?->autoDeploy);
+    }
+
+    public function testAutomaticDeploysAreSavedAndLoadedAndKeptByOtherChanges(): void
+    {
+        $this->makeSettings()->withAutoDeploy(GitStackSettings::AUTO_DEPLOY_DEPLOY)->save($this->stackDir);
+
+        $loaded = GitStackSettings::load($this->stackDir);
+
+        $this->assertNotNull($loaded);
+        $this->assertSame(GitStackSettings::AUTO_DEPLOY_DEPLOY, $loaded->autoDeploy);
+        $this->assertSame(GitStackSettings::AUTO_DEPLOY_DEPLOY, $loaded->withRecreateOnFolderChange(false)->autoDeploy);
+        $this->assertSame(GitStackSettings::AUTO_DEPLOY_NOTIFY, $loaded->withAutoDeploy('notify')->autoDeploy);
+    }
+
+    public function testAutomaticDeploysTakeOnlyTheKnownChoices(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Automatic deploys must be one of');
+        $this->makeSettings()->withAutoDeploy('always');
+    }
+
     public function testCredentialIsSavedAndLoaded(): void
     {
         $credentialId = str_repeat('ab', 16);
@@ -409,6 +441,14 @@ final class GitStackSettingsTest extends TestCase
                 $data['credentialId'] = 7;
                 return (string) json_encode($data);
             }],
+            'unknown automatic deploy choice' => [static function (array $data): string {
+                $data['autoDeploy'] = 'sometimes';
+                return (string) json_encode($data);
+            }],
+            'automatic deploys not a string' => [static function (array $data): string {
+                $data['autoDeploy'] = true;
+                return (string) json_encode($data);
+            }],
             'string instead of true or false' => [static function (array $data): string {
                 $data['recreateOnFolderChange'] = 'yes';
                 return (string) json_encode($data);
@@ -491,11 +531,11 @@ final class GitStackSettingsTest extends TestCase
         $this->makeSettings()->save($this->stackDir);
         $file = $this->stackDir . '/git.json';
         $data = json_decode((string) file_get_contents($file), true);
-        $data['autoDeploy'] = 'off';
+        $data['deployWindow'] = 'nights';
         file_put_contents($file, (string) json_encode($data));
 
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('does not know: autoDeploy');
+        $this->expectExceptionMessage('does not know: deployWindow');
         GitStackSettings::load($this->stackDir);
     }
 
