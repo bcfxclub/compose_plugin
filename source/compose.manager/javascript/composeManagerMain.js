@@ -6875,6 +6875,57 @@ function submitConvertToGit() {
     });
 }
 
+// Save the Sources tab's "Automatic deploys" choice at once (it is not part of Apply).
+function saveGitAutoDeploy(autoDeploy) {
+    var project = editorModal.currentProject;
+    var $saved = $('#settings-git-auto-deploy-saved');
+    $saved.text('Saving...').show();
+    $.post(caURL, {
+        action: 'setGitAutoDeploy',
+        script: project,
+        autoDeploy: autoDeploy
+    }).then(function(data) {
+        var response = tryParseJson(data);
+        if (!response || response.result !== 'success') {
+            $saved.hide();
+            swal({
+                title: 'Automatic deploys not changed',
+                text: (response && response.message) || 'Unexpected response from server.',
+                type: 'error'
+            });
+            showGitSourceForStack(project, true);
+            return;
+        }
+        $saved.text('Saved').show();
+    }).fail(function() {
+        $saved.hide();
+        swal({ title: 'Automatic deploys not changed', text: 'Request failed.', type: 'error' });
+        showGitSourceForStack(project, true);
+    });
+}
+
+// Clear a git stack's failed deploy, so the scheduled check deploys it again.
+function resumeGitStack(project) {
+    $.post(caURL, {
+        action: 'resumeGitStack',
+        script: project
+    }).then(function(data) {
+        var response = tryParseJson(data);
+        if (!response || response.result !== 'success') {
+            swal({
+                title: 'Could not resume ' + project,
+                text: (response && response.message) || 'Unexpected response from server.',
+                type: 'error'
+            });
+            return;
+        }
+        swal({ title: project, text: (response.messages || []).join('\n'), type: 'success' });
+        composeLoadlist();
+    }).fail(function() {
+        swal({ title: 'Could not resume ' + project, text: 'Request failed.', type: 'error' });
+    });
+}
+
 // Fill the Sources tab's git readout from getGitStackStatus.
 function renderGitSource(git) {
     $('#settings-git-url').text(git.url);
@@ -6886,8 +6937,13 @@ function renderGitSource(git) {
     $('#settings-git-deployed').text(git.deployedCommit ? gitShortCommit(git.deployedCommit) : 'Not deployed yet');
     $('#settings-git-failed').text(gitShortCommit(git.failedCommit) + ' (fix it and deploy again)');
     $('#settings-git-failed-row').toggle(!!git.failedCommit);
+    // A scheduled deploy that failed before up (an image pull, say); Resume makes the next check try again.
+    $('#settings-git-failed-automatic').text(gitShortCommit(git.failedAutomaticCommit) + ' (before up; Resume Automatic Deploys in the stack menu tries it again)');
+    $('#settings-git-failed-automatic-row').toggle(!!git.failedAutomaticCommit);
     $('#settings-git-checked-out').text(gitShortCommit(git.checkedOutCommit));
     $('#settings-git-source-table').show();
+    $('#settings-git-auto-deploy').val(git.autoDeploy || 'off');
+    $('#settings-git-auto-deploy-saved').hide();
 
     // What the next deploy will stop on (or offer to save and discard, from the stack menu),
     // on this tab and above the compose file, so it is seen where the file is edited.
@@ -9732,6 +9788,7 @@ function addComposeStackContext(elementId) {
     var webuiUrl = $row.data('webui') || '';
     var hasBuild = $row.data('hasbuild') == "1";
     var isGitStack = $row.data('gitstack') == "1";
+    var gitDeployFailed = $row.data('gitfailed') == "1";
     var hasExistingContainers = false;
     var hasKnownNetworks = false;
 
@@ -9984,6 +10041,17 @@ function addComposeStackContext(elementId) {
                 promptGitDeployCommit(path, project);
             }
         });
+        // After a failed deploy, automatic deploys wait until a deploy works or this clears it.
+        if (gitDeployFailed) {
+            opts.push({
+                text: 'Resume Automatic Deploys',
+                icon: 'fa-play-circle',
+                action: function(e) {
+                    e.preventDefault();
+                    resumeGitStack(project);
+                }
+            });
+        }
         opts.push({
             divider: true
         });

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 require_once '/usr/local/emhttp/plugins/compose.manager/include/GitStackManager.php';
 require_once '/usr/local/emhttp/plugins/compose.manager/include/GitSsh.php';
+require_once '/usr/local/emhttp/plugins/compose.manager/include/GitScheduledCheck.php';
+require_once '/usr/local/emhttp/plugins/compose.manager/include/CronManager.php';
 
 /**
  * What the web UI asks of git stacks. Each method returns the array that
@@ -97,6 +99,48 @@ final class GitStackWebActions
     }
 
     /**
+     * Choose what the scheduled check does for a stack (Sources tab), as
+     * compose-git auto-deploy does, and update the plugin's cron file.
+     *
+     * @return array<string, mixed>
+     */
+    public function setAutoDeploy(string $folder, string $autoDeploy): array
+    {
+        $messages = [];
+        $manager = new GitStackManager($this->composeRoot, static function (string $message) use (&$messages): void {
+            $messages[] = $message;
+        });
+        try {
+            $manager->setAutoDeploy($folder, $autoDeploy);
+        } catch (Throwable $error) {
+            return ['result' => 'error', 'message' => $error->getMessage()];
+        }
+        if (!composeCronManager()->rebuild()) {
+            return ['result' => 'error', 'message' => "The setting was saved, but the plugin's cron file could not be updated."];
+        }
+        return ['result' => 'success', 'messages' => $messages];
+    }
+
+    /**
+     * Clear a stack's failed deploy (stack menu), as compose-git resume does.
+     *
+     * @return array<string, mixed>
+     */
+    public function resume(string $folder): array
+    {
+        $messages = [];
+        $manager = new GitStackManager($this->composeRoot, static function (string $message) use (&$messages): void {
+            $messages[] = $message;
+        });
+        try {
+            $manager->resume($folder);
+        } catch (Throwable $error) {
+            return ['result' => 'error', 'message' => $error->getMessage()];
+        }
+        return ['result' => 'success', 'messages' => $messages];
+    }
+
+    /**
      * What deleting a git stack leaves behind, to tell the person.
      *
      * Delete removes only the stack folder. The clone is not deleted (a
@@ -134,7 +178,14 @@ final class GitStackWebActions
      * What the stack list shows for a git stack. Read from the stack's own
      * files only: no git command is run, so the list stays fast.
      *
-     * @return array{branch: ?string, deployedCommit: ?string, failedCommit: ?string, problem: ?string}
+     * "behind" and "failedAutomaticCommit" come from the scheduled check's record:
+     * the last commit it saw on the branch changes the stack and is not the
+     * deployed one, and a scheduled deploy of it failed before up. Both are left
+     * out while automatic deploys are off, since no check updates the record then.
+     * "checked" says whether they are on; the stack menu offers Resume Automatic
+     * Deploys only then.
+     *
+     * @return array{branch: ?string, checked: bool, deployedCommit: ?string, failedCommit: ?string, failedAutomaticCommit: ?string, behind: bool, problem: ?string}
      */
     public static function listSummary(string $stackDir): array
     {
@@ -142,12 +193,17 @@ final class GitStackWebActions
             $settings = GitStackSettings::load($stackDir);
             $state = GitStackState::load($stackDir);
         } catch (Throwable $error) {
-            return ['branch' => null, 'deployedCommit' => null, 'failedCommit' => null, 'problem' => $error->getMessage()];
+            return ['branch' => null, 'checked' => false, 'deployedCommit' => null, 'failedCommit' => null, 'failedAutomaticCommit' => null, 'behind' => false, 'problem' => $error->getMessage()];
         }
+        $checked = $settings !== null && $settings->autoDeploy !== GitStackSettings::AUTO_DEPLOY_OFF;
+        $record = GitScheduledCheck::loadRecord($stackDir);
         return [
             'branch' => $settings?->branch,
+            'checked' => $checked,
             'deployedCommit' => $state->deployedCommit,
             'failedCommit' => $state->failedCommit,
+            'failedAutomaticCommit' => $checked ? GitScheduledCheck::failedAutomaticDeploy($stackDir) : null,
+            'behind' => $checked && $record['stackChanged'] && $record['remoteCommit'] !== null && $record['remoteCommit'] !== $state->deployedCommit,
             'problem' => null,
         ];
     }
