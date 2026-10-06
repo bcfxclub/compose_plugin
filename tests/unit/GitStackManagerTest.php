@@ -1019,17 +1019,31 @@ final class GitStackManagerTest extends TestCase
     {
         $folder = $this->manager->add('whoami', $this->upstream, 'main', 'whoami/compose.yaml', $this->clonesRoot);
         $stackDir = $this->composeRoot . '/' . $folder;
-
-        $this->assertSame(0, $this->runCli(['compose-git', 'auto-deploy', $folder, 'deploy']));
+        $cronFile = sys_get_temp_dir() . '/compose_git_manager_test.cron';
+        @unlink($cronFile);
+        putenv('COMPOSE_MANAGER_CRON_FILE=' . $cronFile);
+        putenv('COMPOSE_MANAGER_CRON_NOSYNC=1');
+        global $compose_root;
+        $savedComposeRoot = $compose_root;
+        $compose_root = $this->composeRoot;
+        try {
+            $this->assertSame(0, $this->runCli(['compose-git', 'auto-deploy', $folder, 'deploy']));
+            $this->assertStringContainsString('scheduled-check', (string) @file_get_contents($cronFile));
+            $this->assertSame(0, $this->runCli(['compose-git', 'auto-deploy', $folder, 'off']));
+            $this->assertFileDoesNotExist($cronFile);
+            $this->assertSame(0, $this->runCli(['compose-git', 'auto-deploy', $folder, 'deploy']));
+        } finally {
+            putenv('COMPOSE_MANAGER_CRON_FILE');
+            putenv('COMPOSE_MANAGER_CRON_NOSYNC');
+            $compose_root = $savedComposeRoot;
+            @unlink($cronFile);
+        }
         $this->assertSame(GitStackSettings::AUTO_DEPLOY_DEPLOY, GitStackSettings::load($stackDir)->autoDeploy);
         $this->assertSame('deploy', $this->manager->status($folder)['autoDeploy']);
 
         $this->assertSame(1, $this->runCli(['compose-git', 'auto-deploy', $folder, 'always']));
         $this->assertSame(2, $this->runCli(['compose-git', 'auto-deploy', $folder]));
         $this->assertSame(GitStackSettings::AUTO_DEPLOY_DEPLOY, GitStackSettings::load($stackDir)->autoDeploy);
-
-        $this->assertSame(0, $this->runCli(['compose-git', 'auto-deploy', $folder, 'off']));
-        $this->assertSame(GitStackSettings::AUTO_DEPLOY_OFF, GitStackSettings::load($stackDir)->autoDeploy);
     }
 
     public function testResumeClearsAFailedDeployAndKeepsTheDeployedCommit(): void
@@ -1115,6 +1129,9 @@ final class GitStackManagerTest extends TestCase
             'deploy' => ['deploy', ['--commit', '--save-local-changes', '--wait', '--no-wait', '--wait-timeout', '--profile']],
             'reclone' => ['reclone', []],
             'status' => ['status', ['--all', '--json']],
+            'auto-deploy' => ['auto-deploy', ['off', 'notify', 'deploy']],
+            'resume' => ['resume', []],
+            'scheduled-check' => ['scheduled-check', []],
         ];
     }
 

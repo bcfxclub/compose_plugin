@@ -17,6 +17,7 @@ declare(strict_types=1);
 
 require_once '/usr/local/emhttp/plugins/compose.manager/include/GitStackManager.php';
 require_once '/usr/local/emhttp/plugins/compose.manager/include/GitScheduledCheck.php';
+require_once '/usr/local/emhttp/plugins/compose.manager/include/CronManager.php';
 require_once '/usr/local/emhttp/plugins/compose.manager/include/Helpers.php';
 
 const COMPOSE_GIT_EXIT_OK = 0;
@@ -274,6 +275,33 @@ Options:
   --all    Show every git stack. This is what happens when no stack is named, too. A stack
            whose git settings cannot be read is shown with the reason.
   --json   Print the same as JSON, for scripts.
+TEXT,
+        'auto-deploy' => <<<'TEXT'
+Usage: compose-git auto-deploy <stack> off|notify|deploy
+
+Choose what the scheduled check (every 15 minutes) does when a new commit on the stack's
+branch changes the stack, that is, anything in the stack's folder in the repository:
+  off      nothing is checked (the default)
+  notify   send an Unraid notification, once per commit
+  deploy   deploy the commit, as 'compose-git deploy' does with no options
+Each commit is tried once. A stack that is not running (stopped, or never deployed) is not
+deployed until it runs again, and one taken back to an older commit is brought forward to
+the newest. The plugin's cron line is added while any stack's setting is not off.
+TEXT,
+        'resume' => <<<'TEXT'
+Usage: compose-git resume <stack>
+
+Clear a stack's failed deploy, so the scheduled check deploys it again. After a deploy fails
+during up, automatic deploys of the stack are paused until a deploy works; after a scheduled
+deploy fails before up (an image pull, say), that commit is not tried again. Use this once
+you have fixed the cause another way. The deployed commit and the containers are not changed.
+TEXT,
+        'scheduled-check' => <<<'TEXT'
+Usage: compose-git scheduled-check
+
+Run the scheduled check now, for every git stack whose auto-deploy setting is not off. Cron
+runs it every 15 minutes while any stack asks for it. Does nothing while the array is
+stopped, or while another check is still running.
 TEXT,
         default => null,
     };
@@ -587,6 +615,11 @@ function compose_git_main(array $argv, string $composeRoot, $errors = null): int
                     throw new ComposeGitUsageError('auto-deploy needs a stack and one of: ' . implode(', ', GitStackSettings::AUTO_DEPLOY_CHOICES) . '.');
                 }
                 $manager->setAutoDeploy($positional[0], $positional[1]);
+                // Installs the scheduled check's cron line while any stack asks for it, and removes it after.
+                if (!composeCronManager()->rebuild()) {
+                    fwrite($errors, "The setting was saved, but the plugin's cron file could not be updated.\n");
+                    return COMPOSE_GIT_EXIT_FAILED;
+                }
                 return COMPOSE_GIT_EXIT_OK;
 
             case 'resume':
