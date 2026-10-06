@@ -1032,6 +1032,21 @@ final class GitStackManagerTest extends TestCase
         $this->assertSame(GitStackSettings::AUTO_DEPLOY_OFF, GitStackSettings::load($stackDir)->autoDeploy);
     }
 
+    public function testResumeClearsAFailedDeployAndKeepsTheDeployedCommit(): void
+    {
+        $folder = $this->manager->add('whoami', $this->upstream, 'main', 'whoami/compose.yaml', $this->clonesRoot);
+        $stackDir = $this->composeRoot . '/' . $folder;
+        $deployed = str_repeat('a', 40);
+        (new GitStackState($deployed, str_repeat('b', 40)))->save($stackDir);
+
+        $this->assertSame(0, $this->runCli(['compose-git', 'resume', $folder]));
+
+        $state = GitStackState::load($stackDir);
+        $this->assertSame($deployed, $state->deployedCommit);
+        $this->assertNull($state->failedCommit);
+        $this->assertFalse($this->manager->resume($folder));
+    }
+
     public function testCommandLineStatusAsJson(): void
     {
         $this->manager->add('whoami', $this->upstream, 'main', 'whoami/compose.yaml', $this->clonesRoot);

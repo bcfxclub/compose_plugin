@@ -35,6 +35,7 @@ Usage:
   compose-git convert <stack> --url <url> --path <compose file> [--branch <branch>] [--clones-root <folder>] [--credential <name>]
   compose-git credential <stack> <name>|--none
   compose-git auto-deploy <stack> off|notify|deploy
+  compose-git resume <stack>
   compose-git deploy-key <stack>
   compose-git trust-host <stack>
   compose-git check <stack>|--all
@@ -55,7 +56,8 @@ trust-host pins them again after the server's keys change.
 deploy waits for healthy containers when the stack's wait-for-healthy setting says so;
 --wait and --no-wait override it.
 auto-deploy sets what the scheduled check does when a new commit changes the stack: nothing
-(off, the default), send a notification (notify), or deploy it (deploy).
+(off, the default), send a notification (notify), or deploy it (deploy). After a failed deploy
+the scheduled check leaves the stack alone until a deploy works; resume clears the failure.
 
 Exit status: 0 success, 1 failed, 2 usage error; for check, 3 a newer commit changes the stack's
 folder, 4 a newer commit changes only files outside it. See 'compose-git check --help'.
@@ -581,6 +583,11 @@ function compose_git_main(array $argv, string $composeRoot, $errors = null): int
                     throw new ComposeGitUsageError('auto-deploy needs a stack and one of: ' . implode(', ', GitStackSettings::AUTO_DEPLOY_CHOICES) . '.');
                 }
                 $manager->setAutoDeploy($positional[0], $positional[1]);
+                return COMPOSE_GIT_EXIT_OK;
+
+            case 'resume':
+                [$positional] = compose_git_parse($args, [], []);
+                $manager->resume(compose_git_one_stack($positional));
                 return COMPOSE_GIT_EXIT_OK;
 
             case 'deploy-key':

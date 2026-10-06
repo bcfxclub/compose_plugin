@@ -537,6 +537,35 @@ final class GitStackManager
     }
 
     /**
+     * Clear a git stack's failed deploy, so the scheduled check deploys it again.
+     *
+     * After a failed deploy the stack is paused: the scheduled check leaves it
+     * alone until a deploy works. Someone who fixed it another way (by hand, or
+     * with the web UI's Update) clears the failure with this. The deployed
+     * commit stays as it was.
+     *
+     * @return bool false if the stack had no failed deploy to clear
+     * @throws RuntimeException naming why nothing was changed
+     */
+    public function resume(string $folder): bool
+    {
+        $this->assertArrayStarted();
+        $stack = $this->stack($folder);
+        $this->settings($stack);
+
+        return $this->withStackLock($stack, function () use ($stack, $folder): bool {
+            $state = GitStackState::load($stack->path);
+            if ($state->failedCommit === null) {
+                ($this->say)("'$folder' has no failed deploy, so there is nothing to resume.");
+                return false;
+            }
+            (new GitStackState($state->deployedCommit, null))->save($stack->path);
+            ($this->say)("Cleared the failed deploy of " . substr($state->failedCommit, 0, 12) . ". Automatic deploys of '$folder' resume.");
+            return true;
+        });
+    }
+
+    /**
      * The id of a git repository credential, given its exact name or its id.
      *
      * @throws RuntimeException if there is none, or several with that name
