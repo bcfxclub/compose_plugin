@@ -471,6 +471,25 @@ function buildGitDeployCommand(StackInfo $stack, ?string $commit, bool $saveLoca
 }
 
 /**
+ * compose.sh's --wait arguments for a git deploy, from the stack's
+ * wait-for-healthy settings (resolveStackWaitSettings()). A timeout is passed
+ * on only when it is a plain number of seconds.
+ *
+ * @param array{enabled: bool, timeout: string} $waitSettings
+ * @return string[]
+ */
+function gitDeployWaitArguments(array $waitSettings): array
+{
+    if (empty($waitSettings['enabled'])) {
+        return [];
+    }
+    if (preg_match('/^[1-9][0-9]{0,5}$/', (string) $waitSettings['timeout']) !== 1) {
+        return ['--wait'];
+    }
+    return ['--wait', '--wait-timeout', (string) $waitSettings['timeout']];
+}
+
+/**
  * The profiles a git deploy from the web UI runs with. When the person chose
  * them in the profile dialog (profileChosen=1), exactly those: an empty choice
  * means the default services only. Otherwise the ones the stack runs with, as
@@ -552,15 +571,7 @@ function echoGitDeployCommand(array $options = []): void
     $profiles = gitDeployProfilesFromRequest($stack, $_POST);
 
     // Waits for healthy containers as the stack's up does.
-    $waitArguments = [];
-    $waitSettings = resolveStackWaitSettings($stack->path, $cfg);
-    if (!empty($waitSettings['enabled'])) {
-        $waitArguments[] = '--wait';
-        if (preg_match('/^[1-9][0-9]{0,5}$/', (string) $waitSettings['timeout']) === 1) {
-            $waitArguments[] = '--wait-timeout';
-            $waitArguments[] = (string) $waitSettings['timeout'];
-        }
-    }
+    $waitArguments = gitDeployWaitArguments(resolveStackWaitSettings($stack->path, $cfg));
 
     $composeCommand = buildGitDeployCommand($stack, $commit === '' ? null : $commit, $saveLocalChanges, $profiles, $waitArguments);
     if ($debug) {

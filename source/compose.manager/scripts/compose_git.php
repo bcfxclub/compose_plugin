@@ -367,14 +367,9 @@ function compose_git_wait_arguments(array $waitSettings, array $options): array
             throw new ComposeGitUsageError('--wait-timeout must be a number of seconds.');
         }
     }
-    if (!$wait) {
-        return [];
-    }
-    // A timeout read from the settings files is passed on only when it is a plain number.
-    if (preg_match('/^[1-9][0-9]{0,5}$/', $timeout) !== 1) {
-        return ['--wait'];
-    }
-    return ['--wait', '--wait-timeout', $timeout];
+    // As the web UI's and the scheduled deploy wait: a timeout read from the settings
+    // files is passed on only when it is a plain number.
+    return gitDeployWaitArguments(['enabled' => $wait, 'timeout' => $timeout]);
 }
 
 /**
