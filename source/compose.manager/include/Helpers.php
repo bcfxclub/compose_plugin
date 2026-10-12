@@ -545,7 +545,7 @@ function echoGitDeployCommand(array $options = []): void
     // way the person sees why at once, not in a terminal window.
     require_once '/usr/local/emhttp/plugins/compose.manager/include/GitClone.php';
     if ($commit !== '' && !GitClone::isCommitId($commit)) {
-        echo json_encode(['error' => 'git', 'message' => 'Enter the full commit id (40 characters), not a short one or a branch name.']);
+        echo json_encode(['error' => 'git', 'message' => 'Enter the full commit id (40 characters, or 64 in a SHA-256 repository), not a short one or a branch name.']);
         return;
     }
 

@@ -210,8 +210,9 @@ to 30 seconds (COMPOSE_LOCK_TIMEOUT) for it to finish, then fails without changi
 
 Options:
   --commit <id>             Deploy this commit instead of the newest, for example to go back
-                            to an older version. Give the full 40-character id. A later deploy
-                            without --commit returns to the branch's newest commit.
+                            to an older version. Give the full id (40 characters, or 64 in a
+                            SHA-256 repository). A later deploy without --commit returns to
+                            the branch's newest commit.
   --save-local-changes      If tracked files in the clone were changed, or a commit was made
                             in it, save the changes as a patch in the stack folder's
                             git-changes folder, discard them, then deploy. Without it, the

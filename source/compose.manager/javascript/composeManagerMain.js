@@ -5315,7 +5315,7 @@ function checkGitStack(path, project) {
 function promptGitDeployCommit(path, project) {
     swal({
         title: 'Deploy a commit of ' + project,
-        text: 'Enter the full commit id (40 characters). A later Pull and Redeploy brings the stack back to the branch\'s latest.',
+        text: 'Enter the full commit id (40 characters, or 64 in a SHA-256 repository). A later Pull and Redeploy brings the stack back to the branch\'s latest.',
         type: 'input',
         inputPlaceholder: 'Full commit id',
         showCancelButton: true,
@@ -5334,7 +5334,7 @@ function promptGitDeployCommit(path, project) {
             setTimeout(function() {
                 swal({
                     title: 'Not a full commit id',
-                    text: 'Enter the full commit id (40 characters), not a short one or a branch name.',
+                    text: 'Enter the full commit id (40 characters, or 64 in a SHA-256 repository), not a short one or a branch name.',
                     type: 'error'
                 });
             }, 200);
