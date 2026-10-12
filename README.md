@@ -343,7 +343,16 @@ Contributions are welcome — we added issue and PR templates to guide reports a
 
 ## License
 
-This project is open source. See the repository for license details.
+Original material owned and licensable by **Nick Szittai (mstrhakr)** is offered
+under the [MIT License](LICENSE). This is **not a blanket license for the plugin**:
+inherited dcflachs/compose_plugin code and independently owned contributions are
+excluded, and upstream permission remains unresolved. Changes to inherited files
+do not relicense their underlying material.
+
+See the [licensing and provenance audit](source/compose.manager/licenses/LICENSING.md)
+for surviving upstream code, scope, and required permissions. Third-party
+components retain their [own licenses and notices](source/compose.manager/licenses/THIRD-PARTY-NOTICES.md).
+The complete project is not yet cleared for unrestricted redistribution.
 
 ## Credits
 
