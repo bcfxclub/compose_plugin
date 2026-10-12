@@ -5,7 +5,7 @@ advice or a determination of copyright ownership.
 
 ## License status
 
-[The project license](../../../LICENSE) grants MIT permissions only for original
+[The project license](PROJECT-LICENSE.txt) grants MIT permissions only for original
 material owned and licensable by Nick Szittai (mstrhakr). It does **not** license
 inherited upstream material, independently owned contributions, or third-party
 components. The same scoped text is shipped as [PROJECT-LICENSE.txt](PROJECT-LICENSE.txt).

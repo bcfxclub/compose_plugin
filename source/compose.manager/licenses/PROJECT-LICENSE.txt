@@ -10,8 +10,8 @@ Changes to an inherited file do not relicense its underlying material.
 No license grant for the original upstream plugin has been established. This
 repository as a whole is not cleared for unrestricted redistribution by this
 file. Other rights holders retain their rights; separately licensed components
-retain their own licenses. See source/compose.manager/licenses/LICENSING.md and
-source/compose.manager/licenses/THIRD-PARTY-NOTICES.md for evidence and unresolved
+retain their own licenses. See LICENSING.md and
+THIRD-PARTY-NOTICES.md for evidence and unresolved
 permissions. This scope notice is separate from the unmodified MIT terms below.
 
 MIT License
