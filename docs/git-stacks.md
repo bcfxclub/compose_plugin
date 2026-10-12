@@ -323,6 +323,12 @@ An older version of the plugin named each key after its stack (`myapp deploy key
 still reuses such a key. If the new stack is for another repository, delete the old key first: GitHub refuses a
 deploy key that another repository already has.
 
+Stacks added before keys were shared each have a key of their own. To move one onto the key another stack of the
+same repository uses: `compose-git credential myapp "deploy key for git@github.com:you/stacks.git"` (any deploy key
+of the same repository works, by its name on the Credentials tab). The repository is reached with that key first.
+The old key stays on the Credentials tab: once no stack uses it, delete it there and from the repository's deploy
+keys.
+
 When the stack is added, the server's ssh host keys are pinned and their fingerprints shown. Compare them with
 the ones your git host publishes (GitHub, GitLab and Codeberg list theirs). Every later connection must match
 them. If the server is rebuilt and its keys change, deploys stop until you run `compose-git trust-host myapp`,
@@ -480,7 +486,7 @@ otherwise make compose refuse the stack. The log names each one removed.
 |---|---|
 | `add <name> --url <url> --path <file> [--branch <b>] [--clones-root <folder>] [--description <text>] [--credential <name>]` | Clone a repository and make a new git stack. Not deployed yet. |
 | `convert <stack> --url <url> --path <file> [--branch <b>] [--clones-root <folder>] [--credential <name>]` | Turn an existing stack into a git stack (see above). |
-| `credential <stack> <name>` or `credential <stack> --none` | Change or remove the HTTPS credential a stack uses. |
+| `credential <stack> <name>` or `credential <stack> --none` | Change or remove the HTTPS credential a stack uses, or move an ssh stack onto another deploy key of its repository. |
 | `deploy-key <stack>` | Show an ssh stack's public deploy key. |
 | `trust-host <stack>` | Pin an ssh stack's server host keys again, after they changed. |
 | `check <stack>` or `check --all` | Compare the deployed commit with the branch on the remote, and say whether a newer commit changes the stack's folder or only files outside it. Fetches a newer commit into the clone; changes no container and no checked-out file. |

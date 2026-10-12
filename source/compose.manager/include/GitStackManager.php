@@ -382,6 +382,10 @@ final class GitStackManager
     /**
      * Change the credential a git stack uses to reach its repository, or remove it.
      *
+     * An ssh stack always keeps a deploy key, and can only be given another key of its own
+     * repository (see repositoryDeployKeys()): that is how stacks that each got a key of their
+     * own, before keys were shared, move onto one.
+     *
      * The repository is reached with the new setting first, and nothing is
      * saved unless that works.
      *
@@ -392,11 +396,13 @@ final class GitStackManager
         $this->assertArrayStarted();
         $stack = $this->stack($folder);
         $settings = $this->settings($stack);
+        $oldCredentialId = $settings->credentialId;
         if ($settings->isSsh()) {
-            throw new InvalidArgumentException(
-                "An ssh stack always uses a deploy key of its own, so the credential of '$folder' cannot be changed. "
-                . 'compose-git deploy-key shows its public key.'
-            );
+            if ($credentialId !== null && $credentialId === $oldCredentialId) {
+                ($this->say)("'$folder' already uses the deploy key '" . $this->credentialName($credentialId) . "'. Nothing was changed.");
+                return;
+            }
+            $this->assertRepositoryDeployKey($folder, $settings, $credentialId);
         }
 
         $this->withStackLock($stack, function () use ($stack, $settings, $credentialId): void {
@@ -409,6 +415,102 @@ final class GitStackManager
         ($this->say)($credentialId === null
             ? "'$folder' now reaches its repository without a credential."
             : "'$folder' now uses the credential '" . $this->credentialName($credentialId) . "'.");
+        if ($settings->isSsh() && $oldCredentialId !== null && $oldCredentialId !== $credentialId) {
+            ($this->say)(
+                "Its old deploy key '" . $this->credentialName($oldCredentialId) . "' stays on the Credentials tab, which "
+                . "shows whether another stack still uses it. If none does, delete it there and from the repository's deploy keys."
+            );
+        }
+    }
+
+    /**
+     * Refuse any credential for an ssh stack but a deploy key of its own repository.
+     *
+     * @throws InvalidArgumentException naming the keys it could be given
+     */
+    private function assertRepositoryDeployKey(string $folder, GitStackSettings $settings, ?string $credentialId): void
+    {
+        $address = GitStackSettings::sshAddress($settings->url);
+        $keys = $address === null ? [] : $this->repositoryDeployKeys($folder, $address);
+        if ($credentialId !== null && isset($keys[$credentialId])) {
+            return;
+        }
+        throw $this->notARepositoryDeployKey($folder, $keys);
+    }
+
+    /**
+     * Why an ssh stack cannot be given a credential, naming the deploy keys it could be given.
+     *
+     * @param array<string, string> $keys The repository's deploy keys, by id
+     */
+    private function notARepositoryDeployKey(string $folder, array $keys): InvalidArgumentException
+    {
+        $choices = array_map(static fn(string $name): string => "'$name'", array_values($keys));
+        return new InvalidArgumentException(
+            "An ssh stack reaches its repository with a deploy key, so '$folder' can only be given a deploy key of the "
+            . 'same repository that another stack uses, or one made for the repository'
+            . ($choices === [] ? ', and there is none.' : ': ' . implode(', ', $choices) . '.')
+            . ' compose-git deploy-key shows the key it uses now.'
+        );
+    }
+
+    /**
+     * The deploy keys of an ssh stack's repository, other than its own: the keys other ssh stacks
+     * of the same repository use, and a key made for the repository, by id, with their names.
+     *
+     * @param array{user: string, host: string, port: int, path: string} $address
+     * @return array<string, string>
+     */
+    public function repositoryDeployKeys(string $folder, array $address): array
+    {
+        $deployKeys = $this->deployKeysOnHost($address);
+        $keys = [];
+        foreach ($this->stacksOfRepository($folder, $address) as $credentialId) {
+            if (isset($deployKeys[$credentialId])) {
+                $keys[$credentialId] = $deployKeys[$credentialId];
+            }
+        }
+        $repositoryKeyName = 'deploy key for ' . self::sshRepositoryName($address);
+        foreach ($deployKeys as $id => $name) {
+            if ($name === $repositoryKeyName) {
+                $keys[$id] = $name;
+            }
+        }
+        return $keys;
+    }
+
+    /**
+     * The id of the credential named $nameOrId (or with that id) that the stack $folder may be given:
+     * for an ssh stack a deploy key of its repository, otherwise an HTTPS token.
+     *
+     * @throws RuntimeException if there is none, or several with that name
+     */
+    public function findCredentialFor(string $folder, string $nameOrId): string
+    {
+        $settings = $this->settings($this->stack($folder));
+        $address = GitStackSettings::sshAddress($settings->url);
+        if ($address === null) {
+            return $this->findGitCredential($nameOrId);
+        }
+        // The key it uses now: setCredential() then says so and changes nothing.
+        $current = $settings->credentialId;
+        if ($current !== null && ($current === $nameOrId || $this->credentialName($current) === $nameOrId)) {
+            return $current;
+        }
+        $keys = $this->repositoryDeployKeys($folder, $address);
+        $matches = [];
+        foreach ($keys as $id => $name) {
+            if ($id === $nameOrId || $name === $nameOrId) {
+                $matches[] = $id;
+            }
+        }
+        if (count($matches) === 1) {
+            return $matches[0];
+        }
+        if (count($matches) > 1) {
+            throw new RuntimeException("Several deploy keys are named '$nameOrId'. Use the key's id instead.");
+        }
+        throw $this->notARepositoryDeployKey($folder, $keys);
     }
 
     /**
