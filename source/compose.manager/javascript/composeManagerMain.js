@@ -253,7 +253,10 @@ function loadAddStackGitCredentials() {
 // to know the key before the stack can be made. What git said goes underneath, smaller.
 // buttonName is the dialog's button to select again once the key is added.
 function showGitDeployKeyPanel($panel, publicKey, details, buttonName) {
-    var $key = $('<textarea class="compose-git-deploy-key" rows="3" readonly>').val(publicKey);
+    // Named for screen readers: the panel's title is not tied to this box.
+    var $key = $('<textarea class="compose-git-deploy-key" rows="3" readonly>')
+        .attr('aria-label', 'Deploy key to add to the repository')
+        .val(publicKey);
     var $copy = $('<button type="button" class="btn btn-sm">').text('Copy key').on('click', function() {
         // The clipboard API needs https, which Unraid often is not on, so copy the selection.
         $key[0].select();
