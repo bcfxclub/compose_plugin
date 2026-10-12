@@ -301,7 +301,7 @@ offered only for that address, so a host that redirects a shorter address gets n
 One token can serve every stack on the same host that it can read. **Test** on the Credentials tab tries it
 against a stack that already uses it, so add the stack first; until then the tab says no git stack uses it.
 
-**An SSH deploy key.** Use an ssh address, and the stack gets a key of its own:
+**An SSH deploy key.** Use an ssh address, and the plugin makes a deploy key for the repository:
 
 ```bash
 compose-git add myapp --url git@github.com:you/stacks.git --path myapp/compose.yaml
@@ -313,9 +313,15 @@ Deploy keys), then run the same command again. `compose-git deploy-key myapp` sh
 Until then the key is listed on the Credentials tab as used by no stack: leave it there, or the second run
 makes a new key, and the one you added to the repository no longer works.
 
-Deleting a stack leaves its key on the Credentials tab. Delete the key there too before you add a new stack of
-the same name for another repository on the same host: otherwise the new stack reuses the old key, and GitHub
-refuses a deploy key that another repository already has.
+The key belongs to the repository, not to one stack. It is named after the repository on the Credentials tab
+(`deploy key for git@github.com:you/stacks.git`), and every other stack you add from the same repository (a
+repository that holds several stacks, one folder each) uses it too, so nothing more needs adding to the
+repository. The same repository means the same address: the same user, host, port and path.
+
+Deleting a stack leaves the key on the Credentials tab, where other stacks of the repository may still use it.
+An older version of the plugin named each key after its stack (`myapp deploy key`), and a new stack of that name
+still reuses such a key. If the new stack is for another repository, delete the old key first: GitHub refuses a
+deploy key that another repository already has.
 
 When the stack is added, the server's ssh host keys are pinned and their fingerprints shown. Compare them with
 the ones your git host publishes (GitHub, GitLab and Codeberg list theirs). Every later connection must match
@@ -487,7 +493,7 @@ otherwise make compose refuse the stack. The log names each one removed.
 `<url>` is an `https://` address without a user name or password in it, an ssh address
 (`ssh://git@host[:port]/path` or `git@host:path`), or the path of a repository under `/mnt`. `--credential`
 is the name of a git credential (an HTTPS token) on the Credentials tab, for an `https://` address; an ssh
-stack always uses the deploy key made for it. `<stack>` is the stack's exact folder name in the projects folder. `--clones-root` must be on a share,
+stack uses its repository's deploy key. `<stack>` is the stack's exact folder name in the projects folder. `--clones-root` must be on a share,
 disk or pool, and the share must exist.
 
 Exit status: `0` success (for `check`: up to date), `1` failed, `2` the command line was not understood, `3`

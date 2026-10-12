@@ -646,7 +646,7 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
                             <div id="settings-git-local-changes" class="compose-git-warning-box" style="display:none;margin-top:8px;"></div>
                             <div id="settings-git-problem" class="compose-status-danger" style="display:none;margin-top:8px;"></div>
                             <div id="settings-git-deploy-key-wrap" style="display:none;margin-top:8px;">
-                                <div class="settings-field-help" id="settings-git-deploy-key-label">This stack's deploy key. Add it to the repository as a read-only deploy key:</div>
+                                <div class="settings-field-help" id="settings-git-deploy-key-label">The deploy key this stack uses, shared by the ssh stacks of its repository. The repository needs it as a read-only deploy key:</div>
                                 <textarea id="settings-git-deploy-key" rows="2" readonly aria-labelledby="settings-git-deploy-key-label"></textarea>
                             </div>
                         </div>

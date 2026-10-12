@@ -202,8 +202,8 @@ function isGitSshAddress(url) {
 // In the Add Stack dialog, show the fields that apply to the chosen source.
 // A git stack's compose file is in its clone and its .env in its stack
 // folder, so the env path and discovery choices are hidden for it. An ssh
-// repository gets a deploy key of its own, so the credential choice is for
-// https only.
+// repository gets a deploy key from the plugin, so the credential choice is
+// for https only.
 function updateAddStackFieldsForSource() {
     var mode = ($('input[name="compose-stack-compose-source"]:checked').val()) || 'project';
     var isGit = mode === 'git';
@@ -3711,7 +3711,7 @@ function addStack() {
                                 <input type="text" id="compose-stack-git-url" placeholder="https://github.com/me/stacks.git">
                                 <div id="compose-stack-git-url-error" class="compose-status-danger" style="margin-top:6px;display:none;font-size:0.9em;"></div>
                                 <div class="settings-field-help">An <code>https://</code> address, an ssh address (<code>git@host:me/stacks.git</code>), or the path of a repository under <code>/mnt/</code>. No password or token in it.</div>
-                                <div id="compose-stack-git-ssh-note" class="settings-field-help" style="display:none;">An ssh repository needs no credential: a deploy key is made for the stack when you select Create, and shown here to add to the repository.</div>
+                                <div id="compose-stack-git-ssh-note" class="settings-field-help" style="display:none;">An ssh repository needs no credential: when you select Create, the stack uses the deploy key of another stack of the same repository, or a new key is made and shown here to add to the repository.</div>
 
                                 <label for="compose-stack-git-branch" style="font-weight:normal;margin-top:8px;">Branch</label>
                                 <input type="text" id="compose-stack-git-branch" value="main" placeholder="main">
@@ -3724,7 +3724,7 @@ function addStack() {
                                 <div id="compose-stack-git-credential-wrap">
                                     <label for="compose-stack-git-credential" style="font-weight:normal;margin-top:8px;">Credential</label>
                                     <select id="compose-stack-git-credential"><option value="">None (a public repository)</option></select>
-                                    <div class="settings-field-help">For a private https repository, first add a git token on the Credentials tab of the plugin's settings, then choose it here. For an ssh repository, no credential is needed: a deploy key is made for the stack.</div>
+                                    <div class="settings-field-help">For a private https repository, first add a git token on the Credentials tab of the plugin's settings, then choose it here. For an ssh repository, no credential is needed: the stack uses its repository's deploy key.</div>
                                 </div>
                                 <div class="settings-field-help">Create clones the repository but starts nothing. Deploy the stack from its menu when you are ready.</div>
                             </div>
@@ -6777,7 +6777,7 @@ function openConvertToGitModal() {
                         <label for="compose-convert-git-url">Repository address</label>
                         <input type="text" id="compose-convert-git-url" placeholder="https://github.com/me/stacks.git">
                         <div class="settings-field-help">An <code>https://</code> address, an ssh address (<code>git@host:me/stacks.git</code>), or the path of a repository under <code>/mnt/</code>.</div>
-                        <div id="compose-convert-git-ssh-note" class="settings-field-help" style="display:none;">An ssh repository needs no credential: a deploy key is made for the stack when you select Move into git, and shown here to add to the repository.</div>
+                        <div id="compose-convert-git-ssh-note" class="settings-field-help" style="display:none;">An ssh repository needs no credential: when you select Move into git, the stack uses the deploy key of another stack of the same repository, or a new key is made and shown here to add to the repository.</div>
                     </div>
                     <div class="settings-field">
                         <label for="compose-convert-git-branch">Branch</label>
@@ -6790,7 +6790,7 @@ function openConvertToGitModal() {
                     <div class="settings-field" id="compose-convert-git-credential-wrap">
                         <label for="compose-convert-git-credential">Credential</label>
                         <select id="compose-convert-git-credential"><option value="">None (a public repository)</option></select>
-                        <div class="settings-field-help">For a private https repository, first add a git token on the Credentials tab of the plugin's settings, then choose it here. For an ssh repository, no credential is needed: a deploy key is made for the stack.</div>
+                        <div class="settings-field-help">For a private https repository, first add a git token on the Credentials tab of the plugin's settings, then choose it here. For an ssh repository, no credential is needed: the stack uses its repository's deploy key.</div>
                     </div>
                 </div>
                 <div class="compose-modal-footer">

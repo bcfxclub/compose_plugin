@@ -8,7 +8,7 @@ require_once '/usr/local/emhttp/plugins/compose.manager/include/CredentialVault.
 require_once '/usr/local/emhttp/plugins/compose.manager/include/GitCredentials.php';
 
 /**
- * ssh for git stacks: a deploy key per stack, and the repository host's pinned keys.
+ * ssh for git stacks: a deploy key per repository, and the repository host's pinned keys.
  *
  * The private key is kept in the credential vault (a "git-ssh" entry) and
  * written to a root-only file under /var/tmp for each git run, like an HTTPS

@@ -124,7 +124,8 @@ final class GitStackWebActions
         }
         $note = "This is the stack's clone of its repository: delete it yourself once nothing in it is needed.";
         if ($settings->isSsh() && $settings->credentialId !== null) {
-            $note .= " Its ssh deploy key stays on the Credentials tab of the plugin settings, and in the repository's deploy keys.";
+            $note .= " Its ssh deploy key stays on the Credentials tab of the plugin settings, and in the repository's deploy keys:"
+                . ' other stacks of the repository may use it too.';
         }
         return ['path' => $settings->cloneDir, 'note' => $note];
     }

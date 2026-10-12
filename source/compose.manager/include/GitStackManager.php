@@ -420,7 +420,7 @@ final class GitStackManager
     {
         $gitCredentials = array_values(array_filter(
             (new CredentialVault())->listCredentials(),
-            // HTTPS tokens only: a deploy key belongs to the one stack it was made for.
+            // HTTPS tokens only: a deploy key is chosen by the repository it reaches, never by name.
             static fn(array $credential): bool => ($credential['provider'] ?? '') === 'git'
         ));
         $matches = array_values(array_filter(
@@ -519,7 +519,7 @@ final class GitStackManager
 
     /**
      * Settings for a new git stack. For an ssh repository this also makes (or
-     * reuses) the stack's deploy key and pins the host's keys.
+     * reuses) the repository's deploy key and pins the host's keys.
      */
     private function newSettings(
         string $url,
@@ -539,7 +539,7 @@ final class GitStackManager
             throw new InvalidArgumentException("The ssh repository address is not valid: $url");
         }
         if ($credentialId !== null) {
-            throw new InvalidArgumentException('An ssh stack gets a deploy key of its own, so it cannot be given another credential.');
+            throw new InvalidArgumentException('An ssh stack uses the deploy key the plugin keeps for its repository, so it cannot be given another credential.');
         }
         // The host first: a mistyped host then fails before a deploy key is made for it.
         $knownHosts = GitSsh::scanHostKeys($address['host'], $address['port']);
@@ -550,39 +550,207 @@ final class GitStackManager
     }
 
     /**
-     * The stack's deploy key: the one made for it by an earlier attempt, or a new one.
+     * The deploy key for a new ssh stack. One key serves every stack of a repository: GitHub
+     * refuses one key on two repositories, but not one key for several stacks of the same one,
+     * and every such key would have the same read-only access anyway.
      *
-     * The key is found by the stack's name and host. The vault does not record the repository,
-     * so a key left behind by a deleted stack of the same name is reused too; the message says
-     * what to do when that key belongs to another repository.
+     * An existing key is used if there is one (see existingDeployKey()); otherwise a new key is
+     * made, named after the repository so that later stacks of the repository find it. Nothing
+     * locks this choice: two stacks of a new repository added at the same moment can each make a
+     * key. Both keys work; the Credentials tab then lists two keys of the same name.
      *
      * @param array{user: string, host: string, port: int, path: string} $address
      */
     private function deployKeyFor(string $folder, array $address): string
     {
-        $name = "$folder deploy key";
-        $host = $address['host'] . ($address['port'] === 22 ? '' : ':' . $address['port']);
-        foreach ((new CredentialVault())->listCredentials() as $credential) {
-            if ($credential['name'] === $name && $credential['provider'] === 'git-ssh' && $credential['registry'] === $host) {
-                ($this->say)(
-                    "Using the deploy key made for '$folder' earlier ('$name' on the Credentials tab). If it was "
-                    . "made for another repository, by a stack of the same name that has since been deleted, "
-                    . "delete '$name' first: GitHub, for one, refuses a deploy key that another repository has."
-                );
-                return $credential['id'];
-            }
+        $existing = $this->existingDeployKey($folder, $address);
+        if ($existing !== null) {
+            ($this->say)($existing['message']);
+            return $existing['id'];
         }
-        $key = GitSsh::generateKey("compose-manager $folder");
-        ($this->say)("Made a new deploy key for '$folder'.");
+        $repository = self::sshRepositoryName($address);
+        $name = "deploy key for $repository";
+        $key = GitSsh::generateKey("compose-manager $repository");
+        ($this->say)("Made a new deploy key for $repository ('$name' on the Credentials tab). Other stacks of this repository will use it too.");
         $id = (new CredentialVault())->saveCredential([
             'name' => $name,
             'provider' => 'git-ssh',
-            'registry' => $host,
+            'registry' => self::sshRegistry($address),
             'username' => $address['user'],
             'secret' => $key['private'],
         ])['id'];
-        composeLogger("Made a deploy key for git stack '$folder'", ['id' => $id, 'host' => $host], 'user', 'info', 'credentials');
+        composeLogger(
+            "Made a deploy key for $repository, for git stack '$folder'",
+            ['id' => $id, 'host' => self::sshRegistry($address)],
+            'user',
+            'info',
+            'credentials'
+        );
         return $id;
+    }
+
+    /**
+     * The deploy key a new ssh stack would use without making one, and the message that says
+     * why. In this order:
+     *  1. the key another ssh stack of the same repository uses: the repository knows it already;
+     *  2. a key made for this repository earlier, such as by an attempt whose clone failed
+     *     because the key had not been added to the repository yet;
+     *  3. a key named after this stack by an earlier attempt of an older version of the plugin,
+     *     as long as no git stack uses it: such a key may belong to another repository, and
+     *     one that a stack uses could not be deleted to make way for a new one.
+     * The same repository means the same user, host, port and path in the address.
+     *
+     * @param array{user: string, host: string, port: int, path: string} $address
+     * @return array{id: string, message: string}|null
+     */
+    public function existingDeployKey(string $folder, array $address): ?array
+    {
+        $deployKeys = $this->deployKeysOnHost($address);
+
+        foreach ($this->stacksOfRepository($folder, $address) as $otherFolder => $credentialId) {
+            if (!isset($deployKeys[$credentialId])) {
+                continue;
+            }
+            $name = $deployKeys[$credentialId];
+            return [
+                'id' => $credentialId,
+                'message' => "Using the deploy key of '$otherFolder' ('$name' on the Credentials tab), which "
+                    . 'reaches the same repository: the repository knows it already.',
+            ];
+        }
+
+        $repositoryKeyName = 'deploy key for ' . self::sshRepositoryName($address);
+        foreach ($deployKeys as $id => $name) {
+            if ($name === $repositoryKeyName) {
+                return [
+                    'id' => $id,
+                    'message' => "Using the deploy key made for this repository earlier ('$name' on the Credentials tab).",
+                ];
+            }
+        }
+
+        $stackKeyName = "$folder deploy key";
+        $keysInUse = array_values($this->gitStackCredentials());
+        foreach ($deployKeys as $id => $name) {
+            if ($name === $stackKeyName && !in_array($id, $keysInUse, true)) {
+                return [
+                    'id' => $id,
+                    'message' => "Using the deploy key made for '$folder' earlier ('$name' on the Credentials tab). If it was "
+                        . 'made for another repository, by a stack of the same name that has since been deleted, '
+                        . "delete '$name' first: GitHub, for one, refuses a deploy key that another repository has.",
+                ];
+            }
+        }
+        return null;
+    }
+
+    /**
+     * The deploy keys in the credential vault for the host (and port) of an ssh address: names by id.
+     *
+     * @param array{user: string, host: string, port: int, path: string} $address
+     * @return array<string, string>
+     */
+    private function deployKeysOnHost(array $address): array
+    {
+        $keys = [];
+        foreach ((new CredentialVault())->listCredentials() as $credential) {
+            if ($credential['provider'] === 'git-ssh' && $credential['registry'] === self::sshRegistry($address)) {
+                $keys[$credential['id']] = $credential['name'];
+            }
+        }
+        return $keys;
+    }
+
+    /**
+     * The other ssh stacks of a repository and the credential each uses: the git stacks, other
+     * than $exceptFolder, whose address has the same user, host, port and path.
+     *
+     * @param array{user: string, host: string, port: int, path: string} $address
+     * @return array<string, string> Credential ids by stack folder
+     */
+    private function stacksOfRepository(string $exceptFolder, array $address): array
+    {
+        $stacks = [];
+        foreach ($this->gitStackCredentials() as $folder => $credentialId) {
+            if ($folder === $exceptFolder) {
+                continue;
+            }
+            $url = $this->gitStackUrl($folder);
+            if ($url !== null && GitStackSettings::sshAddress($url) === $address) {
+                $stacks[$folder] = $credentialId;
+            }
+        }
+        return $stacks;
+    }
+
+    /**
+     * The credential every git stack uses, by stack folder; a stack with none is left out.
+     *
+     * git.json is read as plain JSON, as the Credentials tab reads it: a stack whose settings fail
+     * a check still uses its credential. One that cannot be read at all is named in a message.
+     *
+     * @return array<string, string>
+     */
+    private function gitStackCredentials(): array
+    {
+        $credentials = [];
+        foreach ($this->listGitStacks() as $folder) {
+            $data = $this->readGitJson($folder);
+            if ($data === null) {
+                ($this->say)("Could not read the git settings of '$folder', so its deploy key is not looked at.");
+                continue;
+            }
+            $credentialId = $data['credentialId'] ?? null;
+            if (is_string($credentialId) && $credentialId !== '') {
+                $credentials[$folder] = $credentialId;
+            }
+        }
+        return $credentials;
+    }
+
+    /**
+     * A git stack's repository address from its git.json, read as plain JSON; null if unreadable.
+     */
+    private function gitStackUrl(string $folder): ?string
+    {
+        $url = ($this->readGitJson($folder) ?? [])['url'] ?? null;
+        return is_string($url) ? $url : null;
+    }
+
+    /**
+     * A git stack's git.json as plain JSON, or null if it cannot be read or is not a JSON object.
+     *
+     * @return array<string, mixed>|null
+     */
+    private function readGitJson(string $folder): ?array
+    {
+        $data = json_decode((string) @file_get_contents($this->composeRoot . '/' . $folder . '/' . GitStackSettings::FILE_NAME), true);
+        return is_array($data) ? $data : null;
+    }
+
+    /**
+     * An ssh repository's address as a deploy key's name shows it: user@host:path, or
+     * ssh://user@host:port/path for a port other than 22.
+     *
+     * @param array{user: string, host: string, port: int, path: string} $address
+     */
+    private static function sshRepositoryName(array $address): string
+    {
+        if ($address['port'] === 22) {
+            return "{$address['user']}@{$address['host']}:{$address['path']}";
+        }
+        return "ssh://{$address['user']}@{$address['host']}:{$address['port']}/{$address['path']}";
+    }
+
+    /**
+     * The host a deploy key is kept under in the credential vault: host, or host:port for a
+     * port other than 22.
+     *
+     * @param array{user: string, host: string, port: int, path: string} $address
+     */
+    private static function sshRegistry(array $address): string
+    {
+        return $address['host'] . ($address['port'] === 22 ? '' : ':' . $address['port']);
     }
 
     /**

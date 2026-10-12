@@ -47,8 +47,9 @@ or git@host:path), or the path of a repository under /mnt.
 --branch defaults to main. <stack> is the stack's exact folder name.
 --credential names a git credential (an HTTPS token) from the plugin's Credentials tab, for a
 private repository; credential changes or removes it on an existing stack.
-An ssh stack gets a deploy key of its own when it is added; deploy-key shows it again, to add to
-the repository as a read-only deploy key. Its host's keys are pinned when it is added;
+An ssh stack gets a deploy key when it is added, one per repository: a second stack of the same
+repository uses the first one's. deploy-key shows it again, to add to the repository as a
+read-only deploy key. Its host's keys are pinned when it is added;
 trust-host pins them again after the server's keys change.
 deploy waits for healthy containers when the stack's wait-for-healthy setting says so;
 --wait and --no-wait override it.
@@ -81,8 +82,9 @@ Options:
   --url <url>             The repository: an https:// address with no user name or
                           password in it, an ssh address (ssh://git@host[:port]/path or
                           git@host:path), or the path of a repository on this server under
-                          /mnt. Required. An ssh stack gets a deploy key of its own, and the
-                          host's ssh keys are pinned.
+                          /mnt. Required. An ssh stack gets the repository's deploy key (made
+                          for the first stack of the repository), and the host's ssh keys
+                          are pinned.
   --path <compose file>   The compose file's path inside the repository, such as
                           stacks/whoami/compose.yaml. Required.
   --branch <branch>       The branch to follow. Default: main.
@@ -116,8 +118,9 @@ Options:
   --url <url>             The repository: an https:// address with no user name or
                           password in it, an ssh address (ssh://git@host[:port]/path or
                           git@host:path), or the path of a repository on this server under
-                          /mnt. Required. An ssh stack gets a deploy key of its own, and the
-                          host's ssh keys are pinned.
+                          /mnt. Required. An ssh stack gets the repository's deploy key (made
+                          for the first stack of the repository), and the host's ssh keys
+                          are pinned.
   --path <compose file>   The compose file's path inside the repository. Required.
   --branch <branch>       The branch to follow. Default: main.
   --clones-root <folder>  The folder the clone goes in, as <stack>-<id>. It must be on a
@@ -144,8 +147,9 @@ TEXT,
 Usage: compose-git deploy-key <stack>
 
 Print the public half of an ssh stack's deploy key, to add to the repository as a read-only
-deploy key (on GitHub: the repository's Settings, Deploy keys). The key was made for the
-stack when it was added, and is kept in the plugin's credential vault. Changes nothing.
+deploy key (on GitHub: the repository's Settings, Deploy keys). The key was made when the
+first stack of the repository was added, is used by every ssh stack of that repository, and is
+kept in the plugin's credential vault. Changes nothing.
 TEXT,
         'trust-host' => <<<'TEXT'
 Usage: compose-git trust-host <stack>

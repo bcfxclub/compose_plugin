@@ -116,7 +116,7 @@
             canOAuth: false
         },
         'git-ssh': {
-            // Made by compose-git for one git stack; never created or edited here.
+            // Made by compose-git for the ssh stacks of a repository; never created or edited here.
             label: 'SSH deploy key (git stack)',
             defaultRegistry: '',
             registryReadonly: true,

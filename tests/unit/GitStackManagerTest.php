@@ -453,7 +453,7 @@ final class GitStackManagerTest extends TestCase
             $this->manager->add('whoami', 'git@github.com:owner/repo.git', 'main', 'whoami/compose.yaml', $this->clonesRoot, '', $token['id']);
             $this->fail('An ssh stack was added with another credential');
         } catch (\InvalidArgumentException $error) {
-            $this->assertStringContainsString('gets a deploy key of its own', $error->getMessage());
+            $this->assertStringContainsString('deploy key the plugin keeps for its repository', $error->getMessage());
         }
         $this->assertDirectoryDoesNotExist($this->composeRoot . '/whoami');
         $this->assertSame([], glob($this->clonesRoot . '/*') ?: []);
@@ -564,6 +564,116 @@ final class GitStackManagerTest extends TestCase
             }
         }
         $this->assertSame(str_repeat('cd', 16), GitStackSettings::load($stackDir)->credentialId);
+    }
+
+    public function testANewSshStackUsesTheDeployKeyOfAnotherStackOfTheSameRepository(): void
+    {
+        $vault = $this->emptyVault();
+        $key = $vault->saveCredential(['name' => 'deploy key for git@github.com:owner/repo.git', 'provider' => 'git-ssh', 'registry' => 'github.com', 'username' => 'git', 'secret' => 'k']);
+        $this->makeSshStack('first', 'git@github.com:owner/repo.git', $key['id']);
+
+        // The ssh:// spelling of the same address is the same repository.
+        foreach (['git@github.com:owner/repo.git', 'ssh://git@github.com/owner/repo.git'] as $url) {
+            $existing = $this->manager->existingDeployKey('second', GitStackSettings::sshAddress($url));
+            $this->assertNotNull($existing);
+            $this->assertSame($key['id'], $existing['id']);
+            $this->assertStringContainsString("Using the deploy key of 'first'", $existing['message']);
+            $this->assertStringContainsString('the repository knows it already', $existing['message']);
+        }
+    }
+
+    public function testAnotherRepositoryNeverGetsTheKey(): void
+    {
+        $vault = $this->emptyVault();
+        $key = $vault->saveCredential(['name' => 'deploy key for git@github.com:owner/repo.git', 'provider' => 'git-ssh', 'registry' => 'github.com', 'username' => 'git', 'secret' => 'k']);
+        $this->makeSshStack('first', 'git@github.com:owner/repo.git', $key['id']);
+
+        // Another path, user, port or host: GitHub refuses one key on two repositories.
+        foreach ([
+            'git@github.com:owner/other.git',
+            'git@github.com:other/repo.git',
+            'deploy@github.com:owner/repo.git',
+            'ssh://git@github.com:2222/owner/repo.git',
+            'git@gitlab.com:owner/repo.git',
+        ] as $url) {
+            $this->assertNull($this->manager->existingDeployKey('second', GitStackSettings::sshAddress($url)), $url);
+        }
+    }
+
+    public function testAKeyMadeForTheRepositoryEarlierIsUsedWhenNoStackHasIt(): void
+    {
+        // As after a first add whose clone failed because the key was not added yet.
+        $key = $this->emptyVault()->saveCredential(['name' => 'deploy key for ssh://git@git.example.com:2222/team/stacks.git', 'provider' => 'git-ssh', 'registry' => 'git.example.com:2222', 'username' => 'git', 'secret' => 'k']);
+
+        $existing = $this->manager->existingDeployKey('myapp', GitStackSettings::sshAddress('ssh://git@git.example.com:2222/team/stacks.git'));
+
+        $this->assertNotNull($existing);
+        $this->assertSame($key['id'], $existing['id']);
+        $this->assertStringContainsString('made for this repository earlier', $existing['message']);
+        $this->assertNull($this->manager->existingDeployKey('myapp', GitStackSettings::sshAddress('ssh://git@git.example.com:2222/team/other.git')));
+    }
+
+    public function testAKeyNamedAfterTheStackByAnOlderVersionIsStillUsed(): void
+    {
+        $key = $this->emptyVault()->saveCredential(['name' => 'myapp deploy key', 'provider' => 'git-ssh', 'registry' => 'github.com', 'username' => 'git', 'secret' => 'k']);
+
+        $existing = $this->manager->existingDeployKey('myapp', GitStackSettings::sshAddress('git@github.com:owner/repo.git'));
+
+        $this->assertNotNull($existing);
+        $this->assertSame($key['id'], $existing['id']);
+        // The vault does not record that key's repository, so the message says what to do if it is another one.
+        $this->assertStringContainsString("delete 'myapp deploy key' first", $existing['message']);
+        $this->assertNull($this->manager->existingDeployKey('otherapp', GitStackSettings::sshAddress('git@github.com:owner/repo.git')));
+    }
+
+    public function testAStackWhoseKeyIsGoneFromTheVaultIsPassedOver(): void
+    {
+        $this->emptyVault();
+        $this->makeSshStack('first', 'git@github.com:owner/repo.git', str_repeat('cd', 16));
+
+        $this->assertNull($this->manager->existingDeployKey('second', GitStackSettings::sshAddress('git@github.com:owner/repo.git')));
+    }
+
+    public function testAKeyNamedAfterTheStackIsNotUsedWhileAnotherStackUsesIt(): void
+    {
+        // 'myapp' had the old-style key; 'other' of the same repository came to share it; 'myapp' was
+        // deleted. A new 'myapp' for another repository must not get that key: it may not reach the
+        // new repository, and it could not be deleted to make way while 'other' uses it.
+        $key = $this->emptyVault()->saveCredential(['name' => 'myapp deploy key', 'provider' => 'git-ssh', 'registry' => 'github.com', 'username' => 'git', 'secret' => 'k']);
+        $this->makeSshStack('other', 'git@github.com:owner/repo.git', $key['id']);
+
+        $this->assertNull($this->manager->existingDeployKey('myapp', GitStackSettings::sshAddress('git@github.com:owner/new.git')));
+        // A stack of the repository that 'other' uses is still given it, by step 1.
+        $this->assertSame($key['id'], $this->manager->existingDeployKey('myapp', GitStackSettings::sshAddress('git@github.com:owner/repo.git'))['id'] ?? null);
+    }
+
+    public function testAStackWhoseSettingsFailACheckStillSharesItsKey(): void
+    {
+        $key = $this->emptyVault()->saveCredential(['name' => 'deploy key for git@github.com:owner/repo.git', 'provider' => 'git-ssh', 'registry' => 'github.com', 'username' => 'git', 'secret' => 'k']);
+        $this->makeSshStack('first', 'git@github.com:owner/repo.git', $key['id']);
+        $file = $this->composeRoot . '/first/git.json';
+        $data = json_decode((string) file_get_contents($file), true);
+        $data['branch'] = '';
+        file_put_contents($file, (string) json_encode($data));
+
+        $existing = $this->manager->existingDeployKey('second', GitStackSettings::sshAddress('git@github.com:owner/repo.git'));
+
+        $this->assertSame($key['id'], $existing['id'] ?? null);
+        $this->assertStringContainsString("Using the deploy key of 'first'", $existing['message'] ?? '');
+    }
+
+    public function testAStackWhoseSettingsCannotBeReadIsNamed(): void
+    {
+        $this->emptyVault();
+        $this->makeSshStack('first', 'git@github.com:owner/repo.git', str_repeat('cd', 16));
+        file_put_contents($this->composeRoot . '/first/git.json', 'not json');
+        $said = [];
+        $manager = new GitStackManager($this->composeRoot, static function (string $message) use (&$said): void {
+            $said[] = $message;
+        });
+
+        $this->assertNull($manager->existingDeployKey('second', GitStackSettings::sshAddress('git@github.com:owner/repo.git')));
+        $this->assertContains("Could not read the git settings of 'first', so its deploy key is not looked at.", $said);
     }
 
     public function testCommandLineCredentialNeedsAStackAndANameOrNone(): void
@@ -967,6 +1077,20 @@ final class GitStackManagerTest extends TestCase
         $errorText = (string) stream_get_contents($errors);
         fclose($errors);
         return [$exit, $output, $errorText];
+    }
+
+    /**
+     * A git stack whose settings say it reaches $url over ssh with the deploy key $credentialId. Its
+     * clone is a local one: nothing here reaches the address.
+     */
+    private function makeSshStack(string $name, string $url, string $credentialId): void
+    {
+        $folder = $this->manager->add($name, $this->upstream, 'main', 'whoami/compose.yaml', $this->clonesRoot);
+        $stackDir = $this->composeRoot . '/' . $folder;
+        GitStackSettings::createNew($url, 'main', 'whoami/compose.yaml', $this->clonesRoot, $folder)
+            ->withCredentialId($credentialId)
+            ->withSshKnownHosts("github.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl\n")
+            ->save($stackDir);
     }
 
     private function emptyVault(): \CredentialVault
