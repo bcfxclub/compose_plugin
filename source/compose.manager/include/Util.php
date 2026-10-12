@@ -4217,7 +4217,8 @@ class StackInfo
      *
      * Rows are `docker ps --format json` rows, filtered on the compose project label.
      * That is much quicker than `docker compose ps` for each stack, which has to read
-     * the stack's compose files first. Pass a project name for that project's only.
+     * the stack's compose files first. Pass a project name to get only that project's
+     * containers.
      *
      * @param string|null $projectName One project, or null for every compose project
      * @return array<string, array[]> Rows by project name
