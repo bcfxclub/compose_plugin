@@ -272,6 +272,8 @@ final class GitStackManager
      * Compare the deployed commit with the branch on the remote. Changes no container and
      * no file of the stack; when the branch has a newer commit, it is fetched into the
      * clone (under the stack's lock, as a deploy would fetch it) to see what it changes.
+     * The deployed commit is read under that lock too, so the check is refused while
+     * another operation on the stack is running.
      *
      * changesStack is null when the stack is up to date. Otherwise it says whether the new
      * commit changes anything in the stack's folder in the repository (the folder holding
@@ -294,30 +296,36 @@ final class GitStackManager
     {
         $stack = $this->stack($folder);
         $settings = $this->settings($stack);
-        $state = GitStackState::load($stack->path);
         $clone = new GitClone($settings);
+        // Asking the remote can take a while, so it is done before taking the lock: a deploy
+        // started meanwhile is not refused.
         $remote = $timeoutSeconds === null ? $clone->remoteBranchCommit() : $clone->remoteBranchCommit($timeoutSeconds);
-        $deployed = $state->deployedCommit;
 
-        $changesStack = null;
-        $deployedCommitMissing = false;
-        if ($deployed === null) {
-            // Nothing deployed yet: whatever the branch has is new to the stack.
-            $changesStack = true;
-        } elseif ($deployed !== $remote) {
-            [$changesStack, $deployedCommitMissing] = $this->withStackLock(
-                $stack,
-                /** @return array{bool, bool} changesStack, deployedCommitMissing */
-                static function () use ($clone, $deployed, $remote): array {
-                    $clone->fetch();
-                    if (!$clone->hasCommit($deployed)) {
-                        // Recloned since, after a force-push for one. Nothing to compare with.
-                        return [true, true];
-                    }
-                    return [$clone->stackFilesChanged($deployed, $remote), false];
+        // What is deployed is read under the lock, after the remote has answered. A deploy
+        // or rollback that finished while the remote was asked is then counted, and none
+        // can finish while the deployed commit is compared with the remote's.
+        [$state, $changesStack, $deployedCommitMissing] = $this->withStackLock(
+            $stack,
+            /** @return array{GitStackState, ?bool, bool} state, changesStack, deployedCommitMissing */
+            static function () use ($stack, $clone, $remote): array {
+                $state = GitStackState::load($stack->path);
+                $deployed = $state->deployedCommit;
+                if ($deployed === null) {
+                    // Nothing deployed yet: whatever the branch has is new to the stack.
+                    return [$state, true, false];
                 }
-            );
-        }
+                if ($deployed === $remote) {
+                    return [$state, null, false];
+                }
+                $clone->fetch();
+                if (!$clone->hasCommit($deployed)) {
+                    // Recloned since, after a force-push for one. Nothing to compare with.
+                    return [$state, true, true];
+                }
+                return [$state, $clone->stackFilesChanged($deployed, $remote), false];
+            }
+        );
+        $deployed = $state->deployedCommit;
 
         return [
             'stack' => $folder,

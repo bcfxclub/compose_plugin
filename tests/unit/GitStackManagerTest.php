@@ -319,6 +319,30 @@ final class GitStackManagerTest extends TestCase
         $this->assertSame($this->upstreamHead(), $result['remoteCommit']);
     }
 
+    public function testCheckReadsTheDeployedCommitOnlyWhenNoOneElseHoldsTheLock(): void
+    {
+        $folder = $this->manager->add('whoami', $this->upstream, 'main', 'whoami/compose.yaml', $this->clonesRoot);
+        $stack = $this->manager->gitStack($folder);
+        // Up to date, so nothing needs fetching. A deploy holding the lock may still
+        // change the deployed commit, so the check does not answer from it.
+        (new GitStackState($this->upstreamHead(), null))->save($stack->path);
+        mkdir(COMPOSE_LOCK_DIR, 0755, true);
+        $lock = fopen(COMPOSE_LOCK_DIR . '/' . $stack->projectName . '.lock', 'c');
+        $this->assertNotFalse($lock);
+        flock($lock, LOCK_EX);
+
+        try {
+            $this->manager->check($folder);
+            $this->fail('Checked while another operation held the lock');
+        } catch (RuntimeException $error) {
+            $this->assertStringContainsString('in progress', $error->getMessage());
+        } finally {
+            flock($lock, LOCK_UN);
+            fclose($lock);
+        }
+        $this->assertTrue($this->manager->check($folder)['upToDate']);
+    }
+
     public function testCheckTellsACommitToTheStacksFolderFromOneOutsideIt(): void
     {
         $folder = $this->manager->add('whoami', $this->upstream, 'main', 'whoami/compose.yaml', $this->clonesRoot);
