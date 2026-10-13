@@ -42,6 +42,7 @@ Usage:
   compose-git trust-host <stack>
   compose-git check <stack>|--all
   compose-git deploy <stack> [--commit <full commit id>] [--save-local-changes] [--wait|--no-wait] [--wait-timeout <seconds>] [--profile <name>]...
+  compose-git deploy <stack> --dry-run [--commit <full commit id>] [--profile <name>]...
   compose-git reclone <stack>
   compose-git status [<stack>|--all] [--json]
   compose-git scheduled-check
@@ -245,10 +246,19 @@ Options:
   --profile <name>          Start the services in this compose profile too. Repeat it for
                             more than one profile. Default: the profiles the stack is running
                             with, else its default profiles, as the web UI's Update uses.
+  --dry-run                 Run the checks without deploying: fetch, check out the commit, run
+                            every check above, show how the compose configuration changes
+                            (variables as written, not their values), and check the commit
+                            from before out again. Nothing is pulled, built or deployed, but
+                            while the checks run the clone holds the tried commit, so a
+                            container reading files from the clone sees them for that time.
+                            Exit status 0 when every check passed, 1 when one did not or the
+                            dry run could not be done. Takes only --commit and --profile.
 
 Examples:
   compose-git deploy myapp
   compose-git deploy myapp --commit 4f1c2b0e9d8a7c6b5a4f3e2d1c0b9a8f7e6d5c4b
+  compose-git deploy myapp --dry-run
 TEXT,
         'reclone' => <<<'TEXT'
 Usage: compose-git reclone <stack>
@@ -484,6 +494,62 @@ function compose_git_deploy(GitStackManager $manager, string $folder, array $opt
 }
 
 /**
+ * compose-git deploy --dry-run: try the deploy without deploying, and print what it found.
+ *
+ * @param array<string, string|true|string[]> $options
+ * @return int 0 when every check passed, 1 when one did not
+ */
+function compose_git_dry_run(GitStackManager $manager, string $folder, array $options): int
+{
+    foreach (['save-local-changes', 'wait', 'no-wait', 'wait-timeout'] as $option) {
+        if (isset($options[$option])) {
+            throw new ComposeGitUsageError("--dry-run takes only --commit and --profile, not --$option: a dry run saves nothing and starts no container.");
+        }
+    }
+    $stack = $manager->gitStack($folder);
+    $result = $manager->dryRun(
+        $folder,
+        isset($options['commit']) ? (string) $options['commit'] : null,
+        gitDeployProfiles($stack, array_map('strval', (array) ($options['profile'] ?? [])))
+    );
+    $previous = substr($result['previousCommit'], 0, 12);
+    $target = substr($result['targetCommit'], 0, 12);
+
+    if ($result['previousCommit'] === $result['targetCommit']) {
+        echo "Dry run of $folder: $target, the commit checked out now.\n";
+    } else {
+        echo "Dry run of $folder: from $previous (checked out now) to $target.\n";
+    }
+    // After a failed up the clone holds the commit that failed, not the one that last worked.
+    if ($result['deployedCommit'] === null) {
+        echo "Nothing has been deployed yet.\n";
+    } elseif ($result['deployedCommit'] !== $result['previousCommit']) {
+        echo 'The last commit deployed successfully is ' . substr($result['deployedCommit'], 0, 12) . ".\n";
+    }
+    if ($result['problems'] === []) {
+        echo "Every check passed. A dry run does not pull or build the images, so a missing image or tag is\n"
+            . "found only by the deploy.\n";
+        if ($result['recreatesEveryContainer']) {
+            echo "Up would recreate every container of the stack (see 'recreateOnFolderChange' in 'deploy --help').\n";
+        }
+    } else {
+        echo "The deploy would stop:\n- " . implode("\n- ", $result['problems']) . "\n";
+    }
+
+    echo "\n";
+    if ($result['configDiff'] === null) {
+        echo "How the compose configuration changes is not known. {$result['configProblem']}\n";
+    } elseif ($result['configDiff'] === '') {
+        echo "The compose configuration does not change.\n";
+    } else {
+        echo "How the compose configuration changes (variables as written, not their values):\n" . $result['configDiff'];
+    }
+    echo "\nNothing was deployed, and the clone is back at $previous.\n";
+
+    return $result['problems'] === [] ? COMPOSE_GIT_EXIT_OK : COMPOSE_GIT_EXIT_FAILED;
+}
+
+/**
  * A status row for a git stack whose settings or state could not be read,
  * with the same keys as GitStackManager::status() and the reason as the problem.
  *
@@ -680,7 +746,10 @@ function compose_git_main(array $argv, string $composeRoot, $errors = null): int
                 return $anyElsewhere ? COMPOSE_GIT_EXIT_NEWER_ELSEWHERE : COMPOSE_GIT_EXIT_OK;
 
             case 'deploy':
-                [$positional, $options] = compose_git_parse($args, ['commit', 'wait-timeout', 'profile'], ['save-local-changes', 'wait', 'no-wait']);
+                [$positional, $options] = compose_git_parse($args, ['commit', 'wait-timeout', 'profile'], ['save-local-changes', 'wait', 'no-wait', 'dry-run']);
+                if (isset($options['dry-run'])) {
+                    return compose_git_dry_run($manager, compose_git_one_stack($positional), $options);
+                }
                 return compose_git_deploy($manager, compose_git_one_stack($positional), $options, $errors);
 
             case 'reclone':

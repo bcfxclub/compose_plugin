@@ -367,6 +367,74 @@ final class GitStackManagerTest extends TestCase
         $this->assertSame($checkedOut, $clone->checkedOutCommit());
     }
 
+    public function testDryRunFromTheCommandLineSaysWhatTheDeployWouldDo(): void
+    {
+        $docker = new FakeDocker();
+        $docker->setConfig(['name' => 'whoami', 'services' => ['whoami' => ['image' => 'traefik/whoami']]]);
+        try {
+            $folder = $this->manager->add('whoami', $this->upstream, 'main', 'whoami/compose.yaml', $this->clonesRoot);
+            $first = $this->upstreamHead();
+            $this->writeAndPush(['whoami/compose.yaml' => "services:\n  whoami:\n    image: traefik/whoami:v2\n"], 'bump');
+
+            [$exit, $output] = $this->runCliCapturingOutput(['compose-git', 'deploy', $folder, '--dry-run']);
+
+            $this->assertSame(0, $exit);
+            $short = substr($first, 0, 12);
+            $this->assertStringContainsString("Dry run of $folder: from $short (checked out now) to " . substr($this->upstreamHead(), 0, 12) . ".\n", $output);
+            $this->assertStringContainsString("Nothing has been deployed yet.\n", $output);
+            $this->assertStringContainsString("Every check passed. A dry run does not pull or build the images", $output);
+            $this->assertStringContainsString("+    image: traefik/whoami:v2\n", $output);
+            $this->assertStringEndsWith("Nothing was deployed, and the clone is back at $short.\n", $output);
+
+            // A problem makes the exit status 1.
+            $docker->setConfig([
+                'name' => 'whoami',
+                'services' => ['whoami' => ['image' => 'traefik/whoami']],
+                'networks' => ['proxy' => ['name' => 'zz-proxy', 'external' => true]],
+            ]);
+            [$exit, $output] = $this->runCliCapturingOutput(['compose-git', 'deploy', $folder, '--dry-run']);
+            $this->assertSame(1, $exit);
+            $this->assertStringContainsString("The deploy would stop:\n- ", $output);
+            $this->assertStringContainsString("network 'zz-proxy' does not exist", $output);
+        } finally {
+            $docker->cleanUp();
+        }
+    }
+
+    public function testDryRunTakesOnlyCommitAndProfile(): void
+    {
+        $folder = $this->manager->add('whoami', $this->upstream, 'main', 'whoami/compose.yaml', $this->clonesRoot);
+
+        foreach ([['--wait'], ['--no-wait'], ['--save-local-changes'], ['--wait-timeout', '5']] as $option) {
+            [$exit, , $errors] = $this->runCliCapturingOutput(array_merge(['compose-git', 'deploy', $folder, '--dry-run'], $option));
+            $this->assertSame(2, $exit);
+            $this->assertStringStartsWith("--dry-run takes only --commit and --profile, not {$option[0]}", $errors);
+        }
+    }
+
+    public function testDryRunIsRefusedWhileTheStacksProjectIdentityIsUnresolved(): void
+    {
+        $folder = $this->manager->add('whoami', $this->upstream, 'main', 'whoami/compose.yaml', $this->clonesRoot);
+        $stackDir = $this->composeRoot . '/' . $folder;
+        $clone = new GitClone(GitStackSettings::load($stackDir));
+        $checkedOut = $clone->checkedOutCommit();
+        $this->writeAndPush(['whoami/compose.yaml' => "services:\n  whoami:\n    image: traefik/whoami:v2\n"], 'bump');
+        // An older project name and docker that cannot be asked: the identity fails closed.
+        @unlink($stackDir . '/' . \ProjectIdentity::METADATA_FILE);
+        file_put_contents($stackDir . '/name', 'older_name');
+        \ProjectIdentity::setProbe(static fn() => null);
+        \StackInfo::clearCache();
+        try {
+            $this->manager->dryRun($folder, null, []);
+            $this->fail('Tried a deploy of a stack whose project name is not settled');
+        } catch (RuntimeException $error) {
+            $this->assertNotSame('', $error->getMessage());
+        } finally {
+            \ProjectIdentity::setProbe(static fn(): array => []);
+        }
+        $this->assertSame($checkedOut, $clone->checkedOutCommit());
+    }
+
     public function testCheckTellsACommitToTheStacksFolderFromOneOutsideIt(): void
     {
         $folder = $this->manager->add('whoami', $this->upstream, 'main', 'whoami/compose.yaml', $this->clonesRoot);
@@ -1150,7 +1218,7 @@ final class GitStackManagerTest extends TestCase
             'deploy-key' => ['deploy-key', []],
             'trust-host' => ['trust-host', []],
             'check' => ['check', ['--all']],
-            'deploy' => ['deploy', ['--commit', '--save-local-changes', '--wait', '--no-wait', '--wait-timeout', '--profile']],
+            'deploy' => ['deploy', ['--commit', '--save-local-changes', '--wait', '--no-wait', '--wait-timeout', '--profile', '--dry-run']],
             'reclone' => ['reclone', []],
             'status' => ['status', ['--all', '--json']],
             'auto-deploy' => ['auto-deploy', ['off', 'notify', 'deploy']],

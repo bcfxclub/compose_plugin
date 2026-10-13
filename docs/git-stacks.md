@@ -211,7 +211,8 @@ copy the backup folder's files back into it (they include the old `indirect` set
 2. See whether the server is behind: `compose-git check myapp` (or `--all`). Exit status 3 means a newer
    commit changes the stack's folder; 4 means a newer commit changes only files outside it (see
    [The stack's folder, and files outside it](#the-stacks-folder-and-files-outside-it)).
-3. Deploy it: `compose-git deploy myapp`.
+3. Deploy it: `compose-git deploy myapp`. To see first whether it would go ahead, and what it changes:
+   `compose-git deploy myapp --dry-run`.
 
 Or let the plugin check for you: see [Automatic deploys](#automatic-deploys).
 
@@ -528,6 +529,20 @@ without changing anything when:
 
 The deploy log says which `.env` was used.
 
+To run these checks without deploying, use `compose-git deploy myapp --dry-run` (with `--commit` and
+`--profile` as for a deploy). It fetches, checks the commit out, runs every check above, and shows how the
+compose configuration changes from the commit checked out now, then checks that commit out again. No container
+is started, stopped or recreated, and nothing is pulled or built, so a missing image or tag is found only by the
+deploy. The configuration is shown with variables as written (`${DB_PASSWORD}`), not their values, so nothing
+from the `.env` or the env files is printed; a change made only in the `.env` is not shown. The exit status is
+0 when every check passed and 1 when one did not, or the dry run could not be done. Local changes in the clone
+stop a dry run as they stop a deploy, and stay as they are.
+
+Like a deploy, a dry run checks the commit out in the clone itself, so for the seconds the checks take, a
+container that reads a folder of the clone sees the tried commit's files (see
+[When a deploy fails](#when-a-deploy-fails)). If a dry run is interrupted (Ctrl-C, a dropped SSH session), the
+clone may be left at the tried commit: run the dry run again, or deploy.
+
 Before the checks, the plugin's override loses its entries (UI labels) for services the compose file no
 longer has, as it does before every Compose Up from the web UI. An entry for a renamed service would
 otherwise make compose refuse the stack. The log names each one removed.
@@ -546,6 +561,7 @@ otherwise make compose refuse the stack. The log names each one removed.
 | `trust-host <stack>` | Pin an ssh stack's server host keys again, after they changed. |
 | `check <stack>` or `check --all` | Compare the deployed commit with the branch on the remote, and say whether a newer commit changes the stack's folder or only files outside it. Fetches a newer commit into the clone; changes no container and no checked-out file. |
 | `deploy <stack> [--commit <id>] [--save-local-changes] [--wait\|--no-wait] [--wait-timeout <s>] [--profile <p>]...` | Deploy the branch's latest commit, or the given one. Waits for healthy containers when the stack's wait-for-healthy setting says so, unless `--wait` or `--no-wait` overrides it. |
+| `deploy <stack> --dry-run [--commit <id>] [--profile <p>]...` | Run every check a deploy runs before it pulls the images, and show how the compose configuration changes, without deploying (see [What is checked before a deploy](#what-is-checked-before-a-deploy)). |
 | `reclone <stack>` | Move the clone aside and clone again at the deployed commit. |
 | `status [<stack>\|--all] [--json]` | Show what is deployed, failed and changed locally, without asking the remote. |
 
