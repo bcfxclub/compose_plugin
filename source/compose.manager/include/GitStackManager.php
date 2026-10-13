@@ -1155,6 +1155,27 @@ final class GitStackManager
      */
     private function withStackLock(StackInfo $stack, callable $work): mixed
     {
+        $handle = self::tryStackLock($stack);
+        if ($handle === null) {
+            throw new RuntimeException("Another operation is in progress for '{$stack->projectFolder}'. Try again when it has finished.");
+        }
+        try {
+            return $work();
+        } finally {
+            flock($handle, LOCK_UN);
+            fclose($handle);
+        }
+    }
+
+    /**
+     * Take compose.sh's lock for the stack without waiting. The caller releases it
+     * with flock($handle, LOCK_UN) and fclose($handle).
+     *
+     * @return resource|null null if another operation holds the lock
+     * @throws RuntimeException if the lock file cannot be opened
+     */
+    public static function tryStackLock(StackInfo $stack)
+    {
         if (!is_dir(COMPOSE_LOCK_DIR)) {
             @mkdir(COMPOSE_LOCK_DIR, 0755, true);
         }
@@ -1163,14 +1184,10 @@ final class GitStackManager
         if ($handle === false) {
             throw new RuntimeException("Could not open the lock file $lockFile.");
         }
-        try {
-            if (!flock($handle, LOCK_EX | LOCK_NB)) {
-                throw new RuntimeException("Another operation is in progress for '{$stack->projectFolder}'. Try again when it has finished.");
-            }
-            return $work();
-        } finally {
-            flock($handle, LOCK_UN);
+        if (!flock($handle, LOCK_EX | LOCK_NB)) {
             fclose($handle);
+            return null;
         }
+        return $handle;
     }
 }
