@@ -11,6 +11,32 @@ require_once '/usr/local/emhttp/plugins/compose.manager/include/GitClone.php';
 require_once '/usr/local/emhttp/plugins/compose.manager/include/CredentialVault.php';
 
 /**
+ * The server refused a new ssh stack's clone, and the usual reason is that the repository
+ * does not know the stack's deploy key yet. The message, which compose-git prints, ends with
+ * the key; the web UI shows the clone's error and the key apart.
+ */
+final class GitDeployKeyNotAddedException extends RuntimeException
+{
+    public function __construct(
+        public readonly string $cloneError,
+        public readonly string $publicKey,
+        Throwable $previous
+    ) {
+        parent::__construct(self::messageWithKey($cloneError, $publicKey), 0, $previous);
+    }
+
+    /**
+     * The clone's error, followed by the deploy key and what to do with it.
+     */
+    public static function messageWithKey(string $cloneError, string $publicKey): string
+    {
+        return $cloneError . "\n\nIf the repository does not know this stack's deploy key yet, add it as a "
+            . "read-only deploy key in the repository's settings, then try again:\n"
+            . $publicKey;
+    }
+}
+
+/**
  * Creates and looks after git stacks: what the compose-git command does,
  * apart from deploying (compose.sh gitdeploy does that).
  *
@@ -21,6 +47,12 @@ require_once '/usr/local/emhttp/plugins/compose.manager/include/CredentialVault.
 final class GitStackManager
 {
     public const DEFAULT_BRANCH = 'main';
+
+    /**
+     * How long the Credentials tab's Test waits for a repository: the browser waits for the
+     * answer, and the registry test waits at most 15 seconds too.
+     */
+    private const CREDENTIAL_TEST_TIMEOUT_SECONDS = 15;
 
     /** @var callable(string): void */
     private $say;
@@ -57,7 +89,7 @@ final class GitStackManager
         }
         $stackDir = $this->composeRoot . '/' . $folder;
         if (file_exists($stackDir) || @readlink($stackDir) !== false) {
-            throw new RuntimeException("A stack folder named '$folder' already exists. Choose another name, or use convert for that stack.");
+            throw new RuntimeException("A stack folder named '$folder' already exists. Choose another name, or move that stack into git (compose-git convert, or the button on its Sources tab).");
         }
         // Before the clone, so a projects folder whose mount is gone leaves nothing behind.
         $this->assertSafeToWriteStackFolder($stackDir);
@@ -237,31 +269,81 @@ final class GitStackManager
     }
 
     /**
-     * Compare the deployed commit with the branch on the remote, changing nothing.
+     * Compare the deployed commit with the branch on the remote. Changes no container and
+     * no file of the stack; when the branch has a newer commit, it is fetched into the
+     * clone (under the stack's lock, as a deploy would fetch it) to see what it changes.
+     * The deployed commit is read under that lock too, so the check is refused while
+     * another operation on the stack is running.
      *
-     * @return array{stack: string, branch: string, remoteCommit: string, deployedCommit: ?string, failedCommit: ?string, upToDate: bool}
-     * @throws RuntimeException if the stack or the remote cannot be read
+     * changesStack is null when the stack is up to date. Otherwise it says whether the new
+     * commit changes anything in the stack's folder in the repository (the folder holding
+     * its compose file, or the whole repository for a compose file at the top). It is true
+     * when that cannot be identified: nothing deployed yet, or the clone no longer has the
+     * deployed commit (deployedCommitMissing says which, so the answer can say so). It is
+     * false when every change is outside the stack's folder, as a commit to another stack
+     * in a shared repository is. Files the stack uses from outside its folder (a ../shared
+     * bind mount, a build context of .., an env_file, extends or include in another folder)
+     * are not looked at, so false does not prove the new commit changes nothing the stack
+     * uses.
+     *
+     * stackFolder is that folder, relative to the top of the repository ('' for the top).
+     *
+     * @param int|null $timeoutSeconds How long to wait for the remote; null for git's usual limit
+     * @return array{stack: string, branch: string, remoteCommit: string, deployedCommit: ?string, failedCommit: ?string, upToDate: bool, changesStack: ?bool, deployedCommitMissing: bool, stackFolder: string}
+     * @throws RuntimeException if the stack or the remote cannot be read, or another operation on the stack is running
      */
-    public function check(string $folder): array
+    public function check(string $folder, ?int $timeoutSeconds = null): array
     {
         $stack = $this->stack($folder);
         $settings = $this->settings($stack);
-        $state = GitStackState::load($stack->path);
-        $remote = (new GitClone($settings))->remoteBranchCommit();
+        $clone = new GitClone($settings);
+        // Asking the remote can take a while, so it is done before taking the lock: a deploy
+        // started meanwhile is not refused.
+        $remote = $timeoutSeconds === null ? $clone->remoteBranchCommit() : $clone->remoteBranchCommit($timeoutSeconds);
+
+        // What is deployed is read under the lock, after the remote has answered. A deploy
+        // or rollback that finished while the remote was asked is then counted, and none
+        // can finish while the deployed commit is compared with the remote's.
+        [$state, $changesStack, $deployedCommitMissing] = $this->withStackLock(
+            $stack,
+            /** @return array{GitStackState, ?bool, bool} state, changesStack, deployedCommitMissing */
+            static function () use ($stack, $clone, $remote): array {
+                $state = GitStackState::load($stack->path);
+                $deployed = $state->deployedCommit;
+                if ($deployed === null) {
+                    // Nothing deployed yet: whatever the branch has is new to the stack.
+                    return [$state, true, false];
+                }
+                if ($deployed === $remote) {
+                    return [$state, null, false];
+                }
+                $clone->fetch();
+                if (!$clone->hasCommit($deployed)) {
+                    // Recloned since, after a force-push for one. Nothing to compare with.
+                    return [$state, true, true];
+                }
+                return [$state, $clone->stackFilesChanged($deployed, $remote), false];
+            }
+        );
+        $deployed = $state->deployedCommit;
+
         return [
             'stack' => $folder,
             'branch' => $settings->branch,
             'remoteCommit' => $remote,
-            'deployedCommit' => $state->deployedCommit,
+            'deployedCommit' => $deployed,
             'failedCommit' => $state->failedCommit,
-            'upToDate' => $state->deployedCommit === $remote,
+            'upToDate' => $deployed === $remote,
+            'changesStack' => $changesStack,
+            'deployedCommitMissing' => $deployedCommitMissing,
+            'stackFolder' => dirname($settings->composePath) === '.' ? '' : dirname($settings->composePath),
         ];
     }
 
     /**
      * What is known about a git stack locally, without asking the remote.
      *
-     * @return array{stack: string, url: string, branch: string, composePath: string, cloneDir: string, recreateOnFolderChange: bool, credential: ?string, deployedCommit: ?string, failedCommit: ?string, checkedOutCommit: ?string, localChanges: list<string>, problem: ?string}
+     * @return array{stack: string, url: string, branch: string, composePath: string, cloneDir: string, recreateOnFolderChange: bool, credential: ?string, deployedCommit: ?string, failedCommit: ?string, checkedOutCommit: ?string, localChanges: list<string>, commitMadeByHand: bool, problem: ?string}
      */
     public function status(string $folder): array
     {
@@ -270,11 +352,13 @@ final class GitStackManager
         $state = GitStackState::load($stack->path);
         $checkedOut = null;
         $changes = [];
+        $madeByHand = false;
         $problem = null;
         try {
             $clone = new GitClone($settings);
             $checkedOut = $clone->checkedOutCommit();
             $changes = $clone->locallyChangedFiles();
+            $madeByHand = $clone->isMadeByHand($checkedOut, $state->deployedCommit, $state->failedCommit);
         } catch (Throwable $error) {
             $problem = $error->getMessage();
         }
@@ -290,12 +374,17 @@ final class GitStackManager
             'failedCommit' => $state->failedCommit,
             'checkedOutCommit' => $checkedOut,
             'localChanges' => $changes,
+            'commitMadeByHand' => $madeByHand,
             'problem' => $problem,
         ];
     }
 
     /**
      * Change the credential a git stack uses to reach its repository, or remove it.
+     *
+     * An ssh stack always keeps a deploy key, and can only be given another key of its own
+     * repository (see repositoryDeployKeys()): that is how stacks that each got a key of their
+     * own, before keys were shared, move onto one.
      *
      * The repository is reached with the new setting first, and nothing is
      * saved unless that works.
@@ -307,11 +396,13 @@ final class GitStackManager
         $this->assertArrayStarted();
         $stack = $this->stack($folder);
         $settings = $this->settings($stack);
+        $oldCredentialId = $settings->credentialId;
         if ($settings->isSsh()) {
-            throw new InvalidArgumentException(
-                "An ssh stack always uses a deploy key of its own, so the credential of '$folder' cannot be changed. "
-                . 'compose-git deploy-key shows its public key.'
-            );
+            if ($credentialId !== null && $credentialId === $oldCredentialId) {
+                ($this->say)("'$folder' already uses the deploy key '" . $this->credentialName($credentialId) . "'. Nothing was changed.");
+                return;
+            }
+            $this->assertRepositoryDeployKey($folder, $settings, $credentialId);
         }
 
         $this->withStackLock($stack, function () use ($stack, $settings, $credentialId): void {
@@ -324,6 +415,102 @@ final class GitStackManager
         ($this->say)($credentialId === null
             ? "'$folder' now reaches its repository without a credential."
             : "'$folder' now uses the credential '" . $this->credentialName($credentialId) . "'.");
+        if ($settings->isSsh() && $oldCredentialId !== null && $oldCredentialId !== $credentialId) {
+            ($this->say)(
+                "Its old deploy key '" . $this->credentialName($oldCredentialId) . "' stays on the Credentials tab, which "
+                . "shows whether another stack still uses it. If none does, delete it there and from the repository's deploy keys."
+            );
+        }
+    }
+
+    /**
+     * Refuse any credential for an ssh stack but a deploy key of its own repository.
+     *
+     * @throws InvalidArgumentException naming the keys it could be given
+     */
+    private function assertRepositoryDeployKey(string $folder, GitStackSettings $settings, ?string $credentialId): void
+    {
+        $address = GitStackSettings::sshAddress($settings->url);
+        $keys = $address === null ? [] : $this->repositoryDeployKeys($folder, $address);
+        if ($credentialId !== null && isset($keys[$credentialId])) {
+            return;
+        }
+        throw $this->notARepositoryDeployKey($folder, $keys);
+    }
+
+    /**
+     * Why an ssh stack cannot be given a credential, naming the deploy keys it could be given.
+     *
+     * @param array<string, string> $keys The repository's deploy keys, by id
+     */
+    private function notARepositoryDeployKey(string $folder, array $keys): InvalidArgumentException
+    {
+        $choices = array_map(static fn(string $name): string => "'$name'", array_values($keys));
+        return new InvalidArgumentException(
+            "An ssh stack reaches its repository with a deploy key, so '$folder' can only be given a deploy key of the "
+            . 'same repository that another stack uses, or one made for the repository'
+            . ($choices === [] ? ', and there is none.' : ': ' . implode(', ', $choices) . '.')
+            . ' compose-git deploy-key shows the key it uses now.'
+        );
+    }
+
+    /**
+     * The deploy keys of an ssh stack's repository, other than its own: the keys other ssh stacks
+     * of the same repository use, and a key made for the repository, by id, with their names.
+     *
+     * @param array{user: string, host: string, port: int, path: string} $address
+     * @return array<string, string>
+     */
+    public function repositoryDeployKeys(string $folder, array $address): array
+    {
+        $deployKeys = $this->deployKeysOnHost($address);
+        $keys = [];
+        foreach ($this->stacksOfRepository($folder, $address) as $credentialId) {
+            if (isset($deployKeys[$credentialId])) {
+                $keys[$credentialId] = $deployKeys[$credentialId];
+            }
+        }
+        $repositoryKeyName = 'deploy key for ' . self::sshRepositoryName($address);
+        foreach ($deployKeys as $id => $name) {
+            if ($name === $repositoryKeyName) {
+                $keys[$id] = $name;
+            }
+        }
+        return $keys;
+    }
+
+    /**
+     * The id of the credential named $nameOrId (or with that id) that the stack $folder may be given:
+     * for an ssh stack a deploy key of its repository, otherwise an HTTPS token.
+     *
+     * @throws RuntimeException if there is none, or several with that name
+     */
+    public function findCredentialFor(string $folder, string $nameOrId): string
+    {
+        $settings = $this->settings($this->stack($folder));
+        $address = GitStackSettings::sshAddress($settings->url);
+        if ($address === null) {
+            return $this->findGitCredential($nameOrId);
+        }
+        // The key it uses now: setCredential() then says so and changes nothing.
+        $current = $settings->credentialId;
+        if ($current !== null && ($current === $nameOrId || $this->credentialName($current) === $nameOrId)) {
+            return $current;
+        }
+        $keys = $this->repositoryDeployKeys($folder, $address);
+        $matches = [];
+        foreach ($keys as $id => $name) {
+            if ($id === $nameOrId || $name === $nameOrId) {
+                $matches[] = $id;
+            }
+        }
+        if (count($matches) === 1) {
+            return $matches[0];
+        }
+        if (count($matches) > 1) {
+            throw new RuntimeException("Several deploy keys are named '$nameOrId'. Use the key's id instead.");
+        }
+        throw $this->notARepositoryDeployKey($folder, $keys);
     }
 
     /**
@@ -335,7 +522,7 @@ final class GitStackManager
     {
         $gitCredentials = array_values(array_filter(
             (new CredentialVault())->listCredentials(),
-            // HTTPS tokens only: a deploy key belongs to the one stack it was made for.
+            // HTTPS tokens only: a deploy key is chosen by the repository it reaches, never by name.
             static fn(array $credential): bool => ($credential['provider'] ?? '') === 'git'
         ));
         $matches = array_values(array_filter(
@@ -375,10 +562,10 @@ final class GitStackManager
             $summary = (new CredentialVault())->getCredentialSummary($credentialId);
             $result = ['id' => $credentialId, 'name' => $summary['name'], 'registry' => $summary['registry']];
             try {
-                (new GitClone($settings))->remoteBranchCommit();
+                (new GitClone($settings))->remoteBranchCommit(self::CREDENTIAL_TEST_TIMEOUT_SECONDS);
                 return $result + ['valid' => true, 'message' => "Reached {$settings->url} (used by '$folder')."];
             } catch (Throwable $error) {
-                return $result + ['valid' => false, 'message' => "Could not reach {$settings->url} (used by '$folder'): " . $error->getMessage()];
+                return $result + ['valid' => false, 'message' => "{$settings->url} (used by '$folder'): " . $error->getMessage()];
             }
         }
         return null;
@@ -434,7 +621,7 @@ final class GitStackManager
 
     /**
      * Settings for a new git stack. For an ssh repository this also makes (or
-     * reuses) the stack's deploy key and pins the host's keys.
+     * reuses) the repository's deploy key and pins the host's keys.
      */
     private function newSettings(
         string $url,
@@ -454,7 +641,7 @@ final class GitStackManager
             throw new InvalidArgumentException("The ssh repository address is not valid: $url");
         }
         if ($credentialId !== null) {
-            throw new InvalidArgumentException('An ssh stack gets a deploy key of its own, so it cannot be given another credential.');
+            throw new InvalidArgumentException('An ssh stack uses the deploy key the plugin keeps for its repository, so it cannot be given another credential.');
         }
         // The host first: a mistyped host then fails before a deploy key is made for it.
         $knownHosts = GitSsh::scanHostKeys($address['host'], $address['port']);
@@ -465,42 +652,222 @@ final class GitStackManager
     }
 
     /**
-     * The stack's deploy key: the one made for it by an earlier attempt, or a new one.
+     * The deploy key for a new ssh stack. One key serves every stack of a repository: GitHub
+     * refuses one key on two repositories, but not one key for several stacks of the same one,
+     * and every such key would have the same read-only access anyway.
+     *
+     * An existing key is used if there is one (see existingDeployKey()); otherwise a new key is
+     * made, named after the repository so that later stacks of the repository find it. Nothing
+     * locks this choice: two stacks of a new repository added at the same moment can each make a
+     * key. Both keys work; the Credentials tab then lists two keys of the same name.
      *
      * @param array{user: string, host: string, port: int, path: string} $address
      */
     private function deployKeyFor(string $folder, array $address): string
     {
-        $name = "$folder deploy key";
-        $host = $address['host'] . ($address['port'] === 22 ? '' : ':' . $address['port']);
-        foreach ((new CredentialVault())->listCredentials() as $credential) {
-            if ($credential['name'] === $name && $credential['provider'] === 'git-ssh' && $credential['registry'] === $host) {
-                ($this->say)("Using the deploy key made for '$folder' earlier.");
-                return $credential['id'];
-            }
+        $existing = $this->existingDeployKey($folder, $address);
+        if ($existing !== null) {
+            ($this->say)($existing['message']);
+            return $existing['id'];
         }
-        $key = GitSsh::generateKey("compose-manager $folder");
-        ($this->say)("Made a new deploy key for '$folder'.");
+        $repository = self::sshRepositoryName($address);
+        $name = "deploy key for $repository";
+        $key = GitSsh::generateKey("compose-manager $repository");
+        ($this->say)("Made a new deploy key for $repository ('$name' on the Credentials tab). Other stacks of this repository will use it too.");
         $id = (new CredentialVault())->saveCredential([
             'name' => $name,
             'provider' => 'git-ssh',
-            'registry' => $host,
+            'registry' => self::sshRegistry($address),
             'username' => $address['user'],
             'secret' => $key['private'],
         ])['id'];
-        composeLogger("Made a deploy key for git stack '$folder'", ['id' => $id, 'host' => $host], 'user', 'info', 'credentials');
+        composeLogger(
+            "Made a deploy key for $repository, for git stack '$folder'",
+            ['id' => $id, 'host' => self::sshRegistry($address)],
+            'user',
+            'info',
+            'credentials'
+        );
         return $id;
+    }
+
+    /**
+     * The deploy key a new ssh stack would use without making one, and the message that says
+     * why. In this order:
+     *  1. the key another ssh stack of the same repository uses: the repository knows it already;
+     *  2. a key made for this repository earlier, such as by an attempt whose clone failed
+     *     because the key had not been added to the repository yet;
+     *  3. a key named after this stack by an earlier attempt of an older version of the plugin,
+     *     as long as no git stack uses it: such a key may belong to another repository, and
+     *     one that a stack uses could not be deleted to make way for a new one.
+     * The same repository means the same user, host, port and path in the address.
+     *
+     * @param array{user: string, host: string, port: int, path: string} $address
+     * @return array{id: string, message: string}|null
+     */
+    public function existingDeployKey(string $folder, array $address): ?array
+    {
+        $deployKeys = $this->deployKeysOnHost($address);
+
+        foreach ($this->stacksOfRepository($folder, $address) as $otherFolder => $credentialId) {
+            if (!isset($deployKeys[$credentialId])) {
+                continue;
+            }
+            $name = $deployKeys[$credentialId];
+            return [
+                'id' => $credentialId,
+                'message' => "Using the deploy key of '$otherFolder' ('$name' on the Credentials tab), which "
+                    . 'reaches the same repository: the repository knows it already.',
+            ];
+        }
+
+        $repositoryKeyName = 'deploy key for ' . self::sshRepositoryName($address);
+        foreach ($deployKeys as $id => $name) {
+            if ($name === $repositoryKeyName) {
+                return [
+                    'id' => $id,
+                    'message' => "Using the deploy key made for this repository earlier ('$name' on the Credentials tab).",
+                ];
+            }
+        }
+
+        $stackKeyName = "$folder deploy key";
+        $keysInUse = array_values($this->gitStackCredentials());
+        foreach ($deployKeys as $id => $name) {
+            if ($name === $stackKeyName && !in_array($id, $keysInUse, true)) {
+                return [
+                    'id' => $id,
+                    'message' => "Using the deploy key made for '$folder' earlier ('$name' on the Credentials tab). If it was "
+                        . 'made for another repository, by a stack of the same name that has since been deleted, '
+                        . "delete '$name' first: GitHub, for one, refuses a deploy key that another repository has.",
+                ];
+            }
+        }
+        return null;
+    }
+
+    /**
+     * The deploy keys in the credential vault for the host (and port) of an ssh address: names by id.
+     *
+     * @param array{user: string, host: string, port: int, path: string} $address
+     * @return array<string, string>
+     */
+    private function deployKeysOnHost(array $address): array
+    {
+        $keys = [];
+        foreach ((new CredentialVault())->listCredentials() as $credential) {
+            if ($credential['provider'] === 'git-ssh' && $credential['registry'] === self::sshRegistry($address)) {
+                $keys[$credential['id']] = $credential['name'];
+            }
+        }
+        return $keys;
+    }
+
+    /**
+     * The other ssh stacks of a repository and the credential each uses: the git stacks, other
+     * than $exceptFolder, whose address has the same user, host, port and path.
+     *
+     * @param array{user: string, host: string, port: int, path: string} $address
+     * @return array<string, string> Credential ids by stack folder
+     */
+    private function stacksOfRepository(string $exceptFolder, array $address): array
+    {
+        $stacks = [];
+        foreach ($this->gitStackCredentials() as $folder => $credentialId) {
+            if ($folder === $exceptFolder) {
+                continue;
+            }
+            $url = $this->gitStackUrl($folder);
+            if ($url !== null && GitStackSettings::sshAddress($url) === $address) {
+                $stacks[$folder] = $credentialId;
+            }
+        }
+        return $stacks;
+    }
+
+    /**
+     * The credential every git stack uses, by stack folder; a stack with none is left out.
+     *
+     * git.json is read as plain JSON, as the Credentials tab reads it: a stack whose settings fail
+     * a check still uses its credential. One that cannot be read at all is named in a message.
+     *
+     * @return array<string, string>
+     */
+    private function gitStackCredentials(): array
+    {
+        $credentials = [];
+        foreach ($this->listGitStacks() as $folder) {
+            $data = $this->readGitJson($folder);
+            if ($data === null) {
+                ($this->say)("Could not read the git settings of '$folder', so its deploy key is not looked at.");
+                continue;
+            }
+            $credentialId = $data['credentialId'] ?? null;
+            if (is_string($credentialId) && $credentialId !== '') {
+                $credentials[$folder] = $credentialId;
+            }
+        }
+        return $credentials;
+    }
+
+    /**
+     * A git stack's repository address from its git.json, read as plain JSON; null if unreadable.
+     */
+    private function gitStackUrl(string $folder): ?string
+    {
+        $url = ($this->readGitJson($folder) ?? [])['url'] ?? null;
+        return is_string($url) ? $url : null;
+    }
+
+    /**
+     * A git stack's git.json as plain JSON, or null if it cannot be read or is not a JSON object.
+     *
+     * @return array<string, mixed>|null
+     */
+    private function readGitJson(string $folder): ?array
+    {
+        $data = json_decode((string) @file_get_contents($this->composeRoot . '/' . $folder . '/' . GitStackSettings::FILE_NAME), true);
+        return is_array($data) ? $data : null;
+    }
+
+    /**
+     * An ssh repository's address as a deploy key's name shows it: user@host:path, or
+     * ssh://user@host:port/path for a port other than 22.
+     *
+     * @param array{user: string, host: string, port: int, path: string} $address
+     */
+    private static function sshRepositoryName(array $address): string
+    {
+        if ($address['port'] === 22) {
+            return "{$address['user']}@{$address['host']}:{$address['path']}";
+        }
+        return "ssh://{$address['user']}@{$address['host']}:{$address['port']}/{$address['path']}";
+    }
+
+    /**
+     * The host a deploy key is kept under in the credential vault: host, or host:port for a
+     * port other than 22.
+     *
+     * @param array{user: string, host: string, port: int, path: string} $address
+     */
+    private static function sshRegistry(array $address): string
+    {
+        return $address['host'] . ($address['port'] === 22 ? '' : ':' . $address['port']);
     }
 
     /**
      * Clone a new stack's repository. When an ssh clone fails, show the deploy
      * key: the usual reason is that it has not been added to the repository yet.
+     *
+     * Only a failure of git clone itself can be the key. A check before or after
+     * it (the folder already exists, the compose file is not on the branch) is
+     * passed on as it is.
      */
     private function createClone(GitStackSettings $settings): void
     {
         try {
             (new GitClone($settings))->create();
-        } catch (RuntimeException $error) {
+        } catch (GitCloneFailedException $error) {
             if (!$settings->isSsh() || $settings->credentialId === null) {
                 throw $error;
             }
@@ -510,10 +877,13 @@ final class GitStackManager
                 // Not a deploy key at all (the wrong --credential): the clone's own message says so.
                 throw $error;
             }
+            if ($error->serverRefusedAccess()) {
+                throw new GitDeployKeyNotAddedException($error->getMessage(), $publicKey, $error);
+            }
+            // Most likely something else (an unreachable host, a wrong branch), but a host may
+            // word a refusal in a way not recognised here, so the key still comes with the error.
             throw new RuntimeException(
-                $error->getMessage() . "\n\nIf the repository does not know this stack's deploy key yet, add it as a "
-                . "read-only deploy key in the repository's settings, then run the same command again:\n"
-                . $publicKey,
+                GitDeployKeyNotAddedException::messageWithKey($error->getMessage(), $publicKey),
                 0,
                 $error
             );
