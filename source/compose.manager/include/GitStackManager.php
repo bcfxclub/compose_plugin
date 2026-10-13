@@ -343,7 +343,7 @@ final class GitStackManager
     /**
      * What is known about a git stack locally, without asking the remote.
      *
-     * @return array{stack: string, url: string, branch: string, composePath: string, cloneDir: string, recreateOnFolderChange: bool, autoDeploy: string, credential: ?string, deployedCommit: ?string, failedCommit: ?string, checkedOutCommit: ?string, localChanges: list<string>, commitMadeByHand: bool, problem: ?string}
+     * @return array{stack: string, url: string, branch: string, composePath: string, cloneDir: string, recreateOnFolderChange: bool, autoDeploy: string, credential: ?string, deployedCommit: ?string, failedCommit: ?string, checkedOutCommit: ?string, localChanges: list<string>, commitMadeByHand: bool, failedAutomaticCommit: ?string, problem: ?string}
      */
     public function status(string $folder): array
     {
@@ -376,8 +376,18 @@ final class GitStackManager
             'checkedOutCommit' => $checkedOut,
             'localChanges' => $changes,
             'commitMadeByHand' => $madeByHand,
+            'failedAutomaticCommit' => self::failedAutomaticCommit($stack->path),
             'problem' => $problem,
         ];
+    }
+
+    /**
+     * The commit whose scheduled deploy failed before up, if any (see GitScheduledCheck).
+     */
+    private static function failedAutomaticCommit(string $stackDir): ?string
+    {
+        require_once '/usr/local/emhttp/plugins/compose.manager/include/GitScheduledCheck.php';
+        return GitScheduledCheck::failedAutomaticDeploy($stackDir);
     }
 
     /**
@@ -542,7 +552,8 @@ final class GitStackManager
      * After a failed deploy the stack is paused: the scheduled check leaves it
      * alone until a deploy works. Someone who fixed it another way (by hand, or
      * with the web UI's Update) clears the failure with this. The deployed
-     * commit stays as it was.
+     * commit stays as it was. It also clears a scheduled deploy that failed
+     * before any container was started, which is otherwise not tried again.
      *
      * @return bool false if the stack had no failed deploy to clear
      * @throws RuntimeException naming why nothing was changed
@@ -551,17 +562,31 @@ final class GitStackManager
     {
         $this->assertArrayStarted();
         $stack = $this->stack($folder);
-        $this->settings($stack);
+        $checked = $this->settings($stack)->autoDeploy !== GitStackSettings::AUTO_DEPLOY_OFF;
 
-        return $this->withStackLock($stack, function () use ($stack, $folder): bool {
+        return $this->withStackLock($stack, function () use ($stack, $folder, $checked): bool {
+            $cleared = false;
             $state = GitStackState::load($stack->path);
-            if ($state->failedCommit === null) {
-                ($this->say)("'$folder' has no failed deploy, so there is nothing to resume.");
-                return false;
+            if ($state->failedCommit !== null) {
+                (new GitStackState($state->deployedCommit, null))->save($stack->path);
+                ($this->say)("Cleared the failed deploy of " . substr($state->failedCommit, 0, 12) . '.'
+                    . ($checked ? " Automatic deploys of '$folder' resume." : ''));
+                $cleared = true;
             }
-            (new GitStackState($state->deployedCommit, null))->save($stack->path);
-            ($this->say)("Cleared the failed deploy of " . substr($state->failedCommit, 0, 12) . ". Automatic deploys of '$folder' resume.");
-            return true;
+            // A scheduled deploy that failed before up (a pull, say) is kept in the
+            // scheduled check's record instead; clearing it lets the next check try again.
+            require_once '/usr/local/emhttp/plugins/compose.manager/include/GitScheduledCheck.php';
+            $failedAutomatic = GitScheduledCheck::failedAutomaticDeploy($stack->path);
+            if ($failedAutomatic !== null) {
+                GitScheduledCheck::clearFailedAutomaticDeploy($stack->path);
+                ($this->say)("Cleared the failed automatic deploy of " . substr($failedAutomatic, 0, 12) . '.'
+                    . ($checked ? " The next scheduled check of '$folder' tries again." : ''));
+                $cleared = true;
+            }
+            if (!$cleared) {
+                ($this->say)("'$folder' has no failed deploy, so there is nothing to resume.");
+            }
+            return $cleared;
         });
     }
 

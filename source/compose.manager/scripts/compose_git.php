@@ -16,6 +16,7 @@
 declare(strict_types=1);
 
 require_once '/usr/local/emhttp/plugins/compose.manager/include/GitStackManager.php';
+require_once '/usr/local/emhttp/plugins/compose.manager/include/GitScheduledCheck.php';
 require_once '/usr/local/emhttp/plugins/compose.manager/include/Helpers.php';
 
 const COMPOSE_GIT_EXIT_OK = 0;
@@ -42,6 +43,7 @@ Usage:
   compose-git deploy <stack> [--commit <full commit id>] [--save-local-changes] [--wait|--no-wait] [--wait-timeout <seconds>] [--profile <name>]...
   compose-git reclone <stack>
   compose-git status [<stack>|--all] [--json]
+  compose-git scheduled-check
 
 <url> is an https address (no user name or password in it), an ssh address (ssh://git@host/path
 or git@host:path), or the path of a repository under /mnt.
@@ -58,6 +60,8 @@ deploy waits for healthy containers when the stack's wait-for-healthy setting sa
 auto-deploy sets what the scheduled check does when a new commit changes the stack: nothing
 (off, the default), send a notification (notify), or deploy it (deploy). After a failed deploy
 the scheduled check leaves the stack alone until a deploy works; resume clears the failure.
+scheduled-check runs the scheduled check now (cron runs it every 15 minutes while any stack
+asks for it).
 
 Exit status: 0 success, 1 failed, 2 usage error; for check, 3 a newer commit changes the stack's
 folder, 4 a newer commit changes only files outside it. See 'compose-git check --help'.
@@ -471,6 +475,7 @@ function compose_git_unreadable_status(string $folder, string $problem): array
         'checkedOutCommit' => null,
         'localChanges' => [],
         'commitMadeByHand' => false,
+        'failedAutomaticCommit' => null,
         'problem' => $problem,
     ];
 }
@@ -497,6 +502,10 @@ function compose_git_print_status(array $status): void
     echo '  deployed:     ' . $short($status['deployedCommit']) . "\n";
     if ($status['failedCommit'] !== null) {
         echo '  failed:       ' . $short($status['failedCommit']) . " (fix it and deploy again)\n";
+    }
+    if ($status['failedAutomaticCommit'] !== null) {
+        echo '  failed:       ' . $short($status['failedAutomaticCommit'])
+            . " (the automatic deploy, before up; compose-git resume tries it again)\n";
     }
     echo '  checked out:  ' . $short($status['checkedOutCommit']) . "\n";
     if ($status['localChanges'] !== []) {
@@ -675,6 +684,14 @@ function compose_git_main(array $argv, string $composeRoot, $errors = null): int
                         echo "There are no git stacks.\n";
                     }
                 }
+                return COMPOSE_GIT_EXIT_OK;
+
+            case 'scheduled-check':
+                [$positional] = compose_git_parse($args, [], []);
+                if ($positional !== []) {
+                    throw new ComposeGitUsageError('scheduled-check checks every git stack whose auto-deploy is not off; name no stack.');
+                }
+                (new GitScheduledCheck($composeRoot, null, null, $say))->run();
                 return COMPOSE_GIT_EXIT_OK;
 
             case 'help':

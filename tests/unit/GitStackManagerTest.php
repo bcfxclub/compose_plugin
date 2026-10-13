@@ -1047,6 +1047,24 @@ final class GitStackManagerTest extends TestCase
         $this->assertFalse($this->manager->resume($folder));
     }
 
+    public function testResumeSaysAutomaticDeploysResumeOnlyWhenTheyAreOn(): void
+    {
+        $folder = $this->manager->add('whoami', $this->upstream, 'main', 'whoami/compose.yaml', $this->clonesRoot);
+        $stackDir = $this->composeRoot . '/' . $folder;
+
+        (new GitStackState(str_repeat('a', 40), str_repeat('b', 40)))->save($stackDir);
+        [, $output, $said] = $this->runCliCapturingOutput(['compose-git', 'resume', $folder]);
+        $output .= $said;
+        $this->assertStringContainsString('Cleared the failed deploy of bbbbbbbbbbbb.', $output);
+        $this->assertStringNotContainsString('resume', $output);
+
+        GitStackSettings::load($stackDir)->withAutoDeploy(GitStackSettings::AUTO_DEPLOY_NOTIFY)->save($stackDir);
+        (new GitStackState(str_repeat('a', 40), str_repeat('b', 40)))->save($stackDir);
+        [, $output, $said] = $this->runCliCapturingOutput(['compose-git', 'resume', $folder]);
+        $output .= $said;
+        $this->assertStringContainsString("Automatic deploys of '$folder' resume.", $output);
+    }
+
     public function testCommandLineStatusAsJson(): void
     {
         $this->manager->add('whoami', $this->upstream, 'main', 'whoami/compose.yaml', $this->clonesRoot);
