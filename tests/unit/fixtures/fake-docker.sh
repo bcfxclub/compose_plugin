@@ -3,6 +3,8 @@
 #
 # It answers from files next to itself (the tests write them):
 #   config.json / config.stderr / config.exit   docker compose ... config --format json
+#   yaml.stderr / yaml.exit                     docker compose ... config --no-interpolate fails;
+#                                               without them it prints the -f files
 #   services.txt                                docker compose ... config --services (refused,
 #                                               as compose does, when given an override file)
 #   networks/<name>, volumes/<name>             these exist (network/volume inspect succeeds);
@@ -36,6 +38,21 @@ case "$1" in
           esac
         done
         cat "$here/services.txt" 2>/dev/null
+        exit 0
+      fi
+    done
+    for arg in "$@"; do
+      if [ "$arg" = "--no-interpolate" ]; then
+        # The dry run's config as written: the -f files one after another, so it changes with the commit.
+        if [ -f "$here/yaml.exit" ]; then
+          cat "$here/yaml.stderr" >&2
+          exit "$(cat "$here/yaml.exit")"
+        fi
+        previous=""
+        for file in "$@"; do
+          [ "$previous" = "-f" ] && cat "$file"
+          previous="$file"
+        done
         exit 0
       fi
     done

@@ -341,6 +341,30 @@ final class GitStackManager
     }
 
     /**
+     * Try a deploy of a git stack without deploying it (compose-git deploy --dry-run): see
+     * GitDeploy::dryRun(). Refused while another operation on the stack is running, since
+     * the dry run checks other commits out in the clone for a moment.
+     *
+     * @param string|null $commit A specific commit to try, or null for the branch's latest
+     * @param string[] $profiles Compose profiles the deploy would use
+     * @return array{previousCommit: string, deployedCommit: ?string, targetCommit: string, problems: string[], recreatesEveryContainer: bool, configDiff: ?string, configProblem: ?string}
+     */
+    public function dryRun(string $folder, ?string $commit, array $profiles): array
+    {
+        require_once '/usr/local/emhttp/plugins/compose.manager/include/GitDeploy.php';
+        $stack = $this->gitStack($folder);
+        if (!$stack->hasResolvedIdentity()) {
+            throw new RuntimeException((string) $stack->getIdentityBlockReason());
+        }
+        $deploy = new GitDeploy($stack->path, $this->say);
+        return $this->withStackLock(
+            $stack,
+            /** @return array{previousCommit: string, deployedCommit: ?string, targetCommit: string, problems: string[], recreatesEveryContainer: bool, configDiff: ?string, configProblem: ?string} */
+            static fn(): array => $deploy->dryRun($stack->projectName, $profiles, $commit)
+        );
+    }
+
+    /**
      * What is known about a git stack locally, without asking the remote.
      *
      * @return array{stack: string, url: string, branch: string, composePath: string, cloneDir: string, recreateOnFolderChange: bool, autoDeploy: string, credential: ?string, deployedCommit: ?string, failedCommit: ?string, checkedOutCommit: ?string, localChanges: list<string>, commitMadeByHand: bool, failedAutomaticCommit: ?string, problem: ?string}

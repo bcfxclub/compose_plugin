@@ -55,6 +55,16 @@ final class FakeDocker
     }
 
     /**
+     * Make `docker compose config --no-interpolate` fail with this stderr. Without
+     * it, it prints the -f files.
+     */
+    public function failConfigAsWritten(string $stderr): void
+    {
+        file_put_contents($this->dir . '/yaml.stderr', $stderr);
+        file_put_contents($this->dir . '/yaml.exit', '1');
+    }
+
+    /**
      * What `docker compose config --services` prints.
      *
      * @param string[] $services

@@ -9,6 +9,8 @@ require_once '/usr/local/emhttp/plugins/compose.manager/include/GitStackSettings
 require_once '/usr/local/emhttp/plugins/compose.manager/include/GitStackState.php';
 require_once '/usr/local/emhttp/plugins/compose.manager/include/GitClone.php';
 require_once '/usr/local/emhttp/plugins/compose.manager/include/GitDeployCheck.php';
+require_once '/usr/local/emhttp/plugins/compose.manager/include/GitCommand.php';
+require_once '/usr/local/emhttp/plugins/compose.manager/include/DockerCommand.php';
 
 /**
  * The git half of deploying a git stack. compose.sh calls this under the
@@ -32,6 +34,12 @@ final class GitDeploy
 
     /** @var callable(string): void */
     private $say;
+
+    /**
+     * The plugin's override as the checks' prune left it (false if there is none), or
+     * null before the prune ran.
+     */
+    private string|false|null $overrideAfterPrune = null;
 
     /**
      * @param string $stackDir The stack folder (holds git.json)
@@ -94,6 +102,133 @@ final class GitDeploy
         }
 
         return $previous;
+    }
+
+    /**
+     * Try a deploy without deploying: fetch, check out the commit, run every check a
+     * deploy runs before it pulls the images, and compare the compose configuration with
+     * the one of the commit checked out before. Then check that commit out again. No
+     * container is started, stopped or recreated, nothing is pulled or built, and the
+     * stack's state is not changed.
+     *
+     * Like a deploy, it checks the commit out in the clone itself (the checks need the
+     * files a clone holds that are not in the repository), so for as long as the checks
+     * run a container that reads a folder of the clone sees the tried commit's files.
+     *
+     * The caller holds the stack's lock (GitStackManager::dryRun() takes it).
+     *
+     * The configuration is compared as "docker compose config --no-interpolate
+     * --no-env-resolution" prints it: variables as they are written, not their values,
+     * so the output holds nothing from the .env or the env files. A change in a value
+     * of the .env is not shown; the .env is not part of the repository anyway.
+     *
+     * The checks prune the plugin's override as a deploy's do (see
+     * pruneOverrideServicesTheComposeFileNoLongerHas()); the dry run puts the
+     * override back as it was afterwards, unless it was saved again meanwhile (from
+     * the Labels tab, say), which it then leaves as it is.
+     *
+     * @param string $projectName The stack's compose project name
+     * @param string[] $profiles Compose profiles the deploy would use
+     * @param string|null $commit A specific commit to try, or null for the branch's latest
+     * @return array{previousCommit: string, deployedCommit: ?string, targetCommit: string, problems: string[], recreatesEveryContainer: bool, configDiff: ?string, configProblem: ?string}
+     *     previousCommit: the commit checked out before, which the configuration is compared with.
+     *     deployedCommit: the last commit deployed successfully (it differs from previousCommit after a failed up).
+     *     problems: what the checks found that would stop the deploy, empty when they all passed.
+     *     recreatesEveryContainer: whether up would recreate every container (only worked out when nothing would stop it).
+     *     configDiff: the change to the compose configuration as a unified diff, '' when there is none,
+     *     null when it could not be worked out, with configProblem saying why.
+     * @throws RuntimeException when the deploy would stop before its checks (the array is stopped, the
+     *     fetch fails, the commit has no compose file, the clone has local changes), or when the commit
+     *     checked out before could not be checked out again
+     */
+    public function dryRun(string $projectName, array $profiles, ?string $commit): array
+    {
+        if (!GitPathGuard::isArrayStarted()) {
+            throw new RuntimeException('The array is not started, so nothing was tried.');
+        }
+        $settings = $this->loadSettings();
+        $clone = new GitClone($settings);
+        $clone->assertOwned();
+        $state = GitStackState::load($this->stackDir);
+
+        $previous = $clone->checkedOutCommit();
+
+        ($this->say)("Fetching {$settings->branch} from {$settings->url}...");
+        $latest = $clone->fetch();
+        $target = $commit ?? $latest;
+        if (!GitClone::isCommitId($target)) {
+            throw new RuntimeException("Not a full commit id: $target");
+        }
+        if (!$clone->composeFileExistsAt($target)) {
+            throw new RuntimeException(
+                "{$settings->composePath} does not exist at commit " . substr($target, 0, 12)
+                . '. It may have been moved or removed in the repository, so a deploy of it would stop.'
+            );
+        }
+        // A deploy without --save-local-changes stops on them, and the dry run cannot check
+        // another commit out over them.
+        $changedFiles = $clone->locallyChangedFiles();
+        $madeByHand = $clone->isMadeByHand($previous, $state->deployedCommit, $state->failedCommit);
+        if ($changedFiles !== [] || $madeByHand) {
+            throw new RuntimeException(
+                'The clone has ' . self::describeLocalChanges($changedFiles, $madeByHand, $previous) . '. A deploy stops on'
+                . ' them unless it saves them as a patch and discards them (--save-local-changes), and a dry run cannot'
+                . ' try another commit over them, so nothing was tried.'
+            );
+        }
+
+        [$configBefore, $configBeforeProblem] = $this->composeConfig($projectName, $profiles);
+        $overridePath = $this->managedOverridePath();
+        $overrideBefore = $overridePath !== null && is_file($overridePath) ? file_get_contents($overridePath) : false;
+
+        $result = null;
+        $error = null;
+        $this->overrideAfterPrune = null;
+        try {
+            if ($target !== $previous) {
+                ($this->say)('Checking out ' . substr($target, 0, 12) . '...');
+                $clone->checkOut($target);
+            }
+            $problems = $this->findProblems($settings, $projectName, $profiles);
+            [$configAfter, $configAfterProblem] = $this->composeConfig($projectName, $profiles);
+            // A silent copy: upArguments() says what it decides, as if up were running.
+            $recreates = $problems === [] && (new GitDeploy($this->stackDir))->upArguments($previous) !== [];
+
+            $configDiff = null;
+            $configProblem = null;
+            if ($configBefore === null) {
+                $configProblem = 'The compose configuration of ' . substr($previous, 0, 12) . " could not be read: $configBeforeProblem";
+            } elseif ($configAfter === null) {
+                $configProblem = 'The compose configuration of ' . substr($target, 0, 12) . " could not be read: $configAfterProblem";
+            } else {
+                try {
+                    $configDiff = self::configDiff($configBefore, $configAfter, $previous, $target);
+                } catch (RuntimeException $diffError) {
+                    $configProblem = $diffError->getMessage();
+                }
+            }
+            $result = [
+                'previousCommit' => $previous,
+                'deployedCommit' => $state->deployedCommit,
+                'targetCommit' => $target,
+                'problems' => $problems,
+                'recreatesEveryContainer' => $recreates,
+                'configDiff' => $configDiff,
+                'configProblem' => $configProblem,
+            ];
+        } catch (Throwable $caught) {
+            $error = $caught;
+        }
+
+        $putBackProblems = $this->putBackAfterDryRun($clone, $previous, $overridePath, $overrideBefore, $this->overrideAfterPrune);
+        if ($putBackProblems !== []) {
+            $message = ($error !== null ? $error->getMessage() . "\n" : '') . implode("\n", $putBackProblems);
+            throw new RuntimeException($message, 0, $error);
+        }
+        if ($error !== null) {
+            throw $error instanceof RuntimeException ? $error : new RuntimeException($error->getMessage(), 0, $error);
+        }
+        return $result;
     }
 
     /**
@@ -245,6 +380,133 @@ final class GitDeploy
         return $error instanceof RuntimeException ? $error : new RuntimeException($error->getMessage(), 0, $error);
     }
 
+    /**
+     * After a dry run, check the commit from before out again and put the plugin's
+     * override back as it was.
+     *
+     * @param string|false $overrideBefore The override's content before, or false if there was none
+     * @param string|false|null $overrideAfterPrune What the checks' prune left in the override (false if
+     *     there was none), or null when the checks stopped before it
+     * @return string[] What could not be put back; empty when everything was
+     */
+    private function putBackAfterDryRun(
+        GitClone $clone,
+        string $previous,
+        ?string $overridePath,
+        string|false $overrideBefore,
+        string|false|null $overrideAfterPrune
+    ): array {
+        $problems = [];
+        try {
+            if ($clone->checkedOutCommit() !== $previous) {
+                ($this->say)('Putting back ' . substr($previous, 0, 12) . '...');
+                $clone->checkOut($previous);
+            }
+        } catch (Throwable $error) {
+            $problems[] = 'The commit ' . substr($previous, 0, 12) . ' could not be checked out again (' . $error->getMessage()
+                . '). No container was changed, but the clone is not where it was: deploy the stack, or clone it again'
+                . ' with compose-git reclone.';
+        }
+        if ($overridePath === null || $overrideBefore === false) {
+            return $problems;
+        }
+        $overrideNow = @file_get_contents($overridePath);
+        if ($overrideNow === $overrideBefore) {
+            return $problems;
+        }
+        if ($overrideAfterPrune === null) {
+            // The checks stopped before the prune, so the dry run did not change the override:
+            // whatever changed it since is someone else's save.
+            return $problems;
+        }
+        if ($overrideNow !== $overrideAfterPrune) {
+            // Saved again since the checks pruned it: that save is newer than the dry run's copy.
+            ($this->say)("The plugin's override was changed during the dry run, so it was left as it is now.");
+            return $problems;
+        }
+        if (file_put_contents($overridePath, $overrideBefore) !== strlen($overrideBefore)) {
+            $problems[] = "The plugin's override $overridePath could not be put back as it was before the dry run.";
+        } else {
+            ($this->say)("Put the plugin's override back as it was before the dry run.");
+        }
+        return $problems;
+    }
+
+    /**
+     * The compose configuration of the commit checked out now, with variables as they
+     * are written (see dryRun()).
+     *
+     * @param string[] $profiles
+     * @return array{0: ?string, 1: ?string} The configuration, or null and why it could not be read
+     */
+    private function composeConfig(string $projectName, array $profiles): array
+    {
+        try {
+            $args = $this->composeArgs();
+            $folder = $this->composeFolder();
+        } catch (RuntimeException $error) {
+            return [null, $error->getMessage()];
+        }
+        foreach ($profiles as $profile) {
+            $args[] = '--profile';
+            $args[] = $profile;
+        }
+        $result = DockerCommand::run(
+            array_merge(['compose'], $args, ['-p', $projectName, 'config', '--no-interpolate', '--no-env-resolution']),
+            $folder
+        );
+        if (!$result->succeeded()) {
+            return [null, trim($result->stderr !== '' ? $result->stderr : $result->errorSummary())];
+        }
+        return [$result->stdout, null];
+    }
+
+    /**
+     * The change from one compose configuration to another, as a unified diff ('' when
+     * there is none).
+     *
+     * @throws RuntimeException when git could not compare them
+     */
+    private static function configDiff(string $before, string $after, string $previousCommit, string $targetCommit): string
+    {
+        if ($before === $after) {
+            return '';
+        }
+        $dir = sys_get_temp_dir() . '/compose-git-dry-run-' . bin2hex(random_bytes(4));
+        if (!@mkdir($dir, 0700)) {
+            throw new RuntimeException("Could not make the folder $dir to compare the compose configurations in.");
+        }
+        $beforeName = 'before-' . substr($previousCommit, 0, 12) . '.yaml';
+        $afterName = 'after-' . substr($targetCommit, 0, 12) . '.yaml';
+        try {
+            if (file_put_contents("$dir/$beforeName", $before) !== strlen($before)
+                || file_put_contents("$dir/$afterName", $after) !== strlen($after)) {
+                throw new RuntimeException("Could not write the compose configurations to $dir to compare them.");
+            }
+            $diff = GitCommand::run(['diff', '--no-index', '--no-color', '--no-prefix', '--', $beforeName, $afterName], $dir);
+            // git diff --no-index answers 1 when the files differ. It also answers 1, printing nothing, when it
+            // could not read them; the two differ, so an empty answer means it could not compare them.
+            if ($diff->exitCode !== 1 || trim($diff->stdout) === '') {
+                throw new RuntimeException('Could not compare the compose configurations: ' . $diff->errorSummary());
+            }
+            return $diff->stdout;
+        } finally {
+            @unlink("$dir/$beforeName");
+            @unlink("$dir/$afterName");
+            @rmdir($dir);
+        }
+    }
+
+    /**
+     * The plugin-managed override in the stack folder, which the checks may prune.
+     */
+    private function managedOverridePath(): ?string
+    {
+        StackInfo::clearCache();
+        $stack = StackInfo::fromProject(dirname(rtrim($this->stackDir, '/')), basename(rtrim($this->stackDir, '/')));
+        return $stack->getOverridePath();
+    }
+
     private function loadSettings(): GitStackSettings
     {
         $settings = GitStackSettings::load($this->stackDir);
@@ -266,6 +528,19 @@ final class GitDeploy
             );
         }
         return $settings;
+    }
+
+    /**
+     * The clone's local changes in words: the changed files, or else the commit made by hand.
+     *
+     * @param string[] $changedFiles
+     */
+    private static function describeLocalChanges(array $changedFiles, bool $madeByHand, string $checkedOut): string
+    {
+        if ($changedFiles !== []) {
+            return 'local changes to ' . implode(', ', array_slice($changedFiles, 0, 5)) . (count($changedFiles) > 5 ? ', ...' : '');
+        }
+        return 'a commit made in the clone by hand (' . substr($checkedOut, 0, 12) . ')';
     }
 
     /**
@@ -295,9 +570,7 @@ final class GitDeploy
         }
 
         if (!$saveAndDiscard) {
-            $what = $changedFiles !== []
-                ? 'local changes to ' . implode(', ', array_slice($changedFiles, 0, 5)) . (count($changedFiles) > 5 ? ', ...' : '')
-                : 'a commit made in the clone by hand (' . substr($checkedOut, 0, 12) . ')';
+            $what = self::describeLocalChanges($changedFiles, $madeByHand, $checkedOut);
             throw new RuntimeException(
                 "The clone has $what, so nothing was deployed. "
                 . 'Deploy again with the option to save them as a patch and discard them, or undo them by hand.'
@@ -433,6 +706,9 @@ final class GitDeploy
         StackInfo::clearCache();
         $stack = StackInfo::fromProject(dirname(rtrim($this->stackDir, '/')), basename(rtrim($this->stackDir, '/')));
         $pruned = $stack->pruneOrphanOverrideServices();
+        // For a dry run, which puts the override back only if nothing saved it since.
+        $overridePath = $stack->getOverridePath();
+        $this->overrideAfterPrune = $overridePath !== null && is_file($overridePath) ? file_get_contents($overridePath) : false;
         foreach ($pruned['removed'] as $service) {
             ($this->say)("Removed '$service' from the plugin's override: the compose file no longer has that service.");
         }

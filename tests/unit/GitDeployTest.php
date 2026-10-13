@@ -501,6 +501,240 @@ final class GitDeployTest extends TestCase
         $this->assertContains("Removed 'gone' from the plugin's override: the compose file no longer has that service.", $said);
     }
 
+    public function testDryRunChecksTheNewCommitShowsTheChangeAndPutsThePreviousOneBack(): void
+    {
+        $before = $this->clone->checkedOutCommit();
+        $this->writeAndPush(['whoami/compose.yaml' => "services:\n  whoami:\n    image: traefik/whoami:v2\n"], 'bump');
+
+        $result = $this->deploy()->dryRun('whoami', [], null);
+
+        $this->assertSame($before, $result['previousCommit']);
+        $this->assertSame($this->upstreamHead(), $result['targetCommit']);
+        $this->assertSame([], $result['problems']);
+        $this->assertTrue($result['recreatesEveryContainer']);
+        $this->assertNull($result['configProblem']);
+        $this->assertStringContainsString("-    image: traefik/whoami\n", (string) $result['configDiff']);
+        $this->assertStringContainsString("+    image: traefik/whoami:v2\n", (string) $result['configDiff']);
+        // The checks ran on the new commit, and nothing of the stack changed.
+        $this->assertContains('compose -f ' . $this->clone->settings()->cloneDir . '/whoami/compose.yaml -p whoami config --format json', $this->docker->calls());
+        $this->assertSame($before, $this->clone->checkedOutCommit());
+        $this->assertSame($before, $result['deployedCommit']);
+        $this->assertSame($before, GitStackState::load($this->stackDir)->deployedCommit);
+        $this->assertNull(GitStackState::load($this->stackDir)->failedCommit);
+        $this->assertFileDoesNotExist($this->stackDir . '/' . GitDeploy::DISCARDED_CHANGES_FILE);
+        $this->assertFileDoesNotExist($this->stackDir . '/git_check.json');
+        // The stack had no override, and the dry run made none.
+        $this->assertFileDoesNotExist((string) \StackInfo::fromProject($this->composeRoot, 'whoami')->getOverridePath());
+        $this->assertSame([], array_filter($this->docker->calls(), static fn(string $c): bool => preg_match('/\b(up|pull|build)\b/', $c) === 1));
+    }
+
+    public function testDryRunNamesTheDeployedCommitAfterAFailedUp(): void
+    {
+        $deployed = $this->clone->checkedOutCommit();
+        $this->writeAndPush(['whoami/compose.yaml' => "services:\n  whoami:\n    image: traefik/whoami:v2\n"], 'bump');
+        $this->deploy()->prepare('whoami', [], null, false);
+        $this->deploy()->finish(false);
+
+        $result = $this->deploy()->dryRun('whoami', [], null);
+
+        // The clone is at the commit whose up failed; the last one that worked is named too.
+        $this->assertSame($this->upstreamHead(), $result['previousCommit']);
+        $this->assertSame($this->upstreamHead(), $result['targetCommit']);
+        $this->assertSame($deployed, $result['deployedCommit']);
+    }
+
+    public function testDryRunPutsThePreviousCommitBackWhenACheckStopsIt(): void
+    {
+        $outside = $this->mnt . '/user/appdata/outside.yaml';
+        file_put_contents($outside, "services: {}\n");
+        $this->git(['rm', '-q', 'whoami/compose.yaml'], $this->author);
+        @mkdir($this->author . '/whoami');
+        symlink($outside, $this->author . '/whoami/compose.yaml');
+        $this->git(['add', 'whoami/compose.yaml'], $this->author);
+        $this->commitAndPush('symlink out');
+        $before = $this->clone->checkedOutCommit();
+
+        try {
+            $this->deploy()->dryRun('whoami', [], null);
+            $this->fail('Tried a compose file outside the clone');
+        } catch (RuntimeException $error) {
+            // The check's own error, not one about putting the commit back.
+            $this->assertStringContainsString('leads outside the repository', $error->getMessage());
+            $this->assertStringNotContainsString('could not be checked out again', $error->getMessage());
+        }
+        $this->assertSame($before, $this->clone->checkedOutCommit());
+    }
+
+    public function testDryRunListsWhatWouldStopTheDeploy(): void
+    {
+        $before = $this->clone->checkedOutCommit();
+        $this->writeAndPush(['whoami/compose.yaml' => "services:\n  whoami:\n    image: traefik/whoami:v2\n"], 'bump');
+        $this->docker->setConfig([
+            'name' => 'whoami',
+            'services' => ['whoami' => ['image' => 'busybox']],
+            'networks' => ['proxy' => ['name' => 'zz-proxy', 'external' => true]],
+        ]);
+
+        $result = $this->deploy()->dryRun('whoami', [], null);
+
+        $this->assertCount(1, $result['problems']);
+        $this->assertStringContainsString("network 'zz-proxy' does not exist", $result['problems'][0]);
+        // Up would not run, so whether it would recreate the containers is not worked out.
+        $this->assertFalse($result['recreatesEveryContainer']);
+        $this->assertNotSame('', $result['configDiff']);
+        $this->assertSame($before, $this->clone->checkedOutCommit());
+    }
+
+    public function testDryRunOfTheCheckedOutCommitShowsNoChange(): void
+    {
+        $result = $this->deploy()->dryRun('whoami', [], null);
+
+        $this->assertSame($result['previousCommit'], $result['targetCommit']);
+        $this->assertSame([], $result['problems']);
+        $this->assertFalse($result['recreatesEveryContainer']);
+        $this->assertSame('', $result['configDiff']);
+    }
+
+    public function testDryRunOfAnOlderCommit(): void
+    {
+        $first = $this->clone->checkedOutCommit();
+        $this->writeAndPush(['whoami/compose.yaml' => "services:\n  whoami:\n    image: traefik/whoami:v2\n"], 'bump');
+        $this->deploy()->prepare('whoami', [], null, false);
+        $this->deploy()->finish(true);
+
+        $result = $this->deploy()->dryRun('whoami', [], $first);
+
+        $this->assertSame($first, $result['targetCommit']);
+        $this->assertStringContainsString("+    image: traefik/whoami\n", (string) $result['configDiff']);
+        $this->assertSame($this->upstreamHead(), $this->clone->checkedOutCommit());
+    }
+
+    public function testDryRunStopsOnLocalChangesAndKeepsThem(): void
+    {
+        $file = $this->clone->settings()->cloneDir . '/whoami/compose.yaml';
+        file_put_contents($file, "hotfix\n");
+        $this->writeAndPush(['whoami/compose.yaml' => "services:\n  whoami:\n    image: traefik/whoami:v2\n"], 'bump');
+
+        try {
+            $this->deploy()->dryRun('whoami', [], null);
+            $this->fail('Tried a commit over local changes');
+        } catch (RuntimeException $error) {
+            $this->assertStringContainsString('local changes to whoami/compose.yaml', $error->getMessage());
+        }
+        $this->assertSame("hotfix\n", file_get_contents($file));
+    }
+
+    public function testDryRunSaysWhenTheConfigurationCannotBeRead(): void
+    {
+        $this->writeAndPush(['whoami/compose.yaml' => "services:\n  whoami:\n    image: traefik/whoami:v2\n"], 'bump');
+        $this->docker->failConfigAsWritten("unknown flag: --no-env-resolution\n");
+
+        $result = $this->deploy()->dryRun('whoami', [], null);
+
+        $this->assertNull($result['configDiff']);
+        $this->assertStringContainsString('unknown flag: --no-env-resolution', (string) $result['configProblem']);
+        // The checks still ran and said the deploy would go ahead.
+        $this->assertSame([], $result['problems']);
+    }
+
+    public function testDryRunPutsTheOverrideBackAfterTheChecksPruneIt(): void
+    {
+        $override = (string) \StackInfo::fromProject($this->composeRoot, 'whoami')->getOverridePath();
+        $content = "services:\n  whoami:\n    labels:\n      net.unraid.docker.webui: http://x\n"
+            . "  gone:\n    labels:\n      net.unraid.docker.webui: http://y\n";
+        file_put_contents($override, $content);
+        $this->writeAndPush(['whoami/compose.yaml' => "services:\n  whoami:\n    image: traefik/whoami\n  whoami2:\n    image: busybox\n"], 'rename gone');
+        $this->docker->setServices(['whoami', 'whoami2']);
+        $said = [];
+        $deploy = new GitDeploy($this->stackDir, static function (string $message) use (&$said): void {
+            $said[] = $message;
+        });
+
+        // StackInfo runs "docker" from the PATH, so put the scripted one first.
+        $originalPath = (string) getenv('PATH');
+        putenv('PATH=' . $this->docker->dir . ':' . $originalPath);
+        try {
+            $deploy->dryRun('whoami', [], null);
+        } finally {
+            putenv('PATH=' . $originalPath);
+        }
+
+        // The checks ran on the pruned override, as a deploy's would, and the dry run put it back.
+        $this->assertContains("Removed 'gone' from the plugin's override: the compose file no longer has that service.", $said);
+        $this->assertContains("Put the plugin's override back as it was before the dry run.", $said);
+        $this->assertSame($content, file_get_contents($override));
+    }
+
+    public function testDryRunStoppedBeforeThePruneLeavesAnOverrideSavedWhileItRan(): void
+    {
+        $override = (string) \StackInfo::fromProject($this->composeRoot, 'whoami')->getOverridePath();
+        file_put_contents($override, "services:\n  whoami:\n    labels:\n      net.unraid.docker.webui: http://x\n");
+        // A commit whose compose file leads out of the clone: the checks stop before the prune.
+        $outside = $this->mnt . '/user/appdata/outside.yaml';
+        file_put_contents($outside, "services: {}\n");
+        $this->git(['rm', '-q', 'whoami/compose.yaml'], $this->author);
+        @mkdir($this->author . '/whoami');
+        symlink($outside, $this->author . '/whoami/compose.yaml');
+        $this->git(['add', 'whoami/compose.yaml'], $this->author);
+        $this->commitAndPush('symlink out');
+        // The Labels tab saves the override as the checks start.
+        $savedMeanwhile = "services:\n  whoami:\n    labels:\n      net.unraid.docker.webui: http://z\n";
+        $deploy = new GitDeploy($this->stackDir, static function (string $message) use ($override, $savedMeanwhile): void {
+            if (str_starts_with($message, 'Checking the stack')) {
+                file_put_contents($override, $savedMeanwhile);
+            }
+        });
+
+        try {
+            $deploy->dryRun('whoami', [], null);
+            $this->fail('Tried a compose file outside the clone');
+        } catch (RuntimeException $error) {
+            $this->assertStringContainsString('leads outside the repository', $error->getMessage());
+        }
+        $this->assertSame($savedMeanwhile, file_get_contents($override));
+    }
+
+    public function testDryRunLeavesAnOverrideSavedWhileItRan(): void
+    {
+        $override = (string) \StackInfo::fromProject($this->composeRoot, 'whoami')->getOverridePath();
+        file_put_contents(
+            $override,
+            "services:\n  whoami:\n    labels:\n      net.unraid.docker.webui: http://x\n"
+            . "  gone:\n    labels:\n      net.unraid.docker.webui: http://y\n"
+        );
+        $this->writeAndPush(['whoami/compose.yaml' => "services:\n  whoami:\n    image: traefik/whoami\n  whoami2:\n    image: busybox\n"], 'rename gone');
+        $this->docker->setServices(['whoami', 'whoami2']);
+        // The Labels tab saves the override right after the checks pruned it.
+        $savedMeanwhile = "services:\n  whoami2:\n    labels:\n      net.unraid.docker.webui: http://z\n";
+        $said = [];
+        $deploy = new GitDeploy($this->stackDir, static function (string $message) use (&$said, $override, $savedMeanwhile): void {
+            $said[] = $message;
+            if (str_starts_with($message, "Removed 'gone'")) {
+                file_put_contents($override, $savedMeanwhile);
+            }
+        });
+
+        $originalPath = (string) getenv('PATH');
+        putenv('PATH=' . $this->docker->dir . ':' . $originalPath);
+        try {
+            $deploy->dryRun('whoami', [], null);
+        } finally {
+            putenv('PATH=' . $originalPath);
+        }
+
+        $this->assertSame($savedMeanwhile, file_get_contents($override));
+        $this->assertContains("The plugin's override was changed during the dry run, so it was left as it is now.", $said);
+    }
+
+    public function testDryRunWhileTheArrayIsStoppedTriesNothing(): void
+    {
+        $this->setArrayState('STOPPED');
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('The array is not started');
+        $this->deploy()->dryRun('whoami', [], null);
+    }
+
     // ----- helpers -----
 
     private function deploy(): GitDeploy

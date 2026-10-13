@@ -343,6 +343,30 @@ final class GitStackManagerTest extends TestCase
         $this->assertTrue($this->manager->check($folder)['upToDate']);
     }
 
+    public function testDryRunIsRefusedWhileAnotherOperationHoldsTheLock(): void
+    {
+        $folder = $this->manager->add('whoami', $this->upstream, 'main', 'whoami/compose.yaml', $this->clonesRoot);
+        $stack = $this->manager->gitStack($folder);
+        $clone = new GitClone(GitStackSettings::load($stack->path));
+        $checkedOut = $clone->checkedOutCommit();
+        $this->writeAndPush(['whoami/compose.yaml' => "services:\n  whoami:\n    image: traefik/whoami:v2\n"], 'bump');
+        mkdir(COMPOSE_LOCK_DIR, 0755, true);
+        $lock = fopen(COMPOSE_LOCK_DIR . '/' . $stack->projectName . '.lock', 'c');
+        $this->assertNotFalse($lock);
+        flock($lock, LOCK_EX);
+
+        try {
+            $this->manager->dryRun($folder, null, []);
+            $this->fail('Tried a deploy while another operation held the lock');
+        } catch (RuntimeException $error) {
+            $this->assertStringContainsString('in progress', $error->getMessage());
+        } finally {
+            flock($lock, LOCK_UN);
+            fclose($lock);
+        }
+        $this->assertSame($checkedOut, $clone->checkedOutCommit());
+    }
+
     public function testCheckTellsACommitToTheStacksFolderFromOneOutsideIt(): void
     {
         $folder = $this->manager->add('whoami', $this->upstream, 'main', 'whoami/compose.yaml', $this->clonesRoot);
