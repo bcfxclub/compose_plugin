@@ -355,6 +355,21 @@ final class GitDeploy
      */
     private function runChecks(GitStackSettings $settings, string $projectName, array $profiles): void
     {
+        $problems = $this->findProblems($settings, $projectName, $profiles);
+        if ($problems !== []) {
+            throw new RuntimeException("The stack was not deployed:\n- " . implode("\n- ", $problems));
+        }
+    }
+
+    /**
+     * Run every check on the commit checked out now.
+     *
+     * @param string[] $profiles
+     * @return string[] One message per problem found; empty when the stack can be deployed
+     * @throws RuntimeException when the compose file leads outside the clone, so nothing else is checked
+     */
+    private function findProblems(GitStackSettings $settings, string $projectName, array $profiles): array
+    {
         ($this->say)('Checking the stack before deploying...');
 
         // The compose file must stay inside the clone, even through a symlink in the repository.
@@ -395,11 +410,12 @@ final class GitDeploy
         );
         $problems = $check->run();
         if ($problems !== []) {
-            throw new RuntimeException("The stack was not deployed:\n- " . implode("\n- ", $problems));
+            return $problems;
         }
         foreach ($check->foldersDockerWillCreate() as $folder) {
             ($this->say)("Docker will create the missing folder $folder");
         }
+        return [];
     }
 
     /**
