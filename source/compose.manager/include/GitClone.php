@@ -372,6 +372,10 @@ final class GitClone
             ['checkout', '--detach', '--no-overwrite-ignore', $this->commitArgument($commit)],
             $this->settings->cloneDir
         );
+        // PHP keeps what realpath() and file_exists() found for a while. A file the checkout
+        // replaced with a symlink would otherwise still resolve where it did before, in
+        // this process, and a check that the compose file stays inside the clone would pass.
+        clearstatcache(true);
         if ($result->succeeded()) {
             return;
         }
