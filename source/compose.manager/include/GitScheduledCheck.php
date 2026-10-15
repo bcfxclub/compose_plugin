@@ -60,7 +60,7 @@ final class GitScheduledCheck
     /** @var callable(string, string, string): void */
     private $notify;
 
-    /** @var callable(StackInfo): int */
+    /** @var callable(StackInfo, string): int */
     private $deploy;
 
     /** @var callable(string): void */
@@ -73,8 +73,8 @@ final class GitScheduledCheck
      * @param string $composeRoot The plugin's projects folder
      * @param callable(string, string, string): void|null $notify Sends a notification:
      *     subject, message, icon ('' or 'warning'). Unraid's notify by default.
-     * @param callable(StackInfo): int|null $deploy Deploys a stack and returns the exit
-     *     status. compose.sh gitdeploy through compose_background.sh by default.
+     * @param callable(StackInfo, string): int|null $deploy Deploys a stack at the given commit
+     *     and returns the exit status. compose.sh gitdeploy through compose_background.sh by default.
      * @param callable(string): void|null $say Receives progress messages
      * @param callable(StackInfo): bool|null $isRunning Whether any of the stack's containers
      *     run; throws RuntimeException when that cannot be found out. docker ps by default.
@@ -89,8 +89,8 @@ final class GitScheduledCheck
         $this->notify = $notify ?? static function (string $subject, string $message, string $icon): void {
             composeSendNotification($subject, $message, $icon);
         };
-        $this->deploy = $deploy ?? static function (StackInfo $stack): int {
-            return self::deployInBackgroundRunner($stack);
+        $this->deploy = $deploy ?? static function (StackInfo $stack, string $commit): int {
+            return self::deployInBackgroundRunner($stack, $commit);
         };
         $this->say = $say ?? static function (string $message): void {
         };
@@ -365,7 +365,9 @@ final class GitScheduledCheck
         ($this->say)("$name: deploying $short...");
         composeLogger("Scheduled git deploy of '$name' at $short", null, 'daemon', 'info', 'git');
         // The background runner logs to the stack's last_cmd.log and notifies whether it worked.
-        $exitStatus = ($this->deploy)($stack);
+        // The commit compared is the one deployed, even if the branch has moved on since: a newer
+        // commit is compared and handled by the next pass, and this one is recorded as handled.
+        $exitStatus = ($this->deploy)($stack, $remote);
         if ($exitStatus !== 0) {
             // Tried once, like every commit, but recorded as failed: the stack list shows it,
             // and Resume Automatic Deploys clears it so the next pass tries again. A failure
@@ -458,16 +460,16 @@ final class GitScheduledCheck
     }
 
     /**
-     * Deploy a stack the way the web UI's background deploy does: compose.sh
+     * Deploy a stack at a commit the way the web UI's background deploy does: compose.sh
      * gitdeploy through compose_background.sh, waiting for it to finish.
      */
-    private static function deployInBackgroundRunner(StackInfo $stack): int
+    private static function deployInBackgroundRunner(StackInfo $stack, string $commit): int
     {
         require_once '/usr/local/emhttp/plugins/compose.manager/include/Helpers.php';
         $waitSettings = resolveStackWaitSettings($stack->path, parse_plugin_cfg('compose.manager'));
         // The profiles the stack runs with, as Pull and Redeploy uses them: without them, profile
         // services would stay on the old commit while the deploy reports success.
-        $command = buildGitDeployCommand($stack, null, false, gitDeployProfiles($stack, []), gitDeployWaitArguments($waitSettings));
+        $command = buildGitDeployCommand($stack, $commit, false, gitDeployProfiles($stack, []), gitDeployWaitArguments($waitSettings));
         // compose_background.sh takes compose.sh's arguments, without compose.sh itself. It is
         // run with sh, as AutoUpdateRunner runs its script, so it needs no execute bit.
         array_shift($command);

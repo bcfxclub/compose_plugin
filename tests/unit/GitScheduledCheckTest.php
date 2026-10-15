@@ -34,6 +34,9 @@ final class GitScheduledCheckTest extends TestCase
     /** @var list<string> */
     private array $deployed = [];
 
+    /** @var list<string> The commit each stand-in deploy was asked for. */
+    private array $deployedCommits = [];
+
     /** The exit status the stand-in deploy returns. */
     private int $deployExitStatus = 0;
 
@@ -42,6 +45,9 @@ final class GitScheduledCheckTest extends TestCase
 
     /** What the stand-in deploy does besides returning its status, as compose.sh would. */
     private ?\Closure $onDeploy = null;
+
+    /** What happens when the pass asks whether the stack runs, between its comparison and its deploy. */
+    private ?\Closure $isRunningHook = null;
 
     protected function setUp(): void
     {
@@ -73,8 +79,10 @@ final class GitScheduledCheckTest extends TestCase
         $this->manager = new GitStackManager($this->composeRoot);
         $this->notifications = [];
         $this->deployed = [];
+        $this->deployedCommits = [];
         $this->deployExitStatus = 0;
         $this->onDeploy = null;
+        $this->isRunningHook = null;
         $this->running = true;
     }
 
@@ -167,6 +175,31 @@ final class GitScheduledCheckTest extends TestCase
 
         $this->writeAndPush(['whoami/compose.yaml' => "services:\n  whoami:\n    image: traefik/whoami:v1.11\n"], 'bump');
         $this->check()->run();
+        $this->assertSame([$folder, $folder], $this->deployed);
+    }
+
+    public function testTheCommitComparedIsTheCommitDeployedWhenTheBranchMovesOnMeanwhile(): void
+    {
+        $folder = $this->deployedStack('whoami', GitStackSettings::AUTO_DEPLOY_DEPLOY);
+        $stackDir = $this->composeRoot . '/' . $folder;
+        $this->writeAndPush(['whoami/compose.yaml' => "services:\n  whoami:\n    image: traefik/whoami:v1.10\n"], 'pin');
+        $compared = $this->upstreamHead();
+
+        // The branch moves on after the pass compared its commit and before the deploy starts.
+        $this->isRunningHook = function (): void {
+            $this->isRunningHook = null;
+            $this->writeAndPush(['whoami/compose.yaml' => "services:\n  whoami:\n    image: traefik/whoami:v1.11\n"], 'bump');
+        };
+        $this->check()->run();
+
+        $this->assertSame([$compared], $this->deployedCommits);
+        $this->assertSame($compared, GitScheduledCheck::loadRecord($stackDir)['handledCommit']);
+
+        // The newer commit is compared and deployed by the next pass, once.
+        (new GitStackState($compared, null))->save($stackDir);
+        $this->check()->run();
+        $this->check()->run();
+        $this->assertSame([$compared, $this->upstreamHead()], $this->deployedCommits);
         $this->assertSame([$folder, $folder], $this->deployed);
     }
 
@@ -603,8 +636,9 @@ final class GitScheduledCheckTest extends TestCase
             function (string $subject, string $message, string $icon): void {
                 $this->notifications[] = [$subject, $message, $icon];
             },
-            function (\StackInfo $stack): int {
+            function (\StackInfo $stack, string $commit): int {
                 $this->deployed[] = $stack->projectFolder;
+                $this->deployedCommits[] = $commit;
                 if ($this->onDeploy !== null) {
                     ($this->onDeploy)();
                 }
@@ -612,6 +646,9 @@ final class GitScheduledCheckTest extends TestCase
             },
             null,
             function (\StackInfo $stack): bool {
+                if ($this->isRunningHook !== null) {
+                    ($this->isRunningHook)();
+                }
                 if ($this->running === null) {
                     throw new \RuntimeException('Cannot connect to the Docker daemon.');
                 }
