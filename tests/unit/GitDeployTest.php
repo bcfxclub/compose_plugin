@@ -8,8 +8,10 @@ use ComposeManager\Tests\Support\FakeDocker;
 use GitClone;
 use GitCommand;
 use GitDeploy;
+use GitDeploySkipped;
 use GitStackSettings;
 use GitStackState;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PluginTests\Mocks\FunctionMocks;
 use PluginTests\TestCase;
 use RuntimeException;
@@ -85,6 +87,70 @@ final class GitDeployTest extends TestCase
 
         $this->assertSame($before, $previous);
         $this->assertSame($this->upstreamHead(), $this->clone->checkedOutCommit());
+    }
+
+    public function testAnAutomaticDeployStillAppliesWhileNothingChanged(): void
+    {
+        $this->setAutoDeploy(GitStackSettings::AUTO_DEPLOY_DEPLOY);
+        $this->docker->setRunning([['name' => 'whoami-whoami-1', 'project' => 'whoami', 'ports' => []]]);
+
+        $this->deploy()->assertAutomaticDeployStillApplies('whoami', $this->deployedCommit());
+
+        $this->assertContains('ps -q --filter label=com.docker.compose.project=whoami', $this->docker->calls());
+    }
+
+    /**
+     * @return array<string, array{0: \Closure(self): void, 1: string}>
+     */
+    public static function automaticDeploysThatNoLongerApply(): array
+    {
+        return [
+            'switched to notify' => [static function (self $test): void {
+                $test->setAutoDeploy(GitStackSettings::AUTO_DEPLOY_NOTIFY);
+            }, 'no longer set to Deploy'],
+            'switched off' => [static function (self $test): void {
+                $test->setAutoDeploy(GitStackSettings::AUTO_DEPLOY_OFF);
+            }, 'no longer set to Deploy'],
+            'a deploy failed' => [static function (self $test): void {
+                $state = GitStackState::load($test->stackDir);
+                (new GitStackState($state->deployedCommit, str_repeat('b', 40)))->save($test->stackDir);
+            }, 'automatic deploys of this stack are paused'],
+            'another commit deployed meanwhile' => [static function (self $test): void {
+                // Pull and Redeploy, or a rollback, ran while the automatic deploy waited for the lock.
+                (new GitStackState(str_repeat('c', 40), null))->save($test->stackDir);
+            }, 'The deployed commit changed since the scheduled check decided'],
+            'local changes' => [static function (self $test): void {
+                file_put_contents(GitStackSettings::load($test->stackDir)->composeFileInClone(), "services: {}\n");
+            }, 'The clone has local changes'],
+            'stopped' => [static function (self $test): void {
+                $test->docker->setRunning([]);
+            }, 'The stack is not running'],
+            'git cannot be asked' => [static function (self $test): void {
+                file_put_contents(GitStackSettings::load($test->stackDir)->cloneDir . '/.git/HEAD', "not a ref\n");
+            }, "Could not read the clone's local changes"],
+            'docker cannot be asked' => [static function (self $test): void {
+                $test->docker->fail('ps', 'Cannot connect to the Docker daemon');
+            }, 'Could not ask docker'],
+        ];
+    }
+
+    /**
+     * @param \Closure(self): void $change What changed while the deploy waited for the stack's lock
+     */
+    #[DataProvider('automaticDeploysThatNoLongerApply')]
+    public function testAnAutomaticDeployThatNoLongerAppliesIsSkipped(\Closure $change, string $why): void
+    {
+        $this->setAutoDeploy(GitStackSettings::AUTO_DEPLOY_DEPLOY);
+        $this->docker->setRunning([['name' => 'whoami-whoami-1', 'project' => 'whoami', 'ports' => []]]);
+        $deployedWhenDecided = $this->deployedCommit();
+        $change($this);
+
+        try {
+            $this->deploy()->assertAutomaticDeployStillApplies('whoami', $deployedWhenDecided);
+            $this->fail('An automatic deploy went ahead that no longer applies');
+        } catch (GitDeploySkipped $skipped) {
+            $this->assertStringContainsString($why, $skipped->getMessage());
+        }
     }
 
     public function testFailedCheckPutsThePreviousCommitBack(): void
@@ -796,6 +862,16 @@ final class GitDeployTest extends TestCase
     private function deploy(): GitDeploy
     {
         return new GitDeploy($this->stackDir);
+    }
+
+    private function setAutoDeploy(string $autoDeploy): void
+    {
+        GitStackSettings::load($this->stackDir)->withAutoDeploy($autoDeploy)->save($this->stackDir);
+    }
+
+    private function deployedCommit(): ?string
+    {
+        return GitStackState::load($this->stackDir)->deployedCommit;
     }
 
     /** @param array<string, string> $files */

@@ -12,7 +12,7 @@ LOCK_TIMEOUT=${COMPOSE_LOCK_TIMEOUT:-30}
 LOCK_DIR=${COMPOSE_LOCK_DIR:-/var/run/compose.manager}
 
 SHORT=e:,c:,f:,p:,d:,o:,g:,s:,w:
-LONG=env,command:,file:,project_name:,project_dir:,override:,profile:,debug,recreate,remove-orphans,stack-path:,workdir:,follow-logs,wait,wait-timeout:,build,credential-id:,git-commit:,save-local-changes
+LONG=env,command:,file:,project_name:,project_dir:,override:,profile:,debug,recreate,remove-orphans,stack-path:,workdir:,follow-logs,wait,wait-timeout:,build,credential-id:,git-commit:,save-local-changes,automatic-deploy-from:
 OPTS=$(getopt -a -n compose --options $SHORT --longoptions $LONG -- "$@")
 
 eval set -- "$OPTS"
@@ -36,6 +36,7 @@ credential_id=""
 docker_config_dir=""
 git_commit=""
 save_local_changes=false
+automatic_deploy_from=""
 
 
 # Logging helper — delegates to shared composeLogger, adds console echo in debug mode
@@ -231,6 +232,11 @@ do
     --save-local-changes )
       save_local_changes=true
       shift;
+      ;;
+    --automatic-deploy-from )
+      # The scheduled check's deploy, and the deployed commit it decided from ("none" if none).
+      automatic_deploy_from="$2"
+      shift 2
       ;;
     --)
       shift;
@@ -540,7 +546,20 @@ case $command in
     for profile_name in "${profile_names[@]}"; do
       prepare_args+=("--profile" "$profile_name")
     done
-    if ! previous_commit=$(git_stack prepare "${prepare_args[@]}"); then
+    # The scheduled check's deploy: git_stack.php first checks, under this lock, that it still applies.
+    if [ -n "$automatic_deploy_from" ]; then
+      prepare_args+=("--automatic-from" "$automatic_deploy_from")
+    fi
+    previous_commit=$(git_stack prepare "${prepare_args[@]}")
+    prepare_exit=$?
+    if [ "$prepare_exit" -eq "$GIT_DEPLOY_EXIT_SKIPPED" ]; then
+      # Not a failure: no result is saved, and the next scheduled check decides again.
+      log_msg "INFO" "Automatic deploy of $name skipped: it no longer applies"
+      echo ""
+      echo "Stack $name was not deployed automatically. No container was changed."
+      exit "$GIT_DEPLOY_EXIT_SKIPPED"
+    fi
+    if [ "$prepare_exit" -ne 0 ]; then
       save_result "failed" 1 "gitdeploy"
       log_msg "ERROR" "Git deploy of $name stopped before any container was changed"
       echo ""
@@ -695,6 +714,10 @@ case $command in
     "${git_compose[@]}" -p "$name" up "${up_args[@]}"
     up_exit=$?
     operation_exit_code=$up_exit
+    # The skipped status means "nothing was changed"; a failed up must never read as that.
+    if [ "$up_exit" -eq "$GIT_DEPLOY_EXIT_SKIPPED" ]; then
+      operation_exit_code=1
+    fi
 
     if [ $up_exit -eq 0 ]; then
       if ! git_stack finish "$stack_path" success; then

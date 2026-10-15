@@ -13,6 +13,14 @@ require_once '/usr/local/emhttp/plugins/compose.manager/include/GitCommand.php';
 require_once '/usr/local/emhttp/plugins/compose.manager/include/DockerCommand.php';
 
 /**
+ * An automatic deploy that no longer applies once it holds the stack's lock
+ * (GitDeploy::assertAutomaticDeployStillApplies()). Nothing was changed.
+ */
+final class GitDeploySkipped extends RuntimeException
+{
+}
+
+/**
  * The git half of deploying a git stack. compose.sh calls this under the
  * stack's lock (scripts/git_stack.php), then pulls and starts the containers.
  *
@@ -31,6 +39,13 @@ final class GitDeploy
      * recreate them.
      */
     public const DISCARDED_CHANGES_FILE = 'git_discarded_changes';
+
+    /**
+     * The exit status of git_stack.php prepare, and of compose.sh gitdeploy, when an
+     * automatic deploy was skipped because it no longer applies (EX_TEMPFAIL: the
+     * next scheduled check decides again). GIT_DEPLOY_EXIT_SKIPPED in common.sh.
+     */
+    public const EXIT_SKIPPED = 75;
 
     /** @var callable(string): void */
     private $say;
@@ -52,6 +67,104 @@ final class GitDeploy
     {
         $this->say = $say ?? static function (string $message): void {
         };
+    }
+
+    /**
+     * For an automatic deploy (the scheduled check's), check again what the scheduled
+     * check decided on before it started the deploy: things may have changed while
+     * the deploy waited for the stack's lock, or while the check asked the remote.
+     * compose.sh calls this under the stack's lock, before prepare(), so nothing can
+     * change it again before the deploy is done.
+     *
+     * @param string $projectName The stack's compose project name
+     * @param string|null $deployedWhenDecided The deployed commit the scheduled check compared
+     *     the new commit with (null if none was deployed). Another commit deployed since (by
+     *     hand, say, or a rollback) is newer than that decision: the automatic deploy would
+     *     replace it with the commit the check compared, which may be older.
+     * @throws GitDeploySkipped naming why the deploy no longer applies: automatic deploys are
+     *     no longer set to Deploy, a deploy failed meanwhile, another commit was deployed
+     *     meanwhile, the clone has local changes, the stack is not running (stopped
+     *     meanwhile), or git or docker could not be asked
+     */
+    public function assertAutomaticDeployStillApplies(string $projectName, ?string $deployedWhenDecided): void
+    {
+        $settings = $this->loadSettings();
+        if ($settings->autoDeploy !== GitStackSettings::AUTO_DEPLOY_DEPLOY) {
+            throw new GitDeploySkipped('Automatic deploys of this stack are no longer set to Deploy, so it was not deployed.');
+        }
+        $state = GitStackState::load($this->stackDir);
+        if ($state->failedCommit !== null) {
+            throw new GitDeploySkipped(
+                'The deploy of ' . substr($state->failedCommit, 0, 12) . ' failed, so automatic deploys of this stack are paused'
+                . ' and it was not deployed.'
+            );
+        }
+        if ($state->deployedCommit !== $deployedWhenDecided) {
+            throw new GitDeploySkipped(
+                'The deployed commit changed since the scheduled check decided to deploy (another deploy ran'
+                . ' meanwhile), so the stack was not deployed automatically.'
+            );
+        }
+        // A question git or docker could not answer is a skip too, not a failure: the next scheduled
+        // check asks again, as it does when it cannot ask them itself.
+        $clone = new GitClone($settings);
+        try {
+            $hasLocalChanges = self::localChanges($clone, $state) !== [];
+        } catch (RuntimeException $error) {
+            throw new GitDeploySkipped(
+                'Could not read the clone\'s local changes (' . $error->getMessage() . '), so the stack was not deployed automatically.',
+                0,
+                $error
+            );
+        }
+        if ($hasLocalChanges) {
+            throw new GitDeploySkipped('The clone has local changes, so the stack was not deployed automatically.');
+        }
+        try {
+            $running = self::hasRunningContainers($projectName);
+        } catch (RuntimeException $error) {
+            throw new GitDeploySkipped($error->getMessage() . ' So the stack was not deployed automatically.', 0, $error);
+        }
+        if (!$running) {
+            throw new GitDeploySkipped('The stack is not running, so it was not deployed automatically.');
+        }
+    }
+
+    /**
+     * What in the clone a deploy would stop on without the option to save it: the
+     * tracked files changed by hand, and a commit made in the clone by hand
+     * (GitClone::isMadeByHand(), the test dealWithLocalChanges() uses).
+     *
+     * @return string[] Changed files, and a line naming a hand-made commit
+     * @throws RuntimeException when git cannot be asked
+     */
+    public static function localChanges(GitClone $clone, GitStackState $state): array
+    {
+        $changes = $clone->locallyChangedFiles();
+        $checkedOut = $clone->checkedOutCommit();
+        if ($clone->isMadeByHand($checkedOut, $state->deployedCommit, $state->failedCommit)) {
+            $changes[] = 'a commit made in the clone (' . substr($checkedOut, 0, 12) . ')';
+        }
+        return $changes;
+    }
+
+    /**
+     * Whether any of a compose project's containers is running, as docker reports it. A
+     * container that is restarting (crash-looping, say) or paused counts as running, as
+     * it does for the image auto-update: docker ps without -a lists those too, and a
+     * crash-looping stack is the one whose fix should be deployed.
+     *
+     * @throws RuntimeException when docker cannot be asked: not knowing is not "stopped"
+     */
+    public static function hasRunningContainers(string $projectName): bool
+    {
+        $result = DockerCommand::run([
+            'ps', '-q', '--filter', 'label=com.docker.compose.project=' . $projectName,
+        ]);
+        if (!$result->succeeded()) {
+            throw new RuntimeException("Could not ask docker whether '$projectName' is running: " . $result->errorSummary());
+        }
+        return trim($result->stdout) !== '';
     }
 
     /**

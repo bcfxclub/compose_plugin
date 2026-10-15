@@ -9,7 +9,7 @@ require_once '/usr/local/emhttp/plugins/compose.manager/include/GitStackSettings
 require_once '/usr/local/emhttp/plugins/compose.manager/include/GitStackState.php';
 require_once '/usr/local/emhttp/plugins/compose.manager/include/GitClone.php';
 require_once '/usr/local/emhttp/plugins/compose.manager/include/GitStackManager.php';
-require_once '/usr/local/emhttp/plugins/compose.manager/include/DockerCommand.php';
+require_once '/usr/local/emhttp/plugins/compose.manager/include/GitDeploy.php';
 
 /**
  * The scheduled check of git stacks (compose-git scheduled-check, run from cron).
@@ -28,7 +28,10 @@ require_once '/usr/local/emhttp/plugins/compose.manager/include/DockerCommand.ph
  *     deployed; the image auto-update leaves those alone too) is not deployed;
  *     one notification says why. A commit held back that way is deployed once the
  *     failure is cleared, the local changes are gone or the stack runs, and one
- *     only notified about is deployed once the stack is switched to "deploy". A deploy that fails before any container
+ *     only notified about is deployed once the stack is switched to "deploy". The deploy
+ *     checks all of that again under the stack's lock, and changes nothing if it no longer
+ *     holds (the stack was stopped while the deploy waited for the lock, say); the next
+ *     pass then decides again. A deploy that fails before any container
  *     is started (a pull, the lock, the checkout) is not retried either; it is
  *     recorded as failed until Resume clears it or a later deploy works.
  *
@@ -60,7 +63,7 @@ final class GitScheduledCheck
     /** @var callable(string, string, string): void */
     private $notify;
 
-    /** @var callable(StackInfo, string): int */
+    /** @var callable(StackInfo, string, ?string): int */
     private $deploy;
 
     /** @var callable(string): void */
@@ -73,8 +76,9 @@ final class GitScheduledCheck
      * @param string $composeRoot The plugin's projects folder
      * @param callable(string, string, string): void|null $notify Sends a notification:
      *     subject, message, icon ('' or 'warning'). Unraid's notify by default.
-     * @param callable(StackInfo, string): int|null $deploy Deploys a stack at the given commit
-     *     and returns the exit status. compose.sh gitdeploy through compose_background.sh by default.
+     * @param callable(StackInfo, string, ?string): int|null $deploy Deploys a stack at the given commit,
+     *     as decided from the given deployed commit (null if none), and returns the exit status.
+     *     compose.sh gitdeploy through compose_background.sh by default.
      * @param callable(string): void|null $say Receives progress messages
      * @param callable(StackInfo): bool|null $isRunning Whether any of the stack's containers
      *     run; throws RuntimeException when that cannot be found out. docker ps by default.
@@ -89,8 +93,8 @@ final class GitScheduledCheck
         $this->notify = $notify ?? static function (string $subject, string $message, string $icon): void {
             composeSendNotification($subject, $message, $icon);
         };
-        $this->deploy = $deploy ?? static function (StackInfo $stack, string $commit): int {
-            return self::deployInBackgroundRunner($stack, $commit);
+        $this->deploy = $deploy ?? static function (StackInfo $stack, string $commit, ?string $deployedWhenDecided): int {
+            return self::deployInBackgroundRunner($stack, $commit, $deployedWhenDecided);
         };
         $this->say = $say ?? static function (string $message): void {
         };
@@ -205,12 +209,15 @@ final class GitScheduledCheck
         // After a failed deploy, the record keeps the commit that failed, so the list and
         // status name it; a newer commit that changes nothing more waits for Resume with it.
         if ($newRecord['stackChanged'] && !$waitsForResume && !$this->alreadyHandled($newRecord, $remote, $settings, $stack, $clone)) {
-            $newRecord['handledBy'] = $this->handleNewCommit($stack, $settings, $clone, $remote);
-            $newRecord['handledCommit'] = $remote;
-            // A deploy moves what the containers run from: record that, so a later change to it
-            // (a rollback by hand, Resume) is seen as one.
-            $state = GitStackState::load($stack->path);
-            $newRecord['baseCommit'] = $state->failedCommit ?? $state->deployedCommit;
+            $handledBy = $this->handleNewCommit($stack, $settings, $clone, $remote, $newRecord['baseCommit']);
+            if ($handledBy !== null) {
+                $newRecord['handledBy'] = $handledBy;
+                $newRecord['handledCommit'] = $remote;
+                // A deploy moves what the containers run from: record that, so a later change to it
+                // (a rollback by hand, Resume) is seen as one.
+                $state = GitStackState::load($stack->path);
+                $newRecord['baseCommit'] = $state->failedCommit ?? $state->deployedCommit;
+            }
         }
         if ($newRecord !== $record) {
             self::saveRecord($stack->path, $newRecord);
@@ -311,9 +318,12 @@ final class GitScheduledCheck
     }
 
     /**
-     * @return string How it was handled (one of the HANDLED_ constants)
+     * @param string|null $comparedFrom The commit the containers ran from when the remote commit was
+     *     compared (compare()'s base); the deploy checks under the stack's lock that it still is
+     * @return string|null How it was handled (one of the HANDLED_ constants), or null when the
+     *     deploy found, under the stack's lock, that it no longer applied: the next pass decides again
      */
-    private function handleNewCommit(StackInfo $stack, GitStackSettings $settings, GitClone $clone, string $remote): string
+    private function handleNewCommit(StackInfo $stack, GitStackSettings $settings, GitClone $clone, string $remote, ?string $comparedFrom): ?string
     {
         $name = $stack->projectFolder;
         $short = substr($remote, 0, 12);
@@ -367,7 +377,14 @@ final class GitScheduledCheck
         // The background runner logs to the stack's last_cmd.log and notifies whether it worked.
         // The commit compared is the one deployed, even if the branch has moved on since: a newer
         // commit is compared and handled by the next pass, and this one is recorded as handled.
-        $exitStatus = ($this->deploy)($stack, $remote);
+        $exitStatus = ($this->deploy)($stack, $remote, $comparedFrom);
+        if ($exitStatus === GitDeploy::EXIT_SKIPPED) {
+            // Something changed while the deploy waited for the stack's lock (the stack was
+            // stopped, or another commit deployed by hand, say). Nothing was changed; the next
+            // pass sees what changed and acts on it.
+            composeLogger("Scheduled git deploy of '$name' at $short skipped: it no longer applied", null, 'daemon', 'info', 'git');
+            return null;
+        }
         if ($exitStatus !== 0) {
             // Tried once, like every commit, but recorded as failed: the stack list shows it,
             // and Resume Automatic Deploys clears it so the next pass tries again. A failure
@@ -422,58 +439,57 @@ final class GitScheduledCheck
     }
 
     /**
-     * What in the clone a deploy would stop on without the option to save it:
-     * the tracked files changed by hand, and a commit made in the clone by hand
-     * (GitClone::isMadeByHand(), the test the deploy itself uses).
+     * What in the clone a deploy would stop on without the option to save it
+     * (GitDeploy::localChanges(), which the deploy checks again under the stack's lock).
      *
      * @return string[] Changed files, and a line naming a hand-made commit
      */
     private static function localChanges(GitClone $clone, StackInfo $stack): array
     {
-        $changes = $clone->locallyChangedFiles();
-        $state = GitStackState::load($stack->path);
-        $checkedOut = $clone->checkedOutCommit();
-        if ($clone->isMadeByHand($checkedOut, $state->deployedCommit, $state->failedCommit)) {
-            $changes[] = 'a commit made in the clone (' . substr($checkedOut, 0, 12) . ')';
-        }
-        return $changes;
+        return GitDeploy::localChanges($clone, GitStackState::load($stack->path));
     }
 
     /**
-     * Whether any of the stack's containers is running, as docker reports it. A
-     * container that is restarting (crash-looping, say) or paused counts as running,
-     * as it does for the image auto-update: docker ps without -a lists those too, and
-     * a crash-looping stack is the one whose fix should be deployed.
+     * Whether any of the stack's containers is running (GitDeploy::hasRunningContainers()).
      *
      * @throws RuntimeException when docker cannot be asked: not knowing is not "stopped",
      *     so the pass leaves the stack and asks again next time
      */
     private static function hasRunningContainers(StackInfo $stack): bool
     {
-        $result = DockerCommand::run([
-            'ps', '-q', '--filter', 'label=com.docker.compose.project=' . $stack->projectName,
-        ]);
-        if (!$result->succeeded()) {
-            throw new RuntimeException("Could not ask docker whether '{$stack->projectFolder}' is running: " . $result->errorSummary());
-        }
-        return trim($result->stdout) !== '';
+        return GitDeploy::hasRunningContainers($stack->projectName);
     }
 
     /**
-     * Deploy a stack at a commit the way the web UI's background deploy does: compose.sh
-     * gitdeploy through compose_background.sh, waiting for it to finish.
+     * The command that deploys a stack at a commit for the pass: compose.sh gitdeploy through
+     * compose_background.sh, as the web UI's background deploy runs it, as an automatic deploy
+     * (--automatic-deploy-from), so the deploy checks again under the stack's lock that it applies.
+     *
+     * @param string|null $deployedWhenDecided The deployed commit the pass decided from (null if none)
+     * @return string[]
      */
-    private static function deployInBackgroundRunner(StackInfo $stack, string $commit): int
+    public static function automaticDeployCommand(StackInfo $stack, string $commit, ?string $deployedWhenDecided): array
     {
         require_once '/usr/local/emhttp/plugins/compose.manager/include/Helpers.php';
         $waitSettings = resolveStackWaitSettings($stack->path, parse_plugin_cfg('compose.manager'));
         // The profiles the stack runs with, as Pull and Redeploy uses them: without them, profile
         // services would stay on the old commit while the deploy reports success.
         $command = buildGitDeployCommand($stack, $commit, false, gitDeployProfiles($stack, []), gitDeployWaitArguments($waitSettings));
+        $command[] = '--automatic-deploy-from';
+        $command[] = $deployedWhenDecided ?? 'none';
         // compose_background.sh takes compose.sh's arguments, without compose.sh itself. It is
         // run with sh, as AutoUpdateRunner runs its script, so it needs no execute bit.
         array_shift($command);
         array_unshift($command, '/bin/sh', dirname(__DIR__) . '/scripts/compose_background.sh');
+        return $command;
+    }
+
+    /**
+     * Deploy a stack at a commit (automaticDeployCommand()), waiting for it to finish.
+     */
+    private static function deployInBackgroundRunner(StackInfo $stack, string $commit, ?string $deployedWhenDecided): int
+    {
+        $command = self::automaticDeployCommand($stack, $commit, $deployedWhenDecided);
 
         $process = proc_open($command, [0 => ['file', '/dev/null', 'r'], 1 => ['file', '/dev/null', 'w'], 2 => ['file', '/dev/null', 'w']], $pipes);
         if (!is_resource($process)) {

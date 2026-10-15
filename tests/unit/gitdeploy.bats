@@ -159,6 +159,26 @@ calls_matching() {
     grep -q '"result":"failed"' "$STACK/last_result.json"
 }
 
+@test "gitdeploy asks the git checks whether an automatic deploy still applies" {
+    run_gitdeploy --git-commit 0123456789abcdef0123456789abcdef01234567 \
+        --automatic-deploy-from abcdefabcdefabcdefabcdefabcdefabcdefabcd
+    [ "$status" -eq 0 ]
+    grep -q "git_stack prepare $STACK whoami --commit 0123456789abcdef0123456789abcdef01234567 --automatic-from abcdefabcdefabcdefabcdefabcdefabcdefabcd" "$CALLS"
+}
+
+@test "gitdeploy skips an automatic deploy that no longer applies, changes nothing, and records no failure" {
+    export PREPARE_EXIT=75
+    # The result of the stack's last operation, which a skip leaves as it is.
+    echo '{"result":"success","exit_code":0,"operation":"gitdeploy"}' > "$STACK/last_result.json"
+    cp "$STACK/last_result.json" "$TEST_TEMP_DIR/last_result.before"
+    run_gitdeploy --automatic-deploy-from none
+    [ "$status" -eq 75 ]
+    [[ "$output" == *"was not deployed automatically. No container was changed."* ]]
+    [ "$(calls_matching 'docker')" -eq 0 ]
+    [ "$(calls_matching 'restore')" -eq 0 ]
+    cmp -s "$STACK/last_result.json" "$TEST_TEMP_DIR/last_result.before"
+}
+
 @test "gitdeploy puts the previous commit back when the pull fails, and never runs up" {
     export PULL_EXIT=1
     run_gitdeploy
@@ -247,6 +267,13 @@ calls_matching() {
     [ "$(calls_matching 'restore')" -eq 0 ]
     [ "$(calls_matching 'rmi')" -eq 0 ]
     [[ "$output" == *"The commit is recorded as failed"* ]]
+}
+
+@test "gitdeploy never reports a failed up with the skipped exit status" {
+    export UP_EXIT=75
+    run_gitdeploy --automatic-deploy-from none
+    [ "$status" -eq 1 ]
+    grep -q "git_stack finish $STACK failed" "$CALLS"
 }
 
 @test "gitdeploy says so when a successful deploy cannot be recorded, and still succeeds" {

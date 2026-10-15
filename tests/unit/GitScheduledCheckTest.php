@@ -6,6 +6,7 @@ namespace ComposeManager\Tests;
 
 use ComposeManager\Tests\Support\FakeDocker;
 use GitCommand;
+use GitDeploy;
 use GitScheduledCheck;
 use GitStackManager;
 use GitStackSettings;
@@ -36,6 +37,9 @@ final class GitScheduledCheckTest extends TestCase
 
     /** @var list<string> The commit each stand-in deploy was asked for. */
     private array $deployedCommits = [];
+
+    /** @var list<?string> The deployed commit each stand-in deploy was decided from. */
+    private array $decidedFrom = [];
 
     /** The exit status the stand-in deploy returns. */
     private int $deployExitStatus = 0;
@@ -80,6 +84,7 @@ final class GitScheduledCheckTest extends TestCase
         $this->notifications = [];
         $this->deployed = [];
         $this->deployedCommits = [];
+        $this->decidedFrom = [];
         $this->deployExitStatus = 0;
         $this->onDeploy = null;
         $this->isRunningHook = null;
@@ -184,6 +189,7 @@ final class GitScheduledCheckTest extends TestCase
         $stackDir = $this->composeRoot . '/' . $folder;
         $this->writeAndPush(['whoami/compose.yaml' => "services:\n  whoami:\n    image: traefik/whoami:v1.10\n"], 'pin');
         $compared = $this->upstreamHead();
+        $deployedBefore = GitStackState::load($stackDir)->deployedCommit;
 
         // The branch moves on after the pass compared its commit and before the deploy starts.
         $this->isRunningHook = function (): void {
@@ -193,6 +199,8 @@ final class GitScheduledCheckTest extends TestCase
         $this->check()->run();
 
         $this->assertSame([$compared], $this->deployedCommits);
+        // The deploy is told what the pass compared from, so it can tell a deploy by hand meanwhile.
+        $this->assertSame([$deployedBefore], $this->decidedFrom);
         $this->assertSame($compared, GitScheduledCheck::loadRecord($stackDir)['handledCommit']);
 
         // The newer commit is compared and deployed by the next pass, once.
@@ -201,6 +209,83 @@ final class GitScheduledCheckTest extends TestCase
         $this->check()->run();
         $this->assertSame([$compared, $this->upstreamHead()], $this->deployedCommits);
         $this->assertSame([$folder, $folder], $this->deployed);
+    }
+
+    public function testADeploySkippedUnderTheStacksLockIsDecidedAgainByTheNextPass(): void
+    {
+        $folder = $this->deployedStack('whoami', GitStackSettings::AUTO_DEPLOY_DEPLOY);
+        $stackDir = $this->composeRoot . '/' . $folder;
+        $this->writeAndPush(['whoami/compose.yaml' => "services:\n  whoami:\n    image: traefik/whoami:v1.10\n"], 'pin');
+        // The stack is stopped while the deploy waits for its lock: the deploy changes nothing.
+        $this->deployExitStatus = GitDeploy::EXIT_SKIPPED;
+        $this->onDeploy = function (): void {
+            $this->running = false;
+        };
+
+        $this->check()->run();
+
+        $this->assertSame([$folder], $this->deployed);
+        $this->assertNull(GitScheduledCheck::loadRecord($stackDir)['handledBy']);
+        $this->assertNull(GitScheduledCheck::failedAutomaticDeploy($stackDir));
+        $this->assertSame([], $this->notifications);
+
+        // The next pass sees the stack stopped, and says so once, as for any stopped stack.
+        $this->onDeploy = null;
+        $this->check()->run();
+        $this->check()->run();
+        $this->assertSame([$folder], $this->deployed);
+        $this->assertCount(1, $this->notifications);
+        $this->assertStringContainsString('is not running', $this->notifications[0][1]);
+    }
+
+    public function testADeploySkippedUnderTheStacksLockKeepsHowTheCommitWasHandledBefore(): void
+    {
+        $folder = $this->deployedStack('whoami', GitStackSettings::AUTO_DEPLOY_NOTIFY);
+        $stackDir = $this->composeRoot . '/' . $folder;
+        $this->writeAndPush(['whoami/compose.yaml' => "services:\n  whoami:\n    image: traefik/whoami:v1.10\n"], 'pin');
+        $this->check()->run();
+        $notified = GitScheduledCheck::loadRecord($stackDir);
+        $this->assertSame('notified', $notified['handledBy']);
+
+        // Switched to Deploy; the deploy finds, under the lock, that it no longer applies.
+        GitStackSettings::load($stackDir)->withAutoDeploy(GitStackSettings::AUTO_DEPLOY_DEPLOY)->save($stackDir);
+        $this->deployExitStatus = GitDeploy::EXIT_SKIPPED;
+        $this->check()->run();
+
+        // The record still says the commit was notified about, so no second notification is sent,
+        // and the next pass tries the deploy again.
+        $this->assertSame([$folder], $this->deployed);
+        $this->assertSame($notified, GitScheduledCheck::loadRecord($stackDir));
+        $this->deployExitStatus = 0;
+        $this->check()->run();
+        $this->assertSame([$folder, $folder], $this->deployed);
+        $this->assertCount(1, $this->notifications);
+    }
+
+    public function testTheDeployRunsGitdeployAtTheComparedCommitAsAnAutomaticDeploy(): void
+    {
+        $folder = $this->deployedStack('whoami', GitStackSettings::AUTO_DEPLOY_DEPLOY);
+        $commit = $this->upstreamHead();
+
+        $deployed = str_repeat('a', 40);
+
+        $command = GitScheduledCheck::automaticDeployCommand(\StackInfo::fromProject($this->composeRoot, $folder), $commit, $deployed);
+
+        $this->assertSame('/bin/sh', $command[0]);
+        $this->assertStringEndsWith('/scripts/compose_background.sh', $command[1]);
+        $this->assertContains('-cgitdeploy', $command);
+        $position = array_search('--git-commit', $command, true);
+        $this->assertNotFalse($position);
+        $this->assertSame($commit, $command[$position + 1]);
+        $position = array_search('--automatic-deploy-from', $command, true);
+        $this->assertNotFalse($position);
+        $this->assertSame($deployed, $command[$position + 1]);
+
+        // Nothing deployed yet: said as "none".
+        $command = GitScheduledCheck::automaticDeployCommand(\StackInfo::fromProject($this->composeRoot, $folder), $commit, null);
+        $position = array_search('--automatic-deploy-from', $command, true);
+        $this->assertNotFalse($position);
+        $this->assertSame('none', $command[$position + 1]);
     }
 
     public function testAStackWhoseLastDeployFailedIsNotDeployedAndSaysWhy(): void
@@ -636,9 +721,10 @@ final class GitScheduledCheckTest extends TestCase
             function (string $subject, string $message, string $icon): void {
                 $this->notifications[] = [$subject, $message, $icon];
             },
-            function (\StackInfo $stack, string $commit): int {
+            function (\StackInfo $stack, string $commit, ?string $deployedWhenDecided): int {
                 $this->deployed[] = $stack->projectFolder;
                 $this->deployedCommits[] = $commit;
+                $this->decidedFrom[] = $deployedWhenDecided;
                 if ($this->onDeploy !== null) {
                     ($this->onDeploy)();
                 }

@@ -2,6 +2,12 @@
 # Compose Manager - Shared shell functions
 # Sourced by event scripts and other shell scripts that need common utilities.
 
+# The exit status of compose.sh gitdeploy when an automatic deploy (the scheduled
+# check's) no longer applies once it holds the stack's lock: nothing was changed,
+# and the next scheduled check decides again. GitDeploy::EXIT_SKIPPED in PHP.
+# shellcheck disable=SC2034 # used by the scripts that source this file
+GIT_DEPLOY_EXIT_SKIPPED=75
+
 # Shared logging function matching the PHP composeLogger() convention.
 # Usage: composeLogger "message" [level] [category] [type]
 #   level: info (default), debug, error, warning

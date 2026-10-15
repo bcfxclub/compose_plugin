@@ -244,7 +244,7 @@ branch changes the stack, on the Sources tab or with `compose-git auto-deploy my
 
 - **Off** (the default): nothing is checked.
 - **Notify**: you get an Unraid notification, once per commit. Deploy it when it suits you.
-- **Deploy**: the commit is deployed, exactly as Pull and Redeploy does, with its output in the stack's
+- **Deploy**: the commit is deployed as Pull and Redeploy deploys it, with its output in the stack's
   last command log (View Last Cmd Log) and a notification saying whether it worked.
 
 A commit **changes the stack** when it changes anything in the stack's folder in the repository (the folder
@@ -276,6 +276,12 @@ does. Two things to know when you choose **Deploy**:
   automatic deploys to Off, or each new commit brings a notification.
 - A stack you took back to an older commit with **Deploy Commit** is brought forward to the branch's latest
   commit at the next check. To stay on an older commit, set automatic deploys to Off.
+
+Once the deploy holds the stack (another operation, such as a Stop or a Pull and Redeploy, may hold it
+first), it checks again what the check decided on: that automatic deploys are still set to **Deploy**, that
+no deploy failed, that the clone has no changes made by hand, that the stack is still running, and that no
+other commit was deployed since. If one no longer holds, it changes nothing and is not counted as a failure;
+the next check decides again.
 
 The check runs from the plugin's cron file, as `compose-git scheduled-check`; the line is there while any
 stack's automatic deploys are not off. Run that command yourself to check at once. A repository that cannot
