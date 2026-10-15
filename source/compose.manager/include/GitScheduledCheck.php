@@ -39,7 +39,11 @@ final class GitScheduledCheck
 {
     public const RECORD_FILE = 'git_check.json';
     private const RECORD_VERSION = 1;
-    private const LOCK_NAME = 'git-scheduled-check.lock';
+    /**
+     * The pass's lock file, in the folder that holds each stack's <project name>.lock. A project
+     * name never starts with a dot, so no stack's lock can be this file.
+     */
+    private const LOCK_NAME = '.git-scheduled-check.lock';
 
     /** How a commit was handled (handledBy in the record). */
     private const HANDLED_NOTIFIED = 'notified';

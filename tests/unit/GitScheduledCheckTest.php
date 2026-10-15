@@ -528,7 +528,7 @@ final class GitScheduledCheckTest extends TestCase
         if (!is_dir(COMPOSE_LOCK_DIR)) {
             mkdir(COMPOSE_LOCK_DIR, 0755, true);
         }
-        $held = fopen(COMPOSE_LOCK_DIR . '/git-scheduled-check.lock', 'c');
+        $held = fopen(COMPOSE_LOCK_DIR . '/.git-scheduled-check.lock', 'c');
         $this->assertNotFalse($held);
         flock($held, LOCK_EX);
         try {
@@ -539,6 +539,18 @@ final class GitScheduledCheckTest extends TestCase
             fclose($held);
         }
         $this->assertSame(1, $this->check()->run());
+    }
+
+    public function testAStackNamedLikeThePassIsNotHeldByThePasssOwnLock(): void
+    {
+        // The pass's lock and the stacks' locks share a folder: a stack whose project name
+        // matched the pass's lock file would always look busy, and never be checked.
+        $folder = $this->deployedStack('git-scheduled-check', GitStackSettings::AUTO_DEPLOY_DEPLOY);
+        $this->writeAndPush(['whoami/compose.yaml' => "services:\n  whoami:\n    image: traefik/whoami:v1.10\n"], 'pin');
+
+        $this->check()->run();
+
+        $this->assertSame([$folder], $this->deployed);
     }
 
     public function testAMalformedRecordIsWorkedOutAgain(): void
