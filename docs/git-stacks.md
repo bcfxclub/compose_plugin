@@ -533,10 +533,12 @@ To run these checks without deploying, use `compose-git deploy myapp --dry-run` 
 `--profile` as for a deploy). It fetches, checks the commit out, runs every check above, and shows how the
 compose configuration changes from the commit checked out now, then checks that commit out again. No container
 is started, stopped or recreated, and nothing is pulled or built, so a missing image or tag is found only by the
-deploy. The configuration is shown with variables as written (`${DB_PASSWORD}`), not their values, so nothing
-from the `.env` or the env files is printed; a change made only in the `.env` is not shown. The exit status is
-0 when every check passed and 1 when one did not, or the dry run could not be done. Local changes in the clone
-stop a dry run as they stop a deploy, and stay as they are.
+deploy. The configuration is shown with variables as written (`${DB_PASSWORD}`), not their values; a change
+made only in the `.env` is not shown. What the checks find is said as a deploy's log says it, with the values
+filled in. For example, a missing folder, or a missing external network or volume, whose path or name is
+built from a variable is named as it resolves, and a compose error quotes what compose said. The exit status
+is 0 when every check passed and 1 when one did not, or the dry run could not be done. Local changes in the
+clone stop a dry run as they stop a deploy, and stay as they are.
 
 Like a deploy, a dry run checks the commit out in the clone itself, so for the seconds the checks take, a
 container that reads a folder of the clone sees the tried commit's files (see

@@ -249,9 +249,11 @@ Options:
   --dry-run                 Run the checks without deploying: fetch, check out the commit, run
                             every check above, show how the compose configuration changes
                             (variables as written, not their values), and check the commit
-                            from before out again. Nothing is pulled, built or deployed, but
-                            while the checks run the clone holds the tried commit, so a
-                            container reading files from the clone sees them for that time.
+                            from before out again. What the checks find is said as a deploy
+                            says it, with values filled in (a missing folder's path, say).
+                            Nothing is pulled, built or deployed, but while the checks run
+                            the clone holds the tried commit, so a container reading files
+                            from the clone sees them for that time.
                             Exit status 0 when every check passed, 1 when one did not or the
                             dry run could not be done. Takes only --commit and --profile.
 

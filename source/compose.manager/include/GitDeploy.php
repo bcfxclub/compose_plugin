@@ -122,8 +122,9 @@ final class GitDeploy
      *
      * The configuration is compared as "docker compose config --no-interpolate
      * --no-env-resolution" prints it: variables as they are written, not their values,
-     * so the output holds nothing from the .env or the env files. A change in a value
-     * of the .env is not shown; the .env is not part of the repository anyway.
+     * so the diff holds nothing from the .env or the env files. A change in a value
+     * of the .env is not shown; the .env is not part of the repository anyway. The
+     * problems are the deploy's own messages, with values filled in, as its log has them.
      *
      * The checks prune the plugin's override as a deploy's do (see
      * pruneOverrideServicesTheComposeFileNoLongerHas()). When the prune changed it, the
