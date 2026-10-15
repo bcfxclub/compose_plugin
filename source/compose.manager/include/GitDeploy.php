@@ -36,10 +36,13 @@ final class GitDeploy
     private $say;
 
     /**
-     * The plugin's override as the checks' prune left it (false if there is none), or
-     * null before the prune ran.
+     * What the checks' prune changed in the plugin's override, for a dry run to put back:
+     * the file, the content the prune read and the content it wrote. Null when the prune
+     * changed nothing, or has not run.
+     *
+     * @var array{path: string, before: string, after: string}|null
      */
-    private string|false|null $overrideAfterPrune = null;
+    private ?array $overridePrune = null;
 
     /**
      * @param string $stackDir The stack folder (holds git.json)
@@ -123,9 +126,10 @@ final class GitDeploy
      * of the .env is not shown; the .env is not part of the repository anyway.
      *
      * The checks prune the plugin's override as a deploy's do (see
-     * pruneOverrideServicesTheComposeFileNoLongerHas()); the dry run puts the
-     * override back as it was afterwards, unless it was saved again meanwhile (from
-     * the Labels tab, say), which it then leaves as it is.
+     * pruneOverrideServicesTheComposeFileNoLongerHas()). When the prune changed it, the
+     * dry run puts back what the prune read, unless the override was saved again after
+     * the prune (from the Labels tab, say), which it then leaves as it is. A save before
+     * the prune is what the prune read, so it is kept either way.
      *
      * @param string $projectName The stack's compose project name
      * @param string[] $profiles Compose profiles the deploy would use
@@ -178,12 +182,10 @@ final class GitDeploy
         }
 
         [$configBefore, $configBeforeProblem] = $this->composeConfig($projectName, $profiles);
-        $overridePath = $this->managedOverridePath();
-        $overrideBefore = $overridePath !== null && is_file($overridePath) ? file_get_contents($overridePath) : false;
 
         $result = null;
         $error = null;
-        $this->overrideAfterPrune = null;
+        $this->overridePrune = null;
         try {
             if ($target !== $previous) {
                 ($this->say)('Checking out ' . substr($target, 0, 12) . '...');
@@ -220,7 +222,7 @@ final class GitDeploy
             $error = $caught;
         }
 
-        $putBackProblems = $this->putBackAfterDryRun($clone, $previous, $overridePath, $overrideBefore, $this->overrideAfterPrune);
+        $putBackProblems = $this->putBackAfterDryRun($clone, $previous, $this->overridePrune);
         if ($putBackProblems !== []) {
             $message = ($error !== null ? $error->getMessage() . "\n" : '') . implode("\n", $putBackProblems);
             throw new RuntimeException($message, 0, $error);
@@ -381,21 +383,15 @@ final class GitDeploy
     }
 
     /**
-     * After a dry run, check the commit from before out again and put the plugin's
-     * override back as it was.
+     * After a dry run, check the commit from before out again and undo what the checks'
+     * prune changed in the plugin's override.
      *
-     * @param string|false $overrideBefore The override's content before, or false if there was none
-     * @param string|false|null $overrideAfterPrune What the checks' prune left in the override (false if
-     *     there was none), or null when the checks stopped before it
+     * @param array{path: string, before: string, after: string}|null $overridePrune What the prune
+     *     changed, or null when it changed nothing or did not run
      * @return string[] What could not be put back; empty when everything was
      */
-    private function putBackAfterDryRun(
-        GitClone $clone,
-        string $previous,
-        ?string $overridePath,
-        string|false $overrideBefore,
-        string|false|null $overrideAfterPrune
-    ): array {
+    private function putBackAfterDryRun(GitClone $clone, string $previous, ?array $overridePrune): array
+    {
         $problems = [];
         try {
             if ($clone->checkedOutCommit() !== $previous) {
@@ -407,25 +403,17 @@ final class GitDeploy
                 . '). No container was changed, but the clone is not where it was: deploy the stack, or clone it again'
                 . ' with compose-git reclone.';
         }
-        if ($overridePath === null || $overrideBefore === false) {
+        if ($overridePrune === null) {
+            // The dry run did not change the override: whatever changed it is someone else's save.
             return $problems;
         }
-        $overrideNow = @file_get_contents($overridePath);
-        if ($overrideNow === $overrideBefore) {
-            return $problems;
-        }
-        if ($overrideAfterPrune === null) {
-            // The checks stopped before the prune, so the dry run did not change the override:
-            // whatever changed it since is someone else's save.
-            return $problems;
-        }
-        if ($overrideNow !== $overrideAfterPrune) {
-            // Saved again since the checks pruned it: that save is newer than the dry run's copy.
+        if (@file_get_contents($overridePrune['path']) !== $overridePrune['after']) {
+            // Saved again since the checks pruned it: that save is newer than what the prune read.
             ($this->say)("The plugin's override was changed during the dry run, so it was left as it is now.");
             return $problems;
         }
-        if (file_put_contents($overridePath, $overrideBefore) !== strlen($overrideBefore)) {
-            $problems[] = "The plugin's override $overridePath could not be put back as it was before the dry run.";
+        if (file_put_contents($overridePrune['path'], $overridePrune['before']) !== strlen($overridePrune['before'])) {
+            $problems[] = "The plugin's override {$overridePrune['path']} could not be put back as it was before the dry run.";
         } else {
             ($this->say)("Put the plugin's override back as it was before the dry run.");
         }
@@ -495,16 +483,6 @@ final class GitDeploy
             @unlink("$dir/$afterName");
             @rmdir($dir);
         }
-    }
-
-    /**
-     * The plugin-managed override in the stack folder, which the checks may prune.
-     */
-    private function managedOverridePath(): ?string
-    {
-        StackInfo::clearCache();
-        $stack = StackInfo::fromProject(dirname(rtrim($this->stackDir, '/')), basename(rtrim($this->stackDir, '/')));
-        return $stack->getOverridePath();
     }
 
     private function loadSettings(): GitStackSettings
@@ -706,9 +684,11 @@ final class GitDeploy
         StackInfo::clearCache();
         $stack = StackInfo::fromProject(dirname(rtrim($this->stackDir, '/')), basename(rtrim($this->stackDir, '/')));
         $pruned = $stack->pruneOrphanOverrideServices();
-        // For a dry run, which puts the override back only if nothing saved it since.
-        $overridePath = $stack->getOverridePath();
-        $this->overrideAfterPrune = $overridePath !== null && is_file($overridePath) ? file_get_contents($overridePath) : false;
+        // For a dry run, which puts back what the prune read only if nothing saved the override since.
+        $overridePath = $stack->overrideInfo->getProjectOverridePath();
+        if ($pruned['changed'] && $overridePath !== null && isset($pruned['before'], $pruned['after'])) {
+            $this->overridePrune = ['path' => $overridePath, 'before' => $pruned['before'], 'after' => $pruned['after']];
+        }
         foreach ($pruned['removed'] as $service) {
             ($this->say)("Removed '$service' from the plugin's override: the compose file no longer has that service.");
         }

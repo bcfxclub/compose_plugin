@@ -665,6 +665,62 @@ final class GitDeployTest extends TestCase
         $this->assertSame($content, file_get_contents($override));
     }
 
+    public function testDryRunKeepsAnOverrideSavedBeforeThePruneThatChangedNothing(): void
+    {
+        $override = (string) \StackInfo::fromProject($this->composeRoot, 'whoami')->getOverridePath();
+        file_put_contents($override, "services:\n  whoami:\n    labels:\n      net.unraid.docker.webui: http://x\n");
+        $this->writeAndPush(['whoami/compose.yaml' => "services:\n  whoami:\n    image: traefik/whoami:v1.10\n"], 'pin');
+        $this->docker->setServices(['whoami']);
+        // The Labels tab saves the override after the dry run started, before the checks prune it.
+        $savedMeanwhile = "services:\n  whoami:\n    labels:\n      net.unraid.docker.webui: http://z\n";
+        $deploy = new GitDeploy($this->stackDir, static function (string $message) use ($override, $savedMeanwhile): void {
+            if (str_starts_with($message, 'Checking out')) {
+                file_put_contents($override, $savedMeanwhile);
+            }
+        });
+
+        $originalPath = (string) getenv('PATH');
+        putenv('PATH=' . $this->docker->dir . ':' . $originalPath);
+        try {
+            $deploy->dryRun('whoami', [], null);
+        } finally {
+            putenv('PATH=' . $originalPath);
+        }
+
+        $this->assertSame($savedMeanwhile, file_get_contents($override));
+    }
+
+    public function testDryRunPutsBackAnOverrideSavedBeforeThePruneThatChangedIt(): void
+    {
+        $override = (string) \StackInfo::fromProject($this->composeRoot, 'whoami')->getOverridePath();
+        file_put_contents(
+            $override,
+            "services:\n  whoami:\n    labels:\n      net.unraid.docker.webui: http://x\n"
+            . "  gone:\n    labels:\n      net.unraid.docker.webui: http://y\n"
+        );
+        $this->writeAndPush(['whoami/compose.yaml' => "services:\n  whoami:\n    image: traefik/whoami\n  whoami2:\n    image: busybox\n"], 'rename gone');
+        $this->docker->setServices(['whoami', 'whoami2']);
+        // The Labels tab saves the override after the dry run started, before the checks prune it.
+        $savedMeanwhile = "services:\n  whoami:\n    labels:\n      net.unraid.docker.webui: http://z\n"
+            . "  gone:\n    labels:\n      net.unraid.docker.webui: http://y\n";
+        $deploy = new GitDeploy($this->stackDir, static function (string $message) use ($override, $savedMeanwhile): void {
+            if (str_starts_with($message, 'Checking out')) {
+                file_put_contents($override, $savedMeanwhile);
+            }
+        });
+
+        $originalPath = (string) getenv('PATH');
+        putenv('PATH=' . $this->docker->dir . ':' . $originalPath);
+        try {
+            $deploy->dryRun('whoami', [], null);
+        } finally {
+            putenv('PATH=' . $originalPath);
+        }
+
+        // What the prune read was the newer save, so that is what is put back.
+        $this->assertSame($savedMeanwhile, file_get_contents($override));
+    }
+
     public function testDryRunStoppedBeforeThePruneLeavesAnOverrideSavedWhileItRan(): void
     {
         $override = (string) \StackInfo::fromProject($this->composeRoot, 'whoami')->getOverridePath();
