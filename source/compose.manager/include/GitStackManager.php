@@ -341,9 +341,33 @@ final class GitStackManager
     }
 
     /**
+     * Try a deploy of a git stack without deploying it (compose-git deploy --dry-run): see
+     * GitDeploy::dryRun(). Refused while another operation on the stack is running, since
+     * the dry run checks other commits out in the clone for a moment.
+     *
+     * @param string|null $commit A specific commit to try, or null for the branch's latest
+     * @param string[] $profiles Compose profiles the deploy would use
+     * @return array{previousCommit: string, deployedCommit: ?string, targetCommit: string, problems: string[], recreatesEveryContainer: bool, configDiff: ?string, configProblem: ?string}
+     */
+    public function dryRun(string $folder, ?string $commit, array $profiles): array
+    {
+        require_once '/usr/local/emhttp/plugins/compose.manager/include/GitDeploy.php';
+        $stack = $this->gitStack($folder);
+        if (!$stack->hasResolvedIdentity()) {
+            throw new RuntimeException((string) $stack->getIdentityBlockReason());
+        }
+        $deploy = new GitDeploy($stack->path, $this->say);
+        return $this->withStackLock(
+            $stack,
+            /** @return array{previousCommit: string, deployedCommit: ?string, targetCommit: string, problems: string[], recreatesEveryContainer: bool, configDiff: ?string, configProblem: ?string} */
+            static fn(): array => $deploy->dryRun($stack->projectName, $profiles, $commit)
+        );
+    }
+
+    /**
      * What is known about a git stack locally, without asking the remote.
      *
-     * @return array{stack: string, url: string, branch: string, composePath: string, cloneDir: string, recreateOnFolderChange: bool, credential: ?string, deployedCommit: ?string, failedCommit: ?string, checkedOutCommit: ?string, localChanges: list<string>, commitMadeByHand: bool, problem: ?string}
+     * @return array{stack: string, url: string, branch: string, composePath: string, cloneDir: string, recreateOnFolderChange: bool, autoDeploy: string, credential: ?string, deployedCommit: ?string, failedCommit: ?string, checkedOutCommit: ?string, localChanges: list<string>, commitMadeByHand: bool, failedAutomaticCommit: ?string, problem: ?string}
      */
     public function status(string $folder): array
     {
@@ -369,14 +393,25 @@ final class GitStackManager
             'composePath' => $settings->composePath,
             'cloneDir' => $settings->cloneDir,
             'recreateOnFolderChange' => $settings->recreateOnFolderChange,
+            'autoDeploy' => $settings->autoDeploy,
             'credential' => $settings->credentialId === null ? null : $this->credentialName($settings->credentialId),
             'deployedCommit' => $state->deployedCommit,
             'failedCommit' => $state->failedCommit,
             'checkedOutCommit' => $checkedOut,
             'localChanges' => $changes,
             'commitMadeByHand' => $madeByHand,
+            'failedAutomaticCommit' => self::failedAutomaticCommit($stack->path),
             'problem' => $problem,
         ];
+    }
+
+    /**
+     * The commit whose scheduled deploy failed before up, if any (see GitScheduledCheck).
+     */
+    private static function failedAutomaticCommit(string $stackDir): ?string
+    {
+        require_once '/usr/local/emhttp/plugins/compose.manager/include/GitScheduledCheck.php';
+        return GitScheduledCheck::failedAutomaticDeploy($stackDir);
     }
 
     /**
@@ -511,6 +546,72 @@ final class GitStackManager
             throw new RuntimeException("Several deploy keys are named '$nameOrId'. Use the key's id instead.");
         }
         throw $this->notARepositoryDeployKey($folder, $keys);
+    }
+
+    /**
+     * Choose what the scheduled check does when a new commit changes a git
+     * stack: nothing (off), send a notification (notify), or deploy it (deploy).
+     *
+     * @throws RuntimeException|InvalidArgumentException naming why nothing was changed
+     */
+    public function setAutoDeploy(string $folder, string $autoDeploy): void
+    {
+        $this->assertArrayStarted();
+        $stack = $this->stack($folder);
+        $settings = $this->settings($stack);
+
+        $this->withStackLock($stack, function () use ($stack, $settings, $autoDeploy): void {
+            $settings->withAutoDeploy($autoDeploy)->save($stack->path);
+        });
+        ($this->say)(match ($autoDeploy) {
+            GitStackSettings::AUTO_DEPLOY_NOTIFY => "'$folder' sends a notification when a new commit changes it.",
+            GitStackSettings::AUTO_DEPLOY_DEPLOY => "'$folder' is deployed when a new commit changes it.",
+            default => "'$folder' is no longer checked on a schedule.",
+        });
+    }
+
+    /**
+     * Clear a git stack's failed deploy, so the scheduled check deploys it again.
+     *
+     * After a failed deploy the stack is paused: the scheduled check leaves it
+     * alone until a deploy works. Someone who fixed it another way (by hand, or
+     * with the web UI's Update) clears the failure with this. The deployed
+     * commit stays as it was. It also clears a scheduled deploy that failed
+     * before any container was started, which is otherwise not tried again.
+     *
+     * @return bool false if the stack had no failed deploy to clear
+     * @throws RuntimeException naming why nothing was changed
+     */
+    public function resume(string $folder): bool
+    {
+        $this->assertArrayStarted();
+        $stack = $this->stack($folder);
+        $checked = $this->settings($stack)->autoDeploy !== GitStackSettings::AUTO_DEPLOY_OFF;
+
+        return $this->withStackLock($stack, function () use ($stack, $folder, $checked): bool {
+            $cleared = false;
+            $state = GitStackState::load($stack->path);
+            if ($state->failedCommit !== null) {
+                (new GitStackState($state->deployedCommit, null))->save($stack->path);
+                ($this->say)("Cleared the failed deploy of " . substr($state->failedCommit, 0, 12) . '.'
+                    . ($checked ? " Automatic deploys of '$folder' resume." : ''));
+                $cleared = true;
+            }
+            // A scheduled deploy that failed before up (a pull, say) is kept in the
+            // scheduled check's record instead; clearing it lets the next check try again.
+            require_once '/usr/local/emhttp/plugins/compose.manager/include/GitScheduledCheck.php';
+            $failedAutomatic = GitScheduledCheck::failedAutomaticDeploy($stack->path);
+            if ($failedAutomatic !== null) {
+                GitScheduledCheck::clearFailedAutomaticDeploy($stack->path);
+                ($this->say)("Cleared the failed automatic deploy of " . substr($failedAutomatic, 0, 12) . '.'
+                    . ($checked ? " The next scheduled check of '$folder' tries again." : ''));
+                $cleared = true;
+            }
+            if (!$cleared) {
+                ($this->say)("'$folder' has no failed deploy, so there is nothing to resume.");
+            }
+            return $cleared;
+        });
     }
 
     /**
@@ -1103,6 +1204,27 @@ final class GitStackManager
      */
     private function withStackLock(StackInfo $stack, callable $work): mixed
     {
+        $handle = self::tryStackLock($stack);
+        if ($handle === null) {
+            throw new RuntimeException("Another operation is in progress for '{$stack->projectFolder}'. Try again when it has finished.");
+        }
+        try {
+            return $work();
+        } finally {
+            flock($handle, LOCK_UN);
+            fclose($handle);
+        }
+    }
+
+    /**
+     * Take compose.sh's lock for the stack without waiting. The caller releases it
+     * with flock($handle, LOCK_UN) and fclose($handle).
+     *
+     * @return resource|null null if another operation holds the lock
+     * @throws RuntimeException if the lock file cannot be opened
+     */
+    public static function tryStackLock(StackInfo $stack)
+    {
         if (!is_dir(COMPOSE_LOCK_DIR)) {
             @mkdir(COMPOSE_LOCK_DIR, 0755, true);
         }
@@ -1111,14 +1233,10 @@ final class GitStackManager
         if ($handle === false) {
             throw new RuntimeException("Could not open the lock file $lockFile.");
         }
-        try {
-            if (!flock($handle, LOCK_EX | LOCK_NB)) {
-                throw new RuntimeException("Another operation is in progress for '{$stack->projectFolder}'. Try again when it has finished.");
-            }
-            return $work();
-        } finally {
-            flock($handle, LOCK_UN);
+        if (!flock($handle, LOCK_EX | LOCK_NB)) {
             fclose($handle);
+            return null;
         }
+        return $handle;
     }
 }

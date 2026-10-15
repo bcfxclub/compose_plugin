@@ -640,9 +640,20 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
                                     <tr id="settings-git-credential-row"><th>Credential</th><td id="settings-git-credential"></td></tr>
                                     <tr><th>Deployed commit</th><td id="settings-git-deployed"></td></tr>
                                     <tr id="settings-git-failed-row"><th>Failed commit</th><td id="settings-git-failed" class="compose-status-danger"></td></tr>
+                                    <tr id="settings-git-failed-automatic-row"><th>Failed automatic deploy</th><td id="settings-git-failed-automatic" class="compose-status-danger"></td></tr>
                                     <tr><th>Checked out</th><td id="settings-git-checked-out"></td></tr>
                                 </tbody>
                             </table>
+                            <div style="margin-top:10px;">
+                                <label for="settings-git-auto-deploy" style="font-weight:normal;">Automatic deploys</label>
+                                <select id="settings-git-auto-deploy" onchange="saveGitAutoDeploy(this.value)">
+                                    <option value="off">Off</option>
+                                    <option value="notify">Notify me when a new commit changes this stack</option>
+                                    <option value="deploy">Deploy a new commit that changes this stack</option>
+                                </select>
+                                <span id="settings-git-auto-deploy-saved" class="compose-text-muted" style="display:none;margin-left:8px;"></span>
+                                <div class="settings-field-help">Checked every 15 minutes. Saved as soon as it is changed. A failed deploy pauses automatic deploys until a deploy works, or Resume Automatic Deploys in the stack menu.</div>
+                            </div>
                             <div id="settings-git-local-changes" class="compose-git-warning-box" style="display:none;margin-top:8px;"></div>
                             <div id="settings-git-problem" class="compose-status-danger" style="display:none;margin-top:8px;"></div>
                             <div id="settings-git-deploy-key-wrap" style="display:none;margin-top:8px;">

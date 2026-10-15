@@ -5,8 +5,12 @@
  *
  * Usage:
  *   git_stack.php prepare <stack-path> <project-name> [--commit <sha>] [--save-local-changes] [--profile <name>]...
+ *                         [--automatic-from <deployed commit>|none]
  *       Fetch, check out and check the commit to deploy. Progress goes to stderr;
- *       on success the previously checked-out commit is printed on stdout.
+ *       on success the previously checked-out commit is printed on stdout. With
+ *       --automatic-from (the scheduled check's deploy, and the deployed commit it
+ *       decided from), first check that the automatic deploy still applies; exit
+ *       status 75 (GitDeploy::EXIT_SKIPPED) when it does not.
  *   git_stack.php compose-args <stack-path>
  *       Print the stack's -f / --env-file arguments, each followed by a NUL byte.
  *   git_stack.php up-arguments <stack-path> <previous-commit>
@@ -46,6 +50,8 @@ try {
             $commit = null;
             $saveLocalChanges = false;
             $profiles = [];
+            $automatic = false;
+            $deployedWhenDecided = null;
             for ($i = 3; $i < count($args); $i++) {
                 if ($args[$i] === '--commit' && isset($args[$i + 1])) {
                     $commit = $args[++$i];
@@ -53,9 +59,16 @@ try {
                     $saveLocalChanges = true;
                 } elseif ($args[$i] === '--profile' && isset($args[$i + 1])) {
                     $profiles[] = $args[++$i];
+                } elseif ($args[$i] === '--automatic-from' && isset($args[$i + 1])) {
+                    $automatic = true;
+                    $from = $args[++$i];
+                    $deployedWhenDecided = $from === 'none' ? null : $from;
                 } else {
                     throw new RuntimeException("git_stack.php prepare: unknown option {$args[$i]}");
                 }
+            }
+            if ($automatic) {
+                $deploy->assertAutomaticDeployStillApplies($projectName, $deployedWhenDecided);
             }
             echo $deploy->prepare($projectName, $profiles, $commit, $saveLocalChanges) . "\n";
             break;
@@ -91,6 +104,9 @@ try {
         default:
             throw new RuntimeException("git_stack.php: unknown action '$action'.");
     }
+} catch (GitDeploySkipped $skipped) {
+    $say($skipped->getMessage());
+    exit(GitDeploy::EXIT_SKIPPED);
 } catch (Throwable $error) {
     $say('✗ ' . $error->getMessage());
     exit(1);

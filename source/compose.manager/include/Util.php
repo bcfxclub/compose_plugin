@@ -1435,7 +1435,7 @@ function pruneOverrideContentServices(string $overrideContent, array $validServi
  * @property string|null $composeFilePath The resolved path to the main compose file for the stack
  * @method static OverrideInfo fromStackInfo(StackInfo $stackInfo) Create an OverrideInfo from a StackInfo instance (preferred)
  * @method string|null getOverridePath() Get the path to the override file that should be used (indirect if present, else project)
- * @method array{changed: bool, removed: string[]} pruneOrphanServices(array $validServices) Prune orphaned services from the override file based on a list of valid service names
+ * @method array{changed: bool, removed: string[], before?: string, after?: string} pruneOrphanServices(array $validServices) Prune orphaned services from the override file based on a list of valid service names
  * @method array{migrated: bool, migrations: array<array{oldName: string, newName: string}>} migrateRenamedServices(string $oldComposeContent, string $newComposeContent) Migrate override entries when services are renamed by comparing old and new compose content
  * 
  */
@@ -1612,7 +1612,8 @@ class OverrideInfo
      * in place.
      *
      * @param string[] $validServices Service names that are defined in the main compose file
-     * @return array{changed: bool, removed: string[]}
+     * @return array{changed: bool, removed: string[], before?: string, after?: string}
+     *     When changed: before is the content the prune read, after the content it wrote.
      */
     public function pruneOrphanServices(array $validServices): array
     {
@@ -1649,7 +1650,7 @@ class OverrideInfo
             );
         }
 
-        return ['changed' => true, 'removed' => $removedServices];
+        return ['changed' => true, 'removed' => $removedServices, 'before' => $overrideContent, 'after' => $result['content']];
     }
 
     /**
@@ -3636,7 +3637,8 @@ class StackInfo
      * Resolves valid services from the main compose file (without override),
      * then delegates to OverrideInfo::pruneOrphanServices().
      *
-     * @return array{changed: bool, removed: string[]}
+     * @return array{changed: bool, removed: string[], before?: string, after?: string}
+     *     When changed: before is the content the prune read, after the content it wrote.
      */
     public function pruneOrphanOverrideServices(): array
     {

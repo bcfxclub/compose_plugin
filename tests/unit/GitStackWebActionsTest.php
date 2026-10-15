@@ -348,9 +348,91 @@ final class GitStackWebActionsTest extends TestCase
         (new \GitStackState($deployed, $failed))->save($stackDir);
 
         $this->assertSame(
-            ['branch' => 'main', 'deployedCommit' => $deployed, 'failedCommit' => $failed, 'problem' => null],
+            ['branch' => 'main', 'checked' => false, 'deployedCommit' => $deployed, 'failedCommit' => $failed, 'failedAutomaticCommit' => null, 'behind' => false, 'problem' => null],
             GitStackWebActions::listSummary($stackDir)
         );
+    }
+
+    public function testListSummarySaysBehindWhenTheScheduledCheckSawANewerCommitForTheStack(): void
+    {
+        $folder = $this->addGitStack('whoami');
+        $stackDir = $this->composeRoot . '/' . $folder;
+        $deployed = str_repeat('a', 40);
+        $newer = str_repeat('c', 40);
+        (new \GitStackState($deployed, null))->save($stackDir);
+        \GitStackSettings::load($stackDir)->withAutoDeploy(\GitStackSettings::AUTO_DEPLOY_NOTIFY)->save($stackDir);
+
+        file_put_contents($stackDir . '/' . \GitScheduledCheck::RECORD_FILE, (string) json_encode(
+            ['version' => 1, 'remoteCommit' => $newer, 'stackChanged' => true, 'handledCommit' => $newer]
+        ));
+        $this->assertTrue(GitStackWebActions::listSummary($stackDir)['behind']);
+
+        // Once that commit is deployed, it is no longer behind.
+        (new \GitStackState($newer, null))->save($stackDir);
+        $this->assertFalse(GitStackWebActions::listSummary($stackDir)['behind']);
+    }
+
+    public function testListSummaryIgnoresTheScheduledCheckOnceAutomaticDeploysAreOff(): void
+    {
+        $folder = $this->addGitStack('whoami');
+        $stackDir = $this->composeRoot . '/' . $folder;
+        $deployed = str_repeat('a', 40);
+        $newer = str_repeat('c', 40);
+        (new \GitStackState($deployed, null))->save($stackDir);
+        \GitStackSettings::load($stackDir)->withAutoDeploy(\GitStackSettings::AUTO_DEPLOY_DEPLOY)->save($stackDir);
+        file_put_contents($stackDir . '/' . \GitScheduledCheck::RECORD_FILE, (string) json_encode(
+            ['version' => 1, 'remoteCommit' => $newer, 'stackChanged' => true, 'handledCommit' => $newer, 'handledBy' => 'failed']
+        ));
+        $summary = GitStackWebActions::listSummary($stackDir);
+        $this->assertTrue($summary['checked']);
+        $this->assertTrue($summary['behind']);
+        $this->assertSame($newer, $summary['failedAutomaticCommit']);
+
+        // No check updates the record while automatic deploys are off, so it would go stale.
+        \GitStackSettings::load($stackDir)->withAutoDeploy(\GitStackSettings::AUTO_DEPLOY_OFF)->save($stackDir);
+        $summary = GitStackWebActions::listSummary($stackDir);
+        $this->assertFalse($summary['checked']);
+        $this->assertFalse($summary['behind']);
+        $this->assertNull($summary['failedAutomaticCommit']);
+    }
+
+    // ----- automatic deploys -----
+
+    public function testSetAutoDeploySavesTheChoiceAndUpdatesTheCronFile(): void
+    {
+        $folder = $this->addGitStack('whoami');
+        $cronFile = sys_get_temp_dir() . '/compose_git_web_test.cron';
+        @unlink($cronFile);
+        putenv('COMPOSE_MANAGER_CRON_FILE=' . $cronFile);
+        putenv('COMPOSE_MANAGER_CRON_NOSYNC=1');
+        try {
+            $result = $this->executeAction('setGitAutoDeploy', ['script' => $folder, 'autoDeploy' => 'notify']);
+
+            $this->assertSame('success', $result['result'], $result['message'] ?? '');
+            $this->assertSame('notify', GitStackSettings::load($this->composeRoot . '/' . $folder)->autoDeploy);
+            $this->assertStringContainsString('scheduled-check', (string) @file_get_contents($cronFile));
+
+            $refused = $this->executeAction('setGitAutoDeploy', ['script' => $folder, 'autoDeploy' => 'hourly']);
+            $this->assertSame('error', $refused['result']);
+            $this->assertSame('notify', GitStackSettings::load($this->composeRoot . '/' . $folder)->autoDeploy);
+        } finally {
+            putenv('COMPOSE_MANAGER_CRON_FILE');
+            putenv('COMPOSE_MANAGER_CRON_NOSYNC');
+            @unlink($cronFile);
+        }
+    }
+
+    public function testResumeClearsAFailedDeploy(): void
+    {
+        $folder = $this->addGitStack('whoami');
+        $stackDir = $this->composeRoot . '/' . $folder;
+        (new \GitStackState(str_repeat('a', 40), str_repeat('b', 40)))->save($stackDir);
+
+        $result = $this->executeAction('resumeGitStack', ['script' => $folder]);
+
+        $this->assertSame('success', $result['result']);
+        $this->assertNull(\GitStackState::load($stackDir)->failedCommit);
+        $this->assertSame(str_repeat('a', 40), \GitStackState::load($stackDir)->deployedCommit);
     }
 
     public function testListSummaryNamesAProblemInsteadOfFailing(): void

@@ -1298,6 +1298,22 @@ switch ($_POST['action']) {
         }
         echo json_encode($result);
         break;
+    case 'setGitAutoDeploy':
+        $script = getPostScript();
+        if (!$script) {
+            echo json_encode(['result' => 'error', 'message' => 'Stack not specified.']);
+            break;
+        }
+        echo json_encode((new GitStackWebActions($compose_root))->setAutoDeploy($script, trim((string) ($_POST['autoDeploy'] ?? ''))));
+        break;
+    case 'resumeGitStack':
+        $script = getPostScript();
+        if (!$script) {
+            echo json_encode(['result' => 'error', 'message' => 'Stack not specified.']);
+            break;
+        }
+        echo json_encode((new GitStackWebActions($compose_root))->resume($script));
+        break;
     case 'checkGitStack':
         $script = getPostScript();
         if (!$script) {

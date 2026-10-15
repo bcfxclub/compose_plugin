@@ -16,6 +16,8 @@
 declare(strict_types=1);
 
 require_once '/usr/local/emhttp/plugins/compose.manager/include/GitStackManager.php';
+require_once '/usr/local/emhttp/plugins/compose.manager/include/GitScheduledCheck.php';
+require_once '/usr/local/emhttp/plugins/compose.manager/include/CronManager.php';
 require_once '/usr/local/emhttp/plugins/compose.manager/include/Helpers.php';
 
 const COMPOSE_GIT_EXIT_OK = 0;
@@ -34,12 +36,16 @@ Usage:
   compose-git add <name> --url <url> --path <compose file> [--branch <branch>] [--clones-root <folder>] [--description <text>] [--credential <name>]
   compose-git convert <stack> --url <url> --path <compose file> [--branch <branch>] [--clones-root <folder>] [--credential <name>]
   compose-git credential <stack> <name>|--none
+  compose-git auto-deploy <stack> off|notify|deploy
+  compose-git resume <stack>
   compose-git deploy-key <stack>
   compose-git trust-host <stack>
   compose-git check <stack>|--all
   compose-git deploy <stack> [--commit <full commit id>] [--save-local-changes] [--wait|--no-wait] [--wait-timeout <seconds>] [--profile <name>]...
+  compose-git deploy <stack> --dry-run [--commit <full commit id>] [--profile <name>]...
   compose-git reclone <stack>
   compose-git status [<stack>|--all] [--json]
+  compose-git scheduled-check
 
 <url> is an https address (no user name or password in it), an ssh address (ssh://git@host/path
 or git@host:path), or the path of a repository under /mnt.
@@ -53,6 +59,11 @@ read-only deploy key. Its host's keys are pinned when it is added;
 trust-host pins them again after the server's keys change.
 deploy waits for healthy containers when the stack's wait-for-healthy setting says so;
 --wait and --no-wait override it.
+auto-deploy sets what the scheduled check does when a new commit changes the stack: nothing
+(off, the default), send a notification (notify), or deploy it (deploy). After a failed deploy
+the scheduled check leaves the stack alone until a deploy works; resume clears the failure.
+scheduled-check runs the scheduled check now (cron runs it every 15 minutes while any stack
+asks for it).
 
 Exit status: 0 success, 1 failed, 2 usage error; for check, 3 a newer commit changes the stack's
 folder, 4 a newer commit changes only files outside it. See 'compose-git check --help'.
@@ -235,10 +246,21 @@ Options:
   --profile <name>          Start the services in this compose profile too. Repeat it for
                             more than one profile. Default: the profiles the stack is running
                             with, else its default profiles, as the web UI's Update uses.
+  --dry-run                 Run the checks without deploying: fetch, check out the commit, run
+                            every check above, show how the compose configuration changes
+                            (variables as written, not their values), and check the commit
+                            from before out again. What the checks find is said as a deploy
+                            says it, with values filled in (a missing folder's path, say).
+                            Nothing is pulled, built or deployed, but while the checks run
+                            the clone holds the tried commit, so a container reading files
+                            from the clone sees them for that time.
+                            Exit status 0 when every check passed, 1 when one did not or the
+                            dry run could not be done. Takes only --commit and --profile.
 
 Examples:
   compose-git deploy myapp
   compose-git deploy myapp --commit 4f1c2b0e9d8a7c6b5a4f3e2d1c0b9a8f7e6d5c4b
+  compose-git deploy myapp --dry-run
 TEXT,
         'reclone' => <<<'TEXT'
 Usage: compose-git reclone <stack>
@@ -265,6 +287,33 @@ Options:
   --all    Show every git stack. This is what happens when no stack is named, too. A stack
            whose git settings cannot be read is shown with the reason.
   --json   Print the same as JSON, for scripts.
+TEXT,
+        'auto-deploy' => <<<'TEXT'
+Usage: compose-git auto-deploy <stack> off|notify|deploy
+
+Choose what the scheduled check (every 15 minutes) does when a new commit on the stack's
+branch changes the stack, that is, anything in the stack's folder in the repository:
+  off      nothing is checked (the default)
+  notify   send an Unraid notification, once per commit
+  deploy   deploy the commit, as 'compose-git deploy' does with no options
+Each commit is tried once. A stack that is not running (stopped, or never deployed) is not
+deployed until it runs again, and one taken back to an older commit is brought forward to
+the newest. The plugin's cron line is added while any stack's setting is not off.
+TEXT,
+        'resume' => <<<'TEXT'
+Usage: compose-git resume <stack>
+
+Clear a stack's failed deploy, so the scheduled check deploys it again. After a deploy fails
+during up, automatic deploys of the stack are paused until a deploy works; after a scheduled
+deploy fails before up (an image pull, say), that commit is not tried again. Use this once
+you have fixed the cause another way. The deployed commit and the containers are not changed.
+TEXT,
+        'scheduled-check' => <<<'TEXT'
+Usage: compose-git scheduled-check
+
+Run the scheduled check now, for every git stack whose auto-deploy setting is not off. Cron
+runs it every 15 minutes while any stack asks for it. Does nothing while the array is
+stopped, or while another check is still running.
 TEXT,
         default => null,
     };
@@ -362,14 +411,9 @@ function compose_git_wait_arguments(array $waitSettings, array $options): array
             throw new ComposeGitUsageError('--wait-timeout must be a number of seconds.');
         }
     }
-    if (!$wait) {
-        return [];
-    }
-    // A timeout read from the settings files is passed on only when it is a plain number.
-    if (preg_match('/^[1-9][0-9]{0,5}$/', $timeout) !== 1) {
-        return ['--wait'];
-    }
-    return ['--wait', '--wait-timeout', $timeout];
+    // As the web UI's and the scheduled deploy wait: a timeout read from the settings
+    // files is passed on only when it is a plain number.
+    return gitDeployWaitArguments(['enabled' => $wait, 'timeout' => $timeout]);
 }
 
 /**
@@ -452,6 +496,62 @@ function compose_git_deploy(GitStackManager $manager, string $folder, array $opt
 }
 
 /**
+ * compose-git deploy --dry-run: try the deploy without deploying, and print what it found.
+ *
+ * @param array<string, string|true|string[]> $options
+ * @return int 0 when every check passed, 1 when one did not
+ */
+function compose_git_dry_run(GitStackManager $manager, string $folder, array $options): int
+{
+    foreach (['save-local-changes', 'wait', 'no-wait', 'wait-timeout'] as $option) {
+        if (isset($options[$option])) {
+            throw new ComposeGitUsageError("--dry-run takes only --commit and --profile, not --$option: a dry run saves nothing and starts no container.");
+        }
+    }
+    $stack = $manager->gitStack($folder);
+    $result = $manager->dryRun(
+        $folder,
+        isset($options['commit']) ? (string) $options['commit'] : null,
+        gitDeployProfiles($stack, array_map('strval', (array) ($options['profile'] ?? [])))
+    );
+    $previous = substr($result['previousCommit'], 0, 12);
+    $target = substr($result['targetCommit'], 0, 12);
+
+    if ($result['previousCommit'] === $result['targetCommit']) {
+        echo "Dry run of $folder: $target, the commit checked out now.\n";
+    } else {
+        echo "Dry run of $folder: from $previous (checked out now) to $target.\n";
+    }
+    // After a failed up the clone holds the commit that failed, not the one that last worked.
+    if ($result['deployedCommit'] === null) {
+        echo "Nothing has been deployed yet.\n";
+    } elseif ($result['deployedCommit'] !== $result['previousCommit']) {
+        echo 'The last commit deployed successfully is ' . substr($result['deployedCommit'], 0, 12) . ".\n";
+    }
+    if ($result['problems'] === []) {
+        echo "Every check passed. A dry run does not pull or build the images, so a missing image or tag is\n"
+            . "found only by the deploy.\n";
+        if ($result['recreatesEveryContainer']) {
+            echo "Up would recreate every container of the stack (see 'recreateOnFolderChange' in 'deploy --help').\n";
+        }
+    } else {
+        echo "The deploy would stop:\n- " . implode("\n- ", $result['problems']) . "\n";
+    }
+
+    echo "\n";
+    if ($result['configDiff'] === null) {
+        echo "How the compose configuration changes is not known. {$result['configProblem']}\n";
+    } elseif ($result['configDiff'] === '') {
+        echo "The compose configuration does not change.\n";
+    } else {
+        echo "How the compose configuration changes (variables as written, not their values):\n" . $result['configDiff'];
+    }
+    echo "\nNothing was deployed, and the clone is back at $previous.\n";
+
+    return $result['problems'] === [] ? COMPOSE_GIT_EXIT_OK : COMPOSE_GIT_EXIT_FAILED;
+}
+
+/**
  * A status row for a git stack whose settings or state could not be read,
  * with the same keys as GitStackManager::status() and the reason as the problem.
  *
@@ -471,6 +571,7 @@ function compose_git_unreadable_status(string $folder, string $problem): array
         'checkedOutCommit' => null,
         'localChanges' => [],
         'commitMadeByHand' => false,
+        'failedAutomaticCommit' => null,
         'problem' => $problem,
     ];
 }
@@ -493,9 +594,14 @@ function compose_git_print_status(array $status): void
     if ($status['credential'] !== null) {
         echo '  credential:   ' . $status['credential'] . "\n";
     }
+    echo '  automatic:    ' . $status['autoDeploy'] . "\n";
     echo '  deployed:     ' . $short($status['deployedCommit']) . "\n";
     if ($status['failedCommit'] !== null) {
         echo '  failed:       ' . $short($status['failedCommit']) . " (fix it and deploy again)\n";
+    }
+    if ($status['failedAutomaticCommit'] !== null) {
+        echo '  failed:       ' . $short($status['failedAutomaticCommit'])
+            . " (the automatic deploy, before up; compose-git resume tries it again)\n";
     }
     echo '  checked out:  ' . $short($status['checkedOutCommit']) . "\n";
     if ($status['localChanges'] !== []) {
@@ -571,6 +677,24 @@ function compose_git_main(array $argv, string $composeRoot, $errors = null): int
                 }
                 return COMPOSE_GIT_EXIT_OK;
 
+            case 'auto-deploy':
+                [$positional] = compose_git_parse($args, [], []);
+                if (count($positional) !== 2) {
+                    throw new ComposeGitUsageError('auto-deploy needs a stack and one of: ' . implode(', ', GitStackSettings::AUTO_DEPLOY_CHOICES) . '.');
+                }
+                $manager->setAutoDeploy($positional[0], $positional[1]);
+                // Installs the scheduled check's cron line while any stack asks for it, and removes it after.
+                if (!composeCronManager()->rebuild()) {
+                    fwrite($errors, "The setting was saved, but the plugin's cron file could not be updated.\n");
+                    return COMPOSE_GIT_EXIT_FAILED;
+                }
+                return COMPOSE_GIT_EXIT_OK;
+
+            case 'resume':
+                [$positional] = compose_git_parse($args, [], []);
+                $manager->resume(compose_git_one_stack($positional));
+                return COMPOSE_GIT_EXIT_OK;
+
             case 'deploy-key':
                 [$positional] = compose_git_parse($args, [], []);
                 echo $manager->deployKey(compose_git_one_stack($positional)) . "\n";
@@ -624,7 +748,10 @@ function compose_git_main(array $argv, string $composeRoot, $errors = null): int
                 return $anyElsewhere ? COMPOSE_GIT_EXIT_NEWER_ELSEWHERE : COMPOSE_GIT_EXIT_OK;
 
             case 'deploy':
-                [$positional, $options] = compose_git_parse($args, ['commit', 'wait-timeout', 'profile'], ['save-local-changes', 'wait', 'no-wait']);
+                [$positional, $options] = compose_git_parse($args, ['commit', 'wait-timeout', 'profile'], ['save-local-changes', 'wait', 'no-wait', 'dry-run']);
+                if (isset($options['dry-run'])) {
+                    return compose_git_dry_run($manager, compose_git_one_stack($positional), $options);
+                }
                 return compose_git_deploy($manager, compose_git_one_stack($positional), $options, $errors);
 
             case 'reclone':
@@ -661,6 +788,14 @@ function compose_git_main(array $argv, string $composeRoot, $errors = null): int
                         echo "There are no git stacks.\n";
                     }
                 }
+                return COMPOSE_GIT_EXIT_OK;
+
+            case 'scheduled-check':
+                [$positional] = compose_git_parse($args, [], []);
+                if ($positional !== []) {
+                    throw new ComposeGitUsageError('scheduled-check checks every git stack whose auto-deploy is not off; name no stack.');
+                }
+                (new GitScheduledCheck($composeRoot, null, null, $say))->run();
                 return COMPOSE_GIT_EXIT_OK;
 
             case 'help':

@@ -23,6 +23,7 @@ to your shell profile.
 - [Moving an existing stack into git](#moving-an-existing-stack-into-git)
 - [Day to day](#day-to-day)
 - [In the web UI](#in-the-web-ui)
+- [Automatic deploys](#automatic-deploys)
 - [How to lay out your repositories](#how-to-lay-out-your-repositories)
 - [The stack's folder, and files outside it](#the-stacks-folder-and-files-outside-it)
 - [Private repositories](#private-repositories)
@@ -210,7 +211,10 @@ copy the backup folder's files back into it (they include the old `indirect` set
 2. See whether the server is behind: `compose-git check myapp` (or `--all`). Exit status 3 means a newer
    commit changes the stack's folder; 4 means a newer commit changes only files outside it (see
    [The stack's folder, and files outside it](#the-stacks-folder-and-files-outside-it)).
-3. Deploy it: `compose-git deploy myapp`.
+3. Deploy it: `compose-git deploy myapp`. To see first whether it would go ahead, and what it changes:
+   `compose-git deploy myapp --dry-run`.
+
+Or let the plugin check for you: see [Automatic deploys](#automatic-deploys).
 
 To go back to an older version, deploy its commit: `compose-git deploy myapp --commit <full commit id>`. A
 later plain `deploy` brings the stack back to the branch's latest.
@@ -227,9 +231,64 @@ later plain `deploy` brings the stack back to the branch's latest.
 | Stack menu, **Pull and Redeploy** | Deploy the branch's latest commit. If files in the clone were changed, or a commit was made in it by hand, offers to save them as a patch and discard them first. Not offered while the clone has a problem (missing or unreadable): the dialog says what it is. | `deploy` (with `--save-local-changes`) |
 | Stack menu, **Deploy Commit...** | Deploy a commit given by its full id, to go back to an older version. | `deploy --commit` |
 | Edit Stack, Sources tab | Shows the repository, branch, compose file, clone, the deployed and checked-out commits, a failed commit, files changed in the clone (also shown above the file on the Compose tab), and an ssh stack's deploy key. | `status`, `deploy-key` |
-| Stack list | Under the project name: the branch and deployed commit, and "failed" after a failed deploy. | `status` |
+| Edit Stack, Sources tab, **Automatic deploys** | Off, notify me, or deploy (see [Automatic deploys](#automatic-deploys)). Saved at once. | `auto-deploy` |
+| Stack menu, **Resume Automatic Deploys** (after a failed deploy) | Clear the failure, so automatic deploys go on. | `resume` |
+| Stack list | Under the project name: the branch and deployed commit, "behind" when the scheduled check saw a newer commit that changes the stack, and "failed" after a failed deploy. | `status` |
 
 Changing a stack's credential, pinning a changed ssh host key and recloning are done from the command line.
+
+## Automatic deploys
+
+Each git stack can be checked on a schedule, every 15 minutes. Choose what happens when a new commit on its
+branch changes the stack, on the Sources tab or with `compose-git auto-deploy myapp <choice>`:
+
+- **Off** (the default): nothing is checked.
+- **Notify**: you get an Unraid notification, once per commit. Deploy it when it suits you.
+- **Deploy**: the commit is deployed as Pull and Redeploy deploys it, with its output in the stack's
+  last command log (View Last Cmd Log) and a notification saying whether it worked.
+
+A commit **changes the stack** when it changes anything in the stack's folder in the repository (the folder
+holding its compose file; everything, for a compose file at the top). In a repository that holds several
+stacks, a commit to another stack's folder changes nothing here, so that stack is neither notified nor
+redeployed.
+
+Each new commit is tried once. Nothing is deployed, and one notification says why, when:
+
+- **the last deploy failed during `up`**: automatic deploys of that stack are paused until a deploy works.
+  Fix the stack and deploy it, or, if you fixed it another way, choose **Resume Automatic Deploys** in its
+  menu (`compose-git resume myapp`). The next check then deploys the latest commit, if it changes the
+  stack;
+- **files in the clone were changed by hand**: deploy with Pull and Redeploy, which offers to save them as a
+  patch first, or undo the change. The next check then deploys the waiting commit.
+
+A deploy that fails before any container is started (an image pull that fails, a file in the way of the
+checkout, another operation holding the stack for too long) is not tried again either. The notification
+says it failed, the stack list shows "failed", and **Resume Automatic Deploys** (`compose-git resume myapp`)
+makes the next check try that commit again.
+
+An automatic deploy uses the profiles the stack is running with, or else its default profiles, as `deploy`
+does. Two things to know when you choose **Deploy**:
+
+- A stack that is **not running** (you stopped it, or it was never deployed) is not deployed: one notification
+  says so, and the first check after the stack runs again deploys the waiting commit. A container that is
+  restarting (crash-looping, say) or paused counts as running, so the fix for a broken stack is deployed. The
+  image auto-update leaves a stopped stack alone the same way. For a stack you keep stopped on purpose, set
+  automatic deploys to Off, or each new commit brings a notification.
+- A stack you took back to an older commit with **Deploy Commit** is brought forward to the branch's latest
+  commit at the next check. To stay on an older commit, set automatic deploys to Off.
+
+Once the deploy holds the stack (another operation, such as a Stop or a Pull and Redeploy, may hold it
+first), it checks again what the check decided on: that automatic deploys are still set to **Deploy**, that
+no deploy failed, that the clone has no changes made by hand, that the stack is still running, and that no
+other commit was deployed since. If one no longer holds, it changes nothing and is not counted as a failure;
+the next check decides again.
+
+The check runs from the plugin's cron file, as `compose-git scheduled-check`; the line is there while any
+stack's automatic deploys are not off. Run that command yourself to check at once. A repository that cannot
+be reached is logged to the syslog and tried again next time; the other stacks are still checked. No
+notification is sent for that, so a stack that can no longer be checked (an expired token, a changed host key,
+a removed clone) is only seen in the syslog, or by running the command, which prints the reason. What the
+check last saw is kept in `git_check.json` in the stack folder, written only when it changes.
 
 ## How to lay out your repositories
 
@@ -446,7 +505,7 @@ is, the deploy stops instead.
 - **During `up`** (a container fails to start, or does not get healthy with `--wait`): a half-finished `up`
   cannot be undone safely, so it is not rolled back. The commit is recorded as failed and shown by
   `compose-git status`. Fix it in the repository and deploy again, or deploy a known good commit with
-  `--commit`.
+  `--commit`. Until a deploy works, [automatic deploys](#automatic-deploys) of the stack are paused.
 
 If the clone itself gets into a bad state, `compose-git reclone myapp` moves it aside (as
 `<clone>.replaced-<date>`, nothing is deleted) and clones the repository again at the deployed commit. It
@@ -476,6 +535,22 @@ without changing anything when:
 
 The deploy log says which `.env` was used.
 
+To run these checks without deploying, use `compose-git deploy myapp --dry-run` (with `--commit` and
+`--profile` as for a deploy). It fetches, checks the commit out, runs every check above, and shows how the
+compose configuration changes from the commit checked out now, then checks that commit out again. No container
+is started, stopped or recreated, and nothing is pulled or built, so a missing image or tag is found only by the
+deploy. The configuration is shown with variables as written (`${DB_PASSWORD}`), not their values; a change
+made only in the `.env` is not shown. What the checks find is said as a deploy's log says it, with the values
+filled in. For example, a missing folder, or a missing external network or volume, whose path or name is
+built from a variable is named as it resolves, and a compose error quotes what compose said. The exit status
+is 0 when every check passed and 1 when one did not, or the dry run could not be done. Local changes in the
+clone stop a dry run as they stop a deploy, and stay as they are.
+
+Like a deploy, a dry run checks the commit out in the clone itself, so for the seconds the checks take, a
+container that reads a folder of the clone sees the tried commit's files (see
+[When a deploy fails](#when-a-deploy-fails)). If a dry run is interrupted (Ctrl-C, a dropped SSH session), the
+clone may be left at the tried commit: run the dry run again, or deploy.
+
 Before the checks, the plugin's override loses its entries (UI labels) for services the compose file no
 longer has, as it does before every Compose Up from the web UI. An entry for a renamed service would
 otherwise make compose refuse the stack. The log names each one removed.
@@ -487,10 +562,14 @@ otherwise make compose refuse the stack. The log names each one removed.
 | `add <name> --url <url> --path <file> [--branch <b>] [--clones-root <folder>] [--description <text>] [--credential <name>]` | Clone a repository and make a new git stack. Not deployed yet. |
 | `convert <stack> --url <url> --path <file> [--branch <b>] [--clones-root <folder>] [--credential <name>]` | Turn an existing stack into a git stack (see above). |
 | `credential <stack> <name>` or `credential <stack> --none` | Change or remove the HTTPS credential a stack uses, or move an ssh stack onto another deploy key of its repository. |
+| `auto-deploy <stack> off\|notify\|deploy` | Choose what the scheduled check does when a new commit changes the stack. |
+| `resume <stack>` | Clear a failed deploy, so automatic deploys of the stack go on. |
+| `scheduled-check` | Run the scheduled check of every stack whose automatic deploys are not off, now. |
 | `deploy-key <stack>` | Show an ssh stack's public deploy key. |
 | `trust-host <stack>` | Pin an ssh stack's server host keys again, after they changed. |
 | `check <stack>` or `check --all` | Compare the deployed commit with the branch on the remote, and say whether a newer commit changes the stack's folder or only files outside it. Fetches a newer commit into the clone; changes no container and no checked-out file. |
 | `deploy <stack> [--commit <id>] [--save-local-changes] [--wait\|--no-wait] [--wait-timeout <s>] [--profile <p>]...` | Deploy the branch's latest commit, or the given one. Waits for healthy containers when the stack's wait-for-healthy setting says so, unless `--wait` or `--no-wait` overrides it. |
+| `deploy <stack> --dry-run [--commit <id>] [--profile <p>]...` | Run every check a deploy runs before it pulls the images, and show how the compose configuration changes, without deploying (see [What is checked before a deploy](#what-is-checked-before-a-deploy)). |
 | `reclone <stack>` | Move the clone aside and clone again at the deployed commit. |
 | `status [<stack>\|--all] [--json]` | Show what is deployed, failed and changed locally, without asking the remote. |
 
@@ -531,7 +610,6 @@ deployed commit: only `compose-git deploy` does that.
 
 - **An `https` server needs a certificate this server trusts.** A self-hosted git server with a self-signed
   certificate is refused over `https`; reach it over ssh instead.
-- **No automatic deploys yet.** Use `check` and `deploy` from your own schedule or a git hook.
 - No submodules and no Git LFS: the clone checks out plain files only.
 - **The web UI's editor edits the file in the clone** (it says so above the file). The next deploy treats that
   as a local change, and the editor lists it in a "Changed in the clone" box. Changes that must survive deploys belong in the plugin's override or the stack folder's

@@ -268,6 +268,11 @@ final class GitClone
      * Untracked files (including data a container wrote into the clone) are
      * not local changes.
      *
+     * Run without git's optional locks: a plain status refreshes the index and
+     * takes .git/index.lock to write it back, and a checkout in the clone at that
+     * moment (a deploy's, or putting the previous commit back) would fail on it.
+     * The status page and the scheduled check ask this without the stack's lock.
+     *
      * @return string[]
      * @throws RuntimeException if git status fails
      */
@@ -275,7 +280,7 @@ final class GitClone
     {
         $this->assertOwned();
         $result = $this->git(
-            ['status', '--porcelain=v1', '-z', '--untracked-files=no'],
+            ['--no-optional-locks', 'status', '--porcelain=v1', '-z', '--untracked-files=no'],
             $this->settings->cloneDir,
             60
         );
@@ -367,6 +372,10 @@ final class GitClone
             ['checkout', '--detach', '--no-overwrite-ignore', $this->commitArgument($commit)],
             $this->settings->cloneDir
         );
+        // PHP keeps what realpath() and file_exists() found for a while. A file the checkout
+        // replaced with a symlink would otherwise still resolve where it did before, in
+        // this process, and a check that the compose file stays inside the clone would pass.
+        clearstatcache(true);
         if ($result->succeeded()) {
             return;
         }
