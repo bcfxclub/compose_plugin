@@ -858,6 +858,23 @@ class ExecActionsTest extends TestCase
         $this->assertSame(['git-stack'], $deleteResult['stacks']);
     }
 
+    public function testCredentialUsedByAGitStackWhoseGitJsonHasAByteOrderMarkCannotBeDeleted(): void
+    {
+        // As saved by a Windows editor. GitStackSettings::load() accepts it, so the stack keeps working
+        // and its credential must not be deleted from under it.
+        $stackPath = $this->createTestStack('git-stack');
+        $saved = json_decode($this->executeAction('saveCredential', [
+            'name' => 'Git stacks', 'provider' => 'git', 'registry' => 'github.com',
+            'username' => 'bot', 'secret' => 'repository-token',
+        ]), true);
+        $credentialId = $saved['credential']['id'];
+        file_put_contents($stackPath . '/git.json', "\xEF\xBB\xBF" . json_encode(['credentialId' => $credentialId]));
+
+        $deleteResult = json_decode($this->executeAction('deleteCredential', ['id' => $credentialId]), true);
+        $this->assertSame('error', $deleteResult['result']);
+        $this->assertSame(['git-stack'], $deleteResult['stacks']);
+    }
+
     public function testGitCredentialIsNotTestedAsARegistryAndCannotBeARegistryCredential(): void
     {
         $stackPath = $this->createTestStack('test-stack');

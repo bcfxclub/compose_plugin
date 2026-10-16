@@ -201,7 +201,7 @@ if (!function_exists('composeBuildCredentialStackMap')) {
         }
         foreach (glob(rtrim($composeRoot, '/') . '/*/git.json') ?: [] as $gitSettingsFile) {
             // Read as plain JSON: a git.json that fails validation still keeps its credential in use.
-            $gitSettings = json_decode((string) @file_get_contents($gitSettingsFile), true);
+            $gitSettings = GitStackSettings::readAsPlainJson($gitSettingsFile);
             $credentialId = is_array($gitSettings) ? ($gitSettings['credentialId'] ?? null) : null;
             if (!is_string($credentialId) || $credentialId === '') {
                 continue;
