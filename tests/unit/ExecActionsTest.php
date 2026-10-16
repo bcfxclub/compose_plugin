@@ -951,6 +951,23 @@ class ExecActionsTest extends TestCase
         $this->assertCount(1, (new \CredentialVault())->listCredentials());
     }
 
+    public function testCredentialIsNotDeletedWhileTheProjectsFolderIsMissing(): void
+    {
+        // As with the projects folder on the array while the array is stopped: the stack using it cannot be seen.
+        $stackPath = $this->createTestStack('test-stack');
+        $saved = json_decode($this->executeAction('saveCredential', [
+            'name' => 'Work GitHub', 'provider' => 'github', 'registry' => 'ghcr.io',
+            'username' => 'octocat', 'secret' => 'read-only-token',
+        ]), true);
+        file_put_contents($stackPath . '/credential_id', $saved['credential']['id']);
+        $this->recursiveDelete($this->testComposeRoot);
+
+        $deleteResult = json_decode($this->executeAction('deleteCredential', ['id' => $saved['credential']['id']]), true);
+        $this->assertSame('error', $deleteResult['result']);
+        $this->assertStringContainsString('start the array first', $deleteResult['message']);
+        $this->assertCount(1, (new \CredentialVault())->listCredentials());
+    }
+
     public function testDeletingAMissingCredentialSaysItIsNotFound(): void
     {
         $deleteResult = json_decode($this->executeAction('deleteCredential', ['id' => str_repeat('ab', 16)]), true);

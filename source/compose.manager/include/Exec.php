@@ -1102,6 +1102,13 @@ switch ($_POST['action']) {
         try {
             $refusal = null;
             $deleted = CredentialVault::withCredentialAssignmentLock(function () use ($compose_root, $credentialId, &$refusal): bool {
+                // A projects folder on the array is gone while the array is stopped: no stack would be
+                // found, and every credential would look unused.
+                if (!is_dir($compose_root)) {
+                    $refusal = "The projects folder ($compose_root) is not there, so the stacks that use this credential "
+                        . 'cannot be checked. If it is on the array, start the array first.';
+                    return false;
+                }
                 $stacks = composeBuildCredentialStackMap($compose_root)[$credentialId] ?? [];
                 if (!empty($stacks)) {
                     throw new RuntimeException('Credential is assigned to: ' . implode(', ', $stacks));
