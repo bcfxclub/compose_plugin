@@ -542,7 +542,7 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
             </div>
 
             <!-- ========== COMPOSE EDITOR PANEL ========== -->
-            <div class="editor-panel active" id="editor-panel-compose" role="tabpanel" aria-labelledby="editor-tab-compose">
+            <div class="editor-panel active" id="editor-panel-compose" role="group" aria-labelledby="editor-tab-compose">
                 <div class="editor-modal-body">
                     <div id="editor-compose-git-banner" class="compose-status-warning" style="display:none;padding:6px 12px;font-size:0.9em;">
                         <i class="fa fa-code-fork"></i> <strong>This is a git stack.</strong> This file is in the plugin's clone of the repository: change it in the repository, then use Pull and Redeploy. An edit saved here is a local change, which the next deploy stops on (it can save it as a patch and discard it). Changes that must survive deploys belong in the Labels tab (the plugin's override) or the .env tab.
@@ -562,7 +562,7 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
             </div>
 
             <!-- ========== ENV EDITOR PANEL ========== -->
-            <div class="editor-panel" id="editor-panel-env" role="tabpanel" aria-labelledby="editor-tab-env">
+            <div class="editor-panel" id="editor-panel-env" role="group" aria-labelledby="editor-tab-env">
                 <div class="editor-modal-body">
                     <div class="editor-empty-state" id="env-empty-state">
                         <p>No <code>.env</code> file exists at this location yet.</p>
@@ -580,7 +580,7 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
             </div>
 
             <!-- ========== WEBUI LABELS PANEL ========== -->
-            <div class="editor-panel" id="editor-panel-labels" role="tabpanel" aria-labelledby="editor-tab-labels">
+            <div class="editor-panel" id="editor-panel-labels" role="group" aria-labelledby="editor-tab-labels">
                 <!-- Basic mode: form UI -->
                 <div class="labels-panel" id="labels-basic-view">
                     <div class="labels-panel-header">
@@ -619,7 +619,7 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
             </div>
 
             <!-- ========== SOURCES PANEL ========== -->
-            <div class="editor-panel" id="editor-panel-sources" role="tabpanel" aria-labelledby="editor-tab-sources">
+            <div class="editor-panel" id="editor-panel-sources" role="group" aria-labelledby="editor-tab-sources">
                 <div class="settings-panel">
                     <!-- Compose Sources & Files -->
                     <div class="settings-section">
@@ -746,7 +746,7 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
             </div>
 
             <!-- ========== SETTINGS PANEL ========== -->
-            <div class="editor-panel" id="editor-panel-settings" role="tabpanel" aria-labelledby="editor-tab-settings">
+            <div class="editor-panel" id="editor-panel-settings" role="group" aria-labelledby="editor-tab-settings">
                 <div class="settings-panel">
                     <!-- Stack Identity -->
                     <div class="settings-section">
