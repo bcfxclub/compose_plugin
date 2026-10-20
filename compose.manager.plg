@@ -36,59 +36,10 @@
 >
 
 <CHANGES>
-###2026.10.20.0925
-- Features (git): read a git.json as plain JSON, byte order mark and all
-- Features (git): compose-git deploy --dry-run
-- Features (git): try a deploy of a git stack without deploying it
-- Features (git): choose automatic deploys in the web UI, and see when a stack is behind
-- Features (cron): run the scheduled git check every 15 minutes while a stack asks for it
-- Features (git): check git stacks for new commits, and deploy them, on request
-- Features (git): resume a git stack after a failed deploy
-- Features (git): store whether a git stack is checked and deployed on a schedule
-- Features (git): move an ssh stack onto another deploy key of its repository
-- Features (git): one deploy key for every ssh stack of a repository
-- Features (git): show changes made in the clone in an orange box, also above the compose file
-- Features (git): say what deleting a git stack leaves behind
-- Features (git): move an existing stack into git from the Sources tab
-- Features (git): check a git stack for a newer commit from its stack menu
-- Features (git): show a git stack's branch and deployed commit in the stack list
-- Features (git): say in the editor where a git stack's compose file lives
-- Features (git): deploy a git stack from its stack menu
-- Features (git): add a git stack from the Add Stack dialog
-- Features (git): show a git stack's repository on the editor's Sources tab
-- Bug Fixes (credentials): do not delete a credential while the projects folder is missing
-- Bug Fixes (credentials): keep a git credential that a broken git.json may name
-- Bug Fixes (git): see a stack's deploy key when its git.json has a byte order mark
-- Bug Fixes (credentials): count a git stack's credential when its git.json has a byte order mark
-- Bug Fixes (cron): keep the git check for a git.json with a byte order mark
-- Bug Fixes (git): check again under the stack's lock that an automatic deploy applies
-- Bug Fixes (git): a dry run puts back only what its prune changed in the override
-- Bug Fixes (git): deploy the commit the scheduled check compared
-- Bug Fixes (git): give the scheduled check a lock no stack's lock can share
-- Bug Fixes (git): forget cached file paths after checking out a commit
-- Bug Fixes (git): read a clone's local changes without taking git's index lock
-- Bug Fixes (git): say a full commit id can also be 64 characters
-- Bug Fixes (git): name the deploy key boxes for screen readers
-- Bug Fixes (git): read the deployed commit under the lock when checking for changes
-- Bug Fixes (git): deploy in the checks' folder and environment, whatever starts it
-- Bug Fixes (git): say why ssh-keyscan got no host keys
-- Bug Fixes (git): say what to do when a reused deploy key is another repository's
-- Bug Fixes (git): let the Credentials tab's git Test wait 15 seconds, not 60
-- Bug Fixes (credentials): stop calling every credential a registry credential
-- Bug Fixes: list a stack row's containers with docker ps, as the full list does
-- Refactoring (git): let the deploy's checks return their problems
-- Refactoring (git): take a stack's lock without waiting, for callers that do not throw
-- Refactoring (git): share a git deploy's --wait arguments
-- Refactoring (git): build a git deploy's compose.sh command in one place
-- Documentation (git): say a dry run's check messages show values, as a deploy's do
-- Documentation: automatic deploys of git stacks
-- Documentation: say plainly what containersByProject returns for one project
-- Documentation: git stacks in the web UI
-- Tests: cover how containersByProject groups and filters docker ps rows
-- Tests (e2e): add, deploy and delete a git stack through the web UI
-- Tests (credentials): name the useCredential test after what it checks
+###2026.10.20.1619
+- Bug Fixes: avoid Docker tab panel conflicts on Unraid 7.3.2
 - [PR #172](https://github.com/mstrhakr/compose_plugin/pull/172)
-- [beta release diff](https://github.com/mstrhakr/compose_plugin/compare/v2026.10.07...v2026.10.20.0925)
+- [beta release diff](https://github.com/mstrhakr/compose_plugin/compare/v2026.10.07...v2026.10.20.1619)
 </CHANGES>
 
 <!-- The 'pre-install' script. -->
