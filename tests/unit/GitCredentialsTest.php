@@ -53,7 +53,7 @@ final class GitCredentialsTest extends TestCase
             GitCredentials::writeRunFile('secret');
             $this->fail('A credential was written through a symlinked folder.');
         } catch (RuntimeException $error) {
-            $this->assertStringContainsString('is not a plain folder', $error->getMessage());
+            $this->assertStringContainsString('不是普通文件夹', $error->getMessage());
         } finally {
             unlink($directory);
             @rename($moved, $directory);
@@ -96,7 +96,7 @@ final class GitCredentialsTest extends TestCase
         $id = $this->gitCredential('gitlab.com');
 
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('is for gitlab.com, but the repository is on github.com');
+        $this->expectExceptionMessage('属于 gitlab.com，但仓库位于 github.com');
         GitCredentials::writeFile($id, 'https://github.com/owner/repo.git');
     }
 
@@ -111,7 +111,7 @@ final class GitCredentialsTest extends TestCase
         ])['id'];
 
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('is not a git repository credential');
+        $this->expectExceptionMessage('不是 git 仓库凭据');
         GitCredentials::writeFile($id, 'https://github.com/owner/repo.git');
     }
 

@@ -114,7 +114,7 @@ final class GitClone
             $timeoutSeconds
         );
         if (!$result->succeeded()) {
-            throw new RuntimeException('Could not reach the repository: ' . $result->errorSummary());
+            throw new RuntimeException('无法访问仓库：' . $result->errorSummary());
         }
         foreach (explode("\n", trim($result->stdout)) as $line) {
             $fields = preg_split('/\s+/', trim($line));
@@ -122,7 +122,7 @@ final class GitClone
                 return $fields[0];
             }
         }
-        throw new RuntimeException("The branch '{$this->settings->branch}' does not exist in the repository.");
+        throw new RuntimeException("分支 '{$this->settings->branch}' 在仓库中不存在。");
     }
 
     /**
@@ -162,10 +162,10 @@ final class GitClone
 
             $result = $this->git($args, null, self::CLONE_TIMEOUT_SECONDS);
             if (!$result->succeeded()) {
-                throw new GitCloneFailedException('Could not clone the repository: ' . $result->errorSummary(), $result->stderr);
+                throw new GitCloneFailedException('无法克隆仓库：' . $result->errorSummary(), $result->stderr);
             }
             if (!is_dir($cloneDir . '/.git')) {
-                throw new RuntimeException("git reported success but $cloneDir/.git is missing.");
+                throw new RuntimeException("git 报告成功，但 $cloneDir/.git 不存在。");
             }
 
             GitPathGuard::assertSafeToWrite($cloneDir . '/.git');
@@ -176,7 +176,7 @@ final class GitClone
             $commit = $this->resolveCommit('refs/remotes/origin/' . $this->settings->branch);
             if (!$this->composeFileExistsAt($commit)) {
                 throw new RuntimeException(
-                    "{$this->settings->composePath} does not exist on branch {$this->settings->branch}, so no clone was made."
+                    "{$this->settings->composePath} 在分支 {$this->settings->branch} 上不存在，因此未创建克隆。"
                 );
             }
             $this->runOrThrow(['checkout', '--detach', $commit], '无法检出文件');
@@ -203,17 +203,17 @@ final class GitClone
             throw new GitCloneNotOwnedException("$cloneDir 是符号链接，因此未被使用。");
         }
         if (!is_dir($cloneDir)) {
-            throw new GitCloneNotOwnedException("The clone folder $cloneDir is missing. (Is the array started?)");
+            throw new GitCloneNotOwnedException("克隆文件夹 $cloneDir 不存在。（阵列是否已启动？）");
         }
         $gitDir = $cloneDir . '/.git';
         if (@readlink($gitDir) !== false || !is_dir($gitDir)) {
-            throw new GitCloneNotOwnedException("$cloneDir is not a git clone made by this plugin (no .git folder).");
+            throw new GitCloneNotOwnedException("$cloneDir 不是本插件创建的 git 克隆（缺少 .git 文件夹）。");
         }
 
         $marker = @file_get_contents($gitDir . '/' . self::MARKER_FILE);
         if ($marker === false || trim($marker) !== $this->settings->cloneId) {
             throw new GitCloneNotOwnedException(
-                "$cloneDir was not made by this plugin for this stack (its marker is missing or names another stack), so it was not changed."
+                "$cloneDir 不是本插件为此栈创建的（标记缺失或指向其他栈），因此未做改动。"
             );
         }
 
@@ -225,8 +225,8 @@ final class GitClone
         $remote = $this->git(['config', '--get', 'remote.origin.url'], $cloneDir, 30);
         if (!$remote->succeeded() || trim($remote->stdout) !== $this->settings->url) {
             throw new GitCloneNotOwnedException(
-                "$cloneDir is a clone of a different repository than this stack's ("
-                . trim($remote->stdout) . '). Clone it again to change the repository.'
+                "$cloneDir 克隆的是与本栈不同的仓库（"
+                . trim($remote->stdout) . ')。要更换仓库，请重新克隆。'
             );
         }
     }
@@ -249,7 +249,7 @@ final class GitClone
             self::FETCH_TIMEOUT_SECONDS
         );
         if (!$result->succeeded()) {
-            throw new RuntimeException('Could not fetch from the repository: ' . $result->errorSummary());
+            throw new RuntimeException('无法从仓库获取更新：' . $result->errorSummary());
         }
         return $this->resolveCommit('refs/remotes/origin/' . $branch);
     }
@@ -323,7 +323,7 @@ final class GitClone
         }
         $result = $this->git($args, $this->settings->cloneDir, 60);
         if (!$result->succeeded()) {
-            throw new RuntimeException('Could not compare commits: ' . $result->errorSummary());
+            throw new RuntimeException('无法比较提交：' . $result->errorSummary());
         }
         return trim($result->stdout, "\0") !== '';
     }
@@ -342,7 +342,7 @@ final class GitClone
             60
         );
         if (!$result->succeeded()) {
-            throw new RuntimeException('Could not read the commit: ' . $result->errorSummary());
+            throw new RuntimeException('无法读取提交：' . $result->errorSummary());
         }
         return trim($result->stdout, "\0") === $this->settings->composePath;
     }
@@ -390,7 +390,7 @@ final class GitClone
                 . '. 请先移走这些文件，然后重新部署。'
             );
         }
-        throw new RuntimeException("Could not check out $commit: " . $result->errorSummary());
+        throw new RuntimeException("无法检出 {$commit}：" . $result->errorSummary());
     }
 
     /**
@@ -438,7 +438,7 @@ final class GitClone
             120
         );
         if (!$result->succeeded()) {
-            throw new RuntimeException('Could not collect the local changes: ' . $result->errorSummary());
+            throw new RuntimeException('无法收集本地改动：' . $result->errorSummary());
         }
         if ($result->stdout === '') {
             return null;
@@ -522,7 +522,7 @@ final class GitClone
         $untracked = $this->git(['ls-files', '-z', '--others'], $this->settings->cloneDir, 120);
         if (!$tracked->succeeded() || !$untracked->succeeded()) {
             throw new RuntimeException(
-                'Could not list the files in the clone: '
+                '无法列出克隆中的文件：'
                 . (!$tracked->succeeded() ? $tracked->errorSummary() : $untracked->errorSummary())
             );
         }
@@ -683,7 +683,7 @@ final class GitClone
         $this->assertOwned();
         $result = $this->git(['ls-files', '-z', '--others', '--directory'], $this->settings->cloneDir, 120);
         if (!$result->succeeded()) {
-            throw new RuntimeException('Could not list the untracked files: ' . $result->errorSummary());
+            throw new RuntimeException('无法列出未跟踪的文件：' . $result->errorSummary());
         }
         return array_values(array_filter(explode("\0", $result->stdout), static fn(string $path): bool => $path !== ''));
     }
@@ -723,7 +723,7 @@ final class GitClone
     private function commitArgument(string $commit): string
     {
         if (!self::isCommitId($commit)) {
-            throw new InvalidArgumentException("Not a full commit id: $commit");
+            throw new InvalidArgumentException("不是完整的提交 ID：$commit");
         }
         return $commit;
     }

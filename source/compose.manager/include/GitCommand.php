@@ -169,17 +169,17 @@ final class GitCommand
     private static function homeDirectoryProblem(string $home): ?string
     {
         if (!file_exists($home) && @readlink($home) === false && !@mkdir($home, 0700, true) && !is_dir($home)) {
-            return "Could not create $home for git.";
+            return "无法为 git 创建 $home。";
         }
         clearstatcache(true, $home);
         if (@readlink($home) !== false || !is_dir($home)) {
-            return "$home is not a plain folder, so git was not run. Remove it.";
+            return "$home 不是普通文件夹，因此未运行 git。请将其删除。";
         }
         if (@fileowner($home) !== (function_exists('posix_geteuid') ? posix_geteuid() : 0)) {
-            return "$home belongs to another user, so git was not run. Remove it.";
+            return "$home 属于其他用户，因此未运行 git。请将其删除。";
         }
         if (!chmod($home, 0700)) {
-            return "Could not make $home private, so git was not run.";
+            return "无法将 $home 设为私有权限，因此未运行 git。";
         }
         return null;
     }

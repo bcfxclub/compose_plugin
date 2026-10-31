@@ -65,7 +65,7 @@ final class GitStackWebActions
             $labelsViewModeFile = $this->composeRoot . '/' . $folder . '/labels_view_mode';
             if (@file_put_contents($labelsViewModeFile, 'advanced') === false) {
                 // The stack is made; only its Labels tab opens in the basic view, where it can be switched.
-                composeLogger("Added git stack '$folder', but could not write $labelsViewModeFile", null, 'user', 'warning', 'git');
+                composeLogger("已添加 Git 栈 '$folder'，但无法写入 $labelsViewModeFile", null, 'user', 'warning', 'git');
             }
         }
 
@@ -160,16 +160,16 @@ final class GitStackWebActions
         try {
             $settings = GitStackSettings::load($stackDir);
         } catch (Throwable) {
-            return ['path' => null, 'note' => "It is in the git stack's clone of its repository (its git.json could not be read)."];
+            return ['path' => null, 'note' => "它位于该 Git 栈对其仓库的克隆中（无法读取其 git.json）。"];
         }
         if ($settings === null) {
             // git.json went away since the check above.
             return null;
         }
-        $note = "This is the stack's clone of its repository: delete it yourself once nothing in it is needed.";
+        $note = "这是该栈对其仓库的克隆：当其中的内容都不再需要时，请自行删除。";
         if ($settings->isSsh() && $settings->credentialId !== null) {
-            $note .= " Its ssh deploy key stays on the Credentials tab of the plugin settings, and in the repository's deploy keys:"
-                . ' other stacks of the repository may use it too.';
+            $note .= " 它的 SSH 部署密钥仍保留在插件设置的“凭据”标签页，以及仓库的部署密钥中："
+                . '该仓库的其他栈可能也在使用它。';
         }
         return ['path' => $settings->cloneDir, 'note' => $note];
     }
@@ -266,8 +266,8 @@ final class GitStackWebActions
             if (GitStackSettings::isSshUrl((string) $status['url']) && $status['problem'] === null) {
                 // GitSsh already starts its message this way when ssh-keygen refuses the key.
                 $message = $error->getMessage();
-                if (!str_starts_with($message, 'Could not read the deploy key')) {
-                    $message = 'Could not read the deploy key: ' . $message;
+                if (!str_starts_with($message, '无法读取部署密钥')) {
+                    $message = '无法读取部署密钥：' . $message;
                 }
                 $status['problem'] = $message;
             }

@@ -573,7 +573,7 @@ final class GitStackManagerTest extends TestCase
             $this->manager->add('private', 'https://127.0.0.1:9/team/stacks.git', 'main', 'whoami/compose.yaml', $this->clonesRoot, '', $credential['id']);
             $this->fail('Added a stack whose repository could not be reached');
         } catch (RuntimeException $error) {
-            $this->assertStringContainsString('Could not clone', $error->getMessage());
+            $this->assertStringContainsString('无法克隆', $error->getMessage());
         }
         $this->assertDirectoryDoesNotExist($this->composeRoot . '/private');
         $this->assertSame([], glob($this->clonesRoot . '/*') ?: []);
@@ -619,7 +619,7 @@ final class GitStackManagerTest extends TestCase
 
         $this->assertNotNull($test);
         $this->assertFalse($test['valid']);
-        $this->assertStringStartsWith("https://127.0.0.1:9/team/stacks.git (used by '$folder'): Could not reach the repository", $test['message']);
+        $this->assertStringStartsWith("https://127.0.0.1:9/team/stacks.git (used by '$folder'): 无法访问仓库", $test['message']);
     }
 
     public function testOnlyAnSshStackHasADeployKeyOrPinnedHostKeys(): void

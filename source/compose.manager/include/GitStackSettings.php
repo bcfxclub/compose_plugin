@@ -252,23 +252,23 @@ final class GitStackSettings
         }
         foreach (['url', 'branch', 'composePath', 'cloneId', 'cloneDir'] as $key) {
             if (!is_string($data[$key])) {
-                throw new RuntimeException("$file: '$key' must be a string.");
+                throw new RuntimeException("$file：'$key' 必须是字符串。");
             }
         }
         if (!is_bool($data['recreateOnFolderChange'])) {
-            throw new RuntimeException("$file: 'recreateOnFolderChange' must be true or false.");
+            throw new RuntimeException("$file：'recreateOnFolderChange' 必须为 true 或 false。");
         }
         $credentialId = $data['credentialId'] ?? null;
         if ($credentialId !== null && !is_string($credentialId)) {
-            throw new RuntimeException("$file: 'credentialId' must be a string.");
+            throw new RuntimeException("$file：'credentialId' 必须是字符串。");
         }
         $sshKnownHosts = $data['sshKnownHosts'] ?? null;
         if ($sshKnownHosts !== null && !is_string($sshKnownHosts)) {
-            throw new RuntimeException("$file: 'sshKnownHosts' must be a string.");
+            throw new RuntimeException("$file：'sshKnownHosts' 必须是字符串。");
         }
         $autoDeploy = $data['autoDeploy'] ?? self::AUTO_DEPLOY_OFF;
         if (!is_string($autoDeploy)) {
-            throw new RuntimeException("$file: 'autoDeploy' must be a string.");
+            throw new RuntimeException("$file：'autoDeploy' 必须是字符串。");
         }
 
         try {
@@ -421,10 +421,10 @@ final class GitStackSettings
         }
 
         if (str_starts_with($url, '/')) {
-            GitPathGuard::assertCleanAbsolutePath($url, 'The repository path');
+            GitPathGuard::assertCleanAbsolutePath($url, '仓库路径');
             if (!str_starts_with($url, rtrim(COMPOSE_GIT_MNT_DIR, '/') . '/')) {
                 throw new InvalidArgumentException(
-                    'A repository on this server must be under ' . COMPOSE_GIT_MNT_DIR . ": $url"
+                    '本服务器上的仓库必须位于 ' . COMPOSE_GIT_MNT_DIR . " 之下：$url"
                 );
             }
             return;
@@ -573,11 +573,11 @@ final class GitStackSettings
                 throw new InvalidArgumentException("compose 文件路径不能包含空段、'.' 或 '..' 段：{$composePath}");
             }
             if (strtolower($part) === '.git') {
-                throw new InvalidArgumentException("The compose file path must not be inside .git: $composePath");
+                throw new InvalidArgumentException("compose 文件路径不能位于 .git 内：$composePath");
             }
         }
         if (preg_match('/\.ya?ml$/i', $composePath) !== 1) {
-            throw new InvalidArgumentException("The compose file path must end in .yml or .yaml: $composePath");
+            throw new InvalidArgumentException("compose 文件路径必须以 .yml 或 .yaml 结尾：$composePath");
         }
     }
 
@@ -589,7 +589,7 @@ final class GitStackSettings
     public static function validateCredentialId(?string $credentialId): void
     {
         if ($credentialId !== null && preg_match('/^[0-9a-f]{32}$/', $credentialId) !== 1) {
-            throw new InvalidArgumentException("The credential id is not valid: $credentialId");
+            throw new InvalidArgumentException("凭据 ID 无效：$credentialId");
         }
     }
 

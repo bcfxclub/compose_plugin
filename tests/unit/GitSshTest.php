@@ -58,7 +58,7 @@ final class GitSshTest extends TestCase
         ])['id'];
 
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('is not an ssh deploy key');
+        $this->expectExceptionMessage('不是 SSH 部署密钥');
         GitSsh::publicKey($id);
     }
 
@@ -70,7 +70,7 @@ final class GitSshTest extends TestCase
 
         // Nothing listens on port 9.
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessageMatches('/^Could not get the ssh host keys of 127\.0\.0\.1 \(port 9\): .+\. Check the address/');
+        $this->expectExceptionMessageMatches('/^无法获取 127\.0\.0\.1（端口 9）的 SSH 主机密钥：.+。请检查地址/u');
         GitSsh::scanHostKeys('127.0.0.1', 9);
     }
 

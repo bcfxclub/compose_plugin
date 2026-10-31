@@ -58,7 +58,7 @@ final class GitCommandTest extends TestCase
         }
 
         $this->assertFalse($result->succeeded());
-        $this->assertStringContainsString('is not a plain folder', $result->errorSummary());
+        $this->assertStringContainsString('不是普通文件夹', $result->errorSummary());
         $this->assertSame(0755, fileperms($target) & 0777);
         rmdir($target);
     }

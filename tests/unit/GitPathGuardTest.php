@@ -332,7 +332,7 @@ final class GitPathGuardTest extends TestCase
     {
         $this->setArrayState('STOPPED');
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('array is not started');
+        $this->expectExceptionMessage('阵列未启动');
         GitPathGuard::assertSafeToWrite($this->mnt . '/user/appdata/git');
     }
 

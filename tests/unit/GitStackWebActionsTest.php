@@ -219,8 +219,8 @@ final class GitStackWebActionsTest extends TestCase
 
         $this->assertSame('success', $result['result']);
         $this->assertNull($result['git']['deployKey']);
-        $this->assertStringStartsWith('Could not read the deploy key: ', (string) $result['git']['problem']);
-        $this->assertStringNotContainsString('Could not read the deploy key: Could not read', (string) $result['git']['problem']);
+        $this->assertStringStartsWith('无法读取部署密钥：', (string) $result['git']['problem']);
+        $this->assertStringNotContainsString('无法读取部署密钥：无法读取', (string) $result['git']['problem']);
     }
 
     public function testStatusListsFilesChangedInTheClone(): void
@@ -304,7 +304,7 @@ final class GitStackWebActionsTest extends TestCase
         }
 
         $this->assertSame('error', $result['result']);
-        $this->assertStringContainsString('Another operation is in progress', $result['message']);
+        $this->assertStringContainsString('正在进行另一个操作', $result['message']);
     }
 
     public function testCheckOfAMissingStackIsAnError(): void

@@ -37,7 +37,7 @@ final class GitCredentials
         $repository = parse_url($repositoryUrl);
         if (!is_array($repository) || strtolower((string) ($repository['scheme'] ?? '')) !== 'https'
             || !isset($repository['host'], $repository['path'])) {
-            throw new RuntimeException('A git credential can only be used with an https:// repository address.');
+            throw new RuntimeException('git 凭据只能用于 https:// 仓库地址。');
         }
         $host = strtolower($repository['host']) . (isset($repository['port']) ? ':' . $repository['port'] : '');
 
@@ -45,11 +45,11 @@ final class GitCredentials
             $credentialId,
             static function (array $credential) use ($host, $repository): string {
                 if (($credential['provider'] ?? '') !== 'git') {
-                    throw new RuntimeException("The credential '{$credential['name']}' is not a git repository credential.");
+                    throw new RuntimeException("凭据 '{$credential['name']}' 不是 git 仓库凭据。");
                 }
                 if (($credential['registry'] ?? '') !== $host) {
                     throw new RuntimeException(
-                        "The credential '{$credential['name']}' is for {$credential['registry']}, but the repository is on $host."
+                        "凭据 '{$credential['name']}' 属于 {$credential['registry']}，但仓库位于 $host。"
                     );
                 }
                 return 'https://' . rawurlencode($credential['username']) . ':' . rawurlencode($credential['secret'])
@@ -81,14 +81,14 @@ final class GitCredentials
             umask($oldUmask);
         }
         if ($handle === false) {
-            throw new RuntimeException('Could not create a credential file for git.');
+            throw new RuntimeException('无法为 git 创建凭据文件。');
         }
         chmod($file, 0600);
         $written = fwrite($handle, $content);
         fclose($handle);
         if ($written !== strlen($content)) {
             @unlink($file);
-            throw new RuntimeException('Could not write the credential file for git.');
+            throw new RuntimeException('无法写入 git 凭据文件。');
         }
         return $file;
     }
@@ -128,18 +128,18 @@ final class GitCredentials
     {
         $directory = rtrim(COMPOSE_GIT_CREDENTIAL_DIR, '/');
         if (!file_exists($directory) && @readlink($directory) === false && !@mkdir($directory, 0700, true) && !is_dir($directory)) {
-            throw new RuntimeException('Could not create the folder for git credential files.');
+            throw new RuntimeException('无法创建用于存放 git 凭据文件的文件夹。');
         }
         clearstatcache(true, $directory);
         if (@readlink($directory) !== false || !is_dir($directory)) {
-            throw new RuntimeException("$directory is not a plain folder, so no credential was written there. Remove it.");
+            throw new RuntimeException("$directory 不是普通文件夹，因此未在其中写入凭据。请将其删除。");
         }
         // Compared with whoever runs this (root on Unraid; the tests run as another user).
         if (@fileowner($directory) !== (function_exists('posix_geteuid') ? posix_geteuid() : 0)) {
-            throw new RuntimeException("$directory belongs to another user, so no credential was written there. Remove it.");
+            throw new RuntimeException("$directory 属于其他用户，因此未在其中写入凭据。请将其删除。");
         }
         if (!chmod($directory, 0700)) {
-            throw new RuntimeException("Could not make $directory private, so no credential was written there.");
+            throw new RuntimeException("无法将 $directory 设为私有权限，因此未在其中写入凭据。");
         }
         return $directory;
     }

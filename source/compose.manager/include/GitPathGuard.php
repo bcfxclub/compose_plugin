@@ -261,7 +261,7 @@ final class GitPathGuard
         }
 
         if (!self::isArrayStarted()) {
-            throw new RuntimeException("The array is not started, so nothing was written to $path.");
+            throw new RuntimeException("阵列未启动，因此未向 $path 写入任何内容。");
         }
 
         $path = self::followExclusiveShare($path);

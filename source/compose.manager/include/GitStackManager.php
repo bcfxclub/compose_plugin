@@ -30,8 +30,8 @@ final class GitDeployKeyNotAddedException extends RuntimeException
      */
     public static function messageWithKey(string $cloneError, string $publicKey): string
     {
-        return $cloneError . "\n\nIf the repository does not know this stack's deploy key yet, add it as a "
-            . "read-only deploy key in the repository's settings, then try again:\n"
+        return $cloneError . "\n\n如果仓库还不认识本栈的部署密钥，请先在仓库设置中将其添加为 "
+            . "只读部署密钥，然后重试：\n"
             . $publicKey;
     }
 }
@@ -564,9 +564,9 @@ final class GitStackManager
             $settings->withAutoDeploy($autoDeploy)->save($stack->path);
         });
         ($this->say)(match ($autoDeploy) {
-            GitStackSettings::AUTO_DEPLOY_NOTIFY => "'$folder' sends a notification when a new commit changes it.",
-            GitStackSettings::AUTO_DEPLOY_DEPLOY => "'$folder' is deployed when a new commit changes it.",
-            default => "'$folder' is no longer checked on a schedule.",
+            GitStackSettings::AUTO_DEPLOY_NOTIFY => "'$folder' 在有新提交导致其变更时会发送通知。",
+            GitStackSettings::AUTO_DEPLOY_DEPLOY => "'$folder' 在有新提交导致其变更时会自动部署。",
+            default => "'$folder' 不再按计划检查。",
         });
     }
 
@@ -594,7 +594,7 @@ final class GitStackManager
             if ($state->failedCommit !== null) {
                 (new GitStackState($state->deployedCommit, null))->save($stack->path);
                 ($this->say)("已清除失败的部署：" . substr($state->failedCommit, 0, 12) . '.'
-                    . ($checked ? " Automatic deploys of '$folder' resume." : ''));
+                    . ($checked ? "'$folder' 的自动部署已恢复。" : ''));
                 $cleared = true;
             }
             // A scheduled deploy that failed before up (a pull, say) is kept in the
@@ -604,7 +604,7 @@ final class GitStackManager
             if ($failedAutomatic !== null) {
                 GitScheduledCheck::clearFailedAutomaticDeploy($stack->path);
                 ($this->say)("已清除失败的自动部署：" . substr($failedAutomatic, 0, 12) . '.'
-                    . ($checked ? " The next scheduled check of '$folder' tries again." : ''));
+                    . ($checked ? "'$folder' 的下次计划检查会重试。" : ''));
                 $cleared = true;
             }
             if (!$cleared) {
@@ -1008,11 +1008,11 @@ final class GitStackManager
     private function logCredentialChange(string $folder, ?string $credentialId): void
     {
         if ($credentialId === null) {
-            composeLogger("Git stack '$folder' no longer uses a credential", null, 'user', 'info', 'credentials');
+            composeLogger("Git 栈 '$folder' 不再使用凭据", null, 'user', 'info', 'credentials');
             return;
         }
         composeLogger(
-            "Git stack '$folder' now uses the credential '" . $this->credentialName($credentialId) . "'",
+            "Git 栈 '$folder' 现在使用凭据 '" . $this->credentialName($credentialId) . "'",
             ['id' => $credentialId],
             'user',
             'info',

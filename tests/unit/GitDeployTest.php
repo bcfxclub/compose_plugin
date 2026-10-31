@@ -296,7 +296,7 @@ final class GitDeployTest extends TestCase
             $this->deploy()->prepare('whoami', [], null, true);
             $this->fail('Deployed without reaching the repository');
         } catch (RuntimeException $error) {
-            $this->assertStringContainsString('Could not fetch', $error->getMessage());
+            $this->assertStringContainsString('无法从仓库获取更新', $error->getMessage());
         } finally {
             rename($this->upstream . '.away', $this->upstream);
         }

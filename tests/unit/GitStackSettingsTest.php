@@ -104,7 +104,7 @@ final class GitStackSettingsTest extends TestCase
             'space' => ['https://github.com/owner/my repo.git', 'spaces'],
             'newline' => ["https://github.com/owner/repo.git\n", 'spaces'],
             'relative path' => ['repos/stacks.git', 'https://'],
-            'local outside mnt' => ['/boot/repos/stacks.git', 'must be under'],
+            'local outside mnt' => ['/boot/repos/stacks.git', '必须位于'],
             'local traversal' => [COMPOSE_GIT_MNT_DIR . '/user/../../etc', "'..'"],
         ];
     }

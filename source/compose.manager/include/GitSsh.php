@@ -37,7 +37,7 @@ final class GitSsh
         try {
             $result = self::run(['ssh-keygen', '-q', '-t', 'ed25519', '-N', '', '-C', $comment, '-f', $keyFile]);
             if (!$result->succeeded() || !is_file($keyFile) || !is_file($keyFile . '.pub')) {
-                throw new RuntimeException('Could not make an ssh key: ' . $result->errorSummary());
+                throw new RuntimeException('无法生成 SSH 密钥：' . $result->errorSummary());
             }
             return [
                 'private' => (string) file_get_contents($keyFile),
@@ -61,7 +61,7 @@ final class GitSsh
         try {
             $result = self::run(['ssh-keygen', '-y', '-f', $keyFile]);
             if (!$result->succeeded()) {
-                throw new RuntimeException('Could not read the deploy key: ' . $result->errorSummary());
+                throw new RuntimeException('无法读取部署密钥：' . $result->errorSummary());
             }
             return trim($result->stdout);
         } finally {
@@ -91,10 +91,10 @@ final class GitSsh
                 array_map('trim', explode("\n", $result->stderr)),
                 static fn(string $line): bool => $line !== '' && !str_starts_with($line, '#')
             ));
-            $reason = $errors === [] ? 'no key came back' : $errors[count($errors) - 1];
+            $reason = $errors === [] ? '没有返回密钥' : $errors[count($errors) - 1];
             throw new RuntimeException(
-                "Could not get the ssh host keys of $host (port $port): $reason. "
-                . 'Check the address, and that this server can reach the host.'
+                "无法获取 $host（端口 $port）的 SSH 主机密钥：{$reason}。"
+                . '请检查地址，并确认本服务器能访问该主机。'
             );
         }
         return implode("\n", $lines) . "\n";
@@ -119,7 +119,7 @@ final class GitSsh
             }
             // Keys the person cannot compare must not be pinned: say so instead of showing nothing.
             if ($fingerprints === []) {
-                throw new RuntimeException('Could not read the fingerprints of the ssh host keys, so nothing was pinned: ' . $result->errorSummary());
+                throw new RuntimeException('无法读取 SSH 主机密钥的指纹，因此未固定任何内容：' . $result->errorSummary());
             }
             return $fingerprints;
         } finally {
@@ -187,7 +187,7 @@ final class GitSsh
             $credentialId,
             static function (array $credential): string {
                 if (($credential['provider'] ?? '') !== 'git-ssh') {
-                    throw new RuntimeException("The credential '{$credential['name']}' is not an ssh deploy key.");
+                    throw new RuntimeException("凭据 '{$credential['name']}' 不是 SSH 部署密钥。");
                 }
                 return $credential['secret'];
             }
