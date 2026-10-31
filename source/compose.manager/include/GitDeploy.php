@@ -123,7 +123,7 @@ final class GitDeploy
         try {
             $running = self::hasRunningContainers($projectName);
         } catch (RuntimeException $error) {
-            throw new GitDeploySkipped($error->getMessage() . ' So the stack was not deployed automatically.', 0, $error);
+            throw new GitDeploySkipped($error->getMessage() . ' 因此该栈未自动部署。', 0, $error);
         }
         if (!$running) {
             throw new GitDeploySkipped('栈未运行，因此未自动部署。');
@@ -201,7 +201,7 @@ final class GitDeploy
         if (!$clone->composeFileExistsAt($target)) {
             throw new RuntimeException(
                 "{$settings->composePath} does not exist at commit " . substr($target, 0, 12)
-                . '. It may have been moved or removed in the repository. Nothing was deployed, and the stack was left as it is.'
+                . '. 它可能已在仓库中被移动或删除。未执行部署，栈保持原样。'
             );
         }
 
@@ -209,7 +209,7 @@ final class GitDeploy
 
         try {
             if ($target !== $previous) {
-                ($this->say)('Checking out ' . substr($target, 0, 12) . '...');
+                ($this->say)('正在检出 ' . substr($target, 0, 12) . '...');
                 $clone->checkOut($target);
             }
             $this->runChecks($settings, $projectName, $profiles);
@@ -280,7 +280,7 @@ final class GitDeploy
         if (!$clone->composeFileExistsAt($target)) {
             throw new RuntimeException(
                 "{$settings->composePath} does not exist at commit " . substr($target, 0, 12)
-                . '. It may have been moved or removed in the repository, so a deploy of it would stop.'
+                . '. 它可能已在仓库中被移动或删除，因此部署会中止。'
             );
         }
         // A deploy without --save-local-changes stops on them, and the dry run cannot check
@@ -289,9 +289,9 @@ final class GitDeploy
         $madeByHand = $clone->isMadeByHand($previous, $state->deployedCommit, $state->failedCommit);
         if ($changedFiles !== [] || $madeByHand) {
             throw new RuntimeException(
-                'The clone has ' . self::describeLocalChanges($changedFiles, $madeByHand, $previous) . '. A deploy stops on'
-                . ' them unless it saves them as a patch and discards them (--save-local-changes), and a dry run cannot'
-                . ' try another commit over them, so nothing was tried.'
+                '克隆包含 ' . self::describeLocalChanges($changedFiles, $madeByHand, $previous) . '。除非将其保存为补丁并丢弃（--save-local-changes），否则部署会因此停止；而试运行无法'
+                . ' 在改动之上'
+                . ' 尝试另一个提交，因此什么都没做。'
             );
         }
 
@@ -302,7 +302,7 @@ final class GitDeploy
         $this->overridePrune = null;
         try {
             if ($target !== $previous) {
-                ($this->say)('Checking out ' . substr($target, 0, 12) . '...');
+                ($this->say)('正在检出 ' . substr($target, 0, 12) . '...');
                 $clone->checkOut($target);
             }
             $problems = $this->findProblems($settings, $projectName, $profiles);
@@ -374,7 +374,7 @@ final class GitDeploy
         $current = $clone->checkedOutCommit();
 
         if (is_file($this->stackDir . '/' . self::DISCARDED_CHANGES_FILE)) {
-            ($this->say)("Local changes in the stack's folder were discarded, so every container is recreated.");
+            ($this->say)("栈文件夹中的本地改动已被丢弃，因此所有容器都会重建。");
             return ['--force-recreate'];
         }
 
@@ -387,11 +387,11 @@ final class GitDeploy
             if ($from !== $current && !$clone->hasCommit($from)) {
                 // The branch was rewritten and git has since pruned the old
                 // commit, so the change cannot be measured: assume one.
-                ($this->say)('The commit ' . substr($from, 0, 12) . ' is no longer in the clone, so every container is recreated.');
+                ($this->say)('提交 ' . substr($from, 0, 12) . ' 已不在克隆中，因此所有容器都会重建。');
                 return ['--force-recreate'];
             }
             if ($from !== $current && $clone->stackFilesChanged($from, $current)) {
-                ($this->say)("Files in the stack's folder changed, so every container is recreated.");
+                ($this->say)("栈文件夹中的文件已变更，因此所有容器都会重建。");
                 return ['--force-recreate'];
             }
         }
@@ -481,14 +481,14 @@ final class GitDeploy
     {
         try {
             if ($clone->checkedOutCommit() !== $previous) {
-                ($this->say)('Putting back ' . substr($previous, 0, 12) . '...');
+                ($this->say)('正在还原 ' . substr($previous, 0, 12) . '...');
                 $clone->checkOut($previous);
             }
         } catch (Throwable $putBackError) {
             return new RuntimeException(
                 $error->getMessage() . "\nThe previous commit " . substr($previous, 0, 12)
-                . ' could not be checked out again (' . $putBackError->getMessage() . '). '
-                . 'No container was changed, but the clone is not at the deployed commit.',
+                . ' 无法再次检出（' . $putBackError->getMessage() . '). '
+                . '没有容器被改动，但克隆并不在已部署的提交上。',
                 0,
                 $error
             );
@@ -509,12 +509,12 @@ final class GitDeploy
         $problems = [];
         try {
             if ($clone->checkedOutCommit() !== $previous) {
-                ($this->say)('Putting back ' . substr($previous, 0, 12) . '...');
+                ($this->say)('正在还原 ' . substr($previous, 0, 12) . '...');
                 $clone->checkOut($previous);
             }
         } catch (Throwable $error) {
-            $problems[] = 'The commit ' . substr($previous, 0, 12) . ' could not be checked out again (' . $error->getMessage()
-                . '). No container was changed, but the clone is not where it was: deploy the stack, or clone it again'
+            $problems[] = '提交 ' . substr($previous, 0, 12) . ' 无法再次检出（' . $error->getMessage()
+                . '）。没有容器被改动，但克隆已不在原先位置：请部署该栈，或使用 compose-git reclone 重新克隆'
                 . ' with compose-git reclone.';
         }
         if ($overridePrune === null) {
@@ -523,13 +523,13 @@ final class GitDeploy
         }
         if (@file_get_contents($overridePrune['path']) !== $overridePrune['after']) {
             // Saved again since the checks pruned it: that save is newer than what the prune read.
-            ($this->say)("The plugin's override was changed during the dry run, so it was left as it is now.");
+            ($this->say)("插件的覆盖文件在试运行期间被改动，因此保持当前状态。");
             return $problems;
         }
         if (file_put_contents($overridePrune['path'], $overridePrune['before']) !== strlen($overridePrune['before'])) {
             $problems[] = "The plugin's override {$overridePrune['path']} could not be put back as it was before the dry run.";
         } else {
-            ($this->say)("Put the plugin's override back as it was before the dry run.");
+            ($this->say)("已将插件的覆盖文件还原到试运行之前的状态。");
         }
         return $problems;
     }
@@ -576,14 +576,14 @@ final class GitDeploy
         }
         $dir = sys_get_temp_dir() . '/compose-git-dry-run-' . bin2hex(random_bytes(4));
         if (!@mkdir($dir, 0700)) {
-            throw new RuntimeException("Could not make the folder $dir to compare the compose configurations in.");
+            throw new RuntimeException("无法创建用于比较 compose 配置的文件夹 {$dir}。");
         }
         $beforeName = 'before-' . substr($previousCommit, 0, 12) . '.yaml';
         $afterName = 'after-' . substr($targetCommit, 0, 12) . '.yaml';
         try {
             if (file_put_contents("$dir/$beforeName", $before) !== strlen($before)
                 || file_put_contents("$dir/$afterName", $after) !== strlen($after)) {
-                throw new RuntimeException("Could not write the compose configurations to $dir to compare them.");
+                throw new RuntimeException("无法将 compose 配置写入 {$dir} 以进行比较。");
             }
             $diff = GitCommand::run(['diff', '--no-index', '--no-color', '--no-prefix', '--', $beforeName, $afterName], $dir);
             // git diff --no-index answers 1 when the files differ. It also answers 1, printing nothing, when it
@@ -614,9 +614,9 @@ final class GitDeploy
         $indirect = trim((string) @file_get_contents($indirectFile));
         if ($indirect !== $settings->composeFileInClone()) {
             throw new RuntimeException(
-                "git.json and the stack's indirect file name different compose files ("
-                . $settings->composeFileInClone() . " and " . ($indirect === '' ? 'none' : $indirect) . "). "
-                . "Make $indirectFile hold the first, then deploy again."
+                "git.json 与该栈的 indirect 文件指向了不同的 compose 文件（"
+                . $settings->composeFileInClone() . " and " . ($indirect === '' ? 'none' : $indirect) . "）。"
+                . "请让 {$indirectFile} 指向第一个文件，然后重新部署。"
             );
         }
         return $settings;
@@ -630,7 +630,7 @@ final class GitDeploy
     private static function describeLocalChanges(array $changedFiles, bool $madeByHand, string $checkedOut): string
     {
         if ($changedFiles !== []) {
-            return 'local changes to ' . implode(', ', array_slice($changedFiles, 0, 5)) . (count($changedFiles) > 5 ? ', ...' : '');
+            return '本地改动：' . implode(', ', array_slice($changedFiles, 0, 5)) . (count($changedFiles) > 5 ? ', ...' : '');
         }
         return 'a commit made in the clone by hand (' . substr($checkedOut, 0, 12) . ')';
     }
@@ -664,7 +664,7 @@ final class GitDeploy
         if (!$saveAndDiscard) {
             $what = self::describeLocalChanges($changedFiles, $madeByHand, $checkedOut);
             throw new RuntimeException(
-                "The clone has $what, so nothing was deployed. "
+                "克隆包含 {$what}，因此未执行部署。"
                 . '请使用「保存为补丁并丢弃」的选项重新部署，或手动撤销这些改动。'
             );
         }
@@ -673,7 +673,7 @@ final class GitDeploy
         $clone->assertDiscardKeepsUntrackedFiles();
         $patch = $clone->saveChangesAsPatch($base, $this->stackDir);
         if ($patch !== null) {
-            ($this->say)("Saved the local changes to $patch");
+            ($this->say)("已将本地改动保存到 {$patch}");
         }
         // Recorded before the discard, so a failure here leaves the changes in place.
         if ($this->anyInStackFolder($clone, $changedFiles)) {
@@ -710,7 +710,7 @@ final class GitDeploy
         $file = $stackDir . '/' . self::DISCARDED_CHANGES_FILE;
         $content = date('c') . "\n";
         if (file_put_contents($file, $content) !== strlen($content)) {
-            throw new RuntimeException("Could not write $file, so the local changes were not discarded.");
+            throw new RuntimeException("无法写入 {$file}，因此本地改动未被丢弃。");
         }
     }
 
@@ -757,7 +757,7 @@ final class GitDeploy
             $envFile = $args[$envIndex + 1];
             // Say it: the stack folder's .env wins over the repository's, so
             // which one is used can change between two deploys.
-            ($this->say)("Using the .env at $envFile");
+            ($this->say)("正在使用 {$envFile} 处的 .env 文件");
         } else {
             $envFile = rtrim($this->stackDir, '/') . '/.env';
         }
@@ -778,7 +778,7 @@ final class GitDeploy
             return $problems;
         }
         foreach ($check->foldersDockerWillCreate() as $folder) {
-            ($this->say)("Docker will create the missing folder $folder");
+            ($this->say)("Docker 将创建缺失的文件夹 {$folder}");
         }
         return [];
     }

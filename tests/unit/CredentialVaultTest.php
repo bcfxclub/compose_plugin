@@ -112,7 +112,7 @@ final class CredentialVaultTest extends TestCase
                 $vault->saveCredential(['id' => $credential['id'], 'name' => $credential['name'], 'provider' => $provider, 'registry' => $host, 'username' => 'u']);
                 $this->fail("{$credential['provider']} was changed to $provider");
             } catch (\InvalidArgumentException $error) {
-                $this->assertStringContainsString('cannot change between a registry login and a git credential', $error->getMessage());
+                $this->assertStringContainsString('不能在“注册表登录”与“git 凭据”之间切换', $error->getMessage());
             }
             $this->assertSame($credential['provider'], $vault->getCredentialSummary($credential['id'])['provider']);
         }
@@ -243,7 +243,7 @@ final class CredentialVaultTest extends TestCase
         $this->assertSame('github.com', $saved['registry']);
 
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('repository host only');
+        $this->expectExceptionMessage('只需填写仓库主机地址');
         $vault->saveCredential([
             'name' => 'Too much',
             'provider' => 'git',

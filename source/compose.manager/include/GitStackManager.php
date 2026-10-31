@@ -85,11 +85,11 @@ final class GitStackManager
         $this->assertArrayStarted();
         $folder = StackInfo::sanitizeProjectString($stackName);
         if ($folder === '') {
-            throw new InvalidArgumentException("'$stackName' cannot be used as a stack name.");
+            throw new InvalidArgumentException("'$stackName' 不能用作栈名称。");
         }
         $stackDir = $this->composeRoot . '/' . $folder;
         if (file_exists($stackDir) || @readlink($stackDir) !== false) {
-            throw new RuntimeException("A stack folder named '$folder' already exists. Choose another name, or move that stack into git (compose-git convert, or the button on its Sources tab).");
+            throw new RuntimeException("名为 '$folder' 的栈文件夹已存在。请换一个名称，或将该栈迁移到 Git（compose-git convert，或在其“来源”标签页上的按钮）。");
         }
         // Before the clone, so a projects folder whose mount is gone leaves nothing behind.
         $this->assertSafeToWriteStackFolder($stackDir);
@@ -107,15 +107,15 @@ final class GitStackManager
             // Nothing here deletes files, so name what was left: a retry makes a new clone,
             // and stops at a stack folder that already exists.
             if (is_dir($stackDir)) {
-                $leftBehind = "The clone at {$settings->cloneDir} was made, and the stack folder $stackDir was"
-                    . ' only partly made. Remove both folders before trying again.';
+                $leftBehind = "克隆已创建于 {$settings->cloneDir}，但栈文件夹 {$stackDir} 只"
+                    . '创建了一部分。重试前请先删除这两个文件夹。';
             } else {
-                $leftBehind = "The clone at {$settings->cloneDir} was made, but the stack was not."
-                    . ' Remove that folder before trying again.';
+                $leftBehind = "克隆已创建于 {$settings->cloneDir}，但栈没有创建成功。"
+                    . '重试前请先删除那个文件夹。';
             }
             throw new RuntimeException($error->getMessage() . "\n" . $leftBehind, 0, $error);
         }
-        ($this->say)("Created stack '{$stack->projectFolder}'. It is not deployed yet.");
+        ($this->say)("已创建栈 '{$stack->projectFolder}'，尚未部署。");
         if ($settings->credentialId !== null) {
             $this->logCredentialChange($stack->projectFolder, $settings->credentialId);
         }
@@ -145,7 +145,7 @@ final class GitStackManager
         $this->assertArrayStarted();
         $stack = $this->stack($folder);
         if ($stack->isGitStack()) {
-            throw new RuntimeException("'$folder' is already a git stack.");
+            throw new RuntimeException("'$folder' 已经是 Git 栈。");
         }
         $stackDir = $stack->path;
 
@@ -160,41 +160,41 @@ final class GitStackManager
             $foldersNextToOldComposeFile = $this->foldersIn($stack->composeSource);
 
             $settings = $this->newSettings($url, $branch, $composePath, $clonesRoot, $folder, $credentialId);
-            ($this->say)("Cloning $url ($branch) into {$settings->cloneDir}...");
+            ($this->say)("正在将 {$url}（{$branch}）克隆到 {$settings->cloneDir}...");
             $this->createClone($settings);
 
             // From here the stack folder changes; everything replaced goes into the backup.
             $backupDir = $stackDir . '/pre-git-' . date('Y-m-d_His');
             $this->assertSafeToWriteStackFolder($backupDir);
             if (!@mkdir($backupDir, 0755)) {
-                throw new RuntimeException("Could not create $backupDir. The clone at {$settings->cloneDir} was made; nothing else changed.");
+                throw new RuntimeException("无法创建 {$backupDir}。克隆已创建于 {$settings->cloneDir}；其他内容未改动。");
             }
             foreach (['indirect', 'indirect_mode', 'use_default_compose_files'] as $metadataFile) {
                 $source = $stackDir . '/' . $metadataFile;
                 if (is_file($source) && !@copy($source, $backupDir . '/' . $metadataFile)) {
                     throw new RuntimeException(
-                        "Could not copy $source into $backupDir. Nothing else in the stack was changed; "
-                        . "the clone at {$settings->cloneDir} was made."
+                        "无法将 {$source} 复制到 {$backupDir}。栈中的其他内容未改动；"
+                        . "克隆已创建于 {$settings->cloneDir}。"
                     );
                 }
             }
             if ($oldComposeFile !== null && is_file($oldComposeFile) && dirname($oldComposeFile) === $stackDir) {
                 if (!rename($oldComposeFile, $backupDir . '/' . basename($oldComposeFile))) {
                     throw new RuntimeException(
-                        "Could not move $oldComposeFile into $backupDir. Nothing else in the stack was changed; "
-                        . "the clone at {$settings->cloneDir} was made."
+                        "无法将 {$oldComposeFile} 移动到 {$backupDir}。栈中的其他内容未改动；"
+                        . "克隆已创建于 {$settings->cloneDir}。"
                     );
                 }
-                ($this->say)('Moved the old ' . basename($oldComposeFile) . " to $backupDir.");
+                ($this->say)('已将旧的 ' . basename($oldComposeFile) . " 移动到 $backupDir。");
             }
 
             try {
                 $indirect = $settings->composeFileInClone();
                 if (@file_put_contents($stackDir . '/indirect', $indirect) !== strlen($indirect)) {
-                    throw new RuntimeException("Could not write $stackDir/indirect.");
+                    throw new RuntimeException("无法写入 $stackDir/indirect。");
                 }
                 if (@file_put_contents($stackDir . '/indirect_mode', 'file') !== strlen('file')) {
-                    throw new RuntimeException("Could not write $stackDir/indirect_mode.");
+                    throw new RuntimeException("无法写入 $stackDir/indirect_mode。");
                 }
 
                 // An indirect stack may have used a .env next to its old compose
@@ -202,9 +202,9 @@ final class GitStackManager
                 $stackEnv = $stackDir . '/.env';
                 if ($usesEnvNextToComposeFile && $oldEnv !== null && $oldEnv !== $stackEnv && !is_file($stackEnv)) {
                     if (!@copy($oldEnv, $stackEnv)) {
-                        throw new RuntimeException("Could not copy $oldEnv to $stackEnv.");
+                        throw new RuntimeException("无法将 {$oldEnv} 复制到 {$stackEnv}。");
                     }
-                    ($this->say)("Copied $oldEnv to $stackEnv.");
+                    ($this->say)("已将 {$oldEnv} 复制到 {$stackEnv}。");
                 }
 
                 $settings->saveCheckingCredential($stackDir);
@@ -217,32 +217,32 @@ final class GitStackManager
                 if ($oldOverride !== null && is_file($oldOverride) && $newOverride !== null
                     && $newOverride !== $oldOverride && !$this->hasContent($newOverride)) {
                     if (!@copy($oldOverride, $newOverride)) {
-                        throw new RuntimeException("Could not copy the plugin's override $oldOverride to $newOverride.");
+                        throw new RuntimeException("无法将插件的覆盖文件 {$oldOverride} 复制到 {$newOverride}。");
                     }
-                    ($this->say)("Copied the plugin's override $oldOverride to $newOverride.");
+                    ($this->say)("已将插件的覆盖文件 {$oldOverride} 复制到 {$newOverride}。");
                 }
             } catch (Throwable $error) {
                 // The old compose file may already be in the backup folder, so say how to undo.
                 throw new RuntimeException(
-                    $error->getMessage() . "\nThe stack was only partly converted. To undo it, delete whichever of"
-                    . " git.json, git_state.json, indirect and indirect_mode are in $stackDir, then copy the files in"
-                    . " $backupDir back into it. The clone at {$settings->cloneDir} was made.",
+                    $error->getMessage() . "\n栈只完成了一部分转换。要撤销，请删除以下文件："
+                    . "git.json、git_state.json、indirect 与 indirect_mode（位于 {$stackDir} 中），然后把"
+                    . "{$backupDir} 中的文件复制回去。克隆已创建于 {$settings->cloneDir}。",
                     0,
                     $error
                 );
             }
 
-            ($this->say)("'$folder' is now a git stack. Its containers change at the next deploy.");
+            ($this->say)("'$folder' 现在是 Git 栈。其容器将在下次部署时变更。");
             if ($settings->credentialId !== null) {
                 $this->logCredentialChange($folder, $settings->credentialId);
             }
             if ($foldersNextToOldComposeFile !== []) {
                 // The compose file is not parsed here; this is only a reminder.
                 ($this->say)(
-                    '注意：这些文件夹与旧的 compose 文件相邻：' . implode(', ', $foldersNextToOldComposeFile)
-                    . '. If the compose file mounts any of them with a relative path (such as ./data), that path now'
-                    . ' points inside the clone, and the container would start on an empty folder. Use an absolute'
-                    . ' path, or move the data, before deploying.'
+                    '注意：这些文件夹与旧的 compose 文件相邻：' . implode('、', $foldersNextToOldComposeFile)
+                    . '。如果 compose 文件以相对路径（例如 ./data）挂载其中任何一个，该路径现在'
+                    . '指向克隆内部，容器会在空文件夹上启动。部署前请改用绝对'
+                    . '路径，或先移动数据。'
                 );
             }
             return $backupDir;
@@ -434,7 +434,7 @@ final class GitStackManager
         $oldCredentialId = $settings->credentialId;
         if ($settings->isSsh()) {
             if ($credentialId !== null && $credentialId === $oldCredentialId) {
-                ($this->say)("'$folder' already uses the deploy key '" . $this->credentialName($credentialId) . "'. Nothing was changed.");
+                ($this->say)("'$folder' 已经使用部署密钥 '" . $this->credentialName($credentialId) . "'。未做任何改动。");
                 return;
             }
             $this->assertRepositoryDeployKey($folder, $settings, $credentialId);
@@ -442,18 +442,18 @@ final class GitStackManager
 
         $this->withStackLock($stack, function () use ($stack, $settings, $credentialId): void {
             $changed = $settings->withCredentialId($credentialId);
-            ($this->say)("Checking that {$changed->url} can be reached with the new setting...");
+            ($this->say)("正在检查能否用新设置访问 {$changed->url}...");
             (new GitClone($changed))->remoteBranchCommit();
             $changed->saveCheckingCredential($stack->path);
         });
         $this->logCredentialChange($folder, $credentialId);
         ($this->say)($credentialId === null
-            ? "'$folder' now reaches its repository without a credential."
-            : "'$folder' now uses the credential '" . $this->credentialName($credentialId) . "'.");
+            ? "'$folder' 现在无需凭据即可访问其仓库。"
+            : "'$folder' 现在使用凭据 '" . $this->credentialName($credentialId) . "'。");
         if ($settings->isSsh() && $oldCredentialId !== null && $oldCredentialId !== $credentialId) {
             ($this->say)(
-                "Its old deploy key '" . $this->credentialName($oldCredentialId) . "' stays on the Credentials tab, which "
-                . "shows whether another stack still uses it. If none does, delete it there and from the repository's deploy keys."
+                "它原来的部署密钥 '" . $this->credentialName($oldCredentialId) . "' 仍保留在“凭据”标签页上，那里"
+                . "会显示是否还有其他栈在使用它。如果没有，请在那里以及仓库的部署密钥中删除它。"
             );
         }
     }
@@ -482,10 +482,10 @@ final class GitStackManager
     {
         $choices = array_map(static fn(string $name): string => "'$name'", array_values($keys));
         return new InvalidArgumentException(
-            "An ssh stack reaches its repository with a deploy key, so '$folder' can only be given a deploy key of the "
-            . 'same repository that another stack uses, or one made for the repository'
-            . ($choices === [] ? ', and there is none.' : ': ' . implode(', ', $choices) . '.')
-            . ' compose-git deploy-key shows the key it uses now.'
+            "SSH 栈通过部署密钥访问其仓库，因此 '$folder' 只能使用"
+            . '同一仓库中其他栈所用的部署密钥，或为该仓库创建的密钥'
+            . ($choices === [] ? '，但当前没有这样的密钥。' : '：' . implode('、', $choices) . '.')
+            . ' compose-git deploy-key 会显示它当前使用的密钥。'
         );
     }
 
@@ -543,7 +543,7 @@ final class GitStackManager
             return $matches[0];
         }
         if (count($matches) > 1) {
-            throw new RuntimeException("Several deploy keys are named '$nameOrId'. Use the key's id instead.");
+            throw new RuntimeException("有多个部署密钥名为 '$nameOrId'。请改用密钥的 id。");
         }
         throw $this->notARepositoryDeployKey($folder, $keys);
     }
@@ -608,7 +608,7 @@ final class GitStackManager
                 $cleared = true;
             }
             if (!$cleared) {
-                ($this->say)("'$folder' has no failed deploy, so there is nothing to resume.");
+                ($this->say)("'$folder' 没有失败的部署，因此没有需要恢复的内容。");
             }
             return $cleared;
         });
@@ -634,12 +634,12 @@ final class GitStackManager
             return $matches[0]['id'];
         }
         if (count($matches) > 1) {
-            throw new RuntimeException("Several git credentials are named '$nameOrId'. Use the credential's id instead.");
+            throw new RuntimeException("有多个 Git 凭据名为 '$nameOrId'。请改用凭据的 id。");
         }
         $names = array_map(static fn(array $credential): string => $credential['name'], $gitCredentials);
         throw new RuntimeException(
-            "There is no git credential named '$nameOrId'. "
-            . ($names === [] ? 'Add one on the Credentials tab of the plugin settings first.' : 'Git credentials: ' . implode(', ', $names) . '.')
+            "没有名为 '$nameOrId' 的 Git 凭据。"
+            . ($names === [] ? '请先在插件设置的“凭据”标签页中添加一个。' : 'Git 凭据：' . implode('、', $names) . '.')
         );
     }
 
@@ -681,7 +681,7 @@ final class GitStackManager
     {
         $settings = $this->settings($this->stack($folder));
         if (!$settings->isSsh() || $settings->credentialId === null) {
-            throw new RuntimeException("'$folder' does not reach its repository over ssh, so it has no deploy key.");
+            throw new RuntimeException("'$folder' 不通过 SSH 访问其仓库，因此没有部署密钥。");
         }
         return GitSsh::publicKey($settings->credentialId);
     }
@@ -701,22 +701,22 @@ final class GitStackManager
         $settings = $this->settings($stack);
         $address = GitStackSettings::sshAddress($settings->url);
         if ($address === null) {
-            throw new RuntimeException("'$folder' does not reach its repository over ssh.");
+            throw new RuntimeException("'$folder' 不通过 SSH 访问其仓库。");
         }
 
         $this->withStackLock($stack, function () use ($stack, $settings, $address): void {
             $knownHosts = GitSsh::scanHostKeys($address['host'], $address['port']);
-            ($this->say)('Pinned now:   ' . implode(', ', GitSsh::fingerprints((string) $settings->sshKnownHosts)));
-            ($this->say)('Host offers:  ' . implode(', ', GitSsh::fingerprints($knownHosts)));
+            ($this->say)('当前固定：   ' . implode(', ', GitSsh::fingerprints((string) $settings->sshKnownHosts)));
+            ($this->say)('主机提供：  ' . implode(', ', GitSsh::fingerprints($knownHosts)));
             if ($knownHosts === $settings->sshKnownHosts) {
-                ($this->say)('The host keys have not changed.');
+                ($this->say)('主机密钥没有变化。');
                 return;
             }
-            ($this->say)('Compare the new fingerprints with the ones your git host publishes before you deploy.');
+            ($this->say)('部署前，请将新的指纹与你的 Git 主机公布的指纹进行比对。');
             $changed = $settings->withSshKnownHosts($knownHosts);
             (new GitClone($changed))->remoteBranchCommit();
             $changed->save($stack->path);
-            ($this->say)('The new host keys are pinned.');
+            ($this->say)('新的主机密钥已固定。');
         });
     }
 
@@ -739,7 +739,7 @@ final class GitStackManager
 
         $address = GitStackSettings::sshAddress($url);
         if ($address === null) {
-            throw new InvalidArgumentException("The ssh repository address is not valid: $url");
+            throw new InvalidArgumentException("SSH 仓库地址无效：{$url}");
         }
         if ($credentialId !== null) {
             throw new InvalidArgumentException('SSH 栈使用插件为其仓库保存的部署密钥，因此不能指定其他凭据。');
@@ -747,8 +747,8 @@ final class GitStackManager
         // The host first: a mistyped host then fails before a deploy key is made for it.
         $knownHosts = GitSsh::scanHostKeys($address['host'], $address['port']);
         $credentialId = $this->deployKeyFor($folder, $address);
-        ($this->say)("Pinned the ssh host keys of {$address['host']}: " . implode(', ', GitSsh::fingerprints($knownHosts)));
-        ($this->say)('Compare them with the fingerprints your git host publishes.');
+        ($this->say)("已固定 {$address['host']} 的 SSH 主机密钥：" . implode(', ', GitSsh::fingerprints($knownHosts)));
+        ($this->say)('请将它们与你的 Git 主机公布的指纹进行比对。');
         return $settings->withCredentialId($credentialId)->withSshKnownHosts($knownHosts);
     }
 
@@ -774,7 +774,7 @@ final class GitStackManager
         $repository = self::sshRepositoryName($address);
         $name = "deploy key for $repository";
         $key = GitSsh::generateKey("compose-manager $repository");
-        ($this->say)("Made a new deploy key for $repository ('$name' on the Credentials tab). Other stacks of this repository will use it too.");
+        ($this->say)("已为 $repository 生成新的部署密钥（在“凭据”标签页中名为 '$name'）。该仓库的其他栈也会使用它。");
         $id = (new CredentialVault())->saveCredential([
             'name' => $name,
             'provider' => 'git-ssh',
@@ -783,7 +783,7 @@ final class GitStackManager
             'secret' => $key['private'],
         ])['id'];
         composeLogger(
-            "Made a deploy key for $repository, for git stack '$folder'",
+            "已为 $repository 生成部署密钥，用于 Git 栈 '$folder'",
             ['id' => $id, 'host' => self::sshRegistry($address)],
             'user',
             'info',
@@ -817,8 +817,8 @@ final class GitStackManager
             $name = $deployKeys[$credentialId];
             return [
                 'id' => $credentialId,
-                'message' => "Using the deploy key of '$otherFolder' ('$name' on the Credentials tab), which "
-                    . 'reaches the same repository: the repository knows it already.',
+                'message' => "使用 '$otherFolder' 的部署密钥（在“凭据”标签页中名为 '$name'），它"
+                    . '访问的是同一个仓库：仓库已经认识它了。',
             ];
         }
 
@@ -827,7 +827,7 @@ final class GitStackManager
             if ($name === $repositoryKeyName) {
                 return [
                     'id' => $id,
-                    'message' => "Using the deploy key made for this repository earlier ('$name' on the Credentials tab).",
+                    'message' => "使用之前为该仓库生成的部署密钥（在“凭据”标签页中名为 '$name'）。",
                 ];
             }
         }
@@ -838,9 +838,9 @@ final class GitStackManager
             if ($name === $stackKeyName && !in_array($id, $keysInUse, true)) {
                 return [
                     'id' => $id,
-                    'message' => "Using the deploy key made for '$folder' earlier ('$name' on the Credentials tab). If it was "
-                        . 'made for another repository, by a stack of the same name that has since been deleted, '
-                        . "delete '$name' first: GitHub, for one, refuses a deploy key that another repository has.",
+                    'message' => "使用之前为 '$folder' 生成的部署密钥（在“凭据”标签页中名为 '$name'）。如果它是"
+                        . '为另一个仓库生成的，由某个后来被删除的同名栈创建，'
+                        . "请先删除 '$name'：例如 GitHub 会拒绝已被其他仓库使用的部署密钥。",
                 ];
             }
         }
@@ -900,7 +900,7 @@ final class GitStackManager
         foreach ($this->listGitStacks() as $folder) {
             $data = $this->readGitJson($folder);
             if ($data === null) {
-                ($this->say)("Could not read the git settings of '$folder', so its deploy key is not looked at.");
+                ($this->say)("无法读取 '$folder' 的 Git 设置，因此不会检查其部署密钥。");
                 continue;
             }
             $credentialId = $data['credentialId'] ?? null;
@@ -998,7 +998,7 @@ final class GitStackManager
         try {
             return (new CredentialVault())->getCredentialSummary($credentialId)['name'];
         } catch (Throwable) {
-            return "$credentialId (no longer in the credential vault)";
+            return "{$credentialId}（已不在凭据库中）";
         }
     }
 
@@ -1056,21 +1056,21 @@ final class GitStackManager
                 $movedTo = $cloneDir . '.replaced-' . date('Y-m-d_His');
                 GitPathGuard::assertSafeToWrite($movedTo);
                 if (file_exists($movedTo) || !@rename($cloneDir, $movedTo)) {
-                    throw new RuntimeException("Could not move $cloneDir aside to $movedTo. Nothing was changed.");
+                    throw new RuntimeException("无法将 {$cloneDir} 移到 {$movedTo}。未做任何改动。");
                 }
-                ($this->say)("Moved the old clone to $movedTo.");
+                ($this->say)("已将旧克隆移动到 $movedTo。");
             }
 
             try {
                 $clone = new GitClone($settings);
-                ($this->say)("Cloning {$settings->url} ({$settings->branch})...");
+                ($this->say)("正在克隆 {$settings->url}（{$settings->branch}）...");
                 $head = $clone->create();
             } catch (Throwable $error) {
                 if ($movedTo !== null) {
                     if (!file_exists($cloneDir) && @rename($movedTo, $cloneDir)) {
                         ($this->say)('已将旧克隆移回。');
                     } else {
-                        ($this->say)("Could not move the old clone back. It is still at $movedTo.");
+                        ($this->say)("无法将旧克隆移回。它仍在 $movedTo。");
                     }
                 }
                 throw $error instanceof RuntimeException ? $error : new RuntimeException($error->getMessage(), 0, $error);
@@ -1085,8 +1085,8 @@ final class GitStackManager
                     // deployed commit stays recorded: the next deploy finds it
                     // gone from the clone and recreates every container, since
                     // what changed cannot be measured (see GitDeploy::upArguments).
-                    ($this->say)('The deployed commit ' . substr($deployed, 0, 12) . ' is not on the branch any more, so the clone was left at '
-                        . substr($head, 0, 12) . '. Deploy to bring the stack up to date; that deploy recreates every container.');
+                    ($this->say)('已部署的提交 ' . substr($deployed, 0, 12) . ' 已不在该分支上，因此克隆保持在 '
+                        . substr($head, 0, 12) . '。请部署以将栈更新到最新；该次部署会重建所有容器。');
                 } else {
                     try {
                         $clone->checkOut($deployed);
@@ -1103,9 +1103,9 @@ final class GitStackManager
             }
             if ($movedTo !== null && $untrackedInOldClone !== []) {
                 ($this->say)(
-                    'The old clone holds files that are not in the repository, and not in the new clone: '
-                    . implode(', ', array_slice($untrackedInOldClone, 0, 10)) . (count($untrackedInOldClone) > 10 ? ', ...' : '')
-                    . '. If a container keeps data there (a relative bind mount such as ./data), copy it back before deploying.'
+                    '旧克隆中含有不在仓库中、也不在新克隆中的文件：'
+                    . implode('、', array_slice($untrackedInOldClone, 0, 10)) . (count($untrackedInOldClone) > 10 ? '、...' : '')
+                    . '。如果某个容器在其中保存数据（例如 ./data 这样的相对 bind mount），请在部署前复制回来。'
                 );
             }
             return $movedTo;
@@ -1137,7 +1137,7 @@ final class GitStackManager
     {
         $stack = $this->stack($folder);
         if (!$stack->isGitStack()) {
-            throw new RuntimeException("'$folder' is not a git stack.");
+            throw new RuntimeException("'$folder' 不是 Git 栈。");
         }
         return $stack;
     }
@@ -1150,10 +1150,10 @@ final class GitStackManager
     private function stack(string $folder): StackInfo
     {
         if ($folder === '' || $folder === '.' || $folder === '..' || str_contains($folder, '/')) {
-            throw new RuntimeException("'$folder' is not a stack folder name.");
+            throw new RuntimeException("'$folder' 不是栈文件夹名称。");
         }
         if (!is_dir($this->composeRoot . '/' . $folder) || @readlink($this->composeRoot . '/' . $folder) !== false) {
-            throw new RuntimeException("There is no stack folder named exactly '$folder' in {$this->composeRoot}.");
+            throw new RuntimeException("在 {$this->composeRoot} 中没有名称完全为 '$folder' 的栈文件夹。");
         }
         StackInfo::clearCache();
         return StackInfo::fromProject($this->composeRoot, $folder);
@@ -1163,7 +1163,7 @@ final class GitStackManager
     {
         $settings = GitStackSettings::load($stack->path);
         if ($settings === null) {
-            throw new RuntimeException("'{$stack->projectFolder}' is not a git stack.");
+            throw new RuntimeException("'{$stack->projectFolder}' 不是 Git 栈。");
         }
         return $settings;
     }
@@ -1205,7 +1205,7 @@ final class GitStackManager
     {
         $handle = self::tryStackLock($stack);
         if ($handle === null) {
-            throw new RuntimeException("Another operation is in progress for '{$stack->projectFolder}'. Try again when it has finished.");
+            throw new RuntimeException("'{$stack->projectFolder}' 正在进行另一个操作。请在其完成后再试。");
         }
         try {
             return $work();
@@ -1230,7 +1230,7 @@ final class GitStackManager
         $lockFile = COMPOSE_LOCK_DIR . '/' . $stack->projectName . '.lock';
         $handle = @fopen($lockFile, 'c');
         if ($handle === false) {
-            throw new RuntimeException("Could not open the lock file $lockFile.");
+            throw new RuntimeException("无法打开锁文件 $lockFile。");
         }
         if (!flock($handle, LOCK_EX | LOCK_NB)) {
             fclose($handle);

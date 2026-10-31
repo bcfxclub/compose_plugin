@@ -145,7 +145,7 @@ final class GitClone
 
         GitPathGuard::assertSafeToWrite($cloneDir);
         if ($this->exists()) {
-            throw new RuntimeException("$cloneDir already exists, so nothing was cloned into it.");
+            throw new RuntimeException("{$cloneDir} 已存在，因此未向其克隆任何内容。");
         }
 
         try {
@@ -170,7 +170,7 @@ final class GitClone
 
             GitPathGuard::assertSafeToWrite($cloneDir . '/.git');
             if (file_put_contents($cloneDir . '/.git/' . self::MARKER_FILE, $this->settings->cloneId . "\n") === false) {
-                throw new RuntimeException("Could not write the clone marker in $cloneDir.");
+                throw new RuntimeException("无法在 {$cloneDir} 中写入克隆标记。");
             }
 
             $commit = $this->resolveCommit('refs/remotes/origin/' . $this->settings->branch);
@@ -179,7 +179,7 @@ final class GitClone
                     "{$this->settings->composePath} does not exist on branch {$this->settings->branch}, so no clone was made."
                 );
             }
-            $this->runOrThrow(['checkout', '--detach', $commit], 'Could not check out the files');
+            $this->runOrThrow(['checkout', '--detach', $commit], '无法检出文件');
             return $commit;
         } catch (Throwable $error) {
             $this->removeFolderCreatedByThisRun();
@@ -219,7 +219,7 @@ final class GitClone
 
         $topLevel = $this->git(['rev-parse', '--show-toplevel'], $cloneDir, 30);
         if (!$topLevel->succeeded() || trim($topLevel->stdout) !== realpath($cloneDir)) {
-            throw new GitCloneNotOwnedException("$cloneDir is not the top of its own git clone.");
+            throw new GitCloneNotOwnedException("{$cloneDir} 不是其自身 git 克隆的顶层目录。");
         }
 
         $remote = $this->git(['config', '--get', 'remote.origin.url'], $cloneDir, 30);
@@ -449,7 +449,7 @@ final class GitClone
             GitPathGuard::assertSafeToWrite($patchDir);
         }
         if (!is_dir($patchDir) && !@mkdir($patchDir, 0755) && !is_dir($patchDir)) {
-            throw new RuntimeException("Could not create $patchDir.");
+            throw new RuntimeException("无法创建 {$patchDir}。");
         }
 
         $base = $patchDir . '/' . date('Y-m-d_His') . '-' . substr($againstCommit, 0, 12);
@@ -462,7 +462,7 @@ final class GitClone
         if (file_put_contents($patchFile, $result->stdout) !== strlen($result->stdout)) {
             // This run created the file (the loop above picked an unused name).
             @unlink($patchFile);
-            throw new RuntimeException("Could not write all of $patchFile, so the local changes were kept.");
+            throw new RuntimeException("无法完整写入 {$patchFile}，因此保留了本地改动。");
         }
         return $patchFile;
     }
@@ -710,7 +710,7 @@ final class GitClone
         );
         $commit = trim($result->stdout);
         if (!$result->succeeded() || !self::isCommitId($commit)) {
-            throw new RuntimeException("Could not find commit $reference in the clone.");
+            throw new RuntimeException("无法在克隆中找到提交 {$reference}。");
         }
         return $commit;
     }
@@ -789,8 +789,8 @@ final class GitClone
         // The token is offered only for the exact address the stack uses (credential.useHttpPath),
         // so after a redirect git asks for the new address and gets nothing.
         if ($hasCredential && preg_match('/^warning: redirecting to (\S+)/m', $stderr, $match) === 1) {
-            return "The server redirected to {$match[1]}, and the stack's credential is offered only for the address "
-                . 'the stack uses. Use the address the server redirects to (usually the one ending in .git).';
+            return "服务器已将请求重定向到 {$match[1]}，而该栈的凭据仅提供给栈所使用的地址"
+                . '（启用了 credential.useHttpPath）。请改用服务器重定向后的地址（通常以 .git 结尾）。';
         }
         if (!$hasCredential && str_contains($stderr, 'terminal prompts disabled')) {
             return '仓库要求输入用户名和密码，因此需要凭据：请在「凭据」标签页添加 git 令牌，'
@@ -826,9 +826,9 @@ final class GitClone
             // git's last line is only "Could not read from remote repository", so say what ssh said.
             if (!$result->succeeded() && str_contains($result->stderr, 'Host key verification failed')) {
                 throw new RuntimeException(
-                    'The repository server\'s ssh host key does not match the one pinned for this stack, so nothing was fetched. '
-                    . 'If the server was rebuilt or its keys were changed on purpose, run compose-git trust-host and compare '
-                    . 'the new fingerprints with the ones the server publishes.'
+                    '该仓库服务器的 SSH 主机密钥与此栈固定的密钥不匹配，因此未获取任何内容。'
+                    .'如果服务器已重建或密钥被有意更换，请运行 compose-git trust-host，'
+                    . '并将新指纹与服务器公布的一致。'
                 );
             }
             return $result;

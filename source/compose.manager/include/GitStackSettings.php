@@ -218,7 +218,7 @@ final class GitStackSettings
         }
         $content = @file_get_contents($file);
         if ($content === false) {
-            throw new RuntimeException("Could not read $file.");
+            throw new RuntimeException("无法读取 {$file}。");
         }
 
         // A file saved by a Windows editor may start with a byte order mark.
@@ -227,27 +227,27 @@ final class GitStackSettings
         }
         $data = json_decode($content, true);
         if ($data === null && json_last_error() !== JSON_ERROR_NONE) {
-            throw new RuntimeException("$file is not valid JSON: " . json_last_error_msg() . '.');
+            throw new RuntimeException("{$file} 不是合法的 JSON：" . json_last_error_msg() . '。');
         }
         if (!is_array($data) || array_is_list($data)) {
-            throw new RuntimeException("$file is not a valid git settings file (expected a JSON object).");
+            throw new RuntimeException("{$file} 不是合法的 git 设置文件（应为 JSON 对象）。");
         }
 
         $unknown = array_values(array_diff(array_keys($data), self::KEYS, self::OPTIONAL_KEYS));
         if ($unknown !== []) {
             throw new RuntimeException(
-                "$file has settings this version of the plugin does not know: " . implode(', ', $unknown)
-                . '. A newer version may have written them; update the plugin, or remove them by hand.'
+                "{$file} 含有本插件版本不认识的设置项：" . implode(', ', $unknown)
+                . '。可能是更新版本的插件写入的，请更新插件或手动移除这些项。'
             );
         }
         $missing = array_values(array_diff(self::KEYS, array_keys($data)));
         if ($missing !== []) {
-            throw new RuntimeException("$file is missing settings: " . implode(', ', $missing) . '.');
+            throw new RuntimeException("{$file} 缺少设置项：" . implode('、', $missing) . '。');
         }
         if ($data['version'] !== self::FORMAT_VERSION) {
             throw new RuntimeException(
-                "$file was written by a different version of the plugin (format "
-                . var_export($data['version'], true) . ', expected ' . self::FORMAT_VERSION . ').'
+                "{$file} 由不同版本的插件写入（格式 "
+                . var_export($data['version'], true) . '，预期为 ' . self::FORMAT_VERSION . '）。'
             );
         }
         foreach (['url', 'branch', 'composePath', 'cloneId', 'cloneDir'] as $key) {
@@ -284,7 +284,7 @@ final class GitStackSettings
                 $autoDeploy
             );
         } catch (InvalidArgumentException $error) {
-            throw new RuntimeException("$file: " . $error->getMessage(), 0, $error);
+            throw new RuntimeException("{$file}： " . $error->getMessage(), 0, $error);
         }
     }
 
@@ -322,7 +322,7 @@ final class GitStackSettings
             GitPathGuard::assertSafeToWrite($stackDir);
         }
         if (!is_dir($stackDir)) {
-            throw new RuntimeException("Stack folder $stackDir does not exist.");
+            throw new RuntimeException("栈目录 {$stackDir} 不存在。");
         }
 
         $data = [
@@ -346,7 +346,7 @@ final class GitStackSettings
         }
         $json = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
         if ($json === false) {
-            throw new RuntimeException('Could not encode the git settings.');
+            throw new RuntimeException('无法编码 git 设置。');
         }
 
         $file = $stackDir . '/' . self::FILE_NAME;
@@ -355,11 +355,11 @@ final class GitStackSettings
         $content = $json . "\n";
         if (file_put_contents($tmpFile, $content) !== strlen($content)) {
             @unlink($tmpFile);
-            throw new RuntimeException("Could not write $tmpFile.");
+            throw new RuntimeException("无法写入 {$tmpFile}。");
         }
         if (!rename($tmpFile, $file)) {
             @unlink($tmpFile);
-            throw new RuntimeException("Could not replace $file.");
+            throw new RuntimeException("无法替换 {$file}。");
         }
     }
 
@@ -400,13 +400,13 @@ final class GitStackSettings
     public static function validateUrl(string $url): void
     {
         if ($url === '') {
-            throw new InvalidArgumentException('The repository address is empty.');
+            throw new InvalidArgumentException('仓库地址为空。');
         }
         if (strlen($url) > 2048) {
-            throw new InvalidArgumentException('The repository address is too long.');
+            throw new InvalidArgumentException('仓库地址过长。');
         }
         if (preg_match('/[\x00-\x20\x7f]/', $url) === 1) {
-            throw new InvalidArgumentException('The repository address must not contain spaces or control characters.');
+            throw new InvalidArgumentException('仓库地址不能包含空格或控制字符。');
         }
 
         if (self::isSshUrl($url)) {
@@ -414,7 +414,7 @@ final class GitStackSettings
             // where a value starting with "-" would be read as an option.
             if (self::sshAddress($url) === null) {
                 throw new InvalidArgumentException(
-                    "The ssh repository address is not valid. Use ssh://git@host[:port]/path or git@host:path: $url"
+                    "SSH 仓库地址无效。请使用 ssh://git@host[:port]/path 或 git@host:path 形式：{$url}"
                 );
             }
             return;
@@ -433,30 +433,29 @@ final class GitStackSettings
         // Lower case only: git matches the transport name exactly, and refuses "HTTPS".
         if (!str_starts_with($url, 'https://')) {
             throw new InvalidArgumentException(
-                "仓库地址必须以 https:// 或 ssh:// 开头（或为 git@host:path 形式），或为以下路径下的路径："
-                . COMPOSE_GIT_MNT_DIR . " for a repository on this server: $url"
+                "仓库地址必须以 https:// 或 ssh:// 开头（或为 git@host:path 形式）；本机上的仓库必须位于 "
+                . COMPOSE_GIT_MNT_DIR . " 路径下：{$url}"
             );
         }
 
         $parts = parse_url($url);
         if ($parts === false || !isset($parts['host']) || $parts['host'] === '') {
-            throw new InvalidArgumentException("The repository address is not a valid URL: $url");
+            throw new InvalidArgumentException("仓库地址不是合法的 URL：{$url}");
         }
         if (isset($parts['user']) || isset($parts['pass'])) {
             throw new InvalidArgumentException(
-                'The repository address must not contain a user name, password or token '
-                . '(it would be stored in plain text). For a private repository, use a git credential instead.'
+                '仓库地址不能包含用户名、密码或令牌（会以明文存储）。私有仓库请改用 git 凭据。'
             );
         }
         if (isset($parts['query']) || isset($parts['fragment'])) {
-            throw new InvalidArgumentException("The repository address must not contain ? or #: $url");
+            throw new InvalidArgumentException("仓库地址不能包含 ? 或 #：{$url}");
         }
         if (preg_match('/^(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)*[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/i', $parts['host']) !== 1) {
-            throw new InvalidArgumentException("The repository address has an invalid host name: {$parts['host']}");
+            throw new InvalidArgumentException("仓库地址的主机名无效：{$parts['host']}");
         }
         $path = $parts['path'] ?? '';
         if ($path === '' || $path === '/') {
-            throw new InvalidArgumentException("The repository address has no repository path: $url");
+            throw new InvalidArgumentException("仓库地址缺少仓库路径：{$url}");
         }
     }
 
@@ -505,11 +504,11 @@ final class GitStackSettings
     {
         $lines = array_filter(explode("\n", trim($knownHosts)), static fn(string $line): bool => $line !== '');
         if ($lines === []) {
-            throw new InvalidArgumentException('The pinned ssh host keys are empty.');
+            throw new InvalidArgumentException('已固定的 SSH 主机密钥为空。');
         }
         foreach ($lines as $line) {
             if (preg_match('#^[A-Za-z0-9.:\[\]_-]+ (?:ssh-ed25519|ssh-rsa|ecdsa-sha2-nistp(?:256|384|521)) [A-Za-z0-9+/]+={0,2}$#', $line) !== 1) {
-                throw new InvalidArgumentException("A pinned ssh host key is not a known_hosts line: $line");
+                throw new InvalidArgumentException("已固定的 SSH 主机密钥不是合法的 known_hosts 行：{$line}");
             }
         }
     }
@@ -522,20 +521,20 @@ final class GitStackSettings
     public static function validateBranch(string $branch): void
     {
         if ($branch === '') {
-            throw new InvalidArgumentException('The branch is empty.');
+            throw new InvalidArgumentException('分支名为空。');
         }
         if (strlen($branch) > 255) {
-            throw new InvalidArgumentException('The branch name is too long.');
+            throw new InvalidArgumentException('分支名过长。');
         }
         if (str_starts_with($branch, '-')) {
-            throw new InvalidArgumentException("The branch name must not start with '-': $branch");
+            throw new InvalidArgumentException("分支名不能以 '-' 开头：{$branch}");
         }
         if ($branch === 'HEAD') {
-            throw new InvalidArgumentException("'HEAD' is not a branch name. Enter the branch to deploy, such as main.");
+            throw new InvalidArgumentException("'HEAD' 不是分支名。请填写要部署的分支，例如 main。");
         }
         $result = GitCommand::run(['check-ref-format', 'refs/heads/' . $branch], null, 10);
         if (!$result->succeeded()) {
-            throw new InvalidArgumentException("'$branch' is not a valid branch name.");
+            throw new InvalidArgumentException("'{$branch}' 不是合法的分支名。");
         }
     }
 
@@ -550,28 +549,28 @@ final class GitStackSettings
     public static function validateComposePath(string $composePath): void
     {
         if ($composePath === '') {
-            throw new InvalidArgumentException('The compose file path is empty.');
+            throw new InvalidArgumentException('compose 文件路径为空。');
         }
         if (strlen($composePath) > 1024) {
-            throw new InvalidArgumentException('The compose file path is too long.');
+            throw new InvalidArgumentException('compose 文件路径过长。');
         }
         if (preg_match('/[\x00-\x1f\x7f]/', $composePath) === 1) {
-            throw new InvalidArgumentException('The compose file path contains a control character.');
+            throw new InvalidArgumentException('compose 文件路径包含控制字符。');
         }
         if (str_starts_with($composePath, '/')) {
             throw new InvalidArgumentException(
-                "The compose file path must be relative to the top of the repository, without a leading /: $composePath"
+                "compose 文件路径必须是相对于仓库顶部的相对路径，不能以 / 开头：{$composePath}"
             );
         }
         if (str_contains($composePath, '\\')) {
-            throw new InvalidArgumentException("Use / in the compose file path, not \\: $composePath");
+            throw new InvalidArgumentException("compose 文件路径请使用 / 而非 \\：{$composePath}");
         }
         if (str_starts_with($composePath, '-')) {
-            throw new InvalidArgumentException("The compose file path must not start with '-': $composePath");
+            throw new InvalidArgumentException("compose 文件路径不能以 '-' 开头：{$composePath}");
         }
         foreach (explode('/', $composePath) as $part) {
             if ($part === '' || $part === '.' || $part === '..') {
-                throw new InvalidArgumentException("The compose file path must not contain empty, '.' or '..' parts: $composePath");
+                throw new InvalidArgumentException("compose 文件路径不能包含空段、'.' 或 '..' 段：{$composePath}");
             }
             if (strtolower($part) === '.git') {
                 throw new InvalidArgumentException("The compose file path must not be inside .git: $composePath");
@@ -615,30 +614,30 @@ final class GitStackSettings
         self::validateComposePath($composePath);
 
         if (preg_match('/^[0-9a-f]{16}$/', $cloneId) !== 1) {
-            throw new InvalidArgumentException("The clone id is not valid: $cloneId");
+            throw new InvalidArgumentException("克隆 ID 无效：{$cloneId}");
         }
-        GitPathGuard::assertCleanAbsolutePath($cloneDir, 'The clone folder');
+        GitPathGuard::assertCleanAbsolutePath($cloneDir, '克隆目录');
         if (!str_starts_with($cloneDir, rtrim(COMPOSE_GIT_MNT_DIR, '/') . '/')) {
-            throw new InvalidArgumentException('The clone folder must be under ' . COMPOSE_GIT_MNT_DIR . ": $cloneDir");
+            throw new InvalidArgumentException('克隆目录必须位于 ' . COMPOSE_GIT_MNT_DIR . ' 路径下：' . $cloneDir);
         }
         if (!str_ends_with(basename($cloneDir), '-' . substr($cloneId, 0, 8))) {
-            throw new InvalidArgumentException("The clone folder $cloneDir does not belong to clone id $cloneId.");
+            throw new InvalidArgumentException("克隆目录 {$cloneDir} 不属于克隆 ID {$cloneId}。");
         }
 
         self::validateCredentialId($credentialId);
         if ($credentialId !== null && str_starts_with($url, '/')) {
-            throw new InvalidArgumentException('A repository on this server needs no credential.');
+            throw new InvalidArgumentException('本机上的仓库不需要凭据。');
         }
         if ($sshKnownHosts !== null) {
             if (!self::isSshUrl($url)) {
-                throw new InvalidArgumentException('Pinned ssh host keys are only for an ssh repository.');
+                throw new InvalidArgumentException('已固定的 SSH 主机密钥仅适用于 SSH 仓库。');
             }
             self::validateKnownHosts($sshKnownHosts);
         }
 
         if (!in_array($autoDeploy, self::AUTO_DEPLOY_CHOICES, true)) {
             throw new InvalidArgumentException(
-                "Automatic deploys must be one of " . implode(', ', self::AUTO_DEPLOY_CHOICES) . ": $autoDeploy"
+                "自动部署必须是以下之一：" . implode('、', self::AUTO_DEPLOY_CHOICES) . "：{$autoDeploy}"
             );
         }
 

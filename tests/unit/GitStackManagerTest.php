@@ -90,7 +90,7 @@ final class GitStackManagerTest extends TestCase
             $this->manager->add('whoami', $this->upstream, 'main', 'whoami/compose.yaml', $this->clonesRoot);
             $this->fail('Added over an existing stack folder');
         } catch (RuntimeException $error) {
-            $this->assertStringContainsString('already exists', $error->getMessage());
+            $this->assertStringContainsString('已存在', $error->getMessage());
         }
         $this->assertDirectoryDoesNotExist($this->clonesRoot);
     }
@@ -258,8 +258,8 @@ final class GitStackManagerTest extends TestCase
             $this->manager->convert($stack->projectFolder, $this->upstream, 'main', 'whoami/compose.yaml', $this->clonesRoot);
             $this->fail('Converted although indirect_mode could not be written');
         } catch (RuntimeException $error) {
-            $this->assertStringContainsString("Could not write $stackDir/indirect_mode.", $error->getMessage());
-            $this->assertStringContainsString('only partly converted', $error->getMessage());
+            $this->assertStringContainsString("无法写入 $stackDir/indirect_mode。", $error->getMessage());
+            $this->assertStringContainsString('栈只完成了一部分转换', $error->getMessage());
             $this->assertStringContainsString($stackDir . '/pre-git-', $error->getMessage());
         }
         $backups = glob($stackDir . '/pre-git-*') ?: [];
@@ -559,7 +559,7 @@ final class GitStackManagerTest extends TestCase
         $vault->saveCredential(['name' => 'Bot', 'provider' => 'git', 'registry' => 'gitlab.com', 'username' => 'b', 'secret' => 't2']);
 
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage("Several git credentials are named 'Bot'");
+        $this->expectExceptionMessage("有多个 Git 凭据名为 'Bot'");
         $this->manager->findGitCredential('Bot');
     }
 
@@ -630,10 +630,10 @@ final class GitStackManagerTest extends TestCase
             $this->manager->deployKey($folder);
             $this->fail('Showed a deploy key for a stack that does not use ssh');
         } catch (RuntimeException $error) {
-            $this->assertStringContainsString('has no deploy key', $error->getMessage());
+            $this->assertStringContainsString('没有部署密钥', $error->getMessage());
         }
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('does not reach its repository over ssh');
+        $this->expectExceptionMessage('不通过 SSH 访问其仓库');
         $this->manager->trustHost($folder);
     }
 
@@ -700,7 +700,7 @@ final class GitStackManagerTest extends TestCase
         $this->assertSame($key['id'], $manager->findCredentialFor('first', 'first deploy key'));
         $manager->setCredential('first', $key['id']);
 
-        $this->assertSame(["'first' already uses the deploy key 'first deploy key'. Nothing was changed."], $said);
+        $this->assertSame(["'first' 已经使用部署密钥 'first deploy key'。未做任何改动。"], $said);
         $this->assertSame($key['id'], GitStackSettings::load($this->composeRoot . '/first')->credentialId);
     }
 
@@ -845,7 +845,7 @@ final class GitStackManagerTest extends TestCase
         });
 
         $this->assertNull($manager->existingDeployKey('second', GitStackSettings::sshAddress('git@github.com:owner/repo.git')));
-        $this->assertContains("Could not read the git settings of 'first', so its deploy key is not looked at.", $said);
+        $this->assertContains("无法读取 'first' 的 Git 设置，因此不会检查其部署密钥。", $said);
     }
 
     public function testCommandLineCredentialNeedsAStackAndANameOrNone(): void
@@ -986,8 +986,8 @@ final class GitStackManagerTest extends TestCase
         }
         $moved = glob($settings->cloneDir . '.replaced-*') ?: [];
         $this->assertCount(1, $moved);
-        $this->assertContains("Could not move the old clone back. It is still at {$moved[0]}.", $messages);
-        $this->assertNotContains('Moved the old clone back.', $messages);
+        $this->assertContains("无法将旧克隆移回。它仍在 {$moved[0]}。", $messages);
+        $this->assertNotContains('已将旧克隆移回。', $messages);
     }
 
     // ----- command line -----

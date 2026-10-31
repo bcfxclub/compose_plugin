@@ -156,20 +156,20 @@ final class GitPathGuard
     public static function assertCleanAbsolutePath(string $path, string $what): void
     {
         if ($path === '') {
-            throw new InvalidArgumentException("$what is empty.");
+            throw new InvalidArgumentException("{$what} 为空。");
         }
         if (preg_match('/[\x00-\x1f\x7f]/', $path) === 1) {
-            throw new InvalidArgumentException("$what contains a control character.");
+            throw new InvalidArgumentException("{$what} 包含控制字符。");
         }
         if (!str_starts_with($path, '/')) {
-            throw new InvalidArgumentException("$what must be an absolute path: $path");
+            throw new InvalidArgumentException("{$what} 必须是绝对路径：{$path}");
         }
         if (str_contains($path, '\\')) {
-            throw new InvalidArgumentException("$what must not contain a backslash: $path");
+            throw new InvalidArgumentException("{$what} 不能包含反斜杠：{$path}");
         }
         foreach (explode('/', substr($path, 1)) as $part) {
             if ($part === '' || $part === '.' || $part === '..') {
-                throw new InvalidArgumentException("$what must not contain empty, '.' or '..' parts: $path");
+                throw new InvalidArgumentException("{$what} 不能包含空段、'.' 或 '..' 段：{$path}");
             }
         }
     }
@@ -255,7 +255,7 @@ final class GitPathGuard
     public static function assertSafeToWrite(string $path): void
     {
         try {
-            self::assertCleanAbsolutePath($path, 'The path');
+            self::assertCleanAbsolutePath($path, '路径');
         } catch (InvalidArgumentException $error) {
             throw new RuntimeException($error->getMessage(), 0, $error);
         }
@@ -268,7 +268,7 @@ final class GitPathGuard
         $mount = self::findMountFor($path);
         if ($mount === null) {
             throw new RuntimeException(
-                "$path is not on a mounted disk, pool or share, so nothing was written there."
+                "{$path} 不在已挂载的磁盘、存储池或共享目录中，因此未在其中写入任何内容。"
             );
         }
 
@@ -294,7 +294,7 @@ final class GitPathGuard
 
         $current = self::shareFolder($path);
         if ($current === null || !is_dir($current) || self::isSymlink($current)) {
-            throw new RuntimeException(($current ?? $path) . " does not exist, so $path was not created.");
+            throw new RuntimeException(($current ?? $path) . " 不存在，因此未创建 {$path}。");
         }
 
         $levelsToCreate = [];
@@ -310,11 +310,11 @@ final class GitPathGuard
                 continue;
             }
             if (file_exists($current)) {
-                throw new RuntimeException("$current exists and is not a folder, so $path was not created.");
+                throw new RuntimeException("{$current} 已存在且不是文件夹，因此未创建 {$path}。");
             }
             self::assertSafeToWrite($current);
             if (!@mkdir($current, $mode) && !is_dir($current)) {
-                throw new RuntimeException("Could not create $current.");
+                throw new RuntimeException("无法创建 {$current}。");
             }
         }
     }
@@ -367,11 +367,11 @@ final class GitPathGuard
         $resolved = realpath($existing);
         $resolvedMount = realpath($mount);
         if ($resolved === false || $resolvedMount === false) {
-            throw new InvalidArgumentException("Could not resolve $existing.");
+            throw new InvalidArgumentException("无法解析 {$existing}。");
         }
         if ($resolved !== $resolvedMount && !str_starts_with($resolved, $resolvedMount . '/')) {
             throw new InvalidArgumentException(
-                "$existing leads outside $mount (it resolves to $resolved), so it was not used."
+                "{$existing} 指向 {$mount} 之外（解析为 {$resolved}），因此未被使用。"
             );
         }
     }

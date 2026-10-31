@@ -384,7 +384,7 @@ final class GitPathGuardTest extends TestCase
         mkdir($this->mnt . '/user/appdata/real');
         symlink($this->mnt . '/user/appdata/real', $this->mnt . '/user/appdata/link');
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('symlink');
+        $this->expectExceptionMessage('符号链接');
         GitPathGuard::createDirectory($this->mnt . '/user/appdata/link/git');
     }
 

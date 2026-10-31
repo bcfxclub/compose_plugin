@@ -49,7 +49,7 @@ final class CredentialVault
             // and must not be overridable by a client-supplied field on update.
             $authMethod = strtolower((string) ($existing['authMethod'] ?? trim($input['authMethod'] ?? 'manual')));
             if ($name === '' || $registry === '' || $username === '' || $secret === '') {
-                throw new InvalidArgumentException('Name, registry, username, and token are required.');
+                throw new InvalidArgumentException('名称、仓库地址、用户名和令牌均为必填。');
             }
             if (!in_array($provider, ['github', 'docker', 'gitlab', 'quay', 'aws', 'azure', 'gcr', 'generic', 'git', 'git-ssh'], true)) {
                 throw new InvalidArgumentException('不支持的凭据提供方。');
@@ -61,12 +61,12 @@ final class CredentialVault
             $gitKinds = ['git', 'git-ssh'];
             if ($existing !== [] && $existingProvider !== $provider
                 && (in_array($existingProvider, $gitKinds, true) || in_array($provider, $gitKinds, true))) {
-                throw new InvalidArgumentException('A credential cannot change between a registry login and a git credential. Add a new credential instead.');
+                throw new InvalidArgumentException('凭据不能在“注册表登录”与“git 凭据”之间切换，请改为新建凭据。');
             }
             // A git repository credential (an HTTPS token, or a git stack's ssh deploy key in
             // "git-ssh") is for one host, such as github.com.
             if (($provider === 'git' || $provider === 'git-ssh') && preg_match('/^[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?(?::[0-9]{1,5})?$/', $registry) !== 1) {
-                throw new InvalidArgumentException('A git credential needs the repository host only, such as github.com.');
+                throw new InvalidArgumentException('git 凭据只需填写仓库主机地址，例如 github.com。');
             }
             if (!in_array($authMethod, ['manual', 'oauth_device'], true)) {
                 throw new InvalidArgumentException('不支持的凭据认证方式。');
@@ -125,7 +125,7 @@ final class CredentialVault
             if (is_resource($handle)) {
                 fclose($handle);
             }
-            throw new RuntimeException('Unable to acquire credential assignment lock.');
+            throw new RuntimeException('无法获取凭据分配锁。');
         }
         try {
             return $callback();
@@ -214,14 +214,14 @@ final class CredentialVault
         );
         $baseDir = rtrim(COMPOSE_DOCKER_CONFIG_DIR, '/');
         if (!is_dir($baseDir) && !mkdir($baseDir, 0700, true) && !is_dir($baseDir)) {
-            throw new RuntimeException('Unable to create Docker credential directory.');
+            throw new RuntimeException('无法创建 Docker 凭据目录。');
         }
         chmod($baseDir, 0700);
         self::sweepStaleDockerConfigs($baseDir);
 
         $directory = $baseDir . '/' . bin2hex(random_bytes(16));
         if (!mkdir($directory, 0700)) {
-            throw new RuntimeException('Unable to create temporary Docker config.');
+            throw new RuntimeException('无法创建临时 Docker 配置。');
         }
 
         $auth = base64_encode($credential['username'] . ':' . $credential['secret']);
@@ -242,7 +242,7 @@ final class CredentialVault
         $json = json_encode($config, JSON_UNESCAPED_SLASHES);
         if ($json === false || file_put_contents($directory . '/config.json', $json, LOCK_EX) === false) {
             @rmdir($directory);
-            throw new RuntimeException('Unable to write temporary Docker config.');
+            throw new RuntimeException('无法写入临时 Docker 配置。');
         }
         chmod($directory . '/config.json', 0600);
         return $directory;
@@ -327,7 +327,7 @@ final class CredentialVault
     {
         $host = $registry === 'https://index.docker.io/v1/' ? 'registry-1.docker.io' : $registry;
         if ($host === '') {
-            return [false, 'No registry host configured for this credential.'];
+            return [false, '该凭据未配置注册表主机。'];
         }
         if (!function_exists('curl_init')) {
             return [false, 'Unable to verify credential: the PHP curl extension is unavailable.'];
@@ -335,12 +335,12 @@ final class CredentialVault
 
         $ping = self::registryRequest('https://' . $host . '/v2/', $username, $secret);
         if ($ping['status'] === 200) {
-            return [true, 'Registry accepted the credential.'];
+            return [true, '注册表已接受该凭据。'];
         }
         if ($ping['status'] === 401 && $ping['authHeader'] !== '') {
             $challenge = self::parseBearerChallenge($ping['authHeader']);
             if ($challenge === null) {
-                return [false, 'Registry returned an unrecognized authentication challenge.'];
+                return [false, '注册表返回了无法识别的身份验证质询。'];
             }
             $query = array_filter([
                 'service' => $challenge['service'] ?? null,
@@ -349,7 +349,7 @@ final class CredentialVault
             $tokenUrl = $challenge['realm'] . ($query ? '?' . http_build_query($query) : '');
             $tokenResponse = self::registryRequest($tokenUrl, $username, $secret);
             if ($tokenResponse['status'] === 200) {
-                return [true, 'Registry accepted the credential.'];
+                return [true, '注册表已接受该凭据。'];
             }
             if ($tokenResponse['status'] === 401 || $tokenResponse['status'] === 403) {
                 return [false, 'Registry rejected the credential (invalid or expired token).'];
@@ -416,7 +416,7 @@ final class CredentialVault
                 return $credential;
             }
         }
-        throw new RuntimeException('Selected credential no longer exists.');
+        throw new RuntimeException('所选凭据已不存在。');
     }
 
     /** @return array<int, array<string, string>> */
@@ -444,12 +444,12 @@ final class CredentialVault
         } else {
             $nonce = base64_decode((string) ($payload['nonce'] ?? ''), true);
             if ($nonce === false || !function_exists('sodium_crypto_secretbox_open')) {
-                throw new RuntimeException('Legacy credential vault requires the PHP sodium extension.');
+                throw new RuntimeException('旧版凭据库需要 PHP sodium 扩展。');
             }
             $plaintext = sodium_crypto_secretbox_open($ciphertext, $nonce, $this->loadKey());
         }
         if (!is_string($plaintext)) {
-            throw new RuntimeException('Credential vault could not be decrypted.');
+            throw new RuntimeException('凭据库无法解密。');
         }
         $credentials = json_decode($plaintext, true);
         return is_array($credentials) ? array_values($credentials) : [];
@@ -477,7 +477,7 @@ final class CredentialVault
         $tag = '';
         $ciphertext = openssl_encrypt($plaintext, self::CIPHER, $this->loadKey(), OPENSSL_RAW_DATA, $iv, $tag);
         if ($ciphertext === false) {
-            throw new RuntimeException('Unable to encrypt credential vault.');
+            throw new RuntimeException('无法加密凭据库。');
         }
         $payload = json_encode([
             'version' => 2,
@@ -489,7 +489,7 @@ final class CredentialVault
         if ($payload === false) {
             throw new RuntimeException('无法编码凭据库。');
         }
-        self::atomicWrite(COMPOSE_CREDENTIAL_VAULT_FILE, $payload, 0600, 'Unable to save credential vault.');
+        self::atomicWrite(COMPOSE_CREDENTIAL_VAULT_FILE, $payload, 0600, '无法保存凭据库。');
     }
 
     private function loadKey(): string
@@ -573,11 +573,11 @@ final class CredentialVault
         $lockFile = $lockDir . '/credentials.lock';
         $handle = fopen($lockFile, 'c+');
         if ($handle === false) {
-            throw new RuntimeException('Unable to open credential lock.');
+            throw new RuntimeException('无法打开凭据锁。');
         }
         if (!flock($handle, $lockType)) {
             fclose($handle);
-            throw new RuntimeException('Unable to acquire credential lock.');
+            throw new RuntimeException('无法获取凭据锁。');
         }
         try {
             return $callback();
