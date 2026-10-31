@@ -69,19 +69,19 @@ final class GitDeployCheck
             $this->composeDir
         );
         if (!$config->succeeded()) {
-            return ['The compose file is not valid: ' . trim($config->stderr !== '' ? $config->stderr : $config->errorSummary())];
+            return ['compose 文件无效：' . trim($config->stderr !== '' ? $config->stderr : $config->errorSummary())];
         }
 
         $problems = $this->unsetVariables($config->stderr);
 
         $resolved = json_decode($config->stdout, true);
         if (!is_array($resolved)) {
-            $problems[] = 'docker compose config did not print valid JSON.';
+            $problems[] = 'docker compose config 未输出有效的 JSON。';
             return $problems;
         }
         // An emptied compose file is almost always a mistake, and "up" would fail on it anyway.
         if (!is_array($resolved['services'] ?? null) || $resolved['services'] === []) {
-            $problems[] = 'The compose file defines no services (with the profiles in use).';
+            $problems[] = 'compose 文件未定义任何服务（在当前使用的 profile 下）。';
             return $problems;
         }
 
@@ -131,8 +131,8 @@ final class GitDeployCheck
         if ($names === []) {
             return [];
         }
-        return ['These variables are used by the compose file but not set: ' . implode(', ', $names)
-            . '. Add them to the .env file (an empty value must be written as NAME=).'];
+        return ['compose 文件使用了以下变量但未设置：' . implode('、', $names)
+            . '。请将它们添加到 .env 文件中（空值必须写成 NAME=）。'];
     }
 
     /**
@@ -178,9 +178,9 @@ final class GitDeployCheck
                     continue;
                 }
                 if (self::failedOnlyOnMissing($inspect, $kind)) {
-                    $problems[] = "The external $kind '$name' does not exist. Create it before deploying.";
+                    $problems[] = "外部 $kind '$name' 不存在。请在部署前创建它。";
                 } else {
-                    $problems[] = "Could not check whether the external $kind '$name' exists: " . self::failureText($inspect);
+                    $problems[] = "无法检查外部 $kind '$name' 是否存在：" . self::failureText($inspect);
                 }
             }
         }
@@ -214,7 +214,7 @@ final class GitDeployCheck
             $build = $service['build'] ?? null;
             if (is_array($build) && isset($build['context']) && str_starts_with((string) $build['context'], '/')) {
                 if (!is_dir((string) $build['context'])) {
-                    $problems[] = "Service '$serviceName': the build folder {$build['context']} does not exist.";
+                    $problems[] = "服务 '$serviceName'：构建目录 {$build['context']} 不存在。";
                 }
             }
         }
@@ -222,7 +222,7 @@ final class GitDeployCheck
         foreach (['configs' => 'config', 'secrets' => 'secret'] as $section => $kind) {
             foreach ((array) ($resolved[$section] ?? []) as $key => $definition) {
                 if (is_array($definition) && isset($definition['file']) && !file_exists((string) $definition['file'])) {
-                    $problems[] = "The $kind '$key' file {$definition['file']} does not exist.";
+                    $problems[] = "$kind '$key' 的文件 {$definition['file']} 不存在。";
                 }
             }
         }
@@ -252,8 +252,8 @@ final class GitDeployCheck
             // reboot, is left for Docker to create.
             $topFolder = '/' . explode('/', substr($source, 1))[0];
             if (!is_dir($topFolder)) {
-                return "the bind mount source $source does not exist, and neither does $topFolder. "
-                    . 'Check the path for a typo, or create the folder first.';
+                return "bind mount 源路径 $source 不存在，$topFolder 也不存在。"
+                    . '请检查路径是否有拼写错误，或先创建该文件夹。';
             }
             $this->foldersDockerWillCreate[] = $source;
             return null;
@@ -269,8 +269,8 @@ final class GitDeployCheck
                 }
                 return null;
             }
-            return "the bind mount $source is not on a mounted disk, pool or share. "
-                . 'Docker would create it in RAM. Check the path for a typo.';
+            return "bind mount $source 不在已挂载的磁盘、存储池或共享目录上。"
+                . 'Docker 会在内存中创建它。请检查路径是否有拼写错误。';
         }
         if (file_exists($source)) {
             return null;
@@ -281,8 +281,8 @@ final class GitDeployCheck
         // one is a typo, or would quietly become a new share.
         $share = GitPathGuard::shareFolder($source);
         if ($share === null || !is_dir($share)) {
-            return "the bind mount source $source does not exist, and neither does " . ($share ?? 'its share') . '. '
-                . 'Check the path for a typo, or create the folder first.';
+            return "bind mount 源路径 $source 不存在，" . ($share ?? '其共享目录') . ' 也不存在。'
+                . '请检查路径是否有拼写错误，或先创建该文件夹。';
         }
         $this->foldersDockerWillCreate[] = $source;
         return null;
@@ -316,12 +316,12 @@ final class GitDeployCheck
                     // Nothing has that name.
                     continue;
                 }
-                $problems[] = "Could not check whether the container name '$name' is free: " . self::failureText($inspect);
+                $problems[] = "无法检查容器名 '$name' 是否空闲：" . self::failureText($inspect);
                 continue;
             }
             $containers = json_decode($inspect->stdout, true);
             if (!is_array($containers)) {
-                $problems[] = "Could not check whether the container name '$name' is free: docker inspect did not print valid JSON.";
+                $problems[] = "无法检查容器名 '$name' 是否空闲：docker inspect 未输出有效的 JSON。";
                 continue;
             }
             // docker inspect also matches the start of a container id, so a short
@@ -332,8 +332,8 @@ final class GitDeployCheck
             }
             $owner = $containers[0]['Config']['Labels']['com.docker.compose.project'] ?? null;
             if ($owner !== $this->projectName) {
-                $problems[] = "A container named '$name' already exists and does not belong to this stack"
-                    . ($owner !== null ? " (it belongs to '$owner')" : '') . '.';
+                $problems[] = "名为 '$name' 的容器已存在，且不属于本栈"
+                    . ($owner !== null ? "（它属于 '$owner'）" : '') . '.';
             }
         }
         return $problems;
@@ -398,7 +398,7 @@ final class GitDeployCheck
         try {
             $heldByOthers = $this->portsHeldByOtherContainers();
         } catch (RuntimeException $error) {
-            $problems[] = 'Could not check whether the published ports are free: ' . $error->getMessage();
+            $problems[] = '无法检查已发布端口是否空闲：' . $error->getMessage();
             return $problems;
         }
 
@@ -410,7 +410,7 @@ final class GitDeployCheck
                 if (!self::addressesOverlap($want['ip'], $held['ip'])) {
                     continue;
                 }
-                $problems[] = "Service '{$want['service']}': port {$want['port']}/{$want['protocol']} is already in use by {$held['owner']}.";
+                $problems[] = "服务 '{$want['service']}'：端口 {$want['port']}/{$want['protocol']} 已被 {$held['owner']} 占用。";
                 break;
             }
         }
@@ -428,7 +428,7 @@ final class GitDeployCheck
         $result = [];
         $ids = DockerCommand::run(['ps', '-q'], null, 30);
         if (!$ids->succeeded()) {
-            throw new RuntimeException('docker ps failed: ' . self::failureText($ids));
+            throw new RuntimeException('docker ps 失败：' . self::failureText($ids));
         }
         $idList = array_values(array_filter(explode("\n", trim($ids->stdout))));
         if ($idList === []) {
@@ -438,11 +438,11 @@ final class GitDeployCheck
         // A container removed between the two commands makes inspect fail,
         // but it still prints the others, and the removed one holds no port.
         if (!$inspect->succeeded() && !self::failedOnlyOnMissingContainers($inspect)) {
-            throw new RuntimeException('docker inspect failed: ' . self::failureText($inspect));
+            throw new RuntimeException('docker inspect 失败：' . self::failureText($inspect));
         }
         $containers = json_decode($inspect->stdout, true);
         if (!is_array($containers)) {
-            throw new RuntimeException('docker inspect did not print valid JSON.');
+            throw new RuntimeException('docker inspect 未输出有效的 JSON。');
         }
 
         foreach ($containers as $container) {

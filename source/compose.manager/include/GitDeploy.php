@@ -143,7 +143,7 @@ final class GitDeploy
         $changes = $clone->locallyChangedFiles();
         $checkedOut = $clone->checkedOutCommit();
         if ($clone->isMadeByHand($checkedOut, $state->deployedCommit, $state->failedCommit)) {
-            $changes[] = 'a commit made in the clone (' . substr($checkedOut, 0, 12) . ')';
+            $changes[] = '在克隆中手工创建的提交（' . substr($checkedOut, 0, 12) . ')';
         }
         return $changes;
     }
@@ -162,7 +162,7 @@ final class GitDeploy
             'ps', '-q', '--filter', 'label=com.docker.compose.project=' . $projectName,
         ]);
         if (!$result->succeeded()) {
-            throw new RuntimeException("Could not ask docker whether '$projectName' is running: " . $result->errorSummary());
+            throw new RuntimeException("无法询问 docker '$projectName' 是否在运行：" . $result->errorSummary());
         }
         return trim($result->stdout) !== '';
     }
@@ -196,12 +196,12 @@ final class GitDeploy
         $latest = $clone->fetch();
         $target = $commit ?? $latest;
         if (!GitClone::isCommitId($target)) {
-            throw new RuntimeException("Not a full commit id: $target");
+            throw new RuntimeException("不是完整的提交 ID：$target");
         }
         if (!$clone->composeFileExistsAt($target)) {
             throw new RuntimeException(
-                "{$settings->composePath} does not exist at commit " . substr($target, 0, 12)
-                . '. 它可能已在仓库中被移动或删除。未执行部署，栈保持原样。'
+                "{$settings->composePath} 在提交 " . substr($target, 0, 12)
+                . ' 处不存在。它可能已在仓库中被移动或删除。未执行部署，栈保持原样。'
             );
         }
 
@@ -275,12 +275,12 @@ final class GitDeploy
         $latest = $clone->fetch();
         $target = $commit ?? $latest;
         if (!GitClone::isCommitId($target)) {
-            throw new RuntimeException("Not a full commit id: $target");
+            throw new RuntimeException("不是完整的提交 ID：$target");
         }
         if (!$clone->composeFileExistsAt($target)) {
             throw new RuntimeException(
-                "{$settings->composePath} does not exist at commit " . substr($target, 0, 12)
-                . '. 它可能已在仓库中被移动或删除，因此部署会中止。'
+                "{$settings->composePath} 在提交 " . substr($target, 0, 12)
+                . ' 处不存在。它可能已在仓库中被移动或删除，因此部署会中止。'
             );
         }
         // A deploy without --save-local-changes stops on them, and the dry run cannot check
@@ -448,7 +448,7 @@ final class GitDeploy
             $args[] = $file;
         }
         if ($args === []) {
-            throw new RuntimeException("No compose file was found for the stack in {$this->stackDir}.");
+            throw new RuntimeException("在 {$this->stackDir} 中找不到该栈的 compose 文件。");
         }
         if (isset($built['envFilePath'])) {
             $args[] = '--env-file';
@@ -466,7 +466,7 @@ final class GitDeploy
         $settings = $this->loadSettings();
         $composeFile = realpath($settings->composeFileInClone());
         if ($composeFile === false) {
-            throw new RuntimeException("The compose file {$settings->composeFileInClone()} was not found.");
+            throw new RuntimeException("找不到 compose 文件 {$settings->composeFileInClone()}。");
         }
         return dirname($composeFile);
     }
@@ -527,7 +527,7 @@ final class GitDeploy
             return $problems;
         }
         if (file_put_contents($overridePrune['path'], $overridePrune['before']) !== strlen($overridePrune['before'])) {
-            $problems[] = "The plugin's override {$overridePrune['path']} could not be put back as it was before the dry run.";
+            $problems[] = "插件的覆盖文件 {$overridePrune['path']} 无法还原到试运行之前的状态。";
         } else {
             ($this->say)("已将插件的覆盖文件还原到试运行之前的状态。");
         }
@@ -589,7 +589,7 @@ final class GitDeploy
             // git diff --no-index answers 1 when the files differ. It also answers 1, printing nothing, when it
             // could not read them; the two differ, so an empty answer means it could not compare them.
             if ($diff->exitCode !== 1 || trim($diff->stdout) === '') {
-                throw new RuntimeException('Could not compare the compose configurations: ' . $diff->errorSummary());
+                throw new RuntimeException('无法比较 compose 配置：' . $diff->errorSummary());
             }
             return $diff->stdout;
         } finally {
@@ -603,7 +603,7 @@ final class GitDeploy
     {
         $settings = GitStackSettings::load($this->stackDir);
         if ($settings === null) {
-            throw new RuntimeException("{$this->stackDir} is not a git stack (it has no git.json).");
+            throw new RuntimeException("{$this->stackDir} 不是 Git 栈（缺少 git.json）。");
         }
 
         // compose is run with the file named in the stack's indirect file,
@@ -632,7 +632,7 @@ final class GitDeploy
         if ($changedFiles !== []) {
             return '本地改动：' . implode(', ', array_slice($changedFiles, 0, 5)) . (count($changedFiles) > 5 ? ', ...' : '');
         }
-        return 'a commit made in the clone by hand (' . substr($checkedOut, 0, 12) . ')';
+        return '在克隆中手工创建的提交（' . substr($checkedOut, 0, 12) . ')';
     }
 
     /**
@@ -741,7 +741,7 @@ final class GitDeploy
         $composeFile = realpath($settings->composeFileInClone());
         $cloneReal = realpath($settings->cloneDir);
         if ($composeFile === false || $cloneReal === false || !str_starts_with($composeFile, $cloneReal . '/')) {
-            throw new RuntimeException("{$settings->composePath} leads outside the repository (through a symlink), so it was not used.");
+            throw new RuntimeException("{$settings->composePath} 通过符号链接指向仓库之外，因此未被使用。");
         }
 
         $this->pruneOverrideServicesTheComposeFileNoLongerHas();
@@ -804,7 +804,7 @@ final class GitDeploy
             $this->overridePrune = ['path' => $overridePath, 'before' => $pruned['before'], 'after' => $pruned['after']];
         }
         foreach ($pruned['removed'] as $service) {
-            ($this->say)("Removed '$service' from the plugin's override: the compose file no longer has that service.");
+            ($this->say)("已从插件的覆盖文件中移除 '$service'：compose 文件已不再包含该服务。");
         }
     }
 }

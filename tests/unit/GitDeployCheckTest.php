@@ -52,7 +52,7 @@ final class GitDeployCheckTest extends TestCase
     public function testComposeFileWithNoServicesIsAProblem(): void
     {
         $this->docker->setConfig(['name' => 'whoami', 'services' => []]);
-        $this->assertStringContainsString('defines no services', $this->check()[0]);
+        $this->assertStringContainsString('未定义任何服务', $this->check()[0]);
     }
 
     // ----- compose itself -----
@@ -123,8 +123,8 @@ final class GitDeployCheckTest extends TestCase
 
         $problems = $this->check();
         $this->assertCount(2, $problems);
-        $this->assertStringContainsString("The external network 'zz-proxy' does not exist", $problems[0]);
-        $this->assertStringContainsString("The external volume 'zz-ext' does not exist", $problems[1]);
+        $this->assertStringContainsString("外部 network 'zz-proxy' 不存在", $problems[0]);
+        $this->assertStringContainsString("外部 volume 'zz-ext' 不存在", $problems[1]);
 
         $this->docker->addNetwork('zz-proxy');
         $this->docker->addVolume('zz-ext');
@@ -143,8 +143,8 @@ final class GitDeployCheckTest extends TestCase
 
         $problems = $this->check();
         $this->assertCount(2, $problems);
-        $this->assertStringContainsString("Could not check whether the external network 'zz-proxy' exists: Cannot connect", $problems[0]);
-        $this->assertStringContainsString("Could not check whether the external volume 'zz-ext' exists: Cannot connect", $problems[1]);
+        $this->assertStringContainsString("无法检查外部 network 'zz-proxy' 是否存在：Cannot connect", $problems[0]);
+        $this->assertStringContainsString("无法检查外部 volume 'zz-ext' 是否存在：Cannot connect", $problems[1]);
     }
 
     public function testOlderDockersWordingForAMissingNetworkOrVolumeCountsAsMissing(): void
@@ -158,8 +158,8 @@ final class GitDeployCheckTest extends TestCase
 
         $problems = $this->check();
         $this->assertCount(2, $problems);
-        $this->assertStringContainsString("The external network 'zz-proxy' does not exist", $problems[0]);
-        $this->assertStringContainsString("The external volume 'zz-ext' does not exist", $problems[1]);
+        $this->assertStringContainsString("外部 network 'zz-proxy' 不存在", $problems[0]);
+        $this->assertStringContainsString("外部 volume 'zz-ext' 不存在", $problems[1]);
     }
 
     public function testMissingExternalNetworkIsNotAProblemWhenItWillBeCreated(): void
@@ -343,7 +343,7 @@ final class GitDeployCheckTest extends TestCase
 
         $problems = $this->check();
         $this->assertCount(1, $problems);
-        $this->assertStringContainsString("Could not check whether the container name 'plex' is free: Cannot connect", $problems[0]);
+        $this->assertStringContainsString("无法检查容器名 'plex' 是否空闲：Cannot connect", $problems[0]);
     }
 
     public function testPortCheckThatCannotListTheRunningContainersIsAProblem(): void
@@ -355,7 +355,7 @@ final class GitDeployCheckTest extends TestCase
 
         $problems = $this->check();
         $this->assertCount(1, $problems);
-        $this->assertStringContainsString('Could not check whether the published ports are free: docker ps failed: Cannot connect', $problems[0]);
+        $this->assertStringContainsString('无法检查已发布端口是否空闲：docker ps 失败：Cannot connect', $problems[0]);
     }
 
     public function testPortCheckThatCannotInspectTheRunningContainersIsAProblem(): void
@@ -370,7 +370,7 @@ final class GitDeployCheckTest extends TestCase
 
         $problems = $this->check();
         $this->assertCount(1, $problems);
-        $this->assertStringContainsString('docker inspect failed: error during connect', $problems[0]);
+        $this->assertStringContainsString('docker inspect 失败：error during connect', $problems[0]);
     }
 
     public function testContainerRemovedBetweenPsAndInspectHoldsNoPort(): void

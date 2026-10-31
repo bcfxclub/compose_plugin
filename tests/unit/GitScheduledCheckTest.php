@@ -131,7 +131,7 @@ final class GitScheduledCheckTest extends TestCase
         $this->check()->run();
 
         $this->assertCount(1, $this->notifications);
-        $this->assertSame("Git stack update: $folder", $this->notifications[0][0]);
+        $this->assertSame("Git 栈有更新：$folder", $this->notifications[0][0]);
         $this->assertStringContainsString(substr($this->upstreamHead(), 0, 12), $this->notifications[0][1]);
         $this->assertSame([], $this->deployed);
         $record = GitScheduledCheck::loadRecord($this->composeRoot . '/' . $folder);
@@ -235,7 +235,7 @@ final class GitScheduledCheckTest extends TestCase
         $this->check()->run();
         $this->assertSame([$folder], $this->deployed);
         $this->assertCount(1, $this->notifications);
-        $this->assertStringContainsString('is not running', $this->notifications[0][1]);
+        $this->assertStringContainsString('未运行', $this->notifications[0][1]);
     }
 
     public function testADeploySkippedUnderTheStacksLockKeepsHowTheCommitWasHandledBefore(): void
@@ -301,7 +301,7 @@ final class GitScheduledCheckTest extends TestCase
 
         $this->assertSame([], $this->deployed);
         $this->assertCount(1, $this->notifications);
-        $this->assertStringContainsString('paused', $this->notifications[0][1]);
+        $this->assertStringContainsString('已暂停', $this->notifications[0][1]);
         $this->assertStringContainsString('compose-git resume', $this->notifications[0][1]);
         $this->assertSame('warning', $this->notifications[0][2]);
 
@@ -419,7 +419,7 @@ final class GitScheduledCheckTest extends TestCase
         // Stopped (or never deployed): told once, not started.
         $this->assertSame([], $this->deployed);
         $this->assertCount(1, $this->notifications);
-        $this->assertStringContainsString('is not running', $this->notifications[0][1]);
+        $this->assertStringContainsString('未运行', $this->notifications[0][1]);
 
         // Started again: the waiting commit is deployed at the next check.
         $this->running = true;
@@ -521,7 +521,7 @@ final class GitScheduledCheckTest extends TestCase
 
         $this->assertSame([], $this->deployed);
         $this->assertCount(1, $this->notifications);
-        $this->assertStringContainsString('a commit made in the clone', $this->notifications[0][1]);
+        $this->assertStringContainsString('在克隆中手工创建的提交', $this->notifications[0][1]);
     }
 
     public function testStatusShowsAScheduledDeployThatFailedBeforeUp(): void
@@ -549,7 +549,7 @@ final class GitScheduledCheckTest extends TestCase
         // Still a change from what the containers were last started from: paused, so it says so.
         $this->assertTrue(GitScheduledCheck::loadRecord($stackDir)['stackChanged']);
         $this->assertCount(1, $this->notifications);
-        $this->assertStringContainsString('paused', $this->notifications[0][1]);
+        $this->assertStringContainsString('已暂停', $this->notifications[0][1]);
 
         $this->manager->resume($folder);
         $this->check()->run();

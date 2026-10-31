@@ -121,15 +121,15 @@ final class GitScheduledCheck
         $lockFile = COMPOSE_LOCK_DIR . '/' . self::LOCK_NAME;
         $lock = @fopen($lockFile, 'c');
         if ($lock === false) {
-            ($this->say)("Could not open the lock file $lockFile, so nothing was checked.");
-            composeLogger("Scheduled git check skipped: could not open the lock file $lockFile.", null, 'daemon', 'warning', 'git');
+            ($this->say)("无法打开锁文件 $lockFile，因此未执行检查。");
+            composeLogger("已跳过计划的 git 检查：无法打开锁文件 $lockFile。", null, 'daemon', 'warning', 'git');
             return 0;
         }
         if (!flock($lock, LOCK_EX | LOCK_NB)) {
             ($this->say)('另一个计划检查仍在运行。');
             // To the syslog too: cron drops what is said, and a pass stuck in a deploy
             // would otherwise stop every stack's checks with nobody told.
-            composeLogger("Scheduled git check skipped: the last one is still running ($lockFile).", null, 'daemon', 'warning', 'git');
+            composeLogger("已跳过计划的 git 检查：上一次检查仍在运行（$lockFile）。", null, 'daemon', 'warning', 'git');
             fclose($lock);
             return 0;
         }
@@ -172,8 +172,8 @@ final class GitScheduledCheck
         // As the image auto-update does: a stack whose project name is not settled is left alone,
         // so a deploy cannot start it under the wrong name.
         if (!$stack->hasResolvedIdentity()) {
-            ($this->say)("$folder: skipped, its compose project identity is unresolved.");
-            composeLogger("Skipped scheduled git check of '$folder': compose project identity is unresolved", null, 'daemon', 'warning', 'git');
+            ($this->say)("$folder：已跳过，其 compose 项目标识尚未确定。");
+            composeLogger("已跳过 '$folder' 的计划 git 检查：compose 项目标识尚未确定", null, 'daemon', 'warning', 'git');
             return false;
         }
         $clone = new GitClone($settings);
@@ -222,7 +222,7 @@ final class GitScheduledCheck
         if ($newRecord !== $record) {
             self::saveRecord($stack->path, $newRecord);
         }
-        ($this->say)("$folder: " . ($newRecord['stackChanged'] ? 'behind ' : 'up to date with ') . substr($remote, 0, 12));
+        ($this->say)("$folder：" . ($newRecord['stackChanged'] ? '落后于 ' : '已是最新，基于 ') . substr($remote, 0, 12));
         return true;
     }
 
@@ -330,8 +330,8 @@ final class GitScheduledCheck
 
         if ($settings->autoDeploy === GitStackSettings::AUTO_DEPLOY_NOTIFY) {
             ($this->notify)(
-                "Git stack update: $name",
-                "Commit $short on {$settings->branch} changes '$name'. Deploy it with Pull and Redeploy, or compose-git deploy $name.",
+                "Git 栈有更新：$name",
+                "分支 {$settings->branch} 上的提交 $short 改动了 '$name'。请使用“拉取并重新部署”，或执行 compose-git deploy $name 来部署。",
                 ''
             );
             return self::HANDLED_NOTIFIED;
@@ -340,10 +340,10 @@ final class GitScheduledCheck
         $state = GitStackState::load($stack->path);
         if ($state->failedCommit !== null) {
             ($this->notify)(
-                "Git stack not deployed: $name",
-                "Commit $short on {$settings->branch} was not deployed: the deploy of " . substr($state->failedCommit, 0, 12)
-                . " failed, so automatic deploys of '$name' are paused. Fix it and deploy it, or resume automatic deploys"
-                . " (stack menu, or compose-git resume $name).",
+                "Git 栈未部署：$name",
+                "分支 {$settings->branch} 上的提交 $short 未部署：" . substr($state->failedCommit, 0, 12)
+                . " 的部署失败，因此 '$name' 的自动部署已暂停。请修复后再部署，或恢复自动部署"
+                . "（栈菜单，或 compose-git resume $name）。",
                 'warning'
             );
             return self::HANDLED_PAUSED;
@@ -351,10 +351,10 @@ final class GitScheduledCheck
         $localChanges = self::localChanges($clone, $stack);
         if ($localChanges !== []) {
             ($this->notify)(
-                "Git stack not deployed: $name",
-                "Commit $short on {$settings->branch} was not deployed: files in the clone of '$name' were changed by hand ("
+                "Git 栈未部署：$name",
+                "分支 {$settings->branch} 上的提交 $short 未部署：'$name' 克隆中的文件被手工修改（"
                 . implode(', ', array_slice($localChanges, 0, 5)) . (count($localChanges) > 5 ? ', ...' : '')
-                . '). Deploy it with Pull and Redeploy, which offers to save them as a patch first.',
+                . '）。请使用“拉取并重新部署”，它会先提供将其保存为补丁的选项。',
                 'warning'
             );
             return self::HANDLED_LOCAL_CHANGES;
@@ -363,17 +363,17 @@ final class GitScheduledCheck
         // started by a commit. It is deployed at the first check after it runs again.
         if (!($this->isRunning)($stack)) {
             ($this->notify)(
-                "Git stack not deployed: $name",
-                "Commit $short on {$settings->branch} was not deployed: '$name' is not running. Deploy it with Pull and "
-                . 'Redeploy, or start the stack and the next check deploys it. To stop these notifications for a stack'
-                . ' stopped on purpose, set its automatic deploys to Off.',
+                "Git 栈未部署：$name",
+                "分支 {$settings->branch} 上的提交 $short 未部署：'$name' 未运行。请使用“拉取并"
+                . '重新部署”，或启动该栈，下次检查时会自动部署。若某个栈是有意停止的，'
+                . '想停止这些通知，请将其自动部署设为“关闭”。',
                 ''
             );
             return self::HANDLED_NOT_RUNNING;
         }
 
-        ($this->say)("$name: deploying $short...");
-        composeLogger("Scheduled git deploy of '$name' at $short", null, 'daemon', 'info', 'git');
+        ($this->say)("$name：正在部署 $short...");
+        composeLogger("计划部署 Git 栈 '$name' 至 $short", null, 'daemon', 'info', 'git');
         // The background runner logs to the stack's last_cmd.log and notifies whether it worked.
         // The commit compared is the one deployed, even if the branch has moved on since: a newer
         // commit is compared and handled by the next pass, and this one is recorded as handled.
@@ -382,14 +382,14 @@ final class GitScheduledCheck
             // Something changed while the deploy waited for the stack's lock (the stack was
             // stopped, or another commit deployed by hand, say). Nothing was changed; the next
             // pass sees what changed and acts on it.
-            composeLogger("Scheduled git deploy of '$name' at $short skipped: it no longer applied", null, 'daemon', 'info', 'git');
+            composeLogger("已跳过 '$name' 至 $short 的计划部署：该部署已不再适用", null, 'daemon', 'info', 'git');
             return null;
         }
         if ($exitStatus !== 0) {
             // Tried once, like every commit, but recorded as failed: the stack list shows it,
             // and Resume Automatic Deploys clears it so the next pass tries again. A failure
             // during up is recorded by compose.sh itself, as failedCommit, and pauses the stack.
-            composeLogger("Scheduled git deploy of '$name' at $short failed (exit status $exitStatus)", null, 'daemon', 'warning', 'git');
+            composeLogger("'$name' 至 $short 的计划部署失败（退出状态 $exitStatus）", null, 'daemon', 'warning', 'git');
             return self::HANDLED_FAILED;
         }
         return self::HANDLED_DEPLOYED;
@@ -537,7 +537,7 @@ final class GitScheduledCheck
         $tmpFile = $file . '.tmp-' . bin2hex(random_bytes(4));
         if (file_put_contents($tmpFile, $json) !== strlen($json) || !rename($tmpFile, $file)) {
             @unlink($tmpFile);
-            throw new RuntimeException("Could not write $file.");
+            throw new RuntimeException("无法写入 $file。");
         }
     }
 }
