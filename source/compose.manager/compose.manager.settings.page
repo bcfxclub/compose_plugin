@@ -1294,7 +1294,7 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
                 }
                 deferred.resolve(true);
             }).fail(function() {
-                showUpdatesStatus('Failed to save image update check settings.', 'error');
+                showUpdatesStatus('保存镜像更新检查设置失败。', 'error');
                 deferred.resolve(false);
             });
 
@@ -1354,7 +1354,7 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
             ].join('|');
             if (settingsUnifiedState.debugReady && settingsUnifiedState.lastDebugSignature !== debugSignature) {
                 settingsUnifiedState.lastDebugSignature = debugSignature;
-                composeLogger('Dirty state recalculated', {
+                composeLogger('已重新计算脏状态', {
                     activeTab: settingsUnifiedState.activeTab,
                     changedTabs: changedTabs,
                     changedSettings: changedSettings,
@@ -1878,13 +1878,13 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
                 var result = JSON.parse(data);
                 if (result.result === 'success') {
                     showBackupStatus('#backup-create-status',
-                        'Backup created: ' + result.archive + ' (' + result.size + ', ' + result.stacks + ' stacks)', 'success');
+                        '备份已创建：' + result.archive + ' (' + result.size + ', ' + result.stacks + ' stacks)', 'success');
                     loadBackupArchives();
                 } else {
-                    showBackupStatus('#backup-create-status', result.message || 'Backup failed.', 'error');
+                    showBackupStatus('#backup-create-status', result.message || '备份失败。', 'error');
                 }
             } catch (e) {
-                showBackupStatus('#backup-create-status', 'Error parsing response.', 'error');
+                showBackupStatus('#backup-create-status', '解析响应失败。', 'error');
             }
         }).fail(function() {
             setBackupSpinner('#btn-create-backup', false);
@@ -2055,10 +2055,10 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
                 } else if (result.result === 'warning') {
                     showBackupStatus('#restore-status', result.message, 'info');
                 } else {
-                    showBackupStatus('#restore-status', result.message || 'Restore failed.', 'error');
+                    showBackupStatus('#restore-status', result.message || '恢复失败。', 'error');
                 }
             } catch (e) {
-                showBackupStatus('#restore-status', 'Error parsing response.', 'error');
+                showBackupStatus('#restore-status', '解析响应失败。', 'error');
             }
         }).fail(function() {
             setBackupSpinner('#btn-restore-stacks', false);
@@ -2124,7 +2124,7 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
 
         // Save via Ajax with the new saveBackupSettings action
         var $btn = $('#btn-save-backup-settings');
-        $btn.prop('disabled', true).val('Saving...');
+        $btn.prop('disabled', true).val('正在保存...');
 
         $.post(caURL, {
             action: 'saveBackupSettings',
@@ -2139,7 +2139,7 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
                     window.composeSettingsUnifiedState.markBackupSaved();
                 }
             } else {
-                showBackupStatus('#backup-create-status', result.message || 'Failed to save settings', 'error');
+                showBackupStatus('#backup-create-status', result.message || '保存设置失败', 'error');
             }
         }).fail(function() {
             $btn.prop('disabled', false).val('保存设置');
@@ -2162,7 +2162,7 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
         formData.append('action', 'uploadBackup');
         formData.append('file', file);
 
-        showBackupStatus('#restore-status', 'Uploading ' + file.name + '...', 'info');
+        showBackupStatus('#restore-status', '正在上传 ' + file.name + '...', 'info');
 
         $.ajax({
             url: caURL,
@@ -2177,14 +2177,14 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
                         showBackupStatus('#restore-status', 'Uploaded: ' + file.name, 'success');
                         loadBackupArchives();
                     } else {
-                        showBackupStatus('#restore-status', result.message || 'Upload failed.', 'error');
+                        showBackupStatus('#restore-status', result.message || '上传失败。', 'error');
                     }
                 } catch (e) {
-                    showBackupStatus('#restore-status', 'Error parsing upload response.', 'error');
+                    showBackupStatus('#restore-status', '解析上传响应出错。', 'error');
                 }
             },
             error: function() {
-                showBackupStatus('#restore-status', 'Upload request failed.', 'error');
+                showBackupStatus('#restore-status', '上传请求失败。', 'error');
             },
             complete: function() {
                 input.value = '';
@@ -2540,7 +2540,7 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
             }, function(resp) {
                 if (!resp || !resp.ok) {
                     setUpdatesSpinner(false);
-                    showUpdatesStatus('Failed to save settings.', 'error');
+                    showUpdatesStatus('保存设置失败。', 'error');
                     return;
                 }
 
@@ -2551,17 +2551,17 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
                 }, function(d) {
                     setUpdatesSpinner(false);
                     refreshCronStatus();
-                    showUpdatesStatus('Auto-update settings saved.', 'success');
+                    showUpdatesStatus('自动更新设置已保存。', 'success');
                     if (window.composeSettingsUnifiedState && typeof window.composeSettingsUnifiedState.markUpdatesSaved === 'function') {
                         window.composeSettingsUnifiedState.markUpdatesSaved();
                     }
                 }, 'json').fail(function() {
                     setUpdatesSpinner(false);
-                    showUpdatesStatus('Settings saved but scheduler update failed.', 'error');
+                    showUpdatesStatus('设置已保存，但调度器更新失败。', 'error');
                 });
             }, 'json').fail(function() {
                 setUpdatesSpinner(false);
-                showUpdatesStatus('Failed to save settings.', 'error');
+                showUpdatesStatus('保存设置失败。', 'error');
             });
         });
 
@@ -2580,14 +2580,14 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
                 return;
             }
 
-            showUpdatesStatus('Running auto-update for ' + paths.length + ' stack(s)...', 'info');
+            showUpdatesStatus('正在对以下项目运行自动更新：' + paths.length + ' stack(s)...', 'info');
 
             var idx = 0;
             var completed = 0;
 
             function runNext() {
                 if (idx >= paths.length) {
-                    showUpdatesStatus('Auto-update completed for ' + completed + ' stack(s).', 'success');
+                    showUpdatesStatus('已完成以下项目的自动更新：' + completed + ' stack(s).', 'success');
                     return;
                 }
                 var p = paths[idx++];
@@ -2599,7 +2599,7 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
                     runNext();
                 }, 'json').fail(function() {
                     if (typeof composeLogger === 'function') {
-                        composeLogger('runNow failed for path', { path: p }, 'user', 'warn', 'settings');
+                        composeLogger('对路径运行失败', { path: p }, 'user', 'warn', 'settings');
                     }
                     runNext();
                 });

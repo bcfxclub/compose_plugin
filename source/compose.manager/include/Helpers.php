@@ -276,7 +276,7 @@ function echoComposeCommand($action, array $options = [])
         echo $plugin_root . "/scripts/arrayNotStarted.sh";
         composeLogger("无法执行操作：阵列未启动", ['action' => $action, 'path' => $path], 'user', 'debug', 'compose');
     } else {
-        composeLogger("Preparing compose command", ['action' => $action, 'path' => $path, 'profile' => $profile, 'recreate' => $recreate, 'background' => $background, 'removeOrphans' => $removeOrphans], 'user', 'debug', 'compose');
+        composeLogger("正在准备 compose 命令", ['action' => $action, 'path' => $path, 'profile' => $profile, 'recreate' => $recreate, 'background' => $background, 'removeOrphans' => $removeOrphans], 'user', 'debug', 'compose');
         $composeCommand = array($plugin_root . "scripts/compose.sh");
 
         // Resolve stack identity via StackInfo
@@ -383,7 +383,7 @@ function echoComposeCommand($action, array $options = [])
             }
             $bgCmd .= ' > /dev/null 2>&1 &';
             exec($bgCmd);
-            composeLogger("Background command: " . $bgCmd, ['command' => $bgCmd], 'user', 'debug', 'compose');
+            composeLogger("后台命令：" . $bgCmd, ['command' => $bgCmd], 'user', 'debug', 'compose');
             // Signal to JS that this ran in background (no terminal window to open)
             echo json_encode(['background' => true]);
         } else {
@@ -410,7 +410,7 @@ function echoComposeCommand($action, array $options = [])
             }
             echo $composeCommand;
         }
-        composeLogger("Final compose command: " . $composeCommand, ['command' => $composeCommand], 'user', 'debug', 'compose');
+        composeLogger("最终 compose 命令：" . $composeCommand, ['command' => $composeCommand], 'user', 'debug', 'compose');
     }
 }
 
@@ -585,7 +585,7 @@ function echoGitDeployCommand(array $options = []): void
             $bgCmd .= ' ' . escapeshellarg($arg);
         }
         exec($bgCmd . ' > /dev/null 2>&1 &');
-        composeLogger("Background command: " . $bgCmd, ['command' => $bgCmd], 'user', 'debug', 'compose');
+        composeLogger("后台命令：" . $bgCmd, ['command' => $bgCmd], 'user', 'debug', 'compose');
         echo json_encode(['background' => true]);
         return;
     }
@@ -634,7 +634,7 @@ function echoComposeCommandMultiple($action, array $options = [])
         try {
             $stackInfo = StackInfo::fromProject($compose_root, $project);
         } catch (\Throwable $e) {
-            composeLogger("Skipping invalid stack during multi-compose action", ['action' => $action, 'path' => $path, 'error' => $e->getMessage()], 'user', 'warning', 'compose-multi');
+            composeLogger("在多 compose 操作中跳过无效栈", ['action' => $action, 'path' => $path, 'error' => $e->getMessage()], 'user', 'warning', 'compose-multi');
             continue;
         }
 
@@ -750,7 +750,7 @@ function echoComposeCommandMultiple($action, array $options = [])
         file_put_contents($tmpScript, $scriptContent);
         chmod($tmpScript, 0700);
         exec(escapeshellarg($tmpScript) . ' > /dev/null 2>&1 &');
-        composeLogger("Background multi-stack queued: " . $tmpScript, ['script' => $tmpScript, 'stacks' => count($commands)], 'user', 'debug', 'compose-multi');
+        composeLogger("后台多栈已排队：" . $tmpScript, ['script' => $tmpScript, 'stacks' => count($commands)], 'user', 'debug', 'compose-multi');
         echo json_encode(['background' => true]);
         return;
     }

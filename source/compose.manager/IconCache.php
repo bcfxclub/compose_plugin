@@ -26,7 +26,7 @@ $cachePath    = compose_get_icon_cache_path($src);
 // failed refresh keeps serving the last known-good PNG.
 if ($forceRefresh || compose_icon_cache_is_stale($src, $cachePath)) {
     if (compose_fetch_icon_to_cache($src, true) === '' && compose_file_is_png($cachePath)) {
-        composeLogger('Icon refresh failed; serving cached copy', ['source' => $src], 'system', 'debug', 'icon-cache');
+        composeLogger('图标刷新失败，正在提供缓存副本', ['source' => $src], 'system', 'debug', 'icon-cache');
     }
 }
 

@@ -2,5 +2,5 @@
 # Compose Manager - Disks Mounted Event Handler
 # Syncs plugin cron entries into the system crontab after reboot.
 . /usr/local/emhttp/plugins/compose.manager/scripts/common.sh
-composeLogger "Syncing cron entries after boot" info cron
+composeLogger "启动后同步 cron 条目" info cron
 /usr/local/sbin/update_cron

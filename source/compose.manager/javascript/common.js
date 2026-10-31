@@ -77,7 +77,7 @@ function getConfig() {
                     resp = JSON.parse(resp);
                 } catch (e) {
                     _configPromise = null;
-                    composeLogger('getConfig returned non-JSON response; using empty config', { response: response, error: e }, 'user', 'error', 'config');
+                    composeLogger('getConfig 返回了非 JSON 响应；改用空配置', { response: response, error: e }, 'user', 'error', 'config');
                     resolve({});
                     return;
                 }
@@ -89,12 +89,12 @@ function getConfig() {
                 resolve(_configCache);
             } else {
                 _configPromise = null;
-                composeLogger('getConfig returned non-success response; using empty config', resp, 'user', 'error', 'config');
+                composeLogger('getConfig 返回了非成功响应；改用空配置', resp, 'user', 'error', 'config');
                 resolve({});
             }
         }).fail(function () {
             _configPromise = null;
-            composeLogger('Network error while fetching config; using empty config', null, 'user', 'error', 'config');
+            composeLogger('获取配置时发生网络错误；改用空配置', null, 'user', 'error', 'config');
             resolve({});
         });
     });

@@ -37,7 +37,7 @@ switch ($action) {
         $arr = json_decode($data, true);
         if ($arr === null && $data !== 'null') {
             http_response_code(400);
-            echo json_encode(array('error' => 'Invalid JSON'));
+            echo json_encode(array('error' => 'JSON 无效'));
             break;
         }
         // Normalize keys: ensure top-level is array
@@ -127,7 +127,7 @@ switch ($action) {
         $path = isset($_POST['path']) ? $_POST['path'] : '';
         if (!$path) {
             http_response_code(400);
-            echo json_encode(array('error' => 'Missing path'));
+            echo json_encode(array('error' => '缺少路径'));
             break;
         }
         // Security: validate path is under allowed directories
@@ -211,6 +211,6 @@ switch ($action) {
         break;
     default:
         http_response_code(400);
-        echo json_encode(array('error' => 'Unknown action'));
+        echo json_encode(array('error' => '未知操作'));
         break;
 }

@@ -37,11 +37,11 @@ if [ -f "$ACE_ZIP_PATH" ]; then
     fi
 
     if ! command -v unzip >/dev/null 2>&1; then
-        fail_ace_install "Required command not found: unzip"
+        fail_ace_install "未找到所需命令：unzip"
     fi
 
     if ! command -v cp >/dev/null 2>&1; then
-        fail_ace_install "Required command not found: cp"
+        fail_ace_install "未找到所需命令：cp"
     fi
 
     if unzip -q "$ACE_ZIP_PATH" \

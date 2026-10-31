@@ -296,7 +296,7 @@ switch ($_POST['action']) {
         break;
     case 'getColumnVisibility':
         $visibility = compose_read_column_layout();
-        composeLogger('Loaded column visibility layout', [
+        composeLogger('已加载列可见性布局', [
             'stackVisible' => count($visibility['stackOrder'] ?? []),
             'serviceVisible' => count($visibility['serviceOrder'] ?? []),
         ], 'user', 'debug', 'column-layout');
@@ -309,7 +309,7 @@ switch ($_POST['action']) {
         $raw = $_POST['visibility'] ?? '';
         $parsed = json_decode((string)$raw, true);
         if (!is_array($parsed)) {
-            composeLogger('Rejected invalid column visibility payload', [
+            composeLogger('已拒绝无效的列可见性数据', [
                 'jsonError' => json_last_error_msg(),
                 'payloadLength' => strlen((string)$raw),
             ], 'user', 'warning', 'column-layout');
@@ -344,7 +344,7 @@ switch ($_POST['action']) {
             break;
         }
 
-        composeLogger('Saved column visibility layout', [
+        composeLogger('已保存列可见性布局', [
             'stackVisible' => count($normalized['stackOrder'] ?? []),
             'serviceVisible' => count($normalized['serviceOrder'] ?? []),
             'prefFile' => $prefFile,
@@ -515,7 +515,7 @@ switch ($_POST['action']) {
     case 'addGitStack':
         $result = (new GitStackWebActions($compose_root))->add($_POST);
         if ($result['result'] === 'success') {
-            composeLogger('Created git stack: ' . $result['project'], null, 'user', 'info', 'stack');
+            composeLogger('已创建 Git 栈：' . $result['project'], null, 'user', 'info', 'stack');
         } else {
             composeLogger('创建 Git 栈失败：' . $result['message'], null, 'user', 'error', 'stack');
         }
@@ -1088,7 +1088,7 @@ switch ($_POST['action']) {
                 'username' => trim((string) ($_POST['username'] ?? '')),
                 'secret' => trim((string) ($_POST['secret'] ?? '')),
             ]);
-            composeLogger('Saved credential', ['id' => $credential['id'], 'provider' => $credential['provider'], 'registry' => $credential['registry']], 'user', 'info', 'credentials');
+            composeLogger('已保存凭据', ['id' => $credential['id'], 'provider' => $credential['provider'], 'registry' => $credential['registry']], 'user', 'info', 'credentials');
             echo json_encode(['result' => 'success', 'credential' => $credential]);
         } catch (\InvalidArgumentException $error) {
             echo json_encode(['result' => 'error', 'message' => $error->getMessage()]);
@@ -2548,9 +2548,9 @@ switch ($_POST['action']) {
         composeLogger('手动备份开始...', null, 'user', 'info', 'backup');
         $result = createBackup();
         if ($result['result'] === 'success') {
-            composeLogger("Manual backup completed: " . $result['archive'] . " (" . $result['size'] . ", " . $result['stacks'] . " stacks)", null, 'user', 'info', 'backup');
+            composeLogger("手动备份已完成：" . $result['archive'] . " (" . $result['size'] . ", " . $result['stacks'] . " stacks)", null, 'user', 'info', 'backup');
         } else {
-            composeLogger('Manual backup FAILED: ' . ($result['message'] ?? '未知错误'), null, 'user', 'error', 'backup');
+            composeLogger('手动备份失败：' . ($result['message'] ?? '未知错误'), null, 'user', 'error', 'backup');
         }
         echo json_encode($result);
         break;
@@ -2575,7 +2575,7 @@ switch ($_POST['action']) {
                     UPLOAD_ERR_NO_TMP_DIR => '服务器缺少临时目录。',
                     UPLOAD_ERR_CANT_WRITE => '写入磁盘失败。',
                 ];
-                $errMsg = $uploadErrors[$_FILES['file']['error']] ?? 'Upload error code ' . $_FILES['file']['error'];
+                $errMsg = $uploadErrors[$_FILES['file']['error']] ?? '上传错误码 ' . $_FILES['file']['error'];
             }
             echo json_encode(['result' => 'error', 'message' => $errMsg]);
             break;
@@ -2608,8 +2608,8 @@ switch ($_POST['action']) {
             echo json_encode(['result' => 'error', 'message' => '保存上传的文件失败。']);
             break;
         }
-        composeLogger('Uploaded backup archive: ' . $filename, null, 'user', 'info', 'backup');
-        echo json_encode(['result' => 'success', 'message' => 'Archive uploaded successfully.', 'archive' => $filename]);
+        composeLogger('已上传备份归档：' . $filename, null, 'user', 'info', 'backup');
+        echo json_encode(['result' => 'success', 'message' => '归档上传成功。', 'archive' => $filename]);
         break;
 
     case 'readManifest':
@@ -2647,7 +2647,7 @@ switch ($_POST['action']) {
             composeLogger('恢复失败：' . ($result['message'] ?? '未知错误'), null, 'user', 'error', 'restore');
         } else {
             $restoredList = implode(', ', $result['restored'] ?? []);
-            composeLogger('Restore completed: ' . count($result['restored']) . ' stacks restored (' . $restoredList . ')', null, 'user', 'info', 'restore');
+            composeLogger('恢复已完成：' . count($result['restored']) . ' stacks restored (' . $restoredList . ')', null, 'user', 'info', 'restore');
             if (!empty($result['errors'])) {
                 composeLogger('恢复错误：' . implode(', ', $result['errors']), null, 'user', 'error', 'restore');
             }
@@ -2668,7 +2668,7 @@ switch ($_POST['action']) {
             break;
         }
         @unlink($archivePath);
-        composeLogger('Deleted backup archive: ' . $archive, null, 'user', 'info', 'backup');
+        composeLogger('已删除备份归档：' . $archive, null, 'user', 'info', 'backup');
         echo json_encode(['result' => 'success', 'message' => '备份已删除。']);
         break;
 

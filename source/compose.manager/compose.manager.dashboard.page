@@ -25,9 +25,9 @@ $unraidVersion = @parse_ini_file('/etc/unraid-version')['version'] ?? '0';
 $isResponsive = version_compare($unraidVersion, '7.2.0-beta', '>=');
 
 // Translated strings
-$tileTitle = _('Compose Stacks');
-$tileTitleAttr = _('Go to Compose Manager');
-$loadingText = _('Loading...');
+$tileTitle = _('Compose 栈');
+$tileTitleAttr = _('前往 Compose 管理器');
+$loadingText = _('加载中…');
 $composePage = $cfg['SHOW_COMPOSE_IN_HEADER_MENU'] === 'true' ? '/Compose' : '/Docker';
 
 // Build tile header
@@ -50,7 +50,7 @@ if ($isResponsive) {
     </span>
     <span class='tile-header-right'>
         <span class='tile-header-right-controls'>
-            <a href='/Settings/compose.manager.settings' title="Go to Settings">
+            <a href='/Settings/compose.manager.settings' title="前往设置">
                 <i class='fa fa-fw fa-cog control'></i>
             </a>
         </span>
@@ -71,7 +71,7 @@ EOT;
     </span>
     <span id='compose_stacks_status' class='compose-stacks switch'></span><br>
 </div>
-<a href='/Settings/compose.manager.settings' title="Go to Settings">
+<a href='/Settings/compose.manager.settings' title="前往设置">
     <i class='fa fa-cog control'></i>
 </a>
 EOT;

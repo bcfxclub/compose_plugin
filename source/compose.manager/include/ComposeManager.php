@@ -20,7 +20,7 @@ $stackColumnOrder = compose_stack_render_order($columnLayout);
 $stackColumnMeta = compose_stack_column_meta();
 $stackHiddenColumns = compose_stack_hidden_columns($columnLayout);
 $stackWidthFractions = compose_stack_width_fractions($columnLayout);
-composeLogger('Prepared column model bootstrap', [
+composeLogger('已准备列模型引导', [
     'stackCols' => count($columnModel['stackCols'] ?? []),
     'serviceCols' => count($columnModel['serviceCols'] ?? []),
     'stackVisible' => count($columnLayout['stackOrder'] ?? []),
@@ -775,7 +775,7 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
                             <div class="settings-field-help">该栈自定义图标的 URL 或本地路径。可用文件选择器或直接输入 URL。留空则使用默认图标。</div>
                             <div class="settings-field-icon-preview" id="settings-icon-preview" style="display:none;">
                                 <span>预览：</span>
-                                <img id="settings-icon-preview-img" src="" alt="Icon preview" onerror="this.parentElement.style.display='none';">
+                                <img id="settings-icon-preview-img" src="" alt="图标预览" onerror="this.parentElement.style.display='none';">
                             </div>
                         </div>
                     </div>

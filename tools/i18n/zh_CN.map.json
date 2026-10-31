@@ -5495,6 +5495,546 @@
       "en": "git_stack.php prepare: the project name is required.",
       "zh": "git_stack.php prepare：必须提供项目名称。",
       "file": "source/compose.manager/scripts/git_stack.php"
+    },
+    {
+      "en": "Icon refresh failed; serving cached copy",
+      "zh": "图标刷新失败，正在提供缓存副本",
+      "file": "_batch2"
+    },
+    {
+      "en": "Compose Stacks",
+      "zh": "Compose 栈",
+      "file": "_batch2"
+    },
+    {
+      "en": "Go to Compose Manager",
+      "zh": "前往 Compose 管理器",
+      "file": "_batch2"
+    },
+    {
+      "en": "Loading...",
+      "zh": "加载中…",
+      "file": "_batch2"
+    },
+    {
+      "en": "Go to Settings",
+      "zh": "前往设置",
+      "file": "_batch2"
+    },
+    {
+      "en": "Failed to save image update check settings.",
+      "zh": "保存镜像更新检查设置失败。",
+      "file": "_batch2"
+    },
+    {
+      "en": "Dirty state recalculated",
+      "zh": "已重新计算脏状态",
+      "file": "_batch2"
+    },
+    {
+      "en": "Backup created: ",
+      "zh": "备份已创建：",
+      "file": "_batch2"
+    },
+    {
+      "en": "Backup failed.",
+      "zh": "备份失败。",
+      "file": "_batch2"
+    },
+    {
+      "en": "Restore failed.",
+      "zh": "恢复失败。",
+      "file": "_batch2"
+    },
+    {
+      "en": "Failed to save settings",
+      "zh": "保存设置失败",
+      "file": "_batch2"
+    },
+    {
+      "en": "Uploading ",
+      "zh": "正在上传 ",
+      "file": "_batch2"
+    },
+    {
+      "en": "Upload failed.",
+      "zh": "上传失败。",
+      "file": "_batch2"
+    },
+    {
+      "en": "Error parsing upload response.",
+      "zh": "解析上传响应出错。",
+      "file": "_batch2"
+    },
+    {
+      "en": "Upload request failed.",
+      "zh": "上传请求失败。",
+      "file": "_batch2"
+    },
+    {
+      "en": "Failed to save settings.",
+      "zh": "保存设置失败。",
+      "file": "_batch2"
+    },
+    {
+      "en": "Auto-update settings saved.",
+      "zh": "自动更新设置已保存。",
+      "file": "_batch2"
+    },
+    {
+      "en": "Settings saved but scheduler update failed.",
+      "zh": "设置已保存，但调度器更新失败。",
+      "file": "_batch2"
+    },
+    {
+      "en": "Running auto-update for ",
+      "zh": "正在对以下项目运行自动更新：",
+      "file": "_batch2"
+    },
+    {
+      "en": "Auto-update completed for ",
+      "zh": "已完成以下项目的自动更新：",
+      "file": "_batch2"
+    },
+    {
+      "en": "runNow failed for path",
+      "zh": "对路径运行失败",
+      "file": "_batch2"
+    },
+    {
+      "en": "Syncing cron entries after boot",
+      "zh": "启动后同步 cron 条目",
+      "file": "_batch2"
+    },
+    {
+      "en": "Waiting for Docker daemon to become ready...",
+      "zh": "正在等待 Docker 守护进程就绪…",
+      "file": "_batch2"
+    },
+    {
+      "en": "Autostart event received; detaching background worker to avoid blocking array startup",
+      "zh": "已收到自启动事件；分离后台工作进程以避免阻塞阵列启动",
+      "file": "_batch2"
+    },
+    {
+      "en": "Waiting for Docker autostart containers to stabilize...",
+      "zh": "正在等待 Docker 自启动容器稳定…",
+      "file": "_batch2"
+    },
+    {
+      "en": "=== Compose Manager Autostart Begin ===",
+      "zh": "=== Compose 管理器自启动开始 ===",
+      "file": "_batch2"
+    },
+    {
+      "en": "=== Compose Manager Autostart Complete ===",
+      "zh": "=== Compose 管理器自启动完成 ===",
+      "file": "_batch2"
+    },
+    {
+      "en": "=== Compose Manager Shutdown Begin ===",
+      "zh": "=== Compose 管理器关闭开始 ===",
+      "file": "_batch2"
+    },
+    {
+      "en": "=== Compose Manager Shutdown Complete ===",
+      "zh": "=== Compose 管理器关闭完成 ===",
+      "file": "_batch2"
+    },
+    {
+      "en": "Invalid JSON",
+      "zh": "JSON 无效",
+      "file": "_batch2"
+    },
+    {
+      "en": "Missing path",
+      "zh": "缺少路径",
+      "file": "_batch2"
+    },
+    {
+      "en": "Unknown action",
+      "zh": "未知操作",
+      "file": "_batch2"
+    },
+    {
+      "en": "Prepared column model bootstrap",
+      "zh": "已准备列模型引导",
+      "file": "_batch2"
+    },
+    {
+      "en": "Icon preview",
+      "zh": "图标预览",
+      "file": "_batch2"
+    },
+    {
+      "en": "Loaded column visibility layout",
+      "zh": "已加载列可见性布局",
+      "file": "_batch2"
+    },
+    {
+      "en": "Rejected invalid column visibility payload",
+      "zh": "已拒绝无效的列可见性数据",
+      "file": "_batch2"
+    },
+    {
+      "en": "Saved column visibility layout",
+      "zh": "已保存列可见性布局",
+      "file": "_batch2"
+    },
+    {
+      "en": "Created git stack: ",
+      "zh": "已创建 Git 栈：",
+      "file": "_batch2"
+    },
+    {
+      "en": "Saved credential",
+      "zh": "已保存凭据",
+      "file": "_batch2"
+    },
+    {
+      "en": "Manual backup completed: ",
+      "zh": "手动备份已完成：",
+      "file": "_batch2"
+    },
+    {
+      "en": "Manual backup FAILED: ",
+      "zh": "手动备份失败：",
+      "file": "_batch2"
+    },
+    {
+      "en": "Upload error code ",
+      "zh": "上传错误码 ",
+      "file": "_batch2"
+    },
+    {
+      "en": "Uploaded backup archive: ",
+      "zh": "已上传备份归档：",
+      "file": "_batch2"
+    },
+    {
+      "en": "Archive uploaded successfully.",
+      "zh": "归档上传成功。",
+      "file": "_batch2"
+    },
+    {
+      "en": "Restore completed: ",
+      "zh": "恢复已完成：",
+      "file": "_batch2"
+    },
+    {
+      "en": "Deleted backup archive: ",
+      "zh": "已删除备份归档：",
+      "file": "_batch2"
+    },
+    {
+      "en": "GitHub authentication request failed.",
+      "zh": "GitHub 身份验证请求失败。",
+      "file": "_batch2"
+    },
+    {
+      "en": "Docker project-label probe failed; legacy identity migration deferred",
+      "zh": "Docker 项目标签探测失败；旧身份迁移已推迟",
+      "file": "_batch2"
+    },
+    {
+      "en": "Icon cache hit",
+      "zh": "图标缓存命中",
+      "file": "_batch2"
+    },
+    {
+      "en": "Icon cached",
+      "zh": "图标已缓存",
+      "file": "_batch2"
+    },
+    {
+      "en": "Seeded Docker Manager icon cache",
+      "zh": "已为 Docker 管理器填充图标缓存",
+      "file": "_batch2"
+    },
+    {
+      "en": "Repaired Docker Manager icon metadata",
+      "zh": "已修复 Docker 管理器图标元数据",
+      "file": "_batch2"
+    },
+    {
+      "en": "Migrated renamed services: ",
+      "zh": "已迁移重命名的服务：",
+      "file": "_batch2"
+    },
+    {
+      "en": "Invalid indirect metadata rejected during structural validation",
+      "zh": "结构校验期间已拒绝无效的间接元数据",
+      "file": "_batch2"
+    },
+    {
+      "en": "Preparing compose command",
+      "zh": "正在准备 compose 命令",
+      "file": "_batch2"
+    },
+    {
+      "en": "Background command: ",
+      "zh": "后台命令：",
+      "file": "_batch2"
+    },
+    {
+      "en": "Final compose command: ",
+      "zh": "最终 compose 命令：",
+      "file": "_batch2"
+    },
+    {
+      "en": "Skipping invalid stack during multi-compose action",
+      "zh": "在多 compose 操作中跳过无效栈",
+      "file": "_batch2"
+    },
+    {
+      "en": "Background multi-stack queued: ",
+      "zh": "后台多栈已排队：",
+      "file": "_batch2"
+    },
+    {
+      "en": "getConfig returned non-JSON response; using empty config",
+      "zh": "getConfig 返回了非 JSON 响应；改用空配置",
+      "file": "_batch2"
+    },
+    {
+      "en": "getConfig returned non-success response; using empty config",
+      "zh": "getConfig 返回了非成功响应；改用空配置",
+      "file": "_batch2"
+    },
+    {
+      "en": "Network error while fetching config; using empty config",
+      "zh": "获取配置时发生网络错误；改用空配置",
+      "file": "_batch2"
+    },
+    {
+      "en": "Column model bootstrap missing; customizer disabled for this page load",
+      "zh": "列模型引导缺失；本次页面加载已禁用自定义器",
+      "file": "_batch2"
+    },
+    {
+      "en": "Applied bootstrap column layout",
+      "zh": "已应用引导列布局",
+      "file": "_batch2"
+    },
+    {
+      "en": "Fetched column visibility preferences",
+      "zh": "已获取列可见性偏好",
+      "file": "_batch2"
+    },
+    {
+      "en": "Column visibility fetch returned fallback payload; using defaults",
+      "zh": "列可见性获取返回了回退数据；使用默认值",
+      "file": "_batch2"
+    },
+    {
+      "en": "Column visibility fetch failed; using defaults",
+      "zh": "列可见性获取失败；使用默认值",
+      "file": "_batch2"
+    },
+    {
+      "en": "Saved column visibility preferences",
+      "zh": "已保存列可见性偏好",
+      "file": "_batch2"
+    },
+    {
+      "en": "Column visibility save returned non-success payload",
+      "zh": "列可见性保存返回了非成功数据",
+      "file": "_batch2"
+    },
+    {
+      "en": "Column visibility save request failed",
+      "zh": "列可见性保存请求失败",
+      "file": "_batch2"
+    },
+    {
+      "en": "Menu already open, closing",
+      "zh": "菜单已打开，正在关闭",
+      "file": "_batch2"
+    },
+    {
+      "en": "Container menu already open, closing",
+      "zh": "容器菜单已打开，正在关闭",
+      "file": "_batch2"
+    },
+    {
+      "en": "Error parsing containers:",
+      "zh": "解析容器出错：",
+      "file": "_batch2"
+    },
+    {
+      "en": "DashboardApps.php AJAX complete, scheduling container hiding",
+      "zh": "DashboardApps.php AJAX 完成，正在安排隐藏容器",
+      "file": "_batch2"
+    },
+    {
+      "en": "compose containers from Docker tile",
+      "zh": "来自 Docker 磁贴的 compose 容器",
+      "file": "_batch2"
+    },
+    {
+      "en": "refreshEditorContents failed for ",
+      "zh": "刷新编辑器内容失败：",
+      "file": "_batch2"
+    },
+    {
+      "en": " minutes. Skipping.",
+      "zh": " 分钟。跳过。",
+      "file": "_batch2"
+    },
+    {
+      "en": "Checking...",
+      "zh": "正在检查…",
+      "file": "_batch2"
+    },
+    {
+      "en": "Loaded persistent container cache",
+      "zh": "已加载持久化容器缓存",
+      "file": "_batch2"
+    },
+    {
+      "en": "Loaded compose load snapshot",
+      "zh": "已加载 compose 加载快照",
+      "file": "_batch2"
+    },
+    {
+      "en": "Failed to load compose load snapshot",
+      "zh": "加载 compose 加载快照失败",
+      "file": "_batch2"
+    },
+    {
+      "en": "triggering composeDockerLoadToggle, enabled=",
+      "zh": "正在触发 composeDockerLoadToggle，enabled=",
+      "file": "_batch2"
+    },
+    {
+      "en": "composeDockerLoadToggle not available yet at composeLoadlist completion",
+      "zh": "composeLoadlist 完成时 composeDockerLoadToggle 尚不可用",
+      "file": "_batch2"
+    },
+    {
+      "en": "NchanSubscriber not available yet",
+      "zh": "NchanSubscriber 尚不可用",
+      "file": "_batch2"
+    },
+    {
+      "en": "initializing subscriber, composeListReady=",
+      "zh": "正在初始化订阅器，composeListReady=",
+      "file": "_batch2"
+    },
+    {
+      "en": "composeListRefreshed — structure unchanged, keeping cache",
+      "zh": "composeListRefreshed — 结构未变，保留缓存",
+      "file": "_batch2"
+    },
+    {
+      "en": "composeListRefreshed — structure changed, invalidating stack index",
+      "zh": "composeListRefreshed — 结构已变，失效栈索引",
+      "file": "_batch2"
+    },
+    {
+      "en": "ignoring toggle for stale WebSocket generation",
+      "zh": "忽略过期 WebSocket 代的切换",
+      "file": "_batch2"
+    },
+    {
+      "en": "starting WebSocket",
+      "zh": "正在启动 WebSocket",
+      "file": "_batch2"
+    },
+    {
+      "en": "stopping WebSocket",
+      "zh": "正在停止 WebSocket",
+      "file": "_batch2"
+    },
+    {
+      "en": "ignoring stale WebSocket message",
+      "zh": "忽略过期的 WebSocket 消息",
+      "file": "_batch2"
+    },
+    {
+      "en": "Compose Action",
+      "zh": "Compose 操作",
+      "file": "_batch2"
+    },
+    {
+      "en": "Processing pending update checks",
+      "zh": "正在处理待定的更新检查",
+      "file": "_batch2"
+    },
+    {
+      "en": "Deferring pending update check while action is in progress",
+      "zh": "操作进行中，推迟待定的更新检查",
+      "file": "_batch2"
+    },
+    {
+      "en": ". Nothing was changed.",
+      "zh": ". 没有任何更改。",
+      "file": "_batch2"
+    },
+    {
+      "en": "getProfileServices result!=success",
+      "zh": "getProfileServices 结果!=成功",
+      "file": "_batch2"
+    },
+    {
+      "en": "getProfileServices JSON parse error",
+      "zh": "getProfileServices JSON 解析错误",
+      "file": "_batch2"
+    },
+    {
+      "en": "getProfileServices AJAX fail",
+      "zh": "getProfileServices AJAX 失败",
+      "file": "_batch2"
+    },
+    {
+      "en": "# Error loading file",
+      "zh": "# 加载文件出错",
+      "file": "_batch2"
+    },
+    {
+      "en": ". Empty server response.",
+      "zh": ". 服务器响应为空。",
+      "file": "_batch2"
+    },
+    {
+      "en": ". Invalid server response.",
+      "zh": ". 服务器响应无效。",
+      "file": "_batch2"
+    },
+    {
+      "en": "Delete request failed for project",
+      "zh": "项目删除请求失败",
+      "file": "_batch2"
+    },
+    {
+      "en": "updateParentStackFromContainers error",
+      "zh": "updateParentStackFromContainers 出错",
+      "file": "_batch2"
+    },
+    {
+      "en": "Reorder Compose above Docker skipped",
+      "zh": "跳过将 Compose 移到 Docker 上方",
+      "file": "_batch2"
+    },
+    {
+      "en": "Scheduled backup starting...",
+      "zh": "计划备份开始…",
+      "file": "_batch2"
+    },
+    {
+      "en": "Could not determine stack path for background operation.",
+      "zh": "无法确定后台操作的栈路径。",
+      "file": "_batch2"
+    },
+    {
+      "en": "Required command not found: unzip",
+      "zh": "未找到所需命令：unzip",
+      "file": "_batch2"
+    },
+    {
+      "en": "Required command not found: cp",
+      "zh": "未找到所需命令：cp",
+      "file": "_batch2"
     }
   ]
 }

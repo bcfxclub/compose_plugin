@@ -28,7 +28,7 @@ wait_for_docker_daemon() {
         fi
 
         if [ $waited -eq 0 ]; then
-            log "Waiting for Docker daemon to become ready..." debug
+            log "正在等待 Docker 守护进程就绪…" debug
         fi
 
         sleep $check_interval
@@ -52,7 +52,7 @@ log() {
 # Unraid invokes this event hook synchronously. Spawn a background worker so the array
 # can finish transitioning to Started while Compose autostart continues in the background.
 if [ "${COMPOSE_MANAGER_AUTOSTART_CHILD:-0}" != "1" ]; then
-    composeLogger "Autostart event received; detaching background worker to avoid blocking array startup" debug autostart
+    composeLogger "已收到自启动事件；分离后台工作进程以避免阻塞阵列启动" debug autostart
     nohup env COMPOSE_MANAGER_AUTOSTART_CHILD=1 "$0" >/dev/null 2>&1 &
     exit 0
 fi
@@ -101,7 +101,7 @@ foreach (array_values($order) as $index => $project) {
 
 # Wait for Docker autostart containers to finish starting
 wait_for_docker_autostart() {
-    log "Waiting for Docker autostart containers to stabilize..." debug
+    log "正在等待 Docker 自启动容器稳定…" debug
     
     local waited=0
     local check_interval=5
@@ -257,7 +257,7 @@ start_stack() {
 }
 
 # Main execution
-log "=== Compose Manager Autostart Begin ===" debug
+log "=== Compose 管理器自启动开始 ===" debug
 
 if [ -z "$COMPOSE_ROOT" ] || [ ! -d "$COMPOSE_ROOT" ]; then
     log "ERROR: Invalid compose root path: '$COMPOSE_ROOT'" error
@@ -344,7 +344,7 @@ for stack_entry in "${sorted_stacks[@]}"; do
     esac
 done
 
-log "=== Compose Manager Autostart Complete ===" debug
+log "=== Compose 管理器自启动完成 ===" debug
 log "Results: $succeeded succeeded, $failed failed, $timedout timed out (of $total_stacks total)" debug
 
 # Exit with error if any failed (for logging purposes, doesn't affect Unraid)

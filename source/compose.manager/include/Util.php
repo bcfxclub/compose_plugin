@@ -345,7 +345,7 @@ if (!function_exists('compose_fetch_icon_to_cache')) {
         $cachePath = compose_get_icon_cache_path($source);
 
         if (!$forceRefresh && compose_file_is_png($cachePath)) {
-            composeLogger('Icon cache hit', ['source' => $source, 'cache' => $cachePath], 'system', 'debug', 'icon-cache');
+            composeLogger('图标缓存命中', ['source' => $source, 'cache' => $cachePath], 'system', 'debug', 'icon-cache');
             return $cachePath;
         }
 
@@ -472,7 +472,7 @@ if (!function_exists('compose_fetch_icon_to_cache')) {
             return '';
         }
 
-        composeLogger('Icon cached', ['source' => $source, 'cache' => $cachePath, 'bytes' => strlen($pngBytes)], 'system', 'debug', 'icon-cache');
+        composeLogger('图标已缓存', ['source' => $source, 'cache' => $cachePath, 'bytes' => strlen($pngBytes)], 'system', 'debug', 'icon-cache');
         compose_sync_docker_manager_icons_for_source($source, $cachePath);
 
         return $cachePath;
@@ -522,7 +522,7 @@ if (!function_exists('compose_seed_docker_manager_icon')) {
                 @chmod($tmp, 0644);
                 if (@rename($tmp, $dest)) {
                     $seeded = true;
-                    composeLogger('Seeded Docker Manager icon cache', ['container' => $containerName, 'dest' => $dest], 'system', 'debug', 'icon-cache');
+                    composeLogger('已为 Docker 管理器填充图标缓存', ['container' => $containerName, 'dest' => $dest], 'system', 'debug', 'icon-cache');
                 } else {
                     @unlink($tmp);
                 }
@@ -580,7 +580,7 @@ if (!function_exists('compose_point_docker_manager_metadata_at_icon')) {
                 ftruncate($fh, 0);
                 fwrite($fh, $encoded);
                 fflush($fh);
-                composeLogger('Repaired Docker Manager icon metadata', ['container' => $containerName, 'icon' => $webPath], 'system', 'debug', 'icon-cache');
+                composeLogger('已修复 Docker 管理器图标元数据', ['container' => $containerName, 'icon' => $webPath], 'system', 'debug', 'icon-cache');
             }
         }
 
@@ -1759,7 +1759,7 @@ class OverrideInfo
 
             $migrationLog = array_map(fn($m) => "{$m['from']} -> {$m['to']}", $result['migrations']);
             composeLogger(
-                "Migrated renamed services: " . implode(', ', $migrationLog),
+                "已迁移重命名的服务：" . implode(', ', $migrationLog),
                 null,
                 'user',
                 'info',
@@ -2445,7 +2445,7 @@ class StackInfo
                 || Path::hasTraversal($indirectPath)
             ) {
                 // Path is structurally invalid — ignore it and keep stack local without mutating files.
-                composeLogger('Invalid indirect metadata rejected during structural validation', [
+                composeLogger('结构校验期间已拒绝无效的间接元数据', [
                     'project' => $this->projectFolder,
                     'indirectFile' => $this->path . '/indirect',
                     'rawIndirectPath' => $indirectPath,

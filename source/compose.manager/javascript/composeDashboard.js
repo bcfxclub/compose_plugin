@@ -79,7 +79,7 @@
         var dropdownId = 'dropdown-' + elementId;
         var $dropdown = $('#' + dropdownId);
         if ($dropdown.length && $dropdown.is(':visible')) {
-            debugLog('Menu already open, closing');
+            debugLog('菜单已打开，正在关闭');
             $dropdown.hide();
             return;
         }
@@ -171,7 +171,7 @@
         var dropdownId = 'dropdown-' + elementId;
         var $dropdown = $('#' + dropdownId);
         if ($dropdown.length && $dropdown.is(':visible')) {
-            debugLog('Container menu already open, closing');
+            debugLog('容器菜单已打开，正在关闭');
             $dropdown.hide();
             return;
         }
@@ -351,7 +351,7 @@
                     $container.html('<div class="compose-dash-loading">无容器</div>');
                 }
             } catch(e) {
-                console.error('Error parsing containers:', e);
+                console.error('解析容器出错：', e);
                 $container.html('<div class="compose-dash-loading">加载容器出错</div>');
             }
         });
@@ -575,7 +575,7 @@
             hideContainersSetup = true;
             $(document).ajaxComplete(function(event, xhr, settings) {
                 if (settings && settings.url && settings.url.indexOf('DashboardApps') !== -1) {
-                    debugLog('DashboardApps.php AJAX complete, scheduling container hiding');
+                    debugLog('DashboardApps.php AJAX 完成，正在安排隐藏容器');
                     setTimeout(doHideContainers, 50);
                     setTimeout(doHideContainers, 300);
                 }
@@ -612,7 +612,7 @@
         });
 
         if (hiddenCount > 0) {
-            debugLog('隐藏', hiddenCount, 'compose containers from Docker tile');
+            debugLog('隐藏', hiddenCount, '来自 Docker 磁贴的 compose 容器');
             updateDockerTileCounts();
         }
 

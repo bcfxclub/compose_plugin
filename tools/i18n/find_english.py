@@ -15,6 +15,7 @@ DENY = {
     "building", "waiting", "pulling", "pushing", "extracting", "complete", "completed",
     "success", "successful", "failed", "failure", "error", "errors", "warning",
     "none", "all", "true", "false", "null", "yes", "no", "on", "off",
+    "compose manager", "host key verification failed",
 }
 
 

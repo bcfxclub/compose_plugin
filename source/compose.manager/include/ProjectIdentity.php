@@ -346,7 +346,7 @@ final class ProjectIdentity
         $output = shell_exec($cmd);
         $counts = self::parseProbeOutput(is_string($output) ? $output : null);
         if ($counts === null) {
-            composeLogger('Docker project-label probe failed; legacy identity migration deferred', ['output' => $output], 'user', 'warning', 'identity');
+            composeLogger('Docker 项目标签探测失败；旧身份迁移已推迟', ['output' => $output], 'user', 'warning', 'identity');
             return null;
         }
 

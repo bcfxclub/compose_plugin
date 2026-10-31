@@ -6,7 +6,7 @@ PLUGIN_ROOT="/usr/local/emhttp/plugins/compose.manager"
 # shellcheck disable=SC1091
 . "$PLUGIN_ROOT/scripts/common.sh"
 
-composeLogger "Scheduled backup starting..." info backup daemon
+composeLogger "计划备份开始…" info backup daemon
 
 # Execute the backup via the PHP backend
 result=$(php -r "

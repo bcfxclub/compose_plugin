@@ -16,12 +16,25 @@ REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 MAP = os.path.join(REPO, "tools", "i18n", "zh_CN.map.json")
 
 DENY = {
-    "running", "stopped", "paused", "pausing", "starting", "stopping", "healthy",
-    "unhealthy", "created", "restarting", "exited", "dead", "recreating", "removing",
-    "building", "waiting", "pulling", "pushing", "extracting", "complete", "completed",
-    "success", "successful", "failed", "failure", "error", "errors", "warning",
-    "none", "all", "true", "false", "null", "yes", "no", "on", "off",
+    "running", "stopped", "paused", "pausing", "starting", "stopping", "started",
+    "healthy", "unhealthy", "created", "restarting", "exited", "dead", "recreating",
+    "removing", "building", "waiting", "pulling", "pushing", "extracting", "complete",
+    "completed", "success", "successful", "failed", "failure", "error", "errors",
+    "warning", "none", "all", "true", "false", "null", "yes", "no", "on", "off",
+    "partial", "label", "value", "name", "type", "key", "id", "text", "title",
+    "compose manager",  # Unraid 通知事件名（-e 参数），非显示文案，必须保持英文
+    "host key verification failed",  # 用于匹配 git 英文 stderr 输出，翻译即失效
 }
+
+
+def usable(en):
+    """只接受'句子/短语'，绝不处理单字标识符/状态值。
+    含空格、或以终止标点结尾才算可翻译文案；否则视为代码/状态串跳过。"""
+    if norm_key(en) in DENY:
+        return False
+    if ' ' not in en and not re.search(r'[.!?:;…]$', en.strip()):
+        return False
+    return True
 
 
 def git(*args):
@@ -42,8 +55,7 @@ def main():
     data = json.load(open(MAP, encoding="utf-8"))
     lookup = {}
     for e in data["entries"]:
-        k = norm_key(e["en"])
-        if k in DENY:
+        if not usable(e["en"]):
             continue
         lookup.setdefault(e["en"], e["zh"])  # 首次命中优先
     if not lookup:
@@ -56,31 +68,32 @@ def main():
         full = os.path.join(REPO, path)
         if not os.path.isfile(full):
             continue
-        lines = open(full, encoding="utf-8", errors="replace").readlines()
+        # 跳过二进制文件（含 NUL 字节），避免把图片等按文本重写损坏
+        raw = open(full, "rb").read()
+        if b"\x00" in raw:
+            continue
+        text = raw.decode("utf-8", errors="replace")
+        lines = text.splitlines(keepends=True)
         new_lines = []
         for ln, line in enumerate(lines, 1):
             if is_comment(line):
                 new_lines.append(line)
                 continue
-            if not any(norm_key(m) not in DENY and m in lookup
-                       for m in re.findall(r"'[^']*'|\"[^\"]*\"", line)):
-                # 快速排除：本行没有可替换项
-                # 仍要走精确匹配以防误判，这里仅做优化跳过
-                new_lines.append(line)
-                continue
 
-            def sub(m):
+            def sub(m, _p=path, _l=ln):
                 q = m.group(0)
                 d = q[0]
                 content = q[1:-1]
                 if content in lookup and norm_key(content) not in DENY:
-                    proposed.append((path, ln, content, lookup[content]))
+                    proposed.append((_p, _l, content, lookup[content]))
                     return d + lookup[content] + d
                 return q
 
             new_lines.append(pat.sub(sub, line))
-        if apply:
-            open(full, "w", encoding="utf-8").write("".join(new_lines))
+        new_text = "".join(new_lines)
+        # 仅在确有改动时写回；newline="" 保留原换行符（CRLF/LF）
+        if apply and new_text != text:
+            open(full, "w", encoding="utf-8", newline="").write(new_text)
     if not proposed:
         print("nothing to replace (tree already Chinese or no match) — good.")
         return

@@ -78,7 +78,7 @@ stop_stack() {
 }
 
 # Main execution
-log "=== Compose Manager Shutdown Begin ==="
+log "=== Compose 管理器关闭开始 ==="
 
 # Collect all stacks (not just autostart ones - we need to stop everything)
 declare -a stacks_to_stop
@@ -119,4 +119,4 @@ done
 # Wait for all stops to complete
 wait
 
-log "=== Compose Manager Shutdown Complete ==="
+log "=== Compose 管理器关闭完成 ==="

@@ -18,7 +18,7 @@
 
     if (!Object.keys(defaults.stack).length || !Object.keys(defaults.service).length) {
         if (typeof composeLogger === 'function') {
-            composeLogger('Column model bootstrap missing; customizer disabled for this page load', null, 'user', 'warning', 'column-layout');
+            composeLogger('列模型引导缺失；本次页面加载已禁用自定义器', null, 'user', 'warning', 'column-layout');
         }
         return;
     }
@@ -39,7 +39,7 @@
         if (bootstrapLayout) {
             prefs = normalizePrefs(bootstrapLayout);
             if (typeof composeLogger === 'function') {
-                composeLogger('Applied bootstrap column layout', {
+                composeLogger('已应用引导列布局', {
                     stackVisible: (prefs.stackOrder || []).length,
                     serviceVisible: (prefs.serviceOrder || []).length
                 }, 'user', 'debug', 'column-layout');
@@ -509,7 +509,7 @@
             if (parsed && parsed.result === 'success' && parsed.visibility) {
                 prefs = normalizePrefs(parsed.visibility);
                 if (typeof composeLogger === 'function') {
-                    composeLogger('Fetched column visibility preferences', {
+                    composeLogger('已获取列可见性偏好', {
                         stackVisible: (prefs.stackOrder || []).length,
                         serviceVisible: (prefs.serviceOrder || []).length
                     }, 'user', 'debug', 'column-layout');
@@ -517,7 +517,7 @@
             } else {
                 prefs = normalizePrefs(null);
                 if (typeof composeLogger === 'function') {
-                    composeLogger('Column visibility fetch returned fallback payload; using defaults', {
+                    composeLogger('列可见性获取返回了回退数据；使用默认值', {
                         result: parsed && parsed.result ? parsed.result : 'invalid'
                     }, 'user', 'debug', 'column-layout');
                 }
@@ -526,7 +526,7 @@
         }).fail(function() {
             prefs = normalizePrefs(null);
             if (typeof composeLogger === 'function') {
-                composeLogger('Column visibility fetch failed; using defaults', null, 'user', 'warning', 'column-layout');
+                composeLogger('列可见性获取失败；使用默认值', null, 'user', 'warning', 'column-layout');
             }
             if (typeof cb === 'function') cb();
         });
@@ -548,20 +548,20 @@
             if (parsed && parsed.result === 'success' && parsed.visibility) {
                 prefs = normalizePrefs(parsed.visibility);
                 if (typeof composeLogger === 'function') {
-                    composeLogger('Saved column visibility preferences', {
+                    composeLogger('已保存列可见性偏好', {
                         stackVisible: (prefs.stackOrder || []).length,
                         serviceVisible: (prefs.serviceOrder || []).length
                     }, 'user', 'debug', 'column-layout');
                 }
             } else if (typeof composeLogger === 'function') {
-                composeLogger('Column visibility save returned non-success payload', {
+                composeLogger('列可见性保存返回了非成功数据', {
                     result: parsed && parsed.result ? parsed.result : 'invalid'
                 }, 'user', 'warning', 'column-layout');
             }
             if (typeof cb === 'function') cb();
         }).fail(function() {
             if (typeof composeLogger === 'function') {
-                composeLogger('Column visibility save request failed', null, 'user', 'warning', 'column-layout');
+                composeLogger('列可见性保存请求失败', null, 'user', 'warning', 'column-layout');
             }
             if (typeof cb === 'function') cb();
         });

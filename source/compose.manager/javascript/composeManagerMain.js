@@ -1762,7 +1762,7 @@ function refreshEditorContents(type) {
         editorModal.editors[type].resize();
         editorModal.editors[type].renderer.updateFull();
     } catch (e) {
-        composeLogger('refreshEditorContents failed for ' + type, {
+        composeLogger('刷新编辑器内容失败：' + type, {
             error: e && e.toString()
         }, 'user', 'warn', 'refreshEditorContents');
     }
@@ -2275,7 +2275,7 @@ function checkAutoUpdateIfNeeded(stacks) {
     // If we have a lastChecked time and it's within the interval, don't check
     if (latestCheck > 0 && (now - latestCheck) < intervalSeconds) {
         needsCheck = false;
-        composeLogger('上次检查于' + Math.round((now - latestCheck) / 60) + ' minutes ago, interval is ' + Math.round(intervalSeconds / 60) + ' minutes. Skipping.', null, 'user', 'debug', 'update-check');
+        composeLogger('上次检查于' + Math.round((now - latestCheck) / 60) + ' minutes ago, interval is ' + Math.round(intervalSeconds / 60) + ' 分钟。跳过。', null, 'user', 'debug', 'update-check');
     }
 
     if (needsCheck) {
@@ -2286,7 +2286,7 @@ function checkAutoUpdateIfNeeded(stacks) {
 
 // Check for updates for all stacks
 function checkAllUpdates() {
-    $('#checkUpdatesBtn').prop('disabled', true).val('Checking...');
+    $('#checkUpdatesBtn').prop('disabled', true).val('正在检查…');
     $('#updateAllBtn').prop('disabled', true);
 
     // Show checking indicator only on running stack update columns (not stopped ones)
@@ -2729,7 +2729,7 @@ function loadPersistentContainerCache() {
             }
         })
             .done(function(response) {
-                composeLogger('Loaded persistent container cache', response, 'user', 'debug', 'load-cache');
+                composeLogger('已加载持久化容器缓存', response, 'user', 'debug', 'load-cache');
                 persistentContainerCache = (response && response.cache) ? response.cache : {};
                 resolve(persistentContainerCache);
             })
@@ -2752,7 +2752,7 @@ function loadComposeLoadSnapshot() {
             }
         })
             .done(function(response) {
-                composeLogger('Loaded compose load snapshot', response, 'user', 'debug', 'load-snapshot');
+                composeLogger('已加载 compose 加载快照', response, 'user', 'debug', 'load-snapshot');
                 var snapshot = (response && response.snapshot && typeof response.snapshot === 'object') ? response.snapshot : {};
                 window.composeLoadSnapshotRaw = typeof snapshot.raw === 'string' ? snapshot.raw : '';
                 window.composeLoadSnapshotTs = Number(snapshot.ts || 0);
@@ -2762,7 +2762,7 @@ function loadComposeLoadSnapshot() {
                 resolve(snapshot);
             })
             .fail(function() {
-                composeLogger('Failed to load compose load snapshot', null, 'user', 'error', 'load-snapshot');
+                composeLogger('加载 compose 加载快照失败', null, 'user', 'error', 'load-snapshot');
                 window.composeLoadSnapshotRaw = '';
                 window.composeLoadSnapshotTs = 0;
                 resolve({});
@@ -2916,10 +2916,10 @@ $(function() {
             // Start the dockerload socket now that the DOM has rows with data-ctids.
             if (typeof window.composeDockerLoadToggle === 'function') {
                 var shouldRunComposeStats = composeShouldEnableDockerLoad();
-                composeLogger('triggering composeDockerLoadToggle, enabled=' + shouldRunComposeStats, null, 'user', 'debug', 'composeLiveStats');
+                composeLogger('正在触发 composeDockerLoadToggle，enabled=' + shouldRunComposeStats, null, 'user', 'debug', 'composeLiveStats');
                 window.composeDockerLoadToggle(shouldRunComposeStats);
             } else {
-                composeLogger('composeDockerLoadToggle not available yet at composeLoadlist completion', null, 'user', 'debug', 'composeLiveStats');
+                composeLogger('composeLoadlist 完成时 composeDockerLoadToggle 尚不可用', null, 'user', 'debug', 'composeLiveStats');
             }
 
         });
@@ -3008,7 +3008,7 @@ $(function() {
         // and column visibility handlers so the socket follows visible load columns.
         function initComposeDockerLoadSubscriber() {
             if (typeof NchanSubscriber !== 'function') {
-                composeLogger('NchanSubscriber not available yet', null, 'user', 'debug', 'dockerload');
+                composeLogger('NchanSubscriber 尚不可用', null, 'user', 'debug', 'dockerload');
                 return false;
             }
 
@@ -3054,7 +3054,7 @@ $(function() {
             }
             $(document).off('composeListRefreshed.dockerload');
 
-            composeLogger('initializing subscriber, composeListReady=' + composeListReady, null, 'user', 'debug', 'dockerload');
+            composeLogger('正在初始化订阅器，composeListReady=' + composeListReady, null, 'user', 'debug', 'dockerload');
 
             var composeDockerLoad = new NchanSubscriber('/sub/composeinfo', {
                 subscriber: 'websocket',
@@ -3156,7 +3156,7 @@ $(function() {
                 // No structural change: keep index/cache intact.
                 if (!structureChanged) {
                     if (composeListReady && composeStackIndex) {
-                        composeLogger('composeListRefreshed — structure unchanged, keeping cache', null, 'user', 'debug', 'dockerload');
+                        composeLogger('composeListRefreshed — 结构未变，保留缓存', null, 'user', 'debug', 'dockerload');
                     }
                     return;
                 }
@@ -3164,7 +3164,7 @@ $(function() {
                 var hadIndex = !!composeStackIndex;
                 var hadLoadCache = Object.keys(composeLoadById).length > 0;
                 if (composeListReady && (hadIndex || hadLoadCache)) {
-                    composeLogger('composeListRefreshed — structure changed, invalidating stack index', null, 'user', 'debug', 'dockerload');
+                    composeLogger('composeListRefreshed — 结构已变，失效栈索引', null, 'user', 'debug', 'dockerload');
                 }
 
                 // Rebuild index lazily on next render tick.
@@ -3191,7 +3191,7 @@ $(function() {
 
             window.composeDockerLoadToggle = function(enable) {
                 if (!isCurrentComposeDockerLoad(composeDockerLoad, newGeneration)) {
-                    composeLogger('ignoring toggle for stale WebSocket generation', {
+                    composeLogger('忽略过期 WebSocket 代的切换', {
                         requested: enable,
                         generation: newGeneration,
                         current: window._composeDockerLoadGeneration || 0
@@ -3199,11 +3199,11 @@ $(function() {
                     return;
                 }
                 if (enable && !composeDockerLoadRunning) {
-                    composeLogger('starting WebSocket', null, 'user', 'debug', 'dockerload');
+                    composeLogger('正在启动 WebSocket', null, 'user', 'debug', 'dockerload');
                     composeDockerLoad.start();
                     composeDockerLoadRunning = true;
                 } else if (!enable && composeDockerLoadRunning) {
-                    composeLogger('stopping WebSocket', null, 'user', 'debug', 'dockerload');
+                    composeLogger('正在停止 WebSocket', null, 'user', 'debug', 'dockerload');
                     composeDockerLoad.stop();
                     composeDockerLoadRunning = false;
                 }
@@ -3439,7 +3439,7 @@ $(function() {
 
             composeDockerLoad.on('message', function(msg) {
                 if (!isCurrentComposeDockerLoad(composeDockerLoad, newGeneration)) {
-                    composeLogger('ignoring stale WebSocket message', {
+                    composeLogger('忽略过期的 WebSocket 消息', {
                         generation: newGeneration,
                         current: window._composeDockerLoadGeneration || 0
                     }, 'user', 'debug', 'dockerload');
@@ -4497,7 +4497,7 @@ function performComposeAction(opts) {
     opts = opts || {};
     var stackName = opts.stackName;
     var actionName = opts.actionName || '';
-    var title = opts.title || (actionName ? actionName.replace(/([A-Z])/g, ' $1').trim() : 'Compose Action');
+    var title = opts.title || (actionName ? actionName.replace(/([A-Z])/g, ' $1').trim() : 'Compose 操作');
     var requestUrl = opts.requestUrl || compURL;
     var payload = opts.payload || {};
     var background = opts.background || false;
@@ -4885,7 +4885,7 @@ function processPendingUpdateChecks() {
 
     // Delay slightly to let the UI settle after row refresh
     setTimeout(function() {
-        composeLogger('Processing pending update checks', {
+        composeLogger('正在处理待定的更新检查', {
             stacks: stacksToCheck
         }, 'user', 'debug', 'update-check');
 
@@ -4893,7 +4893,7 @@ function processPendingUpdateChecks() {
             if (composeStackActionInProgress[stackName]) {
                 // Update action still in progress; defer until completion.
                 deferredStacks.push(stackName);
-                composeLogger('Deferring pending update check while action is in progress', {
+                composeLogger('操作进行中，推迟待定的更新检查', {
                     stack: stackName
                 }, 'user', 'debug', 'update-check');
             } else {
@@ -5177,7 +5177,7 @@ function gitDeployStack(path, project, commit, profile) {
         if (git.problem) {
             swal({
                 title: '无法部署：' + project,
-                text: '发现问题：' + git.problem + '\n\n当前已部署：' + deployedNow + '. Nothing was changed.',
+                text: '发现问题：' + git.problem + '\n\n当前已部署：' + deployedNow + '. 没有任何更改。',
                 type: 'error'
             });
             return;
@@ -5752,13 +5752,13 @@ function showStackActionDialog(action, path, profile) {
             if (response.result === 'success') {
                 profileServices = response.services || [];
             } else {
-                composeLogger('getProfileServices result!=success', {
+                composeLogger('getProfileServices 结果!=成功', {
                     response,
                     data
                 }, 'user', 'error', 'showStackActionDialog');
             }
         } catch (e) {
-            composeLogger('getProfileServices JSON parse error', {
+            composeLogger('getProfileServices JSON 解析错误', {
                 e,
                 data
             }, 'user', 'error', 'showStackActionDialog');
@@ -5807,7 +5807,7 @@ function showStackActionDialog(action, path, profile) {
         });
     }).fail(function(xhr, status, error) {
         // Fallback: if profile resolution fails, show cached container metadata
-        composeLogger('getProfileServices AJAX fail', {
+        composeLogger('getProfileServices AJAX 失败', {
             xhr,
             status,
             error,
@@ -6566,7 +6566,7 @@ function loadEditorFiles(project) {
                 updateEditorFileInfo();
             }
         }).fail(function() {
-            var errorContent = '# Error loading file';
+            var errorContent = '# 加载文件出错';
             editorModal.originalContent['compose'] = errorContent;
             if (editorModal.editors['compose']) editorModal.editors['compose'].setValue(errorContent, -1);
         })
@@ -6596,7 +6596,7 @@ function loadEditorFiles(project) {
                 updateEditorFileInfo();
             }
         }).fail(function() {
-            var errorContent = '# Error loading file';
+            var errorContent = '# 加载文件出错';
             editorModal.originalContent['env'] = errorContent;
             if (editorModal.editors['env']) editorModal.editors['env'].setValue(errorContent, -1);
         })
@@ -8006,7 +8006,7 @@ function saveCurrentTab() {
 
 function parseSaveResponse(data, saveErrors, saveTarget) {
     if (!data) {
-        if (saveErrors) saveErrors.push('保存失败：' + saveTarget + '. Empty server response.');
+        if (saveErrors) saveErrors.push('保存失败：' + saveTarget + '. 服务器响应为空。');
         return false;
     }
 
@@ -8017,7 +8017,7 @@ function parseSaveResponse(data, saveErrors, saveTarget) {
             try {
                 response = JSON.parse(trimmed);
             } catch (e) {
-                if (saveErrors) saveErrors.push('保存失败：' + saveTarget + '. Invalid server response.');
+                if (saveErrors) saveErrors.push('保存失败：' + saveTarget + '. 服务器响应无效。');
                 return false;
             }
         } else {
@@ -8708,7 +8708,7 @@ function deleteStackByProject(project, projectName) {
                 }
             }).fail(function() {
                 setStackActionInProgress(project, false);
-                composeLogger('Delete request failed for project', {
+                composeLogger('项目删除请求失败', {
                     project: project
                 }, 'user', 'error', 'stack-action');
                 swal({
@@ -9470,7 +9470,7 @@ function updateParentStackFromContainers(stackId, project) {
         // Re-apply list helpers after row updates.
         applyListEnhancements();
     } catch (e) {
-        composeLogger('updateParentStackFromContainers error', {
+        composeLogger('updateParentStackFromContainers 出错', {
             err: e.toString(),
             stackId: stackId,
             project: project

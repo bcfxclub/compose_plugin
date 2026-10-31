@@ -170,7 +170,7 @@ final class GitHubDeviceAuth
         $curlError = curl_error($handle);
         curl_close($handle);
         if ($body === false || $curlError !== '' || $status < 200 || $status >= 300) {
-            throw new RuntimeException('GitHub authentication request failed.');
+            throw new RuntimeException('GitHub 身份验证请求失败。');
         }
         $decoded = json_decode((string) $body, true);
         if (!is_array($decoded)) {

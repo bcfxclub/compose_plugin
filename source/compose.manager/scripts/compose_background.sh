@@ -38,7 +38,7 @@ if [ -z "$STACK_PATH" ] || [ ! -d "$STACK_PATH" ]; then
   composeLogger "后台命令失败：找不到栈路径（$STACK_PATH）" error compose daemon
   if [ -x "$NOTIFY" ]; then
     "$NOTIFY" -e 'Compose Manager' -s "Background command failed: $PROJECT_NAME" \
-      -d "Could not determine stack path for background operation." -i 'warning'
+      -d "无法确定后台操作的栈路径。" -i 'warning'
   fi
   exit 1
 fi

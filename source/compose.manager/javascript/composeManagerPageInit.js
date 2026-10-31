@@ -43,7 +43,7 @@ $(function() {
         });
 
         if (!$dockerTitle || !$composeTitle) {
-            composeLogger('Reorder Compose above Docker skipped', {
+            composeLogger('跳过将 Compose 移到 Docker 上方', {
                 dockerTitle: !!$dockerTitle,
                 composeTitle: !!$composeTitle
             }, 'user', 'warn', 'reorderComposeAboveDocker');
