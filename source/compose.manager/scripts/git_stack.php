@@ -45,7 +45,7 @@ try {
         case 'prepare':
             $projectName = $args[2] ?? '';
             if ($projectName === '') {
-                throw new RuntimeException('git_stack.php prepare: the project name is required.');
+                throw new RuntimeException('git_stack.php prepare：必须提供项目名称。');
             }
             $commit = null;
             $saveLocalChanges = false;

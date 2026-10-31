@@ -380,11 +380,11 @@ final class GitStackManagerTest extends TestCase
 
             $this->assertSame(0, $exit);
             $short = substr($first, 0, 12);
-            $this->assertStringContainsString("Dry run of $folder: from $short (checked out now) to " . substr($this->upstreamHead(), 0, 12) . ".\n", $output);
-            $this->assertStringContainsString("Nothing has been deployed yet.\n", $output);
-            $this->assertStringContainsString("Every check passed. A dry run does not pull or build the images", $output);
+            $this->assertStringContainsString("试运行 $folder：从 $short（当前检出）到 " . substr($this->upstreamHead(), 0, 12) . "。\n", $output);
+            $this->assertStringContainsString("尚未部署任何提交。\n", $output);
+            $this->assertStringContainsString("所有检查均已通过。试运行不会拉取或构建镜像", $output);
             $this->assertStringContainsString("+    image: traefik/whoami:v2\n", $output);
-            $this->assertStringEndsWith("Nothing was deployed, and the clone is back at $short.\n", $output);
+            $this->assertStringEndsWith("未部署任何内容，克隆已还原到 $short。\n", $output);
 
             // A problem makes the exit status 1.
             $docker->setConfig([
@@ -394,8 +394,8 @@ final class GitStackManagerTest extends TestCase
             ]);
             [$exit, $output] = $this->runCliCapturingOutput(['compose-git', 'deploy', $folder, '--dry-run']);
             $this->assertSame(1, $exit);
-            $this->assertStringContainsString("The deploy would stop:\n- ", $output);
-            $this->assertStringContainsString("network 'zz-proxy' does not exist", $output);
+            $this->assertStringContainsString("部署会中止：\n- ", $output);
+            $this->assertStringContainsString("外部 network 'zz-proxy' 不存在", $output);
         } finally {
             $docker->cleanUp();
         }

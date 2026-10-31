@@ -343,7 +343,7 @@ function compose_git_parse(array $args, array $withValue, array $flags): array
             $options[$name] = true;
         } elseif (in_array($name, $withValue, true)) {
             if (!isset($args[$i + 1])) {
-                throw new ComposeGitUsageError("--$name needs a value.");
+                throw new ComposeGitUsageError("--$name 需要一个值。");
             }
             $value = $args[++$i];
             if ($name === 'profile') {
@@ -352,7 +352,7 @@ function compose_git_parse(array $args, array $withValue, array $flags): array
                 $options[$name] = $value;
             }
         } else {
-            throw new ComposeGitUsageError("Unknown option --$name.");
+            throw new ComposeGitUsageError("未知选项 --$name。");
         }
     }
     return [$positional, $options];
@@ -365,7 +365,7 @@ function compose_git_required(array $options, string $name): string
 {
     $value = $options[$name] ?? null;
     if (!is_string($value) || $value === '') {
-        throw new ComposeGitUsageError("--$name is required.");
+        throw new ComposeGitUsageError("必须提供 --$name。");
     }
     return $value;
 }
@@ -376,7 +376,7 @@ function compose_git_required(array $options, string $name): string
 function compose_git_one_stack(array $positional): string
 {
     if (count($positional) !== 1) {
-        throw new ComposeGitUsageError('Name exactly one stack.');
+        throw new ComposeGitUsageError('请只指定一个栈。');
     }
     return $positional[0];
 }
@@ -395,7 +395,7 @@ function compose_git_one_stack(array $positional): string
 function compose_git_wait_arguments(array $waitSettings, array $options): array
 {
     if (isset($options['wait']) && isset($options['no-wait'])) {
-        throw new ComposeGitUsageError('Use --wait or --no-wait, not both.');
+        throw new ComposeGitUsageError('不能同时使用 --wait 和 --no-wait。');
     }
     $wait = $waitSettings['enabled'];
     $timeout = $waitSettings['timeout'];
@@ -408,7 +408,7 @@ function compose_git_wait_arguments(array $waitSettings, array $options): array
     if (isset($options['wait-timeout'])) {
         $timeout = (string) $options['wait-timeout'];
         if (preg_match('/^[1-9][0-9]{0,5}$/', $timeout) !== 1) {
-            throw new ComposeGitUsageError('--wait-timeout must be a number of seconds.');
+            throw new ComposeGitUsageError('--wait-timeout 必须是秒数。');
         }
     }
     // As the web UI's and the scheduled deploy wait: a timeout read from the settings
@@ -488,7 +488,7 @@ function compose_git_deploy(GitStackManager $manager, string $folder, array $opt
         compose_git_deploy_environment(getenv())
     );
     if (!is_resource($process)) {
-        fwrite($errors, "Could not start compose.sh.\n");
+        fwrite($errors, "无法启动 compose.sh。\n");
         return COMPOSE_GIT_EXIT_FAILED;
     }
     $exitCode = proc_close($process);
@@ -505,7 +505,7 @@ function compose_git_dry_run(GitStackManager $manager, string $folder, array $op
 {
     foreach (['save-local-changes', 'wait', 'no-wait', 'wait-timeout'] as $option) {
         if (isset($options[$option])) {
-            throw new ComposeGitUsageError("--dry-run takes only --commit and --profile, not --$option: a dry run saves nothing and starts no container.");
+            throw new ComposeGitUsageError("--dry-run 只能与 --commit 和 --profile 一起使用，不能使用 --$option：试运行不保存任何内容，也不启动任何容器。");
         }
     }
     $stack = $manager->gitStack($folder);
@@ -518,35 +518,35 @@ function compose_git_dry_run(GitStackManager $manager, string $folder, array $op
     $target = substr($result['targetCommit'], 0, 12);
 
     if ($result['previousCommit'] === $result['targetCommit']) {
-        echo "Dry run of $folder: $target, the commit checked out now.\n";
+        echo "试运行 $folder：$target，即当前检出的提交。\n";
     } else {
-        echo "Dry run of $folder: from $previous (checked out now) to $target.\n";
+        echo "试运行 $folder：从 $previous（当前检出）到 $target。\n";
     }
     // After a failed up the clone holds the commit that failed, not the one that last worked.
     if ($result['deployedCommit'] === null) {
-        echo "Nothing has been deployed yet.\n";
+        echo "尚未部署任何提交。\n";
     } elseif ($result['deployedCommit'] !== $result['previousCommit']) {
-        echo 'The last commit deployed successfully is ' . substr($result['deployedCommit'], 0, 12) . ".\n";
+        echo '最近一次成功部署的提交是 ' . substr($result['deployedCommit'], 0, 12) . ".\n";
     }
     if ($result['problems'] === []) {
-        echo "Every check passed. A dry run does not pull or build the images, so a missing image or tag is\n"
-            . "found only by the deploy.\n";
+        echo "所有检查均已通过。试运行不会拉取或构建镜像，因此缺失的镜像或标签\n"
+            . "只有在实际部署时才会被发现。\n";
         if ($result['recreatesEveryContainer']) {
-            echo "Up would recreate every container of the stack (see 'recreateOnFolderChange' in 'deploy --help').\n";
+            echo "up 会重建该栈的所有容器（参见 'deploy --help' 中的 'recreateOnFolderChange'）。\n";
         }
     } else {
-        echo "The deploy would stop:\n- " . implode("\n- ", $result['problems']) . "\n";
+        echo "部署会中止：\n- " . implode("\n- ", $result['problems']) . "\n";
     }
 
     echo "\n";
     if ($result['configDiff'] === null) {
-        echo "How the compose configuration changes is not known. {$result['configProblem']}\n";
+        echo "无法得知 compose 配置会如何变化。{$result['configProblem']}\n";
     } elseif ($result['configDiff'] === '') {
-        echo "The compose configuration does not change.\n";
+        echo "compose 配置没有变化。\n";
     } else {
-        echo "How the compose configuration changes (variables as written, not their values):\n" . $result['configDiff'];
+        echo "compose 配置的变化如下（变量按原样显示，不展开取值）：\n" . $result['configDiff'];
     }
-    echo "\nNothing was deployed, and the clone is back at $previous.\n";
+    echo "\n未部署任何内容，克隆已还原到 $previous。\n";
 
     return $result['problems'] === [] ? COMPOSE_GIT_EXIT_OK : COMPOSE_GIT_EXIT_FAILED;
 }
@@ -585,33 +585,33 @@ function compose_git_print_status(array $status): void
     echo $status['stack'] . "\n";
     if ($status['url'] === null) {
         // The stack's git settings could not be read (see compose_git_unreadable_status()).
-        echo '  problem:      ' . $status['problem'] . "\n";
+        echo '  问题:         ' . $status['problem'] . "\n";
         return;
     }
-    echo '  repository:   ' . $status['url'] . ' (' . $status['branch'] . ")\n";
-    echo '  compose file: ' . $status['composePath'] . "\n";
-    echo '  clone:        ' . $status['cloneDir'] . "\n";
+    echo '  仓库:         ' . $status['url'] . ' (' . $status['branch'] . ")\n";
+    echo '  compose 文件: ' . $status['composePath'] . "\n";
+    echo '  克隆:         ' . $status['cloneDir'] . "\n";
     if ($status['credential'] !== null) {
-        echo '  credential:   ' . $status['credential'] . "\n";
+        echo '  凭据:         ' . $status['credential'] . "\n";
     }
-    echo '  automatic:    ' . $status['autoDeploy'] . "\n";
-    echo '  deployed:     ' . $short($status['deployedCommit']) . "\n";
+    echo '  自动部署:     ' . $status['autoDeploy'] . "\n";
+    echo '  已部署:       ' . $short($status['deployedCommit']) . "\n";
     if ($status['failedCommit'] !== null) {
-        echo '  failed:       ' . $short($status['failedCommit']) . " (fix it and deploy again)\n";
+        echo '  失败:         ' . $short($status['failedCommit']) . "（请修复后重新部署）\n";
     }
     if ($status['failedAutomaticCommit'] !== null) {
-        echo '  failed:       ' . $short($status['failedAutomaticCommit'])
-            . " (the automatic deploy, before up; compose-git resume tries it again)\n";
+        echo '  失败:         ' . $short($status['failedAutomaticCommit'])
+            . "（自动部署，在 up 之前失败；compose-git resume 会重试）\n";
     }
-    echo '  checked out:  ' . $short($status['checkedOutCommit']) . "\n";
+    echo '  已检出:       ' . $short($status['checkedOutCommit']) . "\n";
     if ($status['localChanges'] !== []) {
-        echo '  local changes: ' . implode(', ', $status['localChanges']) . "\n";
+        echo '  本地改动:     ' . implode(', ', $status['localChanges']) . "\n";
     }
     if ($status['commitMadeByHand']) {
-        echo "  made by hand: the checked-out commit was committed in the clone (deploy --save-local-changes saves it)\n";
+        echo "  手工创建: 当前检出的提交是在克隆中提交的（deploy --save-local-changes 可将其保存）\n";
     }
     if ($status['problem'] !== null) {
-        echo '  problem:      ' . $status['problem'] . "\n";
+        echo '  问题:         ' . $status['problem'] . "\n";
     }
 }
 
@@ -649,7 +649,7 @@ function compose_git_main(array $argv, string $composeRoot, $errors = null): int
                     (string) ($options['description'] ?? ''),
                     isset($options['credential']) ? $manager->findGitCredential((string) $options['credential']) : null
                 );
-                echo "Deploy it with: compose-git deploy $folder\n";
+                echo "使用以下命令部署：compose-git deploy $folder\n";
                 return COMPOSE_GIT_EXIT_OK;
 
             case 'convert':
@@ -663,7 +663,7 @@ function compose_git_main(array $argv, string $composeRoot, $errors = null): int
                     isset($options['clones-root']) ? (string) $options['clones-root'] : null,
                     isset($options['credential']) ? $manager->findGitCredential((string) $options['credential']) : null
                 );
-                echo "The replaced files are in $backup.\nDeploy it with: compose-git deploy $folder\n";
+                echo "被替换的文件位于 $backup。\n使用以下命令部署：compose-git deploy $folder\n";
                 return COMPOSE_GIT_EXIT_OK;
 
             case 'credential':
@@ -673,19 +673,19 @@ function compose_git_main(array $argv, string $composeRoot, $errors = null): int
                 } elseif (count($positional) === 1 && isset($options['none'])) {
                     $manager->setCredential($positional[0], null);
                 } else {
-                    throw new ComposeGitUsageError('credential needs a stack and either a credential name or --none.');
+                    throw new ComposeGitUsageError('credential 需要一个栈，以及一个凭据名称或 --none。');
                 }
                 return COMPOSE_GIT_EXIT_OK;
 
             case 'auto-deploy':
                 [$positional] = compose_git_parse($args, [], []);
                 if (count($positional) !== 2) {
-                    throw new ComposeGitUsageError('auto-deploy needs a stack and one of: ' . implode(', ', GitStackSettings::AUTO_DEPLOY_CHOICES) . '.');
+                    throw new ComposeGitUsageError('auto-deploy 需要一个栈，以及以下之一：' . implode(', ', GitStackSettings::AUTO_DEPLOY_CHOICES) . '.');
                 }
                 $manager->setAutoDeploy($positional[0], $positional[1]);
                 // Installs the scheduled check's cron line while any stack asks for it, and removes it after.
                 if (!composeCronManager()->rebuild()) {
-                    fwrite($errors, "The setting was saved, but the plugin's cron file could not be updated.\n");
+                    fwrite($errors, "设置已保存，但无法更新插件的 cron 文件。\n");
                     return COMPOSE_GIT_EXIT_FAILED;
                 }
                 return COMPOSE_GIT_EXIT_OK;
@@ -715,27 +715,27 @@ function compose_git_main(array $argv, string $composeRoot, $errors = null): int
                     try {
                         $result = $manager->check($folder);
                         $deployed = $result['deployedCommit'] === null ? 'nothing deployed yet' : substr($result['deployedCommit'], 0, 12) . ' deployed';
-                        $newer = substr($result['remoteCommit'], 0, 12) . " available on {$result['branch']}";
+                        $newer = substr($result['remoteCommit'], 0, 12) . " 可在 {$result['branch']} 上获取";
                         $stackFolder = $result['stackFolder'] === '' ? 'the repository' : $result['stackFolder'] . '/';
                         if ($result['upToDate']) {
-                            echo "$folder: up to date ($deployed)\n";
+                            echo "$folder：已是最新（$deployed）\n";
                         } elseif ($result['deployedCommit'] === null) {
-                            echo "$folder: $newer ($deployed)\n";
+                            echo "$folder：$newer（$deployed）\n";
                             $anyChanged = true;
                         } elseif ($result['deployedCommitMissing']) {
-                            echo "$folder: $newer ($deployed, but no longer in the clone, so the changes "
-                                . "cannot be identified)\n";
+                            echo "$folder：$newer（$deployed，但已不在克隆中，因此这些改动"
+                                . "无法判断）\n";
                             $anyChanged = true;
                         } elseif ($result['changesStack'] === true) {
-                            echo "$folder: $newer, changing $stackFolder ($deployed)\n";
+                            echo "$folder：$newer，改动了 $stackFolder（$deployed）\n";
                             $anyChanged = true;
                         } else {
-                            echo "$folder: $newer, but it changes nothing in $stackFolder ($deployed); "
-                                . "deploy it anyway if the stack uses files outside that folder\n";
+                            echo "$folder：$newer，但未改动 $stackFolder（$deployed）中的任何内容；"
+                                . "如果该栈使用了该文件夹之外的文件，仍可部署\n";
                             $anyElsewhere = true;
                         }
                     } catch (RuntimeException | InvalidArgumentException $error) {
-                        echo "$folder: could not check: " . $error->getMessage() . "\n";
+                        echo "$folder：无法检查：" . $error->getMessage() . "\n";
                         $anyFailed = true;
                     }
                 }
@@ -758,7 +758,7 @@ function compose_git_main(array $argv, string $composeRoot, $errors = null): int
                 [$positional] = compose_git_parse($args, [], []);
                 $movedTo = $manager->reclone(compose_git_one_stack($positional));
                 if ($movedTo !== null) {
-                    echo "The old clone is in $movedTo. Copy back anything you need from it, then delete it yourself.\n";
+                    echo "旧克隆位于 $movedTo。请复制回你需要的内容，然后自行删除它。\n";
                 }
                 return COMPOSE_GIT_EXIT_OK;
 
@@ -785,7 +785,7 @@ function compose_git_main(array $argv, string $composeRoot, $errors = null): int
                         compose_git_print_status($status);
                     }
                     if ($statuses === []) {
-                        echo "There are no git stacks.\n";
+                        echo "没有 Git 栈。\n";
                     }
                 }
                 return COMPOSE_GIT_EXIT_OK;
@@ -793,7 +793,7 @@ function compose_git_main(array $argv, string $composeRoot, $errors = null): int
             case 'scheduled-check':
                 [$positional] = compose_git_parse($args, [], []);
                 if ($positional !== []) {
-                    throw new ComposeGitUsageError('scheduled-check checks every git stack whose auto-deploy is not off; name no stack.');
+                    throw new ComposeGitUsageError('scheduled-check 会检查所有自动部署未关闭的 Git 栈；请勿指定栈名。');
                 }
                 (new GitScheduledCheck($composeRoot, null, null, $say))->run();
                 return COMPOSE_GIT_EXIT_OK;
@@ -803,7 +803,7 @@ function compose_git_main(array $argv, string $composeRoot, $errors = null): int
                 if (isset($args[0])) {
                     $helpFor = compose_git_command_help($args[0]);
                     if ($helpFor === null) {
-                        throw new ComposeGitUsageError("Unknown command '{$args[0]}'.");
+                        throw new ComposeGitUsageError("未知命令 '{$args[0]}'。");
                     }
                     echo $helpFor . "\n";
                     return COMPOSE_GIT_EXIT_OK;
@@ -821,7 +821,7 @@ function compose_git_main(array $argv, string $composeRoot, $errors = null): int
                 return COMPOSE_GIT_EXIT_USAGE;
 
             default:
-                throw new ComposeGitUsageError("Unknown command '$command'.");
+                throw new ComposeGitUsageError("未知命令 '$command'。");
         }
     } catch (ComposeGitUsageError $error) {
         // A mistake in a known command shows that command's help; anything else, the overview.
