@@ -995,7 +995,7 @@ class ExecActionsTest extends TestCase
             'script' => 'test-stack', 'credentialId' => $credentialId, 'envPath' => 'new.env',
         ]), true);
         $this->assertSame('error', $settings['result']);
-        $this->assertStringContainsString('cannot be used to pull images', $settings['message']);
+        $this->assertStringContainsString('Git 仓库凭据不能用于拉取镜像', $settings['message']);
         // Refused before anything is saved: the other settings and the stack's registry credential are unchanged.
         $this->assertSame('old.env', file_get_contents($stackPath . '/envpath'));
         $this->assertSame('registry-credential', file_get_contents($stackPath . '/credential_id'));
@@ -1028,7 +1028,7 @@ class ExecActionsTest extends TestCase
             'script' => 'test-stack', 'credentialId' => $credentialId,
         ]), true);
         $this->assertSame('error', $settings['result']);
-        $this->assertStringContainsString('cannot be used to pull images', $settings['message']);
+        $this->assertStringContainsString('Git 仓库凭据不能用于拉取镜像', $settings['message']);
     }
 
     public function testGetStackSettingsReturnsExternalComposeFileForFileMode(): void
