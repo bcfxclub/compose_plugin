@@ -172,7 +172,7 @@ final class GitCommand
             return "无法为 git 创建 {$home}。";
         }
         clearstatcache(true, $home);
-        if (@readlink($home) !== false || !is_dir($home)) {
+        if (@is_link($home) || !is_dir($home)) {
             return "$home 不是普通文件夹，因此未运行 git。请将其删除。";
         }
         if (@fileowner($home) !== (function_exists('posix_geteuid') ? posix_geteuid() : 0)) {
