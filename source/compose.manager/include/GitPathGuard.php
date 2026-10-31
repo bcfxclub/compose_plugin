@@ -304,7 +304,7 @@ final class GitPathGuard
         foreach ($levelsToCreate as $part) {
             $current .= '/' . $part;
             if (self::isSymlink($current)) {
-                throw new RuntimeException("$current 是符号链接，因此未创建 $path。");
+                throw new RuntimeException("{$current} 是符号链接，因此未创建 {$path}。");
             }
             if (is_dir($current)) {
                 continue;

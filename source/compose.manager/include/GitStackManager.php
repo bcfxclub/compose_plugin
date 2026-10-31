@@ -1094,7 +1094,7 @@ final class GitStackManager
                         throw new RuntimeException(
                             '新克隆无法切换到已部署提交 ' . substr($deployed, 0, 12) . '：'
                             . $error->getMessage() . "\n当前位于 " . substr($head, 0, 12) . '。'
-                            . ($movedTo !== null ? " 旧克隆位于 $movedTo。" : ''),
+                            . ($movedTo !== null ? " 旧克隆位于 {$movedTo}。" : ''),
                             0,
                             $error
                         );
