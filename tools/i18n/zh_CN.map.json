@@ -1,0 +1,5500 @@
+{
+  "version": 1,
+  "entries": [
+    {
+      "en": "Compose Manager Plus",
+      "zh": "Compose 管理器 Plus",
+      "file": "source/compose.manager/compose.manager.settings.page"
+    },
+    {
+      "en": "Clear Icon Cache",
+      "zh": "清除图标缓存",
+      "file": "source/compose.manager/compose.manager.settings.page"
+    },
+    {
+      "en": "This will delete all locally cached icon files. Icons will be re-downloaded on next page load.",
+      "zh": "这会删除本地缓存的所有图标文件，下次打开页面时会重新下载。",
+      "file": "source/compose.manager/compose.manager.settings.page"
+    },
+    {
+      "en": "Clear Cache",
+      "zh": "清除缓存",
+      "file": "source/compose.manager/compose.manager.settings.page"
+    },
+    {
+      "en": "Icon cache cleared (",
+      "zh": "图标缓存已清除（删除 ",
+      "file": "source/compose.manager/compose.manager.settings.page"
+    },
+    {
+      "en": "Failed to clear icon cache",
+      "zh": "清除图标缓存失败",
+      "file": "source/compose.manager/compose.manager.settings.page"
+    },
+    {
+      "en": "Clear Update Cache",
+      "zh": "清除更新缓存",
+      "file": "source/compose.manager/compose.manager.settings.page"
+    },
+    {
+      "en": "This will clear the update status cache and remove stale entries. You will need to check for updates again.",
+      "zh": "这会清空更新状态缓存并移除过期条目，之后需要重新检查更新。",
+      "file": "source/compose.manager/compose.manager.settings.page"
+    },
+    {
+      "en": "Update cache has been cleared.",
+      "zh": "更新缓存已清除。",
+      "file": "source/compose.manager/compose.manager.settings.page"
+    },
+    {
+      "en": "Failed to clear cache",
+      "zh": "清除缓存失败",
+      "file": "source/compose.manager/compose.manager.settings.page"
+    },
+    {
+      "en": "Confirm aggressive mode",
+      "zh": "确认激进模式",
+      "file": "source/compose.manager/compose.manager.settings.page"
+    },
+    {
+      "en": "Both Disable action warnings and Run in background are enabled and one or both have changed. This means actions will execute immediately in background. Proceed?",
+      "zh": "“禁用操作警告”与“后台运行”同时启用，且其中一项或两项刚刚被修改。这意味着操作会立即在后台执行。是否继续？",
+      "file": "source/compose.manager/compose.manager.settings.page"
+    },
+    {
+      "en": "Yes, apply",
+      "zh": "是，应用",
+      "file": "source/compose.manager/compose.manager.settings.page"
+    },
+    {
+      "en": " tabs changed",
+      "zh": " 个标签页已更改",
+      "file": "source/compose.manager/compose.manager.settings.page"
+    },
+    {
+      "en": " settings changed",
+      "zh": " 项设置已更改",
+      "file": "source/compose.manager/compose.manager.settings.page"
+    },
+    {
+      "en": "Clear Logs",
+      "zh": "清除日志",
+      "file": "source/compose.manager/compose.manager.settings.page"
+    },
+    {
+      "en": "This will clear compose-related entries from the syslog. Are you sure?",
+      "zh": "这会从系统日志（syslog）中清除与 compose 相关的条目，确定继续吗？",
+      "file": "source/compose.manager/compose.manager.settings.page"
+    },
+    {
+      "en": "Clear",
+      "zh": "清除",
+      "file": "source/compose.manager/compose.manager.settings.page"
+    },
+    {
+      "en": "Failed to download logs",
+      "zh": "下载日志失败",
+      "file": "source/compose.manager/compose.manager.settings.page"
+    },
+    {
+      "en": "Confirm Restore",
+      "zh": "确认还原",
+      "file": "source/compose.manager/compose.manager.settings.page"
+    },
+    {
+      "en": "This action will permanently replace existing configurations for the selected stacks (",
+      "zh": "此操作会永久替换所选栈的现有配置（",
+      "file": "source/compose.manager/compose.manager.settings.page"
+    },
+    {
+      "en": "Restore",
+      "zh": "还原",
+      "file": "source/compose.manager/compose.manager.settings.page"
+    },
+    {
+      "en": "Cancel",
+      "zh": "取消",
+      "file": "source/compose.manager/compose.manager.settings.page"
+    },
+    {
+      "en": "Delete Backup",
+      "zh": "删除备份",
+      "file": "source/compose.manager/compose.manager.settings.page"
+    },
+    {
+      "en": "\"? This cannot be undone.",
+      "zh": "”吗？此操作无法撤销。",
+      "file": "source/compose.manager/compose.manager.settings.page"
+    },
+    {
+      "en": "Delete",
+      "zh": "删除",
+      "file": "source/compose.manager/compose.manager.settings.page"
+    },
+    {
+      "en": "Failed to delete backup.",
+      "zh": "删除备份失败。",
+      "file": "source/compose.manager/compose.manager.settings.page"
+    },
+    {
+      "en": "Error parsing response.",
+      "zh": "解析响应失败。",
+      "file": "source/compose.manager/compose.manager.settings.page"
+    },
+    {
+      "en": "Please select a .tar.gz archive file.",
+      "zh": "请选择 .tar.gz 归档文件。",
+      "file": "source/compose.manager/compose.manager.settings.page"
+    },
+    {
+      "en": "_(Lock sortable items)_",
+      "zh": "_(锁定可排序项)_",
+      "file": "source/compose.manager/compose.manager.settings.page"
+    },
+    {
+      "en": "_(Unlock sortable items)_",
+      "zh": "_(解锁可排序项)_",
+      "file": "source/compose.manager/compose.manager.settings.page"
+    },
+    {
+      "en": "No stacks are enabled for auto-update.",
+      "zh": "没有启用自动更新的栈。",
+      "file": "source/compose.manager/compose.manager.settings.page"
+    },
+    {
+      "en": "_(Run auto-update now for all enabled stacks)_",
+      "zh": "_(立即对所有已启用的栈执行自动更新)_",
+      "file": "source/compose.manager/compose.manager.settings.page"
+    },
+    {
+      "en": "Failed to create config directory",
+      "zh": "创建配置目录失败",
+      "file": "source/compose.manager/include/AutoUpdate.php"
+    },
+    {
+      "en": "Failed to lock config file",
+      "zh": "无法锁定配置文件",
+      "file": "source/compose.manager/include/AutoUpdate.php"
+    },
+    {
+      "en": "Failed to write config file",
+      "zh": "写入配置文件失败",
+      "file": "source/compose.manager/include/AutoUpdate.php"
+    },
+    {
+      "en": "Failed to update cron",
+      "zh": "更新定时任务失败",
+      "file": "source/compose.manager/include/AutoUpdate.php"
+    },
+    {
+      "en": "Path not allowed",
+      "zh": "不允许的路径",
+      "file": "source/compose.manager/include/AutoUpdate.php"
+    },
+    {
+      "en": "Compose file not found",
+      "zh": "未找到 Compose 文件",
+      "file": "source/compose.manager/include/AutoUpdate.php"
+    },
+    {
+      "en": "Running manual auto-update for: $projectName",
+      "zh": "正在为以下栈手动执行自动更新：$projectName",
+      "file": "source/compose.manager/include/AutoUpdate.php"
+    },
+    {
+      "en": "Skipping disallowed path: ",
+      "zh": "已跳过不允许的路径：",
+      "file": "source/compose.manager/include/AutoUpdateRunner.php"
+    },
+    {
+      "en": "Scheduled auto-update triggered for: $projectName ($schedule)",
+      "zh": "已触发计划自动更新：{$projectName}（{$schedule}）",
+      "file": "source/compose.manager/include/AutoUpdateRunner.php"
+    },
+    {
+      "en": "Projects folder does not exist: ",
+      "zh": "项目目录不存在：",
+      "file": "source/compose.manager/include/BackupFunctions.php"
+    },
+    {
+      "en": "Cannot create backup destination: ",
+      "zh": "无法创建备份目标：",
+      "file": "source/compose.manager/include/BackupFunctions.php"
+    },
+    {
+      "en": "Cannot read projects folder: ",
+      "zh": "无法读取项目目录：",
+      "file": "source/compose.manager/include/BackupFunctions.php"
+    },
+    {
+      "en": "No stacks found to back up.",
+      "zh": "没有找到可备份的栈。",
+      "file": "source/compose.manager/include/BackupFunctions.php"
+    },
+    {
+      "en": "Cannot read archive contents or archive is empty.",
+      "zh": "无法读取归档内容，或归档为空。",
+      "file": "source/compose.manager/include/BackupFunctions.php"
+    },
+    {
+      "en": "No stacks selected for restore.",
+      "zh": "未选择要恢复的栈。",
+      "file": "source/compose.manager/include/BackupFunctions.php"
+    },
+    {
+      "en": "label",
+      "zh": "CPU 占用",
+      "file": "source/compose.manager/include/ColumnLayout.php"
+    },
+    {
+      "en": "LAN IP:Port",
+      "zh": "局域网 IP:端口",
+      "file": "source/compose.manager/include/ColumnLayout.php"
+    },
+    {
+      "en": "Ignoring non-boolean column visibility value",
+      "zh": "忽略非布尔的列可见性值",
+      "file": "source/compose.manager/include/ColumnLayout.php"
+    },
+    {
+      "en": "Failed to read column layout preference file; using defaults",
+      "zh": "读取列布局首选项文件失败，使用默认值",
+      "file": "source/compose.manager/include/ColumnLayout.php"
+    },
+    {
+      "en": "Invalid column layout JSON; using defaults",
+      "zh": "列布局 JSON 无效，使用默认值",
+      "file": "source/compose.manager/include/ColumnLayout.php"
+    },
+    {
+      "en": "Unsupported compose action: ",
+      "zh": "不支持的 Compose 操作：",
+      "file": "source/compose.manager/include/ComposeCommandBuilder.php"
+    },
+    {
+      "en": "Project failed to load.",
+      "zh": "项目加载失败。",
+      "file": "source/compose.manager/include/ComposeList.php"
+    },
+    {
+      "en": "Project not specified.",
+      "zh": "未指定项目。",
+      "file": "source/compose.manager/include/ComposeList.php"
+    },
+    {
+      "en": "Project folder does not exist.",
+      "zh": "项目文件夹不存在。",
+      "file": "source/compose.manager/include/ComposeList.php"
+    },
+    {
+      "en": "Missing project path: $projectPath",
+      "zh": "缺少项目路径：$projectPath",
+      "file": "source/compose.manager/include/ComposeList.php"
+    },
+    {
+      "en": "Project path is not a directory.",
+      "zh": "项目路径不是目录。",
+      "file": "source/compose.manager/include/ComposeList.php"
+    },
+    {
+      "en": "Path is not a directory: $projectPath",
+      "zh": "路径不是目录：$projectPath",
+      "file": "source/compose.manager/include/ComposeList.php"
+    },
+    {
+      "en": "indirect metadata points to: $indirectPath",
+      "zh": "间接指向的元数据：$indirectPath",
+      "file": "source/compose.manager/include/ComposeList.php"
+    },
+    {
+      "en": "indirect_mode metadata: $indirectMode",
+      "zh": "indirect_mode 元数据：$indirectMode",
+      "file": "source/compose.manager/include/ComposeList.php"
+    },
+    {
+      "en": "Indirect compose file is missing.",
+      "zh": "间接引用的 compose 文件不存在。",
+      "file": "source/compose.manager/include/ComposeList.php"
+    },
+    {
+      "en": "Missing indirect compose file: $indirectPath",
+      "zh": "缺少间接 compose 文件：$indirectPath",
+      "file": "source/compose.manager/include/ComposeList.php"
+    },
+    {
+      "en": "No compose file found in indirect source directory.",
+      "zh": "间接源目录中未找到 compose 文件。",
+      "file": "source/compose.manager/include/ComposeList.php"
+    },
+    {
+      "en": "No compose file found under indirect path: $indirectPath",
+      "zh": "间接路径下未找到 compose 文件：$indirectPath",
+      "file": "source/compose.manager/include/ComposeList.php"
+    },
+    {
+      "en": "Indirect source path does not exist.",
+      "zh": "间接源路径不存在。",
+      "file": "source/compose.manager/include/ComposeList.php"
+    },
+    {
+      "en": "Missing indirect source path: $indirectPath",
+      "zh": "缺少间接源路径：$indirectPath",
+      "file": "source/compose.manager/include/ComposeList.php"
+    },
+    {
+      "en": "No compose file found in stack directory.",
+      "zh": "栈目录中未找到 compose 文件。",
+      "file": "source/compose.manager/include/ComposeList.php"
+    },
+    {
+      "en": "No compose file found under project path: $projectPath",
+      "zh": "项目路径下未找到 compose 文件：$projectPath",
+      "file": "source/compose.manager/include/ComposeList.php"
+    },
+    {
+      "en": " min",
+      "zh": " 分钟",
+      "file": "source/compose.manager/include/ComposeList.php"
+    },
+    {
+      "en": " hour",
+      "zh": " 小时",
+      "file": "source/compose.manager/include/ComposeList.php"
+    },
+    {
+      "en": " day",
+      "zh": " 天",
+      "file": "source/compose.manager/include/ComposeList.php"
+    },
+    {
+      "en": " week",
+      "zh": " 周",
+      "file": "source/compose.manager/include/ComposeList.php"
+    },
+    {
+      "en": " month",
+      "zh": " 个月",
+      "file": "source/compose.manager/include/ComposeList.php"
+    },
+    {
+      "en": " year",
+      "zh": " 年",
+      "file": "source/compose.manager/include/ComposeList.php"
+    },
+    {
+      "en": "Rendering invalid indirect warning in stack list",
+      "zh": "正在渲染栈列表中的 indirect 无效警告",
+      "file": "source/compose.manager/include/ComposeList.php"
+    },
+    {
+      "en": "Project: $projectHtml",
+      "zh": "项目：$projectHtml",
+      "file": "source/compose.manager/include/ComposeList.php"
+    },
+    {
+      "en": "not deployed",
+      "zh": "未部署",
+      "file": "source/compose.manager/include/ComposeList.php"
+    },
+    {
+      "en": " failed. Fix it and deploy again.",
+      "zh": " 的部署失败。请修复后重新部署。",
+      "file": "source/compose.manager/include/ComposeList.php"
+    },
+    {
+      "en": " failed before any container was started. Fix it and deploy again, or resume automatic deploys to try again.",
+      "zh": " 的自动部署在启动任何容器之前就失败了。请修复后重新部署，或恢复自动部署以重试。",
+      "file": "source/compose.manager/include/ComposeList.php"
+    },
+    {
+      "en": "Show dialog with run-in-background checkbox, then update selected stacks",
+      "zh": "弹出含“后台运行”选项的对话框，然后更新选中的栈",
+      "file": "source/compose.manager/include/ComposeManager.php"
+    },
+    {
+      "en": "One absolute path per line, e.g. /mnt/user/appdata/shared/gpu.compose.yml",
+      "zh": "每行一个绝对路径，例如 /mnt/user/appdata/shared/gpu.compose.yml",
+      "file": "source/compose.manager/include/ComposeManager.php"
+    },
+    {
+      "en": "Default (uses .env in compose source folder)",
+      "zh": "默认（使用 compose 源目录中的 .env）",
+      "file": "source/compose.manager/include/ComposeManager.php"
+    },
+    {
+      "en": "Name, registry, username, and token are required.",
+      "zh": "名称、仓库地址、用户名和令牌均为必填。",
+      "file": "source/compose.manager/include/CredentialVault.php"
+    },
+    {
+      "en": "Unsupported credential provider.",
+      "zh": "不支持的凭据提供方。",
+      "file": "source/compose.manager/include/CredentialVault.php"
+    },
+    {
+      "en": "A credential cannot change between a registry login and a git credential. Add a new credential instead.",
+      "zh": "凭据不能在“注册表登录”与“git 凭据”之间切换，请改为新建凭据。",
+      "file": "source/compose.manager/include/CredentialVault.php"
+    },
+    {
+      "en": "A git credential needs the repository host only, such as github.com.",
+      "zh": "git 凭据只需填写仓库主机地址，例如 github.com。",
+      "file": "source/compose.manager/include/CredentialVault.php"
+    },
+    {
+      "en": "Unsupported credential authentication method.",
+      "zh": "不支持的凭据认证方式。",
+      "file": "source/compose.manager/include/CredentialVault.php"
+    },
+    {
+      "en": "Unable to create credential storage directory.",
+      "zh": "无法创建凭据存储目录。",
+      "file": "source/compose.manager/include/CredentialVault.php"
+    },
+    {
+      "en": "Unable to acquire credential assignment lock.",
+      "zh": "无法获取凭据分配锁。",
+      "file": "source/compose.manager/include/CredentialVault.php"
+    },
+    {
+      "en": "The credential '{$credential['name']}' is a git repository credential, not a registry login.",
+      "zh": "凭据 '{$credential['name']}' 是 git 仓库凭据，不能用作注册表登录。",
+      "file": "source/compose.manager/include/CredentialVault.php"
+    },
+    {
+      "en": "Using registry credential '{$credential['name']}' ({$credential['registry']}) for this operation",
+      "zh": "本次操作使用注册表凭据 '{$credential['name']}'（{$credential['registry']}）",
+      "file": "source/compose.manager/include/CredentialVault.php"
+    },
+    {
+      "en": "Unable to create Docker credential directory.",
+      "zh": "无法创建 Docker 凭据目录。",
+      "file": "source/compose.manager/include/CredentialVault.php"
+    },
+    {
+      "en": "Unable to create temporary Docker config.",
+      "zh": "无法创建临时 Docker 配置。",
+      "file": "source/compose.manager/include/CredentialVault.php"
+    },
+    {
+      "en": "Unable to write temporary Docker config.",
+      "zh": "无法写入临时 Docker 配置。",
+      "file": "source/compose.manager/include/CredentialVault.php"
+    },
+    {
+      "en": "No registry host configured for this credential.",
+      "zh": "该凭据未配置注册表主机。",
+      "file": "source/compose.manager/include/CredentialVault.php"
+    },
+    {
+      "en": "Unable to verify credential: the PHP curl extension is unavailable.",
+      "zh": "无法验证凭据：PHP curl 扩展不可用。",
+      "file": "source/compose.manager/include/CredentialVault.php"
+    },
+    {
+      "en": "Registry accepted the credential.",
+      "zh": "注册表已接受该凭据。",
+      "file": "source/compose.manager/include/CredentialVault.php"
+    },
+    {
+      "en": "Registry returned an unrecognized authentication challenge.",
+      "zh": "注册表返回了无法识别的身份验证质询。",
+      "file": "source/compose.manager/include/CredentialVault.php"
+    },
+    {
+      "en": "Registry rejected the credential (invalid or expired token).",
+      "zh": "注册表拒绝了该凭据（令牌无效或已过期）。",
+      "file": "source/compose.manager/include/CredentialVault.php"
+    },
+    {
+      "en": "Unable to verify credential (auth service returned HTTP ",
+      "zh": "无法验证凭据（认证服务返回 HTTP ",
+      "file": "source/compose.manager/include/CredentialVault.php"
+    },
+    {
+      "en": "Could not reach the registry: ",
+      "zh": "无法访问注册表：",
+      "file": "source/compose.manager/include/CredentialVault.php"
+    },
+    {
+      "en": "Unable to verify credential (registry returned HTTP ",
+      "zh": "无法验证凭据（注册表返回 HTTP ",
+      "file": "source/compose.manager/include/CredentialVault.php"
+    },
+    {
+      "en": "Selected credential no longer exists.",
+      "zh": "所选凭据已不存在。",
+      "file": "source/compose.manager/include/CredentialVault.php"
+    },
+    {
+      "en": "Credential vault is invalid.",
+      "zh": "凭据库无效。",
+      "file": "source/compose.manager/include/CredentialVault.php"
+    },
+    {
+      "en": "Legacy credential vault requires the PHP sodium extension.",
+      "zh": "旧版凭据库需要 PHP sodium 扩展。",
+      "file": "source/compose.manager/include/CredentialVault.php"
+    },
+    {
+      "en": "Credential vault could not be decrypted.",
+      "zh": "凭据库无法解密。",
+      "file": "source/compose.manager/include/CredentialVault.php"
+    },
+    {
+      "en": "Credential encryption requires the PHP OpenSSL extension.",
+      "zh": "凭据加密需要 PHP OpenSSL 扩展。",
+      "file": "source/compose.manager/include/CredentialVault.php"
+    },
+    {
+      "en": "Credential encryption is unavailable.",
+      "zh": "凭据加密不可用。",
+      "file": "source/compose.manager/include/CredentialVault.php"
+    },
+    {
+      "en": "Unable to encode credential vault.",
+      "zh": "无法编码凭据库。",
+      "file": "source/compose.manager/include/CredentialVault.php"
+    },
+    {
+      "en": "Unable to encrypt credential vault.",
+      "zh": "无法加密凭据库。",
+      "file": "source/compose.manager/include/CredentialVault.php"
+    },
+    {
+      "en": "Unable to save credential vault.",
+      "zh": "无法保存凭据库。",
+      "file": "source/compose.manager/include/CredentialVault.php"
+    },
+    {
+      "en": "Credential encryption key is invalid.",
+      "zh": "凭据加密密钥无效。",
+      "file": "source/compose.manager/include/CredentialVault.php"
+    },
+    {
+      "en": "Unable to save credential encryption key.",
+      "zh": "无法保存凭据加密密钥。",
+      "file": "source/compose.manager/include/CredentialVault.php"
+    },
+    {
+      "en": "Unable to open credential lock.",
+      "zh": "无法打开凭据锁。",
+      "file": "source/compose.manager/include/CredentialVault.php"
+    },
+    {
+      "en": "Unable to acquire credential lock.",
+      "zh": "无法获取凭据锁。",
+      "file": "source/compose.manager/include/CredentialVault.php"
+    },
+    {
+      "en": "cleanupLegacy: no legacy entries found in crontab",
+      "zh": "cleanupLegacy：crontab 中没有旧的条目",
+      "file": "source/compose.manager/include/CronManager.php"
+    },
+    {
+      "en": "Check for Updates",
+      "zh": "检查更新",
+      "file": "source/compose.manager/include/DashboardStacks.php"
+    },
+    {
+      "en": "The target path changed while the editor was open. Reload the editor and try again.",
+      "zh": "编辑器打开期间目标路径已更改，请重新加载编辑器后再试。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Invalid visibility payload.",
+      "zh": "无效的可见性数据。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Failed to create column layout preference directory",
+      "zh": "创建列布局首选项目录失败",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Failed to persist column visibility.",
+      "zh": "保存列可见性失败。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Failed to persist column visibility",
+      "zh": "保存列可见性失败",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "compose_info publisher was not running; starting it",
+      "zh": "compose_info 推送进程未运行，正在启动",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Set either Indirect Path or Indirect Compose File, not both.",
+      "zh": "外部路径与外部 Compose 文件只能设置其中一个。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Failed to create stack: Could not resolve indirect path: $indirectDir",
+      "zh": "创建栈失败：无法解析 indirect 路径：$indirectDir",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Stack path is invalid or does not exist.",
+      "zh": "栈路径无效或不存在。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Failed to create stack: Invalid indirect path: $indirectDir",
+      "zh": "创建栈失败：indirect 路径无效：$indirectDir",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Stack path must be under /mnt/ or /boot/config/.",
+      "zh": "栈路径必须位于 /mnt/ 或 /boot/config/ 下。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Failed to create stack: Indirect stack path does not exist: $indirectDir",
+      "zh": "创建栈失败：indirect 栈路径不存在：$indirectDir",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Indirect stack path does not exist.",
+      "zh": "外部栈路径不存在。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Failed to create stack: Indirect compose file does not exist: $indirectFile",
+      "zh": "创建栈失败：indirect compose 文件不存在：$indirectFile",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Indirect compose file does not exist.",
+      "zh": "外部 Compose 文件不存在。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Failed to create stack: Invalid indirect compose file path: $indirectFile",
+      "zh": "创建栈失败：indirect compose 文件路径无效：$indirectFile",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Indirect compose file must be under /mnt/ or /boot/config/.",
+      "zh": "外部 Compose 文件必须位于 /mnt/ 或 /boot/config/ 下。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Indirect compose file must be a .yml or .yaml file.",
+      "zh": "外部 Compose 文件必须是 .yml 或 .yaml 文件。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Failed to create stack: ",
+      "zh": "创建栈失败：",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Stack name cannot be empty.",
+      "zh": "栈名称不能为空。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "escape compose root",
+      "zh": "超出 Compose 根目录",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Server configuration error.",
+      "zh": "无效的 Compose 根目录",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Failed to create stack. Check server logs for details.",
+      "zh": "创建栈失败，请查看服务器日志。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Failed to create git stack: ",
+      "zh": "创建 Git 栈失败：",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Stack deletion failed: Stack name not specified.",
+      "zh": "删除栈失败：未指定栈名称。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Deleting stack: $stackName",
+      "zh": "正在删除栈：$stackName",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Stack folder delete failed",
+      "zh": "删除栈目录失败",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Failed to delete stack folder. ",
+      "zh": "删除栈目录失败：",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Folder still exists after delete. ",
+      "zh": "删除后文件夹仍然存在。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Stack delete failed: $stackName",
+      "zh": "删除栈失败：$stackName",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Stack '$stackName' was deleted successfully.",
+      "zh": "栈 '$stackName' 已成功删除。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Deleted stack: $stackName",
+      "zh": "已删除栈：$stackName",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Stack delete complete: $stackName",
+      "zh": "栈删除完成：$stackName",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Stack '$stackName' was deleted. Files remain on disk at '$filesRemain'.",
+      "zh": "栈 '$stackName' 已删除。磁盘上仍保留文件：'$filesRemain'。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Deleted stack: $stackName (indirect, external files remain at $filesRemain)",
+      "zh": "已删除栈：{$stackName}（indirect，外部文件仍位于 {$filesRemain}）",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Requested file is not part of this stack.",
+      "zh": "请求的文件不属于该栈。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Unable to read compose file: $composeFilePath",
+      "zh": "无法读取 compose 文件：$composeFilePath",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Target directory does not exist.",
+      "zh": "目标目录不存在。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Target .env path is a directory.",
+      "zh": "目标 .env 路径是一个目录。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Failed to create .env template.",
+      "zh": "创建 .env 模板失败。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Unable to resolve override path",
+      "zh": "无法解析覆盖文件路径",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Override target directory does not exist.",
+      "zh": "覆盖文件的目标目录不存在。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Override target path is a directory.",
+      "zh": "覆盖文件的目标路径是一个目录。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Failed to create override template.",
+      "zh": "创建覆盖模板失败。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Missing project or services.",
+      "zh": "缺少项目或服务。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Cleared all plugin icon cache entries",
+      "zh": "已清除插件的所有图标缓存",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Env file path must be under /mnt/, /boot/config/, or the compose root.",
+      "zh": "环境变量文件路径必须位于 /mnt/、/boot/config/ 或 Compose 根目录下。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Unable to read credential vault.",
+      "zh": "无法读取凭据库。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Unable to start GitHub sign-in",
+      "zh": "无法启动 GitHub 登录",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Unable to complete GitHub sign-in",
+      "zh": "无法完成 GitHub 登录",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "A deploy key is made by compose-git for the ssh stacks of a repository, not added here.",
+      "zh": "部署密钥由 compose-git 为仓库的 SSH 栈生成，不能在此添加。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "The projects folder ($compose_root) is not there, so the stacks that use this credential ",
+      "zh": "项目文件夹（{$compose_root}）不存在，因此无法检查使用该凭据的栈。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "cannot be checked. If it is on the array, start the array first.",
+      "zh": "如果它位于阵列上，请先启动阵列。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Credential is assigned to: ",
+      "zh": "凭据已分配给：",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "The git settings (git.json) of {$unreadable[0]} could not be read, so it may use this credential. ",
+      "zh": "{$unreadable[0]} 的 git 设置（git.json）无法读取，该栈可能会用到这个凭据。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Fix the file first: the stack's Sources tab, or compose-git status, shows the error.",
+      "zh": "请先修复该文件：栈的「来源」标签页或 compose-git status 会显示错误。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": " could not be read, so they may use ",
+      "zh": " 的 git 设置（git.json）无法读取，这些栈可能会用到这个凭据。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "this credential. Fix the files first: each stack's Sources tab, or compose-git status, shows the error.",
+      "zh": "请先修复这些文件：各栈的「来源」标签页或 compose-git status 会显示错误。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Credential ID is required.",
+      "zh": "必须提供凭据 ID。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "No git stack uses this credential yet. ",
+      "zh": "尚无 Git 栈使用该凭据。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "It is tested by reaching a repository: choose it for a git stack (when adding the stack, or with compose-git), then test it again.",
+      "zh": "测试时会连接仓库：请先为某个 Git 栈选择该凭据（新建栈时或使用 compose-git），然后再测试。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Unable to load stack settings.",
+      "zh": "无法加载栈设置。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Converted stack to a git stack: $script",
+      "zh": "已将栈转换为 Git 栈：$script",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Failed to convert stack to a git stack: $script",
+      "zh": "将栈转换为 Git 栈失败：$script",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Invalid labels view mode.",
+      "zh": "无效的标签视图模式。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Invalid icon. Must be http(s) URL, data:image URL, or a local path under /mnt/ or /boot/config/plugins/compose.manager/projects/.",
+      "zh": "图标无效：必须是 http(s) 地址、data:image 地址，或位于 /mnt/ 或 /boot/config/plugins/compose.manager/projects/ 下的本地路径。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Invalid WebUI URL. Must be http:// or https:// (supports [IP] and [PORT:xxxx] placeholders).",
+      "zh": "WebUI 地址无效：必须以 http:// 或 https:// 开头（支持 [IP] 与 [PORT:xxxx] 占位符）。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Bare [PORT] is not supported at stack level. Use [PORT:xxxx] with a default port (e.g. [PORT:8080]).",
+      "zh": "栈级别不支持裸 [PORT]，请使用带默认端口的 [PORT:xxxx]（例如 [PORT:8080]）。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Set either External Compose Path or External Compose File, not both.",
+      "zh": "「外部 compose 路径」与「外部 compose 文件」只能设置其中一个。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "External compose path must be under /mnt/ or /boot/config/.",
+      "zh": "外部 Compose 路径必须位于 /mnt/ 或 /boot/config/ 下。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "External compose path directory does not exist: ",
+      "zh": "外部 Compose 路径目录不存在：",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "External compose path cannot be the stack project folder. Use a path under /mnt/ or /boot/config/ that is external to this stack.",
+      "zh": "外部 Compose 路径不能是该栈的项目文件夹，请使用位于 /mnt/ 或 /boot/config/ 下、且在该栈之外的路径。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "External compose file does not exist: ",
+      "zh": "外部 Compose 文件不存在：",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "External compose file must be under /mnt/ or /boot/config/.",
+      "zh": "外部 Compose 文件必须位于 /mnt/ 或 /boot/config/ 下。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "External compose file must be a .yml or .yaml file.",
+      "zh": "外部 Compose 文件必须是 .yml 或 .yaml 文件。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "External compose file cannot be inside the stack project folder. Use a path under /mnt/ or /boot/config/ that is external to this stack.",
+      "zh": "外部 Compose 文件不能位于该栈的项目文件夹内，请使用位于 /mnt/ 或 /boot/config/ 下、且在该栈之外的路径。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Additional compose file must be a .yml or .yaml file: ",
+      "zh": "附加的 Compose 文件必须是 .yml 或 .yaml 文件：",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Additional compose file does not exist: ",
+      "zh": "附加的 Compose 文件不存在：",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Additional compose files must be under /mnt/ or /boot/config/.",
+      "zh": "附加的 Compose 文件必须位于 /mnt/ 或 /boot/config/ 下。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Relative additional compose file paths must not contain \"..\": ",
+      "zh": "附加 Compose 文件的相对路径不能包含 \"..\"：",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "A git repository credential cannot be used to pull images.",
+      "zh": "Git 仓库凭据不能用于拉取镜像。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Container or action not specified.",
+      "zh": "未指定容器或操作。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Completed: $totalStacks stacks checked, $updatesFound with updates",
+      "zh": "已完成：共检查 $totalStacks 个栈，其中 $updatesFound 个有更新",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Syslog file not found",
+      "zh": "未找到系统日志文件",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Could not read log file.",
+      "zh": "无法读取日志文件。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Manual backup starting...",
+      "zh": "手动备份开始...",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "No file uploaded.",
+      "zh": "未上传文件。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "File exceeds server upload limit.",
+      "zh": "文件超出服务器上传限制。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "File exceeds form upload limit.",
+      "zh": "文件超出表单上传限制。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "File only partially uploaded.",
+      "zh": "文件只上传了一部分。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "No file was uploaded.",
+      "zh": "没有文件被上传。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Server missing temp directory.",
+      "zh": "服务器缺少临时目录。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Failed to write to disk.",
+      "zh": "写入磁盘失败。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Invalid file type. Only .tar.gz archives are accepted.",
+      "zh": "文件类型无效，只接受 .tar.gz 归档。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Failed to create backup destination directory: ",
+      "zh": "创建备份目标目录失败：",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Backup destination does not exist and could not be created: ",
+      "zh": "备份目标不存在且无法创建：",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Backup destination is not writable: ",
+      "zh": "备份目标不可写：",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Archive already exists in backup destination: ",
+      "zh": "备份目标中已存在同名归档：",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Failed to save uploaded file.",
+      "zh": "保存上传的文件失败。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "No archive specified.",
+      "zh": "未指定归档文件。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Restore starting from archive: ",
+      "zh": "开始从归档恢复：",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Archive not found.",
+      "zh": "未找到归档文件。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Backup schedule updated.",
+      "zh": "备份计划已更新。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Failed to update backup schedule.",
+      "zh": "更新备份计划失败。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Invalid settings data.",
+      "zh": "无效的设置数据。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Warning: failed to sync cron schedule",
+      "zh": "警告：同步定时计划失败",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Scheduler DISABLED",
+      "zh": "调度器已禁用",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Backup settings saved.",
+      "zh": "备份设置已保存。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Stack and project name are required.",
+      "zh": "栈名称和项目名称都是必填的。",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Failed to apply project identity choice",
+      "zh": "应用项目标识选择失败",
+      "file": "source/compose.manager/include/Exec.php"
+    },
+    {
+      "en": "Could not reach the repository: ",
+      "zh": "无法访问仓库：",
+      "file": "source/compose.manager/include/GitClone.php"
+    },
+    {
+      "en": "$cloneDir already exists, so nothing was cloned into it.",
+      "zh": "{$cloneDir} 已存在，因此未向其克隆任何内容。",
+      "file": "source/compose.manager/include/GitClone.php"
+    },
+    {
+      "en": "Could not clone the repository: ",
+      "zh": "无法克隆仓库：",
+      "file": "source/compose.manager/include/GitClone.php"
+    },
+    {
+      "en": "git reported success but $cloneDir/.git is missing.",
+      "zh": "git 报告成功，但 $cloneDir/.git 不存在。",
+      "file": "source/compose.manager/include/GitClone.php"
+    },
+    {
+      "en": "Could not write the clone marker in $cloneDir.",
+      "zh": "无法在 {$cloneDir} 中写入克隆标记。",
+      "file": "source/compose.manager/include/GitClone.php"
+    },
+    {
+      "en": "$cloneDir is a symlink, so it was not used.",
+      "zh": "$cloneDir 是符号链接，因此未被使用。",
+      "file": "source/compose.manager/include/GitClone.php"
+    },
+    {
+      "en": "The clone folder $cloneDir is missing. (Is the array started?)",
+      "zh": "克隆文件夹 $cloneDir 不存在。（阵列是否已启动？）",
+      "file": "source/compose.manager/include/GitClone.php"
+    },
+    {
+      "en": "$cloneDir is not a git clone made by this plugin (no .git folder).",
+      "zh": "$cloneDir 不是本插件创建的 git 克隆（缺少 .git 文件夹）。",
+      "file": "source/compose.manager/include/GitClone.php"
+    },
+    {
+      "en": "$cloneDir was not made by this plugin for this stack (its marker is missing or names another stack), so it was not changed.",
+      "zh": "$cloneDir 不是本插件为此栈创建的（标记缺失或指向其他栈），因此未做改动。",
+      "file": "source/compose.manager/include/GitClone.php"
+    },
+    {
+      "en": "$cloneDir is not the top of its own git clone.",
+      "zh": "{$cloneDir} 不是其自身 git 克隆的顶层目录。",
+      "file": "source/compose.manager/include/GitClone.php"
+    },
+    {
+      "en": "$cloneDir is a clone of a different repository than this stack's (",
+      "zh": "$cloneDir 克隆的是与本栈不同的仓库（",
+      "file": "source/compose.manager/include/GitClone.php"
+    },
+    {
+      "en": "). Clone it again to change the repository.",
+      "zh": ")。要更换仓库，请重新克隆。",
+      "file": "source/compose.manager/include/GitClone.php"
+    },
+    {
+      "en": "Could not fetch from the repository: ",
+      "zh": "无法从仓库获取更新：",
+      "file": "source/compose.manager/include/GitClone.php"
+    },
+    {
+      "en": "Could not read the clone status: ",
+      "zh": "无法读取克隆状态：",
+      "file": "source/compose.manager/include/GitClone.php"
+    },
+    {
+      "en": "Could not compare commits: ",
+      "zh": "无法比较提交：",
+      "file": "source/compose.manager/include/GitClone.php"
+    },
+    {
+      "en": "Could not read the commit: ",
+      "zh": "无法读取提交：",
+      "file": "source/compose.manager/include/GitClone.php"
+    },
+    {
+      "en": "The clone has local changes (",
+      "zh": "克隆中存在本地改动（",
+      "file": "source/compose.manager/include/GitClone.php"
+    },
+    {
+      "en": "). Save or discard them first.",
+      "zh": "）。请先保存或丢弃这些改动。",
+      "file": "source/compose.manager/include/GitClone.php"
+    },
+    {
+      "en": "The new commit adds files where untracked local files already are, so nothing was changed: ",
+      "zh": "新提交要写入的文件位置已被未跟踪的本地文件占用，因此未做任何改动：",
+      "file": "source/compose.manager/include/GitClone.php"
+    },
+    {
+      "en": ". Move them out of the way, then deploy again.",
+      "zh": ". 请先移走这些文件，然后重新部署。",
+      "file": "source/compose.manager/include/GitClone.php"
+    },
+    {
+      "en": "Could not check out $commit: ",
+      "zh": "无法检出 {$commit}：",
+      "file": "source/compose.manager/include/GitClone.php"
+    },
+    {
+      "en": "Could not collect the local changes: ",
+      "zh": "无法收集本地改动：",
+      "file": "source/compose.manager/include/GitClone.php"
+    },
+    {
+      "en": "Could not create $patchDir.",
+      "zh": "无法创建 {$patchDir}。",
+      "file": "source/compose.manager/include/GitClone.php"
+    },
+    {
+      "en": "Could not write all of $patchFile, so the local changes were kept.",
+      "zh": "无法完整写入 {$patchFile}，因此保留了本地改动。",
+      "file": "source/compose.manager/include/GitClone.php"
+    },
+    {
+      "en": "Could not unstage the staged changes",
+      "zh": "无法取消已暂存的改动",
+      "file": "source/compose.manager/include/GitClone.php"
+    },
+    {
+      "en": "Could not discard the local changes",
+      "zh": "无法丢弃本地改动",
+      "file": "source/compose.manager/include/GitClone.php"
+    },
+    {
+      "en": "Could not list the files in the clone: ",
+      "zh": "无法列出克隆中的文件：",
+      "file": "source/compose.manager/include/GitClone.php"
+    },
+    {
+      "en": "Discarding the local changes would delete or overwrite untracked files at ",
+      "zh": "丢弃本地改动会删除或覆盖以下未跟踪文件：",
+      "file": "source/compose.manager/include/GitClone.php"
+    },
+    {
+      "en": ", because the checked-out commit has a tracked file or folder there. Nothing was changed. ",
+      "zh": "，因为检出提交在该位置有已跟踪的文件或目录。未做任何改动。",
+      "file": "source/compose.manager/include/GitClone.php"
+    },
+    {
+      "en": "Move them out of the clone, then deploy again.",
+      "zh": "请先把它们移出克隆目录，然后重新部署。",
+      "file": "source/compose.manager/include/GitClone.php"
+    },
+    {
+      "en": "Could not compare the commit with the branch: ",
+      "zh": "无法将该提交与分支比较：",
+      "file": "source/compose.manager/include/GitClone.php"
+    },
+    {
+      "en": "Could not list the untracked files: ",
+      "zh": "无法列出未跟踪的文件：",
+      "file": "source/compose.manager/include/GitClone.php"
+    },
+    {
+      "en": "Could not find commit $reference in the clone.",
+      "zh": "无法在克隆中找到提交 {$reference}。",
+      "file": "source/compose.manager/include/GitClone.php"
+    },
+    {
+      "en": "Not a full commit id: $commit",
+      "zh": "不是完整的提交 ID：$commit",
+      "file": "source/compose.manager/include/GitClone.php"
+    },
+    {
+      "en": "The server redirected to {$match[1]}, and the stack's credential is offered only for the address ",
+      "zh": "服务器已将请求重定向到 {$match[1]}，而该栈的凭据仅提供给栈所使用的地址",
+      "file": "source/compose.manager/include/GitClone.php"
+    },
+    {
+      "en": "the stack uses. Use the address the server redirects to (usually the one ending in .git).",
+      "zh": "（启用了 credential.useHttpPath）。请改用服务器重定向后的地址（通常以 .git 结尾）。",
+      "file": "source/compose.manager/include/GitClone.php"
+    },
+    {
+      "en": "The repository asks for a user name and password, so it needs a credential: add a git token on the ",
+      "zh": "仓库要求输入用户名和密码，因此需要凭据：请在「凭据」标签页添加 git 令牌，",
+      "file": "source/compose.manager/include/GitClone.php"
+    },
+    {
+      "en": "Credentials tab, then name it with --credential when adding the stack, or with compose-git credential ",
+      "zh": "然后在新增栈时用 --credential 指定名称，或对已有栈使用 compose-git credential ",
+      "file": "source/compose.manager/include/GitClone.php"
+    },
+    {
+      "en": "This ssh stack has no deploy key or no pinned host keys in its git.json. Set it up again with compose-git.",
+      "zh": "该 SSH 栈没有部署密钥，或其 git.json 中没有固定主机密钥，请使用 compose-git 重新设置。",
+      "file": "source/compose.manager/include/GitClone.php"
+    },
+    {
+      "en": "The repository server\\'s ssh host key does not match the one pinned for this stack, so nothing was fetched. ",
+      "zh": "该仓库服务器的 SSH 主机密钥与此栈固定的密钥不匹配，因此未获取任何内容。",
+      "file": "source/compose.manager/include/GitClone.php"
+    },
+    {
+      "en": "If the server was rebuilt or its keys were changed on purpose, run compose-git trust-host and compare ",
+      "zh": "如果服务器已重建或密钥被有意更换，请运行 compose-git trust-host，",
+      "file": "source/compose.manager/include/GitClone.php"
+    },
+    {
+      "en": "the new fingerprints with the ones the server publishes.",
+      "zh": "并将新指纹与服务器公布的一致。",
+      "file": "source/compose.manager/include/GitClone.php"
+    },
+    {
+      "en": "Could not create $home for git.",
+      "zh": "无法为 git 创建 {$home}。",
+      "file": "source/compose.manager/include/GitCommand.php"
+    },
+    {
+      "en": "$home is not a plain folder, so git was not run. Remove it.",
+      "zh": "$home 不是普通文件夹，因此未运行 git。请将其删除。",
+      "file": "source/compose.manager/include/GitCommand.php"
+    },
+    {
+      "en": "$home belongs to another user, so git was not run. Remove it.",
+      "zh": "$home 属于其他用户，因此未运行 git。请将其删除。",
+      "file": "source/compose.manager/include/GitCommand.php"
+    },
+    {
+      "en": "Could not make $home private, so git was not run.",
+      "zh": "无法将 $home 设为私有权限，因此未运行 git。",
+      "file": "source/compose.manager/include/GitCommand.php"
+    },
+    {
+      "en": "A git credential can only be used with an https:// repository address.",
+      "zh": "git 凭据只能用于 https:// 仓库地址。",
+      "file": "source/compose.manager/include/GitCredentials.php"
+    },
+    {
+      "en": "The credential '{$credential['name']}' is not a git repository credential.",
+      "zh": "凭据 '{$credential['name']}' 不是 git 仓库凭据。",
+      "file": "source/compose.manager/include/GitCredentials.php"
+    },
+    {
+      "en": "The credential '{$credential['name']}' is for {$credential['registry']}, but the repository is on $host.",
+      "zh": "凭据 '{$credential['name']}' 属于 {$credential['registry']}，但仓库位于 {$host}。",
+      "file": "source/compose.manager/include/GitCredentials.php"
+    },
+    {
+      "en": "Could not create a credential file for git.",
+      "zh": "无法为 git 创建凭据文件。",
+      "file": "source/compose.manager/include/GitCredentials.php"
+    },
+    {
+      "en": "Could not write the credential file for git.",
+      "zh": "无法写入 git 凭据文件。",
+      "file": "source/compose.manager/include/GitCredentials.php"
+    },
+    {
+      "en": "Could not create the folder for git credential files.",
+      "zh": "无法创建用于存放 git 凭据文件的文件夹。",
+      "file": "source/compose.manager/include/GitCredentials.php"
+    },
+    {
+      "en": "$directory is not a plain folder, so no credential was written there. Remove it.",
+      "zh": "$directory 不是普通文件夹，因此未在其中写入凭据。请将其删除。",
+      "file": "source/compose.manager/include/GitCredentials.php"
+    },
+    {
+      "en": "$directory belongs to another user, so no credential was written there. Remove it.",
+      "zh": "$directory 属于其他用户，因此未在其中写入凭据。请将其删除。",
+      "file": "source/compose.manager/include/GitCredentials.php"
+    },
+    {
+      "en": "Could not make $directory private, so no credential was written there.",
+      "zh": "无法将 $directory 设为私有权限，因此未在其中写入凭据。",
+      "file": "source/compose.manager/include/GitCredentials.php"
+    },
+    {
+      "en": "Automatic deploys of this stack are no longer set to Deploy, so it was not deployed.",
+      "zh": "该栈的自动部署已不再设为“部署”，因此未执行部署。",
+      "file": "source/compose.manager/include/GitDeploy.php"
+    },
+    {
+      "en": " failed, so automatic deploys of this stack are paused",
+      "zh": " 的部署失败，该栈的自动部署已暂停",
+      "file": "source/compose.manager/include/GitDeploy.php"
+    },
+    {
+      "en": " and it was not deployed.",
+      "zh": "，因此未执行部署。",
+      "file": "source/compose.manager/include/GitDeploy.php"
+    },
+    {
+      "en": "The deployed commit changed since the scheduled check decided to deploy (another deploy ran",
+      "zh": "自定时检查决定部署后，已部署提交又发生了变化（其间有另一次部署运行），",
+      "file": "source/compose.manager/include/GitDeploy.php"
+    },
+    {
+      "en": " meanwhile), so the stack was not deployed automatically.",
+      "zh": "因此该栈未自动部署。",
+      "file": "source/compose.manager/include/GitDeploy.php"
+    },
+    {
+      "en": "), so the stack was not deployed automatically.",
+      "zh": "无法读取克隆的本地改动（",
+      "file": "source/compose.manager/include/GitDeploy.php"
+    },
+    {
+      "en": "The clone has local changes, so the stack was not deployed automatically.",
+      "zh": "克隆中存在本地改动，因此未自动部署该栈。",
+      "file": "source/compose.manager/include/GitDeploy.php"
+    },
+    {
+      "en": " So the stack was not deployed automatically.",
+      "zh": " 因此该栈未自动部署。",
+      "file": "source/compose.manager/include/GitDeploy.php"
+    },
+    {
+      "en": "The stack is not running, so it was not deployed automatically.",
+      "zh": "栈未运行，因此未自动部署。",
+      "file": "source/compose.manager/include/GitDeploy.php"
+    },
+    {
+      "en": "a commit made in the clone (",
+      "zh": "在克隆中手工创建的提交（",
+      "file": "source/compose.manager/include/GitDeploy.php"
+    },
+    {
+      "en": "Could not ask docker whether '$projectName' is running: ",
+      "zh": "无法询问 docker '$projectName' 是否在运行：",
+      "file": "source/compose.manager/include/GitDeploy.php"
+    },
+    {
+      "en": "The array is not started, so nothing was deployed.",
+      "zh": "阵列未启动，因此未部署任何内容。",
+      "file": "source/compose.manager/include/GitDeploy.php"
+    },
+    {
+      "en": "Not a full commit id: $target",
+      "zh": "不是完整的提交 ID：$target",
+      "file": "source/compose.manager/include/GitDeploy.php"
+    },
+    {
+      "en": ". It may have been moved or removed in the repository. Nothing was deployed, and the stack was left as it is.",
+      "zh": " 处不存在。它可能已在仓库中被移动或删除。未执行部署，栈保持原样。",
+      "file": "source/compose.manager/include/GitDeploy.php"
+    },
+    {
+      "en": "Checking out ",
+      "zh": "正在检出 ",
+      "file": "source/compose.manager/include/GitDeploy.php"
+    },
+    {
+      "en": "The array is not started, so nothing was tried.",
+      "zh": "阵列未启动，因此未执行任何操作。",
+      "file": "source/compose.manager/include/GitDeploy.php"
+    },
+    {
+      "en": ". It may have been moved or removed in the repository, so a deploy of it would stop.",
+      "zh": " 处不存在。它可能已在仓库中被移动或删除，因此部署会中止。",
+      "file": "source/compose.manager/include/GitDeploy.php"
+    },
+    {
+      "en": ". A deploy stops on",
+      "zh": "。除非将其保存为补丁并丢弃（--save-local-changes），否则部署会因此停止；而试运行无法",
+      "file": "source/compose.manager/include/GitDeploy.php"
+    },
+    {
+      "en": " them unless it saves them as a patch and discards them (--save-local-changes), and a dry run cannot",
+      "zh": " 在改动之上",
+      "file": "source/compose.manager/include/GitDeploy.php"
+    },
+    {
+      "en": " try another commit over them, so nothing was tried.",
+      "zh": " 尝试另一个提交，因此什么都没做。",
+      "file": "source/compose.manager/include/GitDeploy.php"
+    },
+    {
+      "en": " could not be read: $configBeforeProblem",
+      "zh": " 的 compose 配置无法读取：$configBeforeProblem",
+      "file": "source/compose.manager/include/GitDeploy.php"
+    },
+    {
+      "en": " could not be read: $configAfterProblem",
+      "zh": " 的 compose 配置无法读取：$configAfterProblem",
+      "file": "source/compose.manager/include/GitDeploy.php"
+    },
+    {
+      "en": "Local changes in the stack's folder were discarded, so every container is recreated.",
+      "zh": "栈文件夹中的本地改动已被丢弃，因此所有容器都会重建。",
+      "file": "source/compose.manager/include/GitDeploy.php"
+    },
+    {
+      "en": " is no longer in the clone, so every container is recreated.",
+      "zh": " 已不在克隆中，因此所有容器都会重建。",
+      "file": "source/compose.manager/include/GitDeploy.php"
+    },
+    {
+      "en": "Files in the stack's folder changed, so every container is recreated.",
+      "zh": "栈文件夹中的文件已变更，因此所有容器都会重建。",
+      "file": "source/compose.manager/include/GitDeploy.php"
+    },
+    {
+      "en": "Putting back ",
+      "zh": "正在还原 ",
+      "file": "source/compose.manager/include/GitDeploy.php"
+    },
+    {
+      "en": " could not be checked out again (",
+      "zh": " 无法再次检出（",
+      "file": "source/compose.manager/include/GitDeploy.php"
+    },
+    {
+      "en": "No container was changed, but the clone is not at the deployed commit.",
+      "zh": "没有容器被改动，但克隆并不在已部署的提交上。",
+      "file": "source/compose.manager/include/GitDeploy.php"
+    },
+    {
+      "en": "). No container was changed, but the clone is not where it was: deploy the stack, or clone it again",
+      "zh": "）。没有容器被改动，但克隆已不在原先位置：请部署该栈，或使用 compose-git reclone 重新克隆",
+      "file": "source/compose.manager/include/GitDeploy.php"
+    },
+    {
+      "en": "The plugin's override was changed during the dry run, so it was left as it is now.",
+      "zh": "插件的覆盖文件在试运行期间被改动，因此保持当前状态。",
+      "file": "source/compose.manager/include/GitDeploy.php"
+    },
+    {
+      "en": "The plugin's override {$overridePrune['path']} could not be put back as it was before the dry run.",
+      "zh": "插件的覆盖文件 {$overridePrune['path']} 无法还原到试运行之前的状态。",
+      "file": "source/compose.manager/include/GitDeploy.php"
+    },
+    {
+      "en": "Put the plugin's override back as it was before the dry run.",
+      "zh": "已将插件的覆盖文件还原到试运行之前的状态。",
+      "file": "source/compose.manager/include/GitDeploy.php"
+    },
+    {
+      "en": "Could not make the folder $dir to compare the compose configurations in.",
+      "zh": "无法创建用于比较 compose 配置的文件夹 {$dir}。",
+      "file": "source/compose.manager/include/GitDeploy.php"
+    },
+    {
+      "en": "Could not write the compose configurations to $dir to compare them.",
+      "zh": "无法将 compose 配置写入 {$dir} 以进行比较。",
+      "file": "source/compose.manager/include/GitDeploy.php"
+    },
+    {
+      "en": "Could not compare the compose configurations: ",
+      "zh": "无法比较 compose 配置：",
+      "file": "source/compose.manager/include/GitDeploy.php"
+    },
+    {
+      "en": "git.json and the stack's indirect file name different compose files (",
+      "zh": "git.json 与该栈的 indirect 文件指向了不同的 compose 文件（",
+      "file": "source/compose.manager/include/GitDeploy.php"
+    },
+    {
+      "en": "Make $indirectFile hold the first, then deploy again.",
+      "zh": "请让 {$indirectFile} 指向第一个文件，然后重新部署。",
+      "file": "source/compose.manager/include/GitDeploy.php"
+    },
+    {
+      "en": "local changes to ",
+      "zh": "本地改动：",
+      "file": "source/compose.manager/include/GitDeploy.php"
+    },
+    {
+      "en": "a commit made in the clone by hand (",
+      "zh": "在克隆中手工创建的提交（",
+      "file": "source/compose.manager/include/GitDeploy.php"
+    },
+    {
+      "en": ", which shares no history with the branch ",
+      "zh": "克隆当前位于 ",
+      "file": "source/compose.manager/include/GitDeploy.php"
+    },
+    {
+      "en": "The clone has $what, so nothing was deployed. ",
+      "zh": "克隆包含 {$what}，因此未执行部署。",
+      "file": "source/compose.manager/include/GitDeploy.php"
+    },
+    {
+      "en": "Deploy again with the option to save them as a patch and discard them, or undo them by hand.",
+      "zh": "请使用「保存为补丁并丢弃」的选项重新部署，或手动撤销这些改动。",
+      "file": "source/compose.manager/include/GitDeploy.php"
+    },
+    {
+      "en": "Saved the local changes to $patch",
+      "zh": "已将本地改动保存到 {$patch}",
+      "file": "source/compose.manager/include/GitDeploy.php"
+    },
+    {
+      "en": "Could not write $file, so the local changes were not discarded.",
+      "zh": "无法写入 {$file}，因此本地改动未被丢弃。",
+      "file": "source/compose.manager/include/GitDeploy.php"
+    },
+    {
+      "en": "The stack was not deployed:\\n- ",
+      "zh": "该栈未部署：\\n- ",
+      "file": "source/compose.manager/include/GitDeploy.php"
+    },
+    {
+      "en": "Checking the stack before deploying...",
+      "zh": "部署前正在检查栈...",
+      "file": "source/compose.manager/include/GitDeploy.php"
+    },
+    {
+      "en": "Using the .env at $envFile",
+      "zh": "正在使用 {$envFile} 处的 .env 文件",
+      "file": "source/compose.manager/include/GitDeploy.php"
+    },
+    {
+      "en": "Docker will create the missing folder $folder",
+      "zh": "Docker 将创建缺失的文件夹 {$folder}",
+      "file": "source/compose.manager/include/GitDeploy.php"
+    },
+    {
+      "en": "Removed '$service' from the plugin's override: the compose file no longer has that service.",
+      "zh": "已从插件的覆盖文件中移除 '$service'：compose 文件已不再包含该服务。",
+      "file": "source/compose.manager/include/GitDeploy.php"
+    },
+    {
+      "en": "Create Missing External Networks",
+      "zh": "创建缺失的外部网络",
+      "file": "source/compose.manager/include/GitDeployCheck.php"
+    },
+    {
+      "en": "The compose file is not valid: ",
+      "zh": "compose 文件无效：",
+      "file": "source/compose.manager/include/GitDeployCheck.php"
+    },
+    {
+      "en": "docker compose config did not print valid JSON.",
+      "zh": "docker compose config 未输出有效的 JSON。",
+      "file": "source/compose.manager/include/GitDeployCheck.php"
+    },
+    {
+      "en": "The compose file defines no services (with the profiles in use).",
+      "zh": "compose 文件未定义任何服务（在当前使用的 profile 下）。",
+      "file": "source/compose.manager/include/GitDeployCheck.php"
+    },
+    {
+      "en": "These variables are used by the compose file but not set: ",
+      "zh": "compose 文件使用了以下变量但未设置：",
+      "file": "source/compose.manager/include/GitDeployCheck.php"
+    },
+    {
+      "en": "The repository\\'s .env.example lists keys missing from the stack\\'s .env: ",
+      "zh": "仓库的 .env.example 列出了栈 .env 中缺少的键：",
+      "file": "source/compose.manager/include/GitDeployCheck.php"
+    },
+    {
+      "en": "The external $kind '$name' does not exist. Create it before deploying.",
+      "zh": "外部 $kind '$name' 不存在。请在部署前创建它。",
+      "file": "source/compose.manager/include/GitDeployCheck.php"
+    },
+    {
+      "en": "Could not check whether the external $kind '$name' exists: ",
+      "zh": "无法检查外部 $kind '$name' 是否存在：",
+      "file": "source/compose.manager/include/GitDeployCheck.php"
+    },
+    {
+      "en": "Service '$serviceName': the build folder {$build['context']} does not exist.",
+      "zh": "服务 '$serviceName'：构建目录 {$build['context']} 不存在。",
+      "file": "source/compose.manager/include/GitDeployCheck.php"
+    },
+    {
+      "en": "The $kind '$key' file {$definition['file']} does not exist.",
+      "zh": "$kind '$key' 的文件 {$definition['file']} 不存在。",
+      "file": "source/compose.manager/include/GitDeployCheck.php"
+    },
+    {
+      "en": "the bind mount source $source does not exist, and neither does $topFolder. ",
+      "zh": "bind mount 源路径 $source 不存在，$topFolder 也不存在。",
+      "file": "source/compose.manager/include/GitDeployCheck.php"
+    },
+    {
+      "en": "Check the path for a typo, or create the folder first.",
+      "zh": "请检查路径是否有拼写错误，或先创建该文件夹。",
+      "file": "source/compose.manager/include/GitDeployCheck.php"
+    },
+    {
+      "en": "the bind mount $source is not on a mounted disk, pool or share. ",
+      "zh": "bind mount $source 不在已挂载的磁盘、存储池或共享目录上。",
+      "file": "source/compose.manager/include/GitDeployCheck.php"
+    },
+    {
+      "en": "Docker would create it in RAM. Check the path for a typo.",
+      "zh": "Docker 会在内存中创建它。请检查路径是否有拼写错误。",
+      "file": "source/compose.manager/include/GitDeployCheck.php"
+    },
+    {
+      "en": "the bind mount source $source does not exist, and neither does ",
+      "zh": "bind mount 源路径 $source 不存在，",
+      "file": "source/compose.manager/include/GitDeployCheck.php"
+    },
+    {
+      "en": "Could not check whether the container name '$name' is free: ",
+      "zh": "无法检查容器名 '$name' 是否空闲：",
+      "file": "source/compose.manager/include/GitDeployCheck.php"
+    },
+    {
+      "en": "Could not check whether the container name '$name' is free: docker inspect did not print valid JSON.",
+      "zh": "无法检查容器名 '$name' 是否空闲：docker inspect 未输出有效的 JSON。",
+      "file": "source/compose.manager/include/GitDeployCheck.php"
+    },
+    {
+      "en": "A container named '$name' already exists and does not belong to this stack",
+      "zh": "名为 '$name' 的容器已存在，且不属于本栈",
+      "file": "source/compose.manager/include/GitDeployCheck.php"
+    },
+    {
+      "en": " (it belongs to '$owner')",
+      "zh": "（它属于 '$owner'）",
+      "file": "source/compose.manager/include/GitDeployCheck.php"
+    },
+    {
+      "en": "Could not check whether the published ports are free: ",
+      "zh": "无法检查已发布端口是否空闲：",
+      "file": "source/compose.manager/include/GitDeployCheck.php"
+    },
+    {
+      "en": "Service '{$want['service']}': port {$want['port']}/{$want['protocol']} is already in use by {$held['owner']}.",
+      "zh": "服务 '{$want['service']}'：端口 {$want['port']}/{$want['protocol']} 已被 {$held['owner']} 占用。",
+      "file": "source/compose.manager/include/GitDeployCheck.php"
+    },
+    {
+      "en": "docker ps failed: ",
+      "zh": "docker ps 失败：",
+      "file": "source/compose.manager/include/GitDeployCheck.php"
+    },
+    {
+      "en": "docker inspect failed: ",
+      "zh": "docker inspect 失败：",
+      "file": "source/compose.manager/include/GitDeployCheck.php"
+    },
+    {
+      "en": "docker inspect did not print valid JSON.",
+      "zh": "docker inspect 未输出有效的 JSON。",
+      "file": "source/compose.manager/include/GitDeployCheck.php"
+    },
+    {
+      "en": "GitHub sign-in is not configured.",
+      "zh": "未配置 GitHub 登录。",
+      "file": "source/compose.manager/include/GitHubDeviceAuth.php"
+    },
+    {
+      "en": "The credential to renew no longer exists.",
+      "zh": "要续期的凭据已不存在。",
+      "file": "source/compose.manager/include/GitHubDeviceAuth.php"
+    },
+    {
+      "en": "Only GitHub OAuth credentials can be renewed with GitHub sign-in.",
+      "zh": "只有 GitHub OAuth 凭据可以通过 GitHub 登录来续期。",
+      "file": "source/compose.manager/include/GitHubDeviceAuth.php"
+    },
+    {
+      "en": "GitHub returned an invalid device authorization response.",
+      "zh": "GitHub 返回了无效的设备授权响应。",
+      "file": "source/compose.manager/include/GitHubDeviceAuth.php"
+    },
+    {
+      "en": "GitHub sign-in started to renew credential",
+      "zh": "GitHub 登录已开始，用于续期凭据",
+      "file": "source/compose.manager/include/GitHubDeviceAuth.php"
+    },
+    {
+      "en": "GitHub sign-in expired before authorization completed",
+      "zh": "GitHub 登录在授权完成前已过期",
+      "file": "source/compose.manager/include/GitHubDeviceAuth.php"
+    },
+    {
+      "en": "GitHub sign-in failed",
+      "zh": "GitHub 登录失败",
+      "file": "source/compose.manager/include/GitHubDeviceAuth.php"
+    },
+    {
+      "en": "GitHub did not return an access token.",
+      "zh": "GitHub 未返回访问令牌。",
+      "file": "source/compose.manager/include/GitHubDeviceAuth.php"
+    },
+    {
+      "en": "Unable to read the authorized GitHub account.",
+      "zh": "无法读取已授权的 GitHub 账号。",
+      "file": "source/compose.manager/include/GitHubDeviceAuth.php"
+    },
+    {
+      "en": " credential '{$credential['name']}' for {$username}",
+      "zh": "凭据 '{$credential['name']}'，账号 {$username}",
+      "file": "source/compose.manager/include/GitHubDeviceAuth.php"
+    },
+    {
+      "en": "GitHub returned an invalid response.",
+      "zh": "GitHub 返回了无效响应。",
+      "file": "source/compose.manager/include/GitHubDeviceAuth.php"
+    },
+    {
+      "en": "Unable to create GitHub sign-in session.",
+      "zh": "无法创建 GitHub 登录会话。",
+      "file": "source/compose.manager/include/GitHubDeviceAuth.php"
+    },
+    {
+      "en": "Unable to serialize GitHub sign-in session.",
+      "zh": "无法序列化 GitHub 登录会话。",
+      "file": "source/compose.manager/include/GitHubDeviceAuth.php"
+    },
+    {
+      "en": "Invalid GitHub sign-in session.",
+      "zh": "GitHub 登录会话无效。",
+      "file": "source/compose.manager/include/GitHubDeviceAuth.php"
+    },
+    {
+      "en": "GitHub sign-in session expired.",
+      "zh": "GitHub 登录会话已过期。",
+      "file": "source/compose.manager/include/GitHubDeviceAuth.php"
+    },
+    {
+      "en": "not started",
+      "zh": "未启动",
+      "file": "source/compose.manager/include/GitPathGuard.php"
+    },
+    {
+      "en": "$what is empty.",
+      "zh": "{$what} 为空。",
+      "file": "source/compose.manager/include/GitPathGuard.php"
+    },
+    {
+      "en": "$what contains a control character.",
+      "zh": "{$what} 包含控制字符。",
+      "file": "source/compose.manager/include/GitPathGuard.php"
+    },
+    {
+      "en": "$what must be an absolute path: $path",
+      "zh": "{$what} 必须是绝对路径：{$path}",
+      "file": "source/compose.manager/include/GitPathGuard.php"
+    },
+    {
+      "en": "$what must not contain a backslash: $path",
+      "zh": "{$what} 不能包含反斜杠：{$path}",
+      "file": "source/compose.manager/include/GitPathGuard.php"
+    },
+    {
+      "en": "$what must not contain empty, '.' or '..' parts: $path",
+      "zh": "{$what} 不能包含空段、'.' 或 '..' 段：{$path}",
+      "file": "source/compose.manager/include/GitPathGuard.php"
+    },
+    {
+      "en": "The git clones folder",
+      "zh": "git 克隆目录",
+      "file": "source/compose.manager/include/GitPathGuard.php"
+    },
+    {
+      "en": "The git clones folder $path is not on a disk, pool or share under ",
+      "zh": "git 克隆目录 $path 不在以下路径的磁盘、存储池或共享目录中：",
+      "file": "source/compose.manager/include/GitPathGuard.php"
+    },
+    {
+      "en": ". Anything written there would be kept in RAM and lost at reboot. ",
+      "zh": "。写入该位置的数据会留在内存中，重启后丢失。",
+      "file": "source/compose.manager/include/GitPathGuard.php"
+    },
+    {
+      "en": "Check the path for a typo, and that the array is started.",
+      "zh": "请检查路径是否拼写有误，并确认阵列已启动。",
+      "file": "source/compose.manager/include/GitPathGuard.php"
+    },
+    {
+      "en": "The git clones folder must be a folder inside $mount, not $mount itself.",
+      "zh": "git 克隆目录必须是 $mount 内的子目录，不能是 $mount 本身。",
+      "file": "source/compose.manager/include/GitPathGuard.php"
+    },
+    {
+      "en": "$share is a symlink, so it was not used. Check the path for a typo.",
+      "zh": "$share 是符号链接，因此未被使用。请检查路径是否拼写有误。",
+      "file": "source/compose.manager/include/GitPathGuard.php"
+    },
+    {
+      "en": "$share does not exist. Create it first (for a user share, add the share in Unraid), ",
+      "zh": "$share 不存在。请先创建它（若为用户共享目录，请在 Unraid 中添加该共享），",
+      "file": "source/compose.manager/include/GitPathGuard.php"
+    },
+    {
+      "en": "or check the path for a typo.",
+      "zh": "或检查路径是否拼写有误。",
+      "file": "source/compose.manager/include/GitPathGuard.php"
+    },
+    {
+      "en": "The path",
+      "zh": "路径",
+      "file": "source/compose.manager/include/GitPathGuard.php"
+    },
+    {
+      "en": "The array is not started, so nothing was written to $path.",
+      "zh": "阵列未启动，因此未向 $path 写入任何内容。",
+      "file": "source/compose.manager/include/GitPathGuard.php"
+    },
+    {
+      "en": "$path is not on a mounted disk, pool or share, so nothing was written there.",
+      "zh": "{$path} 不在已挂载的磁盘、存储池或共享目录中，因此未在其中写入任何内容。",
+      "file": "source/compose.manager/include/GitPathGuard.php"
+    },
+    {
+      "en": " does not exist, so $path was not created.",
+      "zh": " 不存在，因此未创建 {$path}。",
+      "file": "source/compose.manager/include/GitPathGuard.php"
+    },
+    {
+      "en": "$current is a symlink, so $path was not created.",
+      "zh": "{$current} 是符号链接，因此未创建 {$path}。",
+      "file": "source/compose.manager/include/GitPathGuard.php"
+    },
+    {
+      "en": "$current exists and is not a folder, so $path was not created.",
+      "zh": "{$current} 已存在且不是文件夹，因此未创建 {$path}。",
+      "file": "source/compose.manager/include/GitPathGuard.php"
+    },
+    {
+      "en": "Could not create $current.",
+      "zh": "无法创建 {$current}。",
+      "file": "source/compose.manager/include/GitPathGuard.php"
+    },
+    {
+      "en": "Could not resolve $existing.",
+      "zh": "无法解析 {$existing}。",
+      "file": "source/compose.manager/include/GitPathGuard.php"
+    },
+    {
+      "en": "$existing leads outside $mount (it resolves to $resolved), so it was not used.",
+      "zh": "{$existing} 指向 {$mount} 之外（解析为 {$resolved}），因此未被使用。",
+      "file": "source/compose.manager/include/GitPathGuard.php"
+    },
+    {
+      "en": "The array is not started, so nothing was checked.",
+      "zh": "阵列未启动，因此未执行任何检查。",
+      "file": "source/compose.manager/include/GitScheduledCheck.php"
+    },
+    {
+      "en": "Could not open the lock file $lockFile, so nothing was checked.",
+      "zh": "无法打开锁文件 {$lockFile}，因此未执行检查。",
+      "file": "source/compose.manager/include/GitScheduledCheck.php"
+    },
+    {
+      "en": "Scheduled git check skipped: could not open the lock file $lockFile.",
+      "zh": "已跳过计划的 git 检查：无法打开锁文件 {$lockFile}。",
+      "file": "source/compose.manager/include/GitScheduledCheck.php"
+    },
+    {
+      "en": "Another scheduled check is still running.",
+      "zh": "另一个计划检查仍在运行。",
+      "file": "source/compose.manager/include/GitScheduledCheck.php"
+    },
+    {
+      "en": "Scheduled git check skipped: the last one is still running ($lockFile).",
+      "zh": "已跳过计划的 git 检查：上一次检查仍在运行（{$lockFile}）。",
+      "file": "source/compose.manager/include/GitScheduledCheck.php"
+    },
+    {
+      "en": "$folder: skipped, its compose project identity is unresolved.",
+      "zh": "{$folder}：已跳过，其 compose 项目标识尚未确定。",
+      "file": "source/compose.manager/include/GitScheduledCheck.php"
+    },
+    {
+      "en": "Skipped scheduled git check of '$folder': compose project identity is unresolved",
+      "zh": "已跳过 '$folder' 的计划 git 检查：compose 项目标识尚未确定",
+      "file": "source/compose.manager/include/GitScheduledCheck.php"
+    },
+    {
+      "en": "Git stack update: $name",
+      "zh": "Git 栈有更新：$name",
+      "file": "source/compose.manager/include/GitScheduledCheck.php"
+    },
+    {
+      "en": "Git stack not deployed: $name",
+      "zh": "Git 栈未部署：$name",
+      "file": "source/compose.manager/include/GitScheduledCheck.php"
+    },
+    {
+      "en": " failed, so automatic deploys of '$name' are paused. Fix it and deploy it, or resume automatic deploys",
+      "zh": " 的部署失败，因此 '$name' 的自动部署已暂停。请修复后再部署，或恢复自动部署",
+      "file": "source/compose.manager/include/GitScheduledCheck.php"
+    },
+    {
+      "en": " (stack menu, or compose-git resume $name).",
+      "zh": "（栈菜单，或 compose-git resume {$name}）。",
+      "file": "source/compose.manager/include/GitScheduledCheck.php"
+    },
+    {
+      "en": "). Deploy it with Pull and Redeploy, which offers to save them as a patch first.",
+      "zh": "）。请使用“拉取并重新部署”，它会先提供将其保存为补丁的选项。",
+      "file": "source/compose.manager/include/GitScheduledCheck.php"
+    },
+    {
+      "en": "Redeploy, or start the stack and the next check deploys it. To stop these notifications for a stack",
+      "zh": "重新部署”，或启动该栈，下次检查时会自动部署。若某个栈是有意停止的，",
+      "file": "source/compose.manager/include/GitScheduledCheck.php"
+    },
+    {
+      "en": " stopped on purpose, set its automatic deploys to Off.",
+      "zh": "想停止这些通知，请将其自动部署设为“关闭”。",
+      "file": "source/compose.manager/include/GitScheduledCheck.php"
+    },
+    {
+      "en": "$name: deploying $short...",
+      "zh": "{$name}：正在部署 $short...",
+      "file": "source/compose.manager/include/GitScheduledCheck.php"
+    },
+    {
+      "en": "Scheduled git deploy of '$name' at $short",
+      "zh": "计划部署 Git 栈 '$name' 至 $short",
+      "file": "source/compose.manager/include/GitScheduledCheck.php"
+    },
+    {
+      "en": "Scheduled git deploy of '$name' at $short skipped: it no longer applied",
+      "zh": "已跳过 '$name' 至 $short 的计划部署：该部署已不再适用",
+      "file": "source/compose.manager/include/GitScheduledCheck.php"
+    },
+    {
+      "en": "Scheduled git deploy of '$name' at $short failed (exit status $exitStatus)",
+      "zh": "'$name' 至 $short 的计划部署失败（退出状态 {$exitStatus}）",
+      "file": "source/compose.manager/include/GitScheduledCheck.php"
+    },
+    {
+      "en": "Could not write $file.",
+      "zh": "无法写入 {$file}。",
+      "file": "source/compose.manager/include/GitScheduledCheck.php"
+    },
+    {
+      "en": "Could not make an ssh key: ",
+      "zh": "无法生成 SSH 密钥：",
+      "file": "source/compose.manager/include/GitSsh.php"
+    },
+    {
+      "en": "Could not read the deploy key: ",
+      "zh": "无法读取部署密钥：",
+      "file": "source/compose.manager/include/GitSsh.php"
+    },
+    {
+      "en": "no key came back",
+      "zh": "没有返回密钥",
+      "file": "source/compose.manager/include/GitSsh.php"
+    },
+    {
+      "en": "Could not get the ssh host keys of $host (port $port): $reason. ",
+      "zh": "无法获取 {$host}（端口 {$port}）的 SSH 主机密钥：{$reason}。",
+      "file": "source/compose.manager/include/GitSsh.php"
+    },
+    {
+      "en": "Check the address, and that this server can reach the host.",
+      "zh": "请检查地址，并确认本服务器能访问该主机。",
+      "file": "source/compose.manager/include/GitSsh.php"
+    },
+    {
+      "en": "Could not read the fingerprints of the ssh host keys, so nothing was pinned: ",
+      "zh": "无法读取 SSH 主机密钥的指纹，因此未固定任何内容：",
+      "file": "source/compose.manager/include/GitSsh.php"
+    },
+    {
+      "en": "The credential '{$credential['name']}' is not an ssh deploy key.",
+      "zh": "凭据 '{$credential['name']}' 不是 SSH 部署密钥。",
+      "file": "source/compose.manager/include/GitSsh.php"
+    },
+    {
+      "en": "\\n\\nIf the repository does not know this stack's deploy key yet, add it as a ",
+      "zh": "\\n\\n如果仓库还不认识本栈的部署密钥，请先在仓库设置中将其添加为 ",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "read-only deploy key in the repository's settings, then try again:\\n",
+      "zh": "只读部署密钥，然后重试：\\n",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "'$stackName' cannot be used as a stack name.",
+      "zh": "'$stackName' 不能用作栈名称。",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "A stack folder named '$folder' already exists. Choose another name, or move that stack into git (compose-git convert, or the button on its Sources tab).",
+      "zh": "名为 '$folder' 的栈文件夹已存在。请换一个名称，或将该栈迁移到 Git（compose-git convert，或在其“来源”标签页上的按钮）。",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": " only partly made. Remove both folders before trying again.",
+      "zh": "创建了一部分。重试前请先删除这两个文件夹。",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": " Remove that folder before trying again.",
+      "zh": "重试前请先删除那个文件夹。",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "'$folder' is already a git stack.",
+      "zh": "'$folder' 已经是 Git 栈。",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "Could not copy $source into $backupDir. Nothing else in the stack was changed; ",
+      "zh": "无法将 {$source} 复制到 {$backupDir}。栈中的其他内容未改动；",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "Could not move $oldComposeFile into $backupDir. Nothing else in the stack was changed; ",
+      "zh": "无法将 {$oldComposeFile} 移动到 {$backupDir}。栈中的其他内容未改动；",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": " to $backupDir.",
+      "zh": " 移动到 {$backupDir}。",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "Could not write $stackDir/indirect.",
+      "zh": "无法写入 $stackDir/indirect。",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "Could not write $stackDir/indirect_mode.",
+      "zh": "无法写入 $stackDir/indirect_mode。",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "Could not copy $oldEnv to $stackEnv.",
+      "zh": "无法将 {$oldEnv} 复制到 {$stackEnv}。",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "Copied $oldEnv to $stackEnv.",
+      "zh": "已将 {$oldEnv} 复制到 {$stackEnv}。",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "Could not copy the plugin's override $oldOverride to $newOverride.",
+      "zh": "无法将插件的覆盖文件 {$oldOverride} 复制到 {$newOverride}。",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "Copied the plugin's override $oldOverride to $newOverride.",
+      "zh": "已将插件的覆盖文件 {$oldOverride} 复制到 {$newOverride}。",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "\\nThe stack was only partly converted. To undo it, delete whichever of",
+      "zh": "\\n栈只完成了一部分转换。要撤销，请删除以下文件：",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": " git.json, git_state.json, indirect and indirect_mode are in $stackDir, then copy the files in",
+      "zh": "git.json、git_state.json、indirect 与 indirect_mode（位于 {$stackDir} 中），然后把",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "'$folder' is now a git stack. Its containers change at the next deploy.",
+      "zh": "'$folder' 现在是 Git 栈。其容器将在下次部署时变更。",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "Note: these folders are next to the old compose file: ",
+      "zh": "注意：这些文件夹与旧的 compose 文件相邻：",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": ". If the compose file mounts any of them with a relative path (such as ./data), that path now",
+      "zh": "。如果 compose 文件以相对路径（例如 ./data）挂载其中任何一个，该路径现在",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": " points inside the clone, and the container would start on an empty folder. Use an absolute",
+      "zh": "指向克隆内部，容器会在空文件夹上启动。部署前请改用绝对",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": " path, or move the data, before deploying.",
+      "zh": "路径，或先移动数据。",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "'$folder' already uses the deploy key '",
+      "zh": "'$folder' 已经使用部署密钥 '",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "'$folder' now reaches its repository without a credential.",
+      "zh": "'$folder' 现在无需凭据即可访问其仓库。",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "'$folder' now uses the credential '",
+      "zh": "'$folder' 现在使用凭据 '",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "' stays on the Credentials tab, which ",
+      "zh": "' 仍保留在“凭据”标签页上，那里",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "shows whether another stack still uses it. If none does, delete it there and from the repository's deploy keys.",
+      "zh": "会显示是否还有其他栈在使用它。如果没有，请在那里以及仓库的部署密钥中删除它。",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "An ssh stack reaches its repository with a deploy key, so '$folder' can only be given a deploy key of the ",
+      "zh": "SSH 栈通过部署密钥访问其仓库，因此 '$folder' 只能使用",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "same repository that another stack uses, or one made for the repository",
+      "zh": "同一仓库中其他栈所用的部署密钥，或为该仓库创建的密钥",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": ", and there is none.",
+      "zh": "，但当前没有这样的密钥。",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": " compose-git deploy-key shows the key it uses now.",
+      "zh": " compose-git deploy-key 会显示它当前使用的密钥。",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "Several deploy keys are named '$nameOrId'. Use the key's id instead.",
+      "zh": "有多个部署密钥名为 '$nameOrId'。请改用密钥的 id。",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "'$folder' sends a notification when a new commit changes it.",
+      "zh": "'$folder' 在有新提交导致其变更时会发送通知。",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "'$folder' is deployed when a new commit changes it.",
+      "zh": "'$folder' 在有新提交导致其变更时会自动部署。",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "'$folder' is no longer checked on a schedule.",
+      "zh": "'$folder' 不再按计划检查。",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "Cleared the failed deploy of ",
+      "zh": "已清除失败的部署：",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": " Automatic deploys of '$folder' resume.",
+      "zh": "'$folder' 的自动部署已恢复。",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "Cleared the failed automatic deploy of ",
+      "zh": "已清除失败的自动部署：",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": " The next scheduled check of '$folder' tries again.",
+      "zh": "'$folder' 的下次计划检查会重试。",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "'$folder' has no failed deploy, so there is nothing to resume.",
+      "zh": "'$folder' 没有失败的部署，因此没有需要恢复的内容。",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "Several git credentials are named '$nameOrId'. Use the credential's id instead.",
+      "zh": "有多个 Git 凭据名为 '$nameOrId'。请改用凭据的 id。",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "There is no git credential named '$nameOrId'. ",
+      "zh": "没有名为 '$nameOrId' 的 Git 凭据。",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "Add one on the Credentials tab of the plugin settings first.",
+      "zh": "请先在插件设置的“凭据”标签页中添加一个。",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "'$folder' does not reach its repository over ssh, so it has no deploy key.",
+      "zh": "'$folder' 不通过 SSH 访问其仓库，因此没有部署密钥。",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "'$folder' does not reach its repository over ssh.",
+      "zh": "'$folder' 不通过 SSH 访问其仓库。",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "Pinned now:   ",
+      "zh": "当前固定：   ",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "Host offers:  ",
+      "zh": "主机提供：  ",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "The host keys have not changed.",
+      "zh": "主机密钥没有变化。",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "Compare the new fingerprints with the ones your git host publishes before you deploy.",
+      "zh": "部署前，请将新的指纹与你的 Git 主机公布的指纹进行比对。",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "The new host keys are pinned.",
+      "zh": "新的主机密钥已固定。",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "The ssh repository address is not valid: $url",
+      "zh": "SSH 仓库地址无效：{$url}",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "An ssh stack uses the deploy key the plugin keeps for its repository, so it cannot be given another credential.",
+      "zh": "SSH 栈使用插件为其仓库保存的部署密钥，因此不能指定其他凭据。",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "Pinned the ssh host keys of {$address['host']}: ",
+      "zh": "已固定 {$address['host']} 的 SSH 主机密钥：",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "Compare them with the fingerprints your git host publishes.",
+      "zh": "请将它们与你的 Git 主机公布的指纹进行比对。",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "Made a new deploy key for $repository ('$name' on the Credentials tab). Other stacks of this repository will use it too.",
+      "zh": "已为 $repository 生成新的部署密钥（在“凭据”标签页中名为 '$name'）。该仓库的其他栈也会使用它。",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "Made a deploy key for $repository, for git stack '$folder'",
+      "zh": "已为 $repository 生成部署密钥，用于 Git 栈 '$folder'",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "Using the deploy key of '$otherFolder' ('$name' on the Credentials tab), which ",
+      "zh": "使用 '$otherFolder' 的部署密钥（在“凭据”标签页中名为 '$name'），它",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "reaches the same repository: the repository knows it already.",
+      "zh": "访问的是同一个仓库：仓库已经认识它了。",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "Using the deploy key made for this repository earlier ('$name' on the Credentials tab).",
+      "zh": "使用之前为该仓库生成的部署密钥（在“凭据”标签页中名为 '$name'）。",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "Using the deploy key made for '$folder' earlier ('$name' on the Credentials tab). If it was ",
+      "zh": "使用之前为 '$folder' 生成的部署密钥（在“凭据”标签页中名为 '$name'）。如果它是",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "made for another repository, by a stack of the same name that has since been deleted, ",
+      "zh": "为另一个仓库生成的，由某个后来被删除的同名栈创建，",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "delete '$name' first: GitHub, for one, refuses a deploy key that another repository has.",
+      "zh": "请先删除 '$name'：例如 GitHub 会拒绝已被其他仓库使用的部署密钥。",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "Could not read the git settings of '$folder', so its deploy key is not looked at.",
+      "zh": "无法读取 '$folder' 的 Git 设置，因此不会检查其部署密钥。",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "$credentialId (no longer in the credential vault)",
+      "zh": "{$credentialId}（已不在凭据库中）",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "Git stack '$folder' no longer uses a credential",
+      "zh": "Git 栈 '$folder' 不再使用凭据",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "Git stack '$folder' now uses the credential '",
+      "zh": "Git 栈 '$folder' 现在使用凭据 '",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "$cloneDir is a symlink, so it was left alone.",
+      "zh": "$cloneDir 是符号链接，因此未做处理。",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "Could not move $cloneDir aside to $movedTo. Nothing was changed.",
+      "zh": "无法将 {$cloneDir} 移到 {$movedTo}。未做任何改动。",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "Moved the old clone to $movedTo.",
+      "zh": "已将旧克隆移动到 {$movedTo}。",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "Moved the old clone back.",
+      "zh": "已将旧克隆移回。",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "Could not move the old clone back. It is still at $movedTo.",
+      "zh": "无法将旧克隆移回。它仍在 {$movedTo}。",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": " is not on the branch any more, so the clone was left at ",
+      "zh": " 已不在该分支上，因此克隆保持在 ",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": ". Deploy to bring the stack up to date; that deploy recreates every container.",
+      "zh": "。请部署以将栈更新到最新；该次部署会重建所有容器。",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "The new clone could not be put at the deployed commit ",
+      "zh": "新克隆无法切换到已部署提交 ",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "\\nIt is at ",
+      "zh": "\\n当前位于 ",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": " The old clone is at $movedTo.",
+      "zh": " 旧克隆位于 {$movedTo}。",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "The old clone holds files that are not in the repository, and not in the new clone: ",
+      "zh": "旧克隆中含有不在仓库中、也不在新克隆中的文件：",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": ". If a container keeps data there (a relative bind mount such as ./data), copy it back before deploying.",
+      "zh": "。如果某个容器在其中保存数据（例如 ./data 这样的相对 bind mount），请在部署前复制回来。",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "'$folder' is not a git stack.",
+      "zh": "'$folder' 不是 Git 栈。",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "'$folder' is not a stack folder name.",
+      "zh": "'$folder' 不是栈文件夹名称。",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "The array is not started, so nothing was changed.",
+      "zh": "阵列未启动，因此未做任何更改。",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "Could not open the lock file $lockFile.",
+      "zh": "无法打开锁文件 {$lockFile}。",
+      "file": "source/compose.manager/include/GitStackManager.php"
+    },
+    {
+      "en": "Could not read $file.",
+      "zh": "无法读取 {$file}。",
+      "file": "source/compose.manager/include/GitStackSettings.php"
+    },
+    {
+      "en": "$file is not valid JSON: ",
+      "zh": "{$file} 不是合法的 JSON：",
+      "file": "source/compose.manager/include/GitStackSettings.php"
+    },
+    {
+      "en": "$file is not a valid git settings file (expected a JSON object).",
+      "zh": "{$file} 不是合法的 git 设置文件（应为 JSON 对象）。",
+      "file": "source/compose.manager/include/GitStackSettings.php"
+    },
+    {
+      "en": "$file has settings this version of the plugin does not know: ",
+      "zh": "{$file} 含有本插件版本不认识的设置项：",
+      "file": "source/compose.manager/include/GitStackSettings.php"
+    },
+    {
+      "en": ". A newer version may have written them; update the plugin, or remove them by hand.",
+      "zh": "。可能是更新版本的插件写入的，请更新插件或手动移除这些项。",
+      "file": "source/compose.manager/include/GitStackSettings.php"
+    },
+    {
+      "en": "$file is missing settings: ",
+      "zh": "{$file} 缺少设置项：",
+      "file": "source/compose.manager/include/GitStackSettings.php"
+    },
+    {
+      "en": "$file was written by a different version of the plugin (format ",
+      "zh": "{$file} 由不同版本的插件写入（格式 ",
+      "file": "source/compose.manager/include/GitStackSettings.php"
+    },
+    {
+      "en": "$file: '$key' must be a string.",
+      "zh": "{$file}：'$key' 必须是字符串。",
+      "file": "source/compose.manager/include/GitStackSettings.php"
+    },
+    {
+      "en": "$file: 'recreateOnFolderChange' must be true or false.",
+      "zh": "{$file}：'recreateOnFolderChange' 必须为 true 或 false。",
+      "file": "source/compose.manager/include/GitStackSettings.php"
+    },
+    {
+      "en": "$file: 'credentialId' must be a string.",
+      "zh": "{$file}：'credentialId' 必须是字符串。",
+      "file": "source/compose.manager/include/GitStackSettings.php"
+    },
+    {
+      "en": "$file: 'sshKnownHosts' must be a string.",
+      "zh": "{$file}：'sshKnownHosts' 必须是字符串。",
+      "file": "source/compose.manager/include/GitStackSettings.php"
+    },
+    {
+      "en": "$file: 'autoDeploy' must be a string.",
+      "zh": "{$file}：'autoDeploy' 必须是字符串。",
+      "file": "source/compose.manager/include/GitStackSettings.php"
+    },
+    {
+      "en": "The credential was deleted while the repository was being reached, so the stack settings were not saved.",
+      "zh": "连接仓库期间凭据被删除，因此栈设置未保存。",
+      "file": "source/compose.manager/include/GitStackSettings.php"
+    },
+    {
+      "en": "Stack folder $stackDir does not exist.",
+      "zh": "栈目录 {$stackDir} 不存在。",
+      "file": "source/compose.manager/include/GitStackSettings.php"
+    },
+    {
+      "en": "Could not encode the git settings.",
+      "zh": "无法编码 git 设置。",
+      "file": "source/compose.manager/include/GitStackSettings.php"
+    },
+    {
+      "en": "Could not write $tmpFile.",
+      "zh": "无法写入 {$tmpFile}。",
+      "file": "source/compose.manager/include/GitStackSettings.php"
+    },
+    {
+      "en": "Could not replace $file.",
+      "zh": "无法替换 {$file}。",
+      "file": "source/compose.manager/include/GitStackSettings.php"
+    },
+    {
+      "en": "The repository address is empty.",
+      "zh": "仓库地址为空。",
+      "file": "source/compose.manager/include/GitStackSettings.php"
+    },
+    {
+      "en": "The repository address is too long.",
+      "zh": "仓库地址过长。",
+      "file": "source/compose.manager/include/GitStackSettings.php"
+    },
+    {
+      "en": "The repository address must not contain spaces or control characters.",
+      "zh": "仓库地址不能包含空格或控制字符。",
+      "file": "source/compose.manager/include/GitStackSettings.php"
+    },
+    {
+      "en": "The ssh repository address is not valid. Use ssh://git@host[:port]/path or git@host:path: $url",
+      "zh": "SSH 仓库地址无效。请使用 ssh://git@host[:port]/path 或 git@host:path 形式：{$url}",
+      "file": "source/compose.manager/include/GitStackSettings.php"
+    },
+    {
+      "en": "The repository path",
+      "zh": "仓库路径",
+      "file": "source/compose.manager/include/GitStackSettings.php"
+    },
+    {
+      "en": "A repository on this server must be under ",
+      "zh": "本服务器上的仓库必须位于 ",
+      "file": "source/compose.manager/include/GitStackSettings.php"
+    },
+    {
+      "en": "The repository address must start with https:// or ssh:// (or be git@host:path), or be a path under ",
+      "zh": "仓库地址必须以 https:// 或 ssh:// 开头（或为 git@host:path 形式）；本机上的仓库必须位于 ",
+      "file": "source/compose.manager/include/GitStackSettings.php"
+    },
+    {
+      "en": " for a repository on this server: $url",
+      "zh": " 路径下：{$url}",
+      "file": "source/compose.manager/include/GitStackSettings.php"
+    },
+    {
+      "en": "The repository address is not a valid URL: $url",
+      "zh": "仓库地址不是合法的 URL：{$url}",
+      "file": "source/compose.manager/include/GitStackSettings.php"
+    },
+    {
+      "en": "The repository address must not contain a user name, password or token ",
+      "zh": "仓库地址不能包含用户名、密码或令牌（会以明文存储）。私有仓库请改用 git 凭据。",
+      "file": "source/compose.manager/include/GitStackSettings.php"
+    },
+    {
+      "en": "The repository address must not contain ? or #: $url",
+      "zh": "仓库地址不能包含 ? 或 #：{$url}",
+      "file": "source/compose.manager/include/GitStackSettings.php"
+    },
+    {
+      "en": "The repository address has an invalid host name: {$parts['host']}",
+      "zh": "仓库地址的主机名无效：{$parts['host']}",
+      "file": "source/compose.manager/include/GitStackSettings.php"
+    },
+    {
+      "en": "The repository address has no repository path: $url",
+      "zh": "仓库地址缺少仓库路径：{$url}",
+      "file": "source/compose.manager/include/GitStackSettings.php"
+    },
+    {
+      "en": "The pinned ssh host keys are empty.",
+      "zh": "已固定的 SSH 主机密钥为空。",
+      "file": "source/compose.manager/include/GitStackSettings.php"
+    },
+    {
+      "en": "A pinned ssh host key is not a known_hosts line: $line",
+      "zh": "已固定的 SSH 主机密钥不是合法的 known_hosts 行：{$line}",
+      "file": "source/compose.manager/include/GitStackSettings.php"
+    },
+    {
+      "en": "The branch is empty.",
+      "zh": "分支名为空。",
+      "file": "source/compose.manager/include/GitStackSettings.php"
+    },
+    {
+      "en": "The branch name is too long.",
+      "zh": "分支名过长。",
+      "file": "source/compose.manager/include/GitStackSettings.php"
+    },
+    {
+      "en": "The branch name must not start with '-': $branch",
+      "zh": "分支名不能以 '-' 开头：{$branch}",
+      "file": "source/compose.manager/include/GitStackSettings.php"
+    },
+    {
+      "en": "'HEAD' is not a branch name. Enter the branch to deploy, such as main.",
+      "zh": "'HEAD' 不是分支名。请填写要部署的分支，例如 main。",
+      "file": "source/compose.manager/include/GitStackSettings.php"
+    },
+    {
+      "en": "'$branch' is not a valid branch name.",
+      "zh": "'{$branch}' 不是合法的分支名。",
+      "file": "source/compose.manager/include/GitStackSettings.php"
+    },
+    {
+      "en": "The compose file path is empty.",
+      "zh": "compose 文件路径为空。",
+      "file": "source/compose.manager/include/GitStackSettings.php"
+    },
+    {
+      "en": "The compose file path is too long.",
+      "zh": "compose 文件路径过长。",
+      "file": "source/compose.manager/include/GitStackSettings.php"
+    },
+    {
+      "en": "The compose file path contains a control character.",
+      "zh": "compose 文件路径包含控制字符。",
+      "file": "source/compose.manager/include/GitStackSettings.php"
+    },
+    {
+      "en": "The compose file path must be relative to the top of the repository, without a leading /: $composePath",
+      "zh": "compose 文件路径必须是相对于仓库顶部的相对路径，不能以 / 开头：{$composePath}",
+      "file": "source/compose.manager/include/GitStackSettings.php"
+    },
+    {
+      "en": "Use / in the compose file path, not \\\\: $composePath",
+      "zh": "compose 文件路径请使用 / 而非 \\\\：{$composePath}",
+      "file": "source/compose.manager/include/GitStackSettings.php"
+    },
+    {
+      "en": "The compose file path must not start with '-': $composePath",
+      "zh": "compose 文件路径不能以 '-' 开头：{$composePath}",
+      "file": "source/compose.manager/include/GitStackSettings.php"
+    },
+    {
+      "en": "The compose file path must not contain empty, '.' or '..' parts: $composePath",
+      "zh": "compose 文件路径不能包含空段、'.' 或 '..' 段：{$composePath}",
+      "file": "source/compose.manager/include/GitStackSettings.php"
+    },
+    {
+      "en": "The compose file path must not be inside .git: $composePath",
+      "zh": "compose 文件路径不能位于 .git 内：$composePath",
+      "file": "source/compose.manager/include/GitStackSettings.php"
+    },
+    {
+      "en": "The compose file path must end in .yml or .yaml: $composePath",
+      "zh": "compose 文件路径必须以 .yml 或 .yaml 结尾：$composePath",
+      "file": "source/compose.manager/include/GitStackSettings.php"
+    },
+    {
+      "en": "The credential id is not valid: $credentialId",
+      "zh": "凭据 ID 无效：$credentialId",
+      "file": "source/compose.manager/include/GitStackSettings.php"
+    },
+    {
+      "en": "The clone id is not valid: $cloneId",
+      "zh": "克隆 ID 无效：{$cloneId}",
+      "file": "source/compose.manager/include/GitStackSettings.php"
+    },
+    {
+      "en": "The clone folder",
+      "zh": "克隆目录",
+      "file": "source/compose.manager/include/GitStackSettings.php"
+    },
+    {
+      "en": "The clone folder must be under ",
+      "zh": "克隆目录必须位于 ",
+      "file": "source/compose.manager/include/GitStackSettings.php"
+    },
+    {
+      "en": "The clone folder $cloneDir does not belong to clone id $cloneId.",
+      "zh": "克隆目录 {$cloneDir} 不属于克隆 ID {$cloneId}。",
+      "file": "source/compose.manager/include/GitStackSettings.php"
+    },
+    {
+      "en": "A repository on this server needs no credential.",
+      "zh": "本机上的仓库不需要凭据。",
+      "file": "source/compose.manager/include/GitStackSettings.php"
+    },
+    {
+      "en": "Pinned ssh host keys are only for an ssh repository.",
+      "zh": "已固定的 SSH 主机密钥仅适用于 SSH 仓库。",
+      "file": "source/compose.manager/include/GitStackSettings.php"
+    },
+    {
+      "en": "$file is not a valid git state file.",
+      "zh": "$file 不是有效的 git 状态文件。",
+      "file": "source/compose.manager/include/GitStackState.php"
+    },
+    {
+      "en": "$file has entries this version of the plugin does not know: ",
+      "zh": "$file 含有本版本插件无法识别的条目：",
+      "file": "source/compose.manager/include/GitStackState.php"
+    },
+    {
+      "en": "$file has unexpected contents.",
+      "zh": "$file 的内容不符合预期。",
+      "file": "source/compose.manager/include/GitStackState.php"
+    },
+    {
+      "en": "$file: '$key' must be a commit id or null.",
+      "zh": "{$file}：'$key' 必须是提交 ID 或 null。",
+      "file": "source/compose.manager/include/GitStackState.php"
+    },
+    {
+      "en": "Added git stack '$folder', but could not write $labelsViewModeFile",
+      "zh": "已添加 Git 栈 '$folder'，但无法写入 $labelsViewModeFile",
+      "file": "source/compose.manager/include/GitStackWebActions.php"
+    },
+    {
+      "en": "The setting was saved, but the plugin's cron file could not be updated.",
+      "zh": "设置已保存，但插件的定时任务文件无法更新。",
+      "file": "source/compose.manager/include/GitStackWebActions.php"
+    },
+    {
+      "en": "It is in the git stack's clone of its repository (its git.json could not be read).",
+      "zh": "它位于该 Git 栈对其仓库的克隆中（无法读取其 git.json）。",
+      "file": "source/compose.manager/include/GitStackWebActions.php"
+    },
+    {
+      "en": "This is the stack's clone of its repository: delete it yourself once nothing in it is needed.",
+      "zh": "这是该栈对其仓库的克隆：当其中的内容都不再需要时，请自行删除。",
+      "file": "source/compose.manager/include/GitStackWebActions.php"
+    },
+    {
+      "en": " Its ssh deploy key stays on the Credentials tab of the plugin settings, and in the repository's deploy keys:",
+      "zh": " 它的 SSH 部署密钥仍保留在插件设置的“凭据”标签页，以及仓库的部署密钥中：",
+      "file": "source/compose.manager/include/GitStackWebActions.php"
+    },
+    {
+      "en": " other stacks of the repository may use it too.",
+      "zh": "该仓库的其他栈可能也在使用它。",
+      "file": "source/compose.manager/include/GitStackWebActions.php"
+    },
+    {
+      "en": "Could not read the deploy key",
+      "zh": "无法读取部署密钥",
+      "file": "source/compose.manager/include/GitStackWebActions.php"
+    },
+    {
+      "en": "Skipping ttyd execution in test mode: ",
+      "zh": "测试模式，跳过 ttyd 执行：",
+      "file": "source/compose.manager/include/Helpers.php"
+    },
+    {
+      "en": "Executing command in ttyd: ",
+      "zh": "正在 ttyd 中执行命令：",
+      "file": "source/compose.manager/include/Helpers.php"
+    },
+    {
+      "en": "Suspended live follow session for stack",
+      "zh": "已暂停该栈的实时跟随会话",
+      "file": "source/compose.manager/include/Helpers.php"
+    },
+    {
+      "en": "Cannot perform action: array not started",
+      "zh": "无法执行操作：阵列未启动",
+      "file": "source/compose.manager/include/Helpers.php"
+    },
+    {
+      "en": "Cannot perform action: invalid stack",
+      "zh": "无法执行操作：无效的栈",
+      "file": "source/compose.manager/include/Helpers.php"
+    },
+    {
+      "en": "Blocked wait-for-healthy with follow logs enabled",
+      "zh": "已阻止在启用跟随日志时使用等待健康检查",
+      "file": "source/compose.manager/include/Helpers.php"
+    },
+    {
+      "en": "Follow stack logs and wait-for-healthy cannot be enabled at the same time.",
+      "zh": "不能同时启用“跟随栈日志”和“等待健康检查”。",
+      "file": "source/compose.manager/include/Helpers.php"
+    },
+    {
+      "en": "Pull and Redeploy",
+      "zh": "拉取并重新部署",
+      "file": "source/compose.manager/include/Helpers.php"
+    },
+    {
+      "en": "Deploy Commit...",
+      "zh": "部署提交...",
+      "file": "source/compose.manager/include/Helpers.php"
+    },
+    {
+      "en": "Cannot deploy: invalid stack",
+      "zh": "无法部署：无效的栈",
+      "file": "source/compose.manager/include/Helpers.php"
+    },
+    {
+      "en": "Enter the full commit id (40 characters, or 64 in a SHA-256 repository), not a short one or a branch name.",
+      "zh": "请输入完整的提交 ID（40 位，SHA-256 仓库为 64 位），不要使用短 ID 或分支名。",
+      "file": "source/compose.manager/include/Helpers.php"
+    },
+    {
+      "en": "Multi Compose operation aborted: Array not started",
+      "zh": "批量 Compose 操作已中止：阵列未启动",
+      "file": "source/compose.manager/include/Helpers.php"
+    },
+    {
+      "en": "Processing stack for multi-compose action: ",
+      "zh": "正在处理多 compose 操作的目标栈：",
+      "file": "source/compose.manager/include/Helpers.php"
+    },
+    {
+      "en": "Multi Compose operation aborted: no valid stacks resolved",
+      "zh": "多 compose 操作已中止：未解析到有效的栈",
+      "file": "source/compose.manager/include/Helpers.php"
+    },
+    {
+      "en": "Compose project identity is unresolved for: ",
+      "zh": "以下栈的 Compose 项目标识未确定：",
+      "file": "source/compose.manager/include/Helpers.php"
+    },
+    {
+      "en": "The command did not finish in time and was stopped.",
+      "zh": "命令未在限定时间内完成，stopped。",
+      "file": "source/compose.manager/include/ProcessRunner.php"
+    },
+    {
+      "en": "Could not start ",
+      "zh": "无法启动 ",
+      "file": "source/compose.manager/include/ProcessRunner.php"
+    },
+    {
+      "en": "no containers found",
+      "zh": "未找到容器",
+      "file": "source/compose.manager/include/ProjectIdentity.php"
+    },
+    {
+      "en": "Ambiguous compose project identity for '$projectFolder'; mutating actions are blocked until an identity is chosen",
+      "zh": "栈 '$projectFolder' 的 compose 项目标识不明确；在选择标识之前，变更类操作会被阻止",
+      "file": "source/compose.manager/include/ProjectIdentity.php"
+    },
+    {
+      "en": "Choose which one this stack should use before running any action.",
+      "zh": "请先选择该栈应使用哪一个，再执行任何操作。",
+      "file": "source/compose.manager/include/ProjectIdentity.php"
+    },
+    {
+      "en": "Docker could not be queried, so the runtime project name of this imported stack cannot be verified. ",
+      "zh": "无法查询 Docker，因此无法验证该导入栈的运行时项目名。",
+      "file": "source/compose.manager/include/ProjectIdentity.php"
+    },
+    {
+      "en": "Actions are blocked until Docker is reachable.",
+      "zh": "在 Docker 可访问之前，操作会被阻止。",
+      "file": "source/compose.manager/include/ProjectIdentity.php"
+    },
+    {
+      "en": "update ready",
+      "zh": "有可用更新",
+      "file": "source/compose.manager/include/UpdateCheck.php"
+    },
+    {
+      "en": "Icon conversion returned null; not caching",
+      "zh": "图标转换返回空值，因此不写入缓存",
+      "file": "source/compose.manager/include/Util.php"
+    },
+    {
+      "en": "Icon conversion did not produce PNG; not caching",
+      "zh": "图标转换未生成 PNG，因此不写入缓存",
+      "file": "source/compose.manager/include/Util.php"
+    },
+    {
+      "en": "Invalid stack name.",
+      "zh": "无效的栈名称。",
+      "file": "source/compose.manager/include/Util.php"
+    },
+    {
+      "en": "Compose root is not available.",
+      "zh": "Compose 根目录不可用。",
+      "file": "source/compose.manager/include/Util.php"
+    },
+    {
+      "en": "Failed to remove stack symlink.",
+      "zh": "删除栈符号链接失败。",
+      "file": "source/compose.manager/include/Util.php"
+    },
+    {
+      "en": "Invalid stack path resolved for deletion.",
+      "zh": "解析出的待删除栈路径无效。",
+      "file": "source/compose.manager/include/Util.php"
+    },
+    {
+      "en": "Failed to remove stack file.",
+      "zh": "删除栈文件失败。",
+      "file": "source/compose.manager/include/Util.php"
+    },
+    {
+      "en": "Failed to enumerate stack folder for deletion.",
+      "zh": "枚举待删除的栈文件夹失败。",
+      "file": "source/compose.manager/include/Util.php"
+    },
+    {
+      "en": "Failed to remove stack symlink contents.",
+      "zh": "删除栈中的符号链接失败。",
+      "file": "source/compose.manager/include/Util.php"
+    },
+    {
+      "en": "Failed to remove stack directory contents.",
+      "zh": "删除栈中的目录失败。",
+      "file": "source/compose.manager/include/Util.php"
+    },
+    {
+      "en": "Failed to remove stack file contents.",
+      "zh": "删除栈中的文件失败。",
+      "file": "source/compose.manager/include/Util.php"
+    },
+    {
+      "en": "Failed to remove stack folder.",
+      "zh": "删除栈文件夹失败。",
+      "file": "source/compose.manager/include/Util.php"
+    },
+    {
+      "en": "# Override file for UI labels (icon, webui, shell)\\n",
+      "zh": "# 用于界面标签（图标、WebUI、Shell）的覆盖文件\\n",
+      "file": "source/compose.manager/include/Util.php"
+    },
+    {
+      "en": "# This file is managed by Compose Manager\\n",
+      "zh": "# 此文件由 Compose Manager 管理\\n",
+      "file": "source/compose.manager/include/Util.php"
+    },
+    {
+      "en": "# Manual example:\\n",
+      "zh": "# 手动示例：\\n",
+      "file": "source/compose.manager/include/Util.php"
+    },
+    {
+      "en": "# .env file - define environment variables used by docker compose\\n",
+      "zh": "# .env 文件 —— 定义 docker compose 使用的环境变量\\n",
+      "file": "source/compose.manager/include/Util.php"
+    },
+    {
+      "en": "# Variables defined here are automatically available in compose.yaml via \\${VAR_NAME}\\n",
+      "zh": "# 此处定义的变量会自动以 \\${VAR_NAME} 形式在 compose.yaml 中可用\\n",
+      "file": "source/compose.manager/include/Util.php"
+    },
+    {
+      "en": "# Example:\\n",
+      "zh": "# 示例：\\n",
+      "file": "source/compose.manager/include/Util.php"
+    },
+    {
+      "en": "Pruned orphaned override services from ",
+      "zh": " 中移除孤立服务：",
+      "file": "source/compose.manager/include/Util.php"
+    },
+    {
+      "en": "Preparing degraded stack load due to invalid indirect path",
+      "zh": "因 indirect 路径无效，正在以降级模式加载栈",
+      "file": "source/compose.manager/include/Util.php"
+    },
+    {
+      "en": "Project name sanitization produced empty output; fallback name will be used",
+      "zh": "项目名清理后为空，将使用备用名称",
+      "file": "source/compose.manager/include/Util.php"
+    },
+    {
+      "en": "Sanitized project string is empty after processing; defaulting to 'compose'",
+      "zh": "清理后的项目名为空，将默认使用 'compose'",
+      "file": "source/compose.manager/include/Util.php"
+    },
+    {
+      "en": "Missing display name metadata detected; initializing from project folder",
+      "zh": "缺少显示名称元数据，正在从项目文件夹初始化",
+      "file": "source/compose.manager/include/Util.php"
+    },
+    {
+      "en": "Initialized missing display name from project folder: '$displayName'",
+      "zh": "已从项目文件夹初始化缺失的显示名称：'$displayName'",
+      "file": "source/compose.manager/include/Util.php"
+    },
+    {
+      "en": "Explicit envpath is set but not resolvable to a file; falling back to default env resolution",
+      "zh": "已设置显式 envpath，但无法解析为文件；回退到默认的 .env 解析方式",
+      "file": "source/compose.manager/include/Util.php"
+    },
+    {
+      "en": "No host part in the URL",
+      "zh": "URL 中没有主机部分",
+      "file": "source/compose.manager/include/Util.php"
+    },
+    {
+      "en": "Attempted to create a new stack with an empty name, which is not allowed.",
+      "zh": "尝试用空名称创建新栈，这是不允许的。",
+      "file": "source/compose.manager/include/Util.php"
+    },
+    {
+      "en": "Stack name cannot be empty",
+      "zh": "栈名称不能为空",
+      "file": "source/compose.manager/include/Util.php"
+    },
+    {
+      "en": "Sanitized stack name is empty, cannot create stack directory.",
+      "zh": "清理后的栈名称为空，无法创建栈目录。",
+      "file": "source/compose.manager/include/Util.php"
+    },
+    {
+      "en": "Stack name produced an empty folder name after sanitization.",
+      "zh": "栈名称清理后得到空的文件夹名。",
+      "file": "source/compose.manager/include/Util.php"
+    },
+    {
+      "en": "Failed to resolve real path for compose root.",
+      "zh": "无法解析 Compose 根目录的真实路径。",
+      "file": "source/compose.manager/include/Util.php"
+    },
+    {
+      "en": "Invalid compose root directory.",
+      "zh": "无效的 Compose 根目录。",
+      "file": "source/compose.manager/include/Util.php"
+    },
+    {
+      "en": "Invalid stack name: path would escape compose root.",
+      "zh": "无效的栈名称：路径会超出 Compose 根目录。",
+      "file": "source/compose.manager/include/Util.php"
+    },
+    {
+      "en": "Failed to get available path for stack.",
+      "zh": "获取栈可用路径失败。",
+      "file": "source/compose.manager/include/Util.php"
+    },
+    {
+      "en": "Failed to create stack directory.",
+      "zh": "创建栈目录失败。",
+      "file": "source/compose.manager/include/Util.php"
+    },
+    {
+      "en": "Failed to create stack directory: $path",
+      "zh": "创建栈目录失败：$path",
+      "file": "source/compose.manager/include/Util.php"
+    },
+    {
+      "en": "Failed to create override template: $projectOverridePath",
+      "zh": "创建覆盖文件模板失败：$projectOverridePath",
+      "file": "source/compose.manager/include/Util.php"
+    },
+    {
+      "en": "Failed to create default compose file: $filePath",
+      "zh": "创建默认 compose 文件失败：$filePath",
+      "file": "source/compose.manager/include/Util.php"
+    },
+    {
+      "en": "partial ($running/$total)",
+      "zh": "部分运行 ($running/$total)",
+      "file": "source/compose.manager/include/Util.php"
+    },
+    {
+      "en": "Open Compose",
+      "zh": "打开 Compose",
+      "file": "source/compose.manager/javascript/composeDashboard.js"
+    },
+    {
+      "en": " Stack ",
+      "zh": " 个栈 ",
+      "file": "source/compose.manager/javascript/composeDashboard.js"
+    },
+    {
+      "en": "started",
+      "zh": "运行中",
+      "file": "source/compose.manager/javascript/composeDashboard.js"
+    },
+    {
+      "en": "Stacks -- Started: ",
+      "zh": "栈 —— 运行中：",
+      "file": "source/compose.manager/javascript/composeDashboard.js"
+    },
+    {
+      "en": ", Partial: ",
+      "zh": "，部分运行：",
+      "file": "source/compose.manager/javascript/composeDashboard.js"
+    },
+    {
+      "en": "partial",
+      "zh": "部分运行",
+      "file": "source/compose.manager/javascript/composeDashboard.js"
+    },
+    {
+      "en": "Setting up compose container hiding for:",
+      "zh": "正在为以下对象设置 Compose 容器隐藏：",
+      "file": "source/compose.manager/javascript/composeDashboard.js"
+    },
+    {
+      "en": "Hiding Docker tile container:",
+      "zh": "正在隐藏 Docker 磁贴容器：",
+      "file": "source/compose.manager/javascript/composeDashboard.js"
+    },
+    {
+      "en": "All Stacks",
+      "zh": "所有栈",
+      "file": "source/compose.manager/javascript/composeDashboard.js"
+    },
+    {
+      "en": "Started only",
+      "zh": "仅运行中",
+      "file": "source/compose.manager/javascript/composeDashboard.js"
+    },
+    {
+      "en": "used / limit",
+      "zh": "已用 / 上限",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Stack name is required.",
+      "zh": "请填写栈名称。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Choose a folder for the external compose source.",
+      "zh": "请选择外部 compose 来源的文件夹。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Path must be under /mnt/ or /boot/config/.",
+      "zh": "路径必须位于 /mnt/ 或 /boot/config/ 下。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Choose a compose file to use as the source.",
+      "zh": "请选择作为来源的 compose 文件。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "File must have a .yml or .yaml extension.",
+      "zh": "文件扩展名必须是 .yml 或 .yaml。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Enter the repository address.",
+      "zh": "请输入仓库地址。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Enter the path of the compose file in the repository.",
+      "zh": "请输入 compose 文件在仓库中的路径。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Give the path from the top of the repository, without a leading /.",
+      "zh": "请填写从仓库根目录开始的路径，不要以 / 开头。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Could not read the credentials",
+      "zh": "无法读取凭据",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Deploy key to add to the repository",
+      "zh": "需要添加到仓库的部署密钥",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Select the key and copy it",
+      "zh": "选择密钥并复制",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Add this deploy key to the repository",
+      "zh": "将此部署密钥添加到仓库",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "In the repository\\'s settings, add this key as a read-only deploy key (on GitHub: ",
+      "zh": "在仓库设置中，将此密钥添加为只读部署密钥（在 GitHub 上：",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Settings, then Deploy keys), then select ",
+      "zh": "设置 → 部署密钥），然后再次点击 ",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "so this is needed only once.",
+      "zh": "因此只需操作一次。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Cloning...",
+      "zh": "正在克隆...",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Create",
+      "zh": "创建",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Unexpected response from server.",
+      "zh": "服务器返回了意外的响应。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "The stack was not created.",
+      "zh": "该栈未被创建。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Deploy it from its stack menu when you are ready.",
+      "zh": "准备好后，从栈菜单中部署它。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Request failed. If the repository is large, the clone may still be running: ",
+      "zh": "请求失败。若仓库较大，克隆可能仍在进行：",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "refresh the stack list before trying again.",
+      "zh": "请刷新栈列表后再试。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Additional Compose Files",
+      "zh": "额外 Compose 文件",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Locked to explicit -f flags because ",
+      "zh": "已锁定为显式 -f 参数，因为 ",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Discovery mode: Docker Compose default",
+      "zh": "发现模式：Docker Compose 默认",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Use explicit -f flags",
+      "zh": "使用显式 -f 参数",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Loading stack list...",
+      "zh": "正在加载栈列表...",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Invalid stack meta response",
+      "zh": "无效的栈元数据响应",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Invalid stack list response",
+      "zh": "无效的栈列表响应",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Row request failed before payload returned.",
+      "zh": "请求在返回数据前就中断了。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Ace editor not available. Stack editor is unavailable.",
+      "zh": "Ace 编辑器不可用，栈编辑器无法使用。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Bare [PORT] placeholder is not supported at stack level. Use [PORT:xxxx] with a default port instead (e.g. [PORT:8080]).",
+      "zh": "不支持单独使用 [PORT] 占位符。请改用带默认端口的 [PORT:xxxx]（例如 [PORT:8080]）。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "This file is inside the stack project folder. The path must be external to this stack.",
+      "zh": "该文件位于栈项目目录内，路径必须在该栈之外。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Invalid tab name: ",
+      "zh": "无效的标签页名称：",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Editor resize failed",
+      "zh": "编辑器调整尺寸失败",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "No raw file in current tab; changes save via ",
+      "zh": "当前标签页没有原始文件，改动将保存到 ",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "No raw file in current tab",
+      "zh": "当前标签页没有原始文件",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Loading…",
+      "zh": "加载中…",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Unable to parse preview response.",
+      "zh": "无法解析预览响应。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Preview unavailable.",
+      "zh": "预览不可用。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Failed to load preview (network error).",
+      "zh": "预览加载失败（网络错误）。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Unsaved changes",
+      "zh": "未保存的改动",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Failed to load saved update status",
+      "zh": "加载已保存的更新状态失败",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Running automatic update check...",
+      "zh": "正在执行自动更新检查...",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Failed to parse update check response",
+      "zh": "解析更新检查响应失败",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "No Updates Available",
+      "zh": "没有可用更新",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "No stacks with Autostart enabled have updates available.",
+      "zh": "没有启用自动启动的栈有可用更新。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Update Autostart Stacks?",
+      "zh": "更新自动启动的栈？",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Update All Stacks",
+      "zh": "更新所有栈",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Failed to load persistent container cache",
+      "zh": "加载持久化容器缓存失败",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Please enter a stack name.",
+      "zh": "请输入栈名称。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Failed to parse addStack response",
+      "zh": "解析新建栈响应失败",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Failed to create stack",
+      "zh": "创建栈失败",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Unexpected response from server",
+      "zh": "服务器返回了意外的响应",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "An error occurred",
+      "zh": "发生错误",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "No response from server",
+      "zh": "服务器无响应",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Request failed",
+      "zh": "请求失败",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "YAML parser is unavailable. Please reload the page and try again.",
+      "zh": "YAML 解析器不可用，请刷新页面后重试。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Failed to update profiles.",
+      "zh": "更新配置档失败。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Failed to update profiles",
+      "zh": "更新配置档失败",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "A path under /mnt/user/ or /mnt/cache/ or /mnt/pool/",
+      "zh": "路径必须位于 /mnt/user/、/mnt/cache/ 或 /mnt/pool/ 之下",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Stack Settings",
+      "zh": "栈设置",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Save",
+      "zh": "保存",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Failed to set stack settings.",
+      "zh": "保存栈设置失败。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Invalid server response.",
+      "zh": "服务器响应无效。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Running in background",
+      "zh": "正在后台运行",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": " has been started in the background.\\nYou will receive a notification when it completes.",
+      "zh": " 已在后台启动。\\n完成后你会收到通知。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Timeout after 30m",
+      "zh": "30 分钟后超时",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "pulling and rebuilding...",
+      "zh": "正在拉取并重建...",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "checking...",
+      "zh": "检查中...",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "This stack has an ambiguous Docker Compose project name.",
+      "zh": "该栈的 Docker Compose 项目名称存在歧义。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Compose project identity required",
+      "zh": "需要 Compose 项目标识",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Compose project identity is unresolved. Resolve each affected stack before retrying.",
+      "zh": "Compose 项目标识未确定，请先解决受影响的栈再重试。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Using project name \"",
+      "zh": "使用项目名称 \"",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Failed to pin project identity.",
+      "zh": "固定项目标识失败。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Compose Up",
+      "zh": "启动",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Compose Recreate: ",
+      "zh": "Compose 重建：",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Compose Down",
+      "zh": "停止",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Compose Stop",
+      "zh": "停止",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Compose Restart",
+      "zh": "重启",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Force Update",
+      "zh": "强制更新",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Saved!",
+      "zh": "已保存！",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "All changes have been saved.",
+      "zh": "所有更改已保存。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "All changes have been saved. Container labels will take effect when you start the stack.",
+      "zh": "所有改动已保存。容器标签将在你启动该栈时生效。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Container labels were saved. Recreate or restart containers to apply the changes.",
+      "zh": "容器标签已保存。请重建或重启容器以应用改动。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Recreate Containers?",
+      "zh": "重建容器？",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Recreate Now",
+      "zh": "立即重建",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Later",
+      "zh": "稍后",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Changes saved. Remember to restart or recreate containers to apply label changes.",
+      "zh": "改动已保存。记得重启或重建容器以应用标签改动。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Cannot deploy ",
+      "zh": "无法部署：",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Could not read the git stack.",
+      "zh": "无法读取 Git 栈。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "the latest commit on ",
+      "zh": "以下分支的最新提交：",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Deploy ",
+      "zh": "部署 ",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": ", check it, and start the stack from it. Deployed now: ",
+      "zh": "，检查它，并从它启动该栈。当前已部署：",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Deploy",
+      "zh": "部署",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": " was made in the clone by hand",
+      "zh": " 是在克隆中手工创建的",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "these files differ from the repository: ",
+      "zh": "这些文件与仓库不一致：",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Changes made in the clone",
+      "zh": "克隆中的改动",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "In the clone of ",
+      "zh": "在克隆中：",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": ". Save the changes as a patch in the stack folder\\'s git-changes folder, discard them, and deploy ",
+      "zh": "。是否将这些改动保存为补丁（放在栈文件夹的 git-changes 目录中）后丢弃，并部署 ",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Save, discard and deploy",
+      "zh": "保存、丢弃并部署",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Checking ",
+      "zh": "正在检查 ",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Asking the repository for the latest commit.",
+      "zh": "正在向仓库查询最新提交。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Could not check ",
+      "zh": "无法检查 ",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": " is up to date",
+      "zh": " 已是最新",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "The latest commit on ",
+      "zh": "最新提交位于",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": " is the latest on ",
+      "zh": " 上的最新提交。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": " is currently deployed",
+      "zh": "当前部署的是提交 ",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "/, the folder holding this stack\\'s compose file. In a repository ",
+      "zh": "/（存放该栈 compose 文件的文件夹）中的任何文件。在包含",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "with several stacks, that is usually a commit to another stack.",
+      "zh": "多个栈的仓库中，这通常是另一个栈的提交。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "no files.",
+      "zh": "没有文件。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": ", outside this stack\\'s folder",
+      "zh": "，位于该栈文件夹之外",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "The commits since then change ",
+      "zh": "之后的提交改动了 ",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "\\n\\nDeploy it anyway if this stack uses files from outside that folder: ",
+      "zh": "\\n\\n如果该栈使用了该文件夹之外的文件，仍可部署：",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "a bind mount or build context of ../something, or an env_file, extends or include in another ",
+      "zh": "例如 ../ 形式的绑定挂载或构建上下文，或位于另一个 ",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "folder. Changes there are not counted as changes to this stack.",
+      "zh": " 文件夹中的 env_file、extends 或 include。那里的改动不计入该栈的改动。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Deploy anyway",
+      "zh": "仍然部署",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "A commit is on ",
+      "zh": "有一个提交待部署，位于 ",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": " is ready to deploy.\\n",
+      "zh": "）已可部署。\\n",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Nothing is currently deployed.",
+      "zh": "当前没有部署任何提交。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "A newer commit is on ",
+      "zh": "有更新的提交位于：",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": ", but it is no longer in the clone, so the changes ",
+      "zh": "，但它已不在克隆中，因此这些改动 ",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "cannot be identified.",
+      "zh": "无法判断。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "this stack\\'s files (its compose file is at the top of the repository)",
+      "zh": "该栈的文件（其 compose 文件位于仓库根目录）",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Not now",
+      "zh": "暂不",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Request failed.",
+      "zh": "请求失败。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Deploy a commit of ",
+      "zh": "部署以下栈的某个提交：",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Enter the full commit id (40 characters, or 64 in a SHA-256 repository). A later Pull and Redeploy brings the stack back to the branch\\'s latest.",
+      "zh": "请输入完整的提交 ID（40 位，SHA-256 仓库为 64 位）。之后执行“拉取并重新部署”会让该栈回到分支的最新提交。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Full commit id",
+      "zh": "完整提交 ID",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Next",
+      "zh": "下一步",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Not a full commit id",
+      "zh": "不是完整的提交 ID",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "No Stacks to Start",
+      "zh": "没有要启动的栈",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "No stopped stacks with Autostart enabled found.",
+      "zh": "没有找到启用了自动启动的已停止栈。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Start Autostart Stacks?",
+      "zh": "启动自动启动的栈？",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Start All Stacks",
+      "zh": "启动所有栈",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "No Stacks to Stop",
+      "zh": "没有要停止的栈",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "No running stacks with Autostart enabled found.",
+      "zh": "没有找到启用了自动启动的运行中栈。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Stop Autostart Stacks?",
+      "zh": "停止自动启动的栈？",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Stop All Stacks",
+      "zh": "停止所有栈",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Build",
+      "zh": "构建",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Compose Up: ",
+      "zh": "Compose 启动：",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "CONTAINERS",
+      "zh": "容器",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Images will be pulled if not present locally.",
+      "zh": "本地没有镜像时会自动拉取。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Compose Down: ",
+      "zh": "Compose 停止并移除：",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Containers will be removed but data in volumes is preserved.",
+      "zh": "容器会被移除，但数据卷中的数据会保留。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Compose Stop: ",
+      "zh": "Compose 停止：",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Containers will be stopped but not removed. Use Compose Up to start them again.",
+      "zh": "容器会被停止但不会移除。再次启动请使用 Compose Up。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Compose Restart: ",
+      "zh": "Compose 重启：",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Containers will be recreated. Data in volumes is preserved.",
+      "zh": "容器会被重建，数据卷中的数据会保留。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Images will be pulled from the registry.",
+      "zh": "将根据 Dockerfile 构建镜像。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Update: ",
+      "zh": "更新：",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Running containers will be recreated with the latest images.",
+      "zh": "运行中的容器会用最新镜像重建。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Update",
+      "zh": "更新",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Force Update: ",
+      "zh": "强制更新：",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "All containers will be recreated with freshly pulled images.",
+      "zh": "所有容器都会用新拉取的镜像重建。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Could not retrieve the log.",
+      "zh": "无法获取日志。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "No log available",
+      "zh": "没有可用日志",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": " yet.\\nRun a command to generate one.",
+      "zh": "。\\n运行一条命令即可生成。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Last Cmd Log: ",
+      "zh": "最近命令日志：",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Close",
+      "zh": "关闭",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Compose Pull",
+      "zh": "拉取镜像",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": ".stack-action-item:contains(\"Delete Stack\")",
+      "zh": ".stack-action-item:contains(\"删除栈\")",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "All profile-based services",
+      "zh": "所有基于配置档的服务",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Select Profiles",
+      "zh": "选择配置档",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Choose which profiles to use for ",
+      "zh": "选择要用于以下栈的配置档：",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Continue",
+      "zh": "继续",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "all profiles",
+      "zh": "所有配置档",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Editor Unavailable",
+      "zh": "编辑器不可用",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "The Ace editor library could not be loaded. Please reload the page or verify the plugin installation.",
+      "zh": "Ace 编辑器库加载失败，请刷新页面或检查插件安装。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Unable to load file.",
+      "zh": "无法加载文件。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Unable to load file (network error).",
+      "zh": "无法加载文件（网络错误）。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Discard changes?",
+      "zh": "丢弃改动？",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "The current compose file has unsaved changes that will be lost when switching files.",
+      "zh": "当前 compose 文件有未保存的改动，切换文件时会丢失。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Discard",
+      "zh": "丢弃",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Changed in the clone",
+      "zh": "克隆目录中有改动",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "The checked-out commit ",
+      "zh": "已检出的提交 ",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": " was made in the clone by hand, not in the repository.",
+      "zh": " 是在克隆中手工改的，不是仓库里的改动。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Files changed: ",
+      "zh": "已更改的文件：",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "save them as a patch in the stack folder and discard them. To keep a change, make it in the repository.",
+      "zh": "将它们保存为栈目录中的补丁并丢弃。若要保留改动，请在仓库中修改。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Move this stack into git...",
+      "zh": "将该栈迁移到 Git...",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Save or discard the changes in the editor first.",
+      "zh": "请先保存或放弃编辑器中的更改。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Enter the repository address and the path of the compose file in the repository.",
+      "zh": "请输入仓库地址以及 compose 文件在仓库中的路径。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Move into git",
+      "zh": "迁移到 Git",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": " is now a git stack",
+      "zh": " 现在是 Git 栈",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "\\n\\nDeploy it with Pull and Redeploy from its stack menu.",
+      "zh": "\\n\\n请从其栈菜单执行“拉取并重新部署”来部署。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "reopen the stack before trying again.",
+      "zh": "请重新打开该栈后再试。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Automatic deploys",
+      "zh": "自动部署",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Saving...",
+      "zh": "正在保存...",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Automatic deploys not changed",
+      "zh": "自动部署设置未改变",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Saved",
+      "zh": "已保存",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Could not resume ",
+      "zh": "无法恢复 ",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Failed to load compose file",
+      "zh": "加载 Compose 文件失败",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Failed to parse compose files for labels",
+      "zh": "解析 compose 文件以提取标签失败",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "creating override templates",
+      "zh": "正在创建覆盖模板",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Empty server response",
+      "zh": "服务器响应为空",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Override file location changed while this dialog was open. Reloading the editor.",
+      "zh": "此对话框打开期间覆盖文件位置已变更，正在重新加载编辑器。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Create Failed",
+      "zh": "创建失败",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": ".env file location changed while this dialog was open. Reloading the editor.",
+      "zh": ".env 文件位置在对话框打开期间已改变，正在重新加载编辑器。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "(will be removed on save)",
+      "zh": "（保存时会被移除）",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": " No services defined in compose file",
+      "zh": " compose 文件中未定义任何服务",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": " Orphaned Services (copy values before saving)",
+      "zh": " 孤立服务（保存前请先复制所需的值）",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Save Sources First",
+      "zh": "请先保存来源",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Compose Sources changed. Save the Sources tab and reload the editor before ",
+      "zh": "Compose 来源已变更。请先保存“来源”标签并重新加载编辑器，然后再",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Editor Reloaded",
+      "zh": "编辑器已重新加载",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Stack paths changed while this dialog was open.",
+      "zh": "此对话框打开期间栈路径已变更。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Stack paths changed. Files were reloaded from the current target.",
+      "zh": "栈路径已更改，已从当前目标重新加载文件。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Failed to save stack settings.",
+      "zh": "保存栈设置失败。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Save Failed",
+      "zh": "保存失败",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "The save target changed while this dialog was open. Reloading the editor.",
+      "zh": "此对话框打开期间保存目标已变更，正在重新加载编辑器。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Failed to save ",
+      "zh": "保存失败：",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Editor not available",
+      "zh": "编辑器不可用",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Unknown tab",
+      "zh": "未知标签页",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Failed to save stack name.",
+      "zh": "保存栈名称失败。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Failed to save description.",
+      "zh": "保存描述失败。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Invalid server response when saving settings.",
+      "zh": "保存设置时服务器返回无效响应。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Failed to save stack settings (network error).",
+      "zh": "保存栈设置失败（网络错误）。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Invalid server response when saving override management mode.",
+      "zh": "保存覆盖管理方式时服务器返回无效响应。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Failed to save override management mode.",
+      "zh": "保存覆盖管理方式失败。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Failed to save override management mode. Empty server response.",
+      "zh": "保存覆盖管理方式失败，服务器返回为空。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Failed to save override management mode (network error).",
+      "zh": "保存覆盖文件管理方式失败（网络错误）。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Partially Saved",
+      "zh": "部分保存",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Non-label changes were saved. WebUI label form edits were not saved because Override File Management is set to Manual. Switch to Automatic to save Labels form changes.",
+      "zh": "非标签改动已保存。由于“覆盖文件管理”设为手动，WebUI 标签表单的编辑未被保存。切换到自动后才能保存标签表单的改动。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "An unknown error occurred while saving.",
+      "zh": "保存时发生未知错误。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Reload Required",
+      "zh": "需要重新加载",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Compose path or discovery settings changed. Save settings and reload the editor before saving compose, .env, override, or label edits.",
+      "zh": "Compose 路径或发现设置已变更。请先保存设置并重新加载编辑器，然后再保存 compose、.env、覆盖文件或标签的编辑。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Save Settings Only",
+      "zh": "仅保存设置",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Running Stack Changed",
+      "zh": "运行中的栈已变化",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Save Anyway",
+      "zh": "仍然保存",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "WebUI labels cannot be saved because compose.override.yaml uses !override, !reset, or !merge tags. Edit the override file directly to preserve those tags.",
+      "zh": "无法保存 WebUI 标签，因为 compose.override.yaml 使用了 !override、!reset 或 !merge 标签。请直接编辑覆盖文件以保留这些标签。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "WebUI labels",
+      "zh": "WebUI 标签",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Failed to save WebUI labels. Please try again.",
+      "zh": "保存 WebUI 标签失败，请重试。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Unsaved Changes",
+      "zh": "未保存的改动",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "You have unsaved changes. Are you sure you want to close?",
+      "zh": "你有未保存的更改，确定要关闭吗？",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Discard Changes",
+      "zh": "放弃更改",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Delete Stack?",
+      "zh": "删除栈？",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Deleting stack...",
+      "zh": "正在删除栈...",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Delete Failed",
+      "zh": "删除失败",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Empty response from server while deleting stack.",
+      "zh": "删除栈时服务器返回为空。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Unexpected delete response from server.",
+      "zh": "删除栈时服务器返回了意外响应。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Unable to delete stack.",
+      "zh": "无法删除栈。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Stack deleted. Files remain on disk.",
+      "zh": "栈已删除，文件仍保留在磁盘上。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Some external files were not removed.",
+      "zh": "部分外部文件未被删除。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Stack deleted",
+      "zh": "栈已删除",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Delete response parse error",
+      "zh": "删除响应解析错误",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Could not parse delete response.",
+      "zh": "无法解析删除响应。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Network error while deleting stack.",
+      "zh": "删除栈时发生网络错误。",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Failed to load container details",
+      "zh": "加载容器详情失败",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Console",
+      "zh": "控制台",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Stop",
+      "zh": "停止",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Pause",
+      "zh": "暂停",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Restart",
+      "zh": "重启",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Resume",
+      "zh": "继续运行",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Start",
+      "zh": "启动",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Logs",
+      "zh": "日志",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "resuming",
+      "zh": "恢复中",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "working",
+      "zh": "处理中",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Action Failed",
+      "zh": "操作失败",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Check for Changes",
+      "zh": "检查变更",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Resume Automatic Deploys",
+      "zh": "恢复自动部署",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Edit Stack",
+      "zh": "编辑栈",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "View Logs",
+      "zh": "查看日志",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "View Last Cmd Log",
+      "zh": "查看上次命令日志",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Delete Stack",
+      "zh": "删除栈",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Delete Stack (Stop first)",
+      "zh": "删除栈（需先停止）",
+      "file": "source/compose.manager/javascript/composeManagerMain.js"
+    },
+    {
+      "en": "Lock sortable items",
+      "zh": "锁定可排序项",
+      "file": "source/compose.manager/javascript/composeSortable.js"
+    },
+    {
+      "en": "Unlock sortable items",
+      "zh": "解锁可排序项",
+      "file": "source/compose.manager/javascript/composeSortable.js"
+    },
+    {
+      "en": "partial (",
+      "zh": "部分运行 (",
+      "file": "source/compose.manager/javascript/composeStackUtils.js"
+    },
+    {
+      "en": "GitHub Container Registry (ghcr.io)",
+      "zh": "GitHub 容器仓库（ghcr.io）",
+      "file": "source/compose.manager/javascript/credentialManager.js"
+    },
+    {
+      "en": "e.g. Work GitHub",
+      "zh": "例如：Work GitHub",
+      "file": "source/compose.manager/javascript/credentialManager.js"
+    },
+    {
+      "en": "GitHub username or organisation",
+      "zh": "GitHub 用户名或组织",
+      "file": "source/compose.manager/javascript/credentialManager.js"
+    },
+    {
+      "en": "Personal access token (ghp_... / github_pat_...)",
+      "zh": "个人访问令牌（ghp_... / github_pat_...）",
+      "file": "source/compose.manager/javascript/credentialManager.js"
+    },
+    {
+      "en": "Generate GitHub Token",
+      "zh": "生成 GitHub 令牌",
+      "file": "source/compose.manager/javascript/credentialManager.js"
+    },
+    {
+      "en": "e.g. Docker Hub",
+      "zh": "例如：Docker Hub",
+      "file": "source/compose.manager/javascript/credentialManager.js"
+    },
+    {
+      "en": "Docker Hub username (not email)",
+      "zh": "Docker Hub 用户名（不是邮箱）",
+      "file": "source/compose.manager/javascript/credentialManager.js"
+    },
+    {
+      "en": "Personal access token (dckr_pat_...)",
+      "zh": "个人访问令牌（dckr_pat_...）",
+      "file": "source/compose.manager/javascript/credentialManager.js"
+    },
+    {
+      "en": "Generate Docker Hub PAT",
+      "zh": "生成 Docker Hub 访问令牌",
+      "file": "source/compose.manager/javascript/credentialManager.js"
+    },
+    {
+      "en": "GitLab Container Registry (registry.gitlab.com)",
+      "zh": "GitLab 容器仓库（registry.gitlab.com）",
+      "file": "source/compose.manager/javascript/credentialManager.js"
+    },
+    {
+      "en": "e.g. GitLab Registry",
+      "zh": "例如：GitLab 镜像仓库",
+      "file": "source/compose.manager/javascript/credentialManager.js"
+    },
+    {
+      "en": "GitLab username or deploy token username",
+      "zh": "GitLab 用户名或部署令牌用户名",
+      "file": "source/compose.manager/javascript/credentialManager.js"
+    },
+    {
+      "en": "Personal access token or deploy token secret",
+      "zh": "个人访问令牌或部署令牌密钥",
+      "file": "source/compose.manager/javascript/credentialManager.js"
+    },
+    {
+      "en": "Generate GitLab Token",
+      "zh": "生成 GitLab 令牌",
+      "file": "source/compose.manager/javascript/credentialManager.js"
+    },
+    {
+      "en": "e.g. Quay Registry",
+      "zh": "例如：Quay 镜像仓库",
+      "file": "source/compose.manager/javascript/credentialManager.js"
+    },
+    {
+      "en": "Robot account name (e.g. org+bot) or username",
+      "zh": "机器人账号名（如 org+bot）或用户名",
+      "file": "source/compose.manager/javascript/credentialManager.js"
+    },
+    {
+      "en": "Robot account token or password",
+      "zh": "机器人账号令牌或密码",
+      "file": "source/compose.manager/javascript/credentialManager.js"
+    },
+    {
+      "en": "Open Quay Organization Settings",
+      "zh": "打开 Quay 组织设置",
+      "file": "source/compose.manager/javascript/credentialManager.js"
+    },
+    {
+      "en": "Create a Robot Account with read permissions or an application token in Quay Settings.",
+      "zh": "在 Quay 设置中创建具有读取权限的机器人账号，或创建应用令牌。",
+      "file": "source/compose.manager/javascript/credentialManager.js"
+    },
+    {
+      "en": "AWS Elastic Container Registry (ECR)",
+      "zh": "AWS 弹性容器仓库（ECR）",
+      "file": "source/compose.manager/javascript/credentialManager.js"
+    },
+    {
+      "en": "e.g. AWS ECR",
+      "zh": "例如：AWS ECR",
+      "file": "source/compose.manager/javascript/credentialManager.js"
+    },
+    {
+      "en": "Auth token (from aws ecr get-login-password)",
+      "zh": "认证令牌（来自 aws ecr get-login-password）",
+      "file": "source/compose.manager/javascript/credentialManager.js"
+    },
+    {
+      "en": "Open AWS ECR Console",
+      "zh": "打开 AWS ECR 控制台",
+      "file": "source/compose.manager/javascript/credentialManager.js"
+    },
+    {
+      "en": "Azure Container Registry (ACR)",
+      "zh": "Azure 容器仓库（ACR）",
+      "file": "source/compose.manager/javascript/credentialManager.js"
+    },
+    {
+      "en": "e.g. Azure ACR",
+      "zh": "例如：Azure ACR",
+      "file": "source/compose.manager/javascript/credentialManager.js"
+    },
+    {
+      "en": "ACR username or Service Principal App ID",
+      "zh": "ACR 用户名或服务主体应用 ID",
+      "file": "source/compose.manager/javascript/credentialManager.js"
+    },
+    {
+      "en": "Access key password or client secret",
+      "zh": "访问密钥密码或客户端密钥",
+      "file": "source/compose.manager/javascript/credentialManager.js"
+    },
+    {
+      "en": "Open Azure Portal",
+      "zh": "打开 Azure 门户",
+      "file": "source/compose.manager/javascript/credentialManager.js"
+    },
+    {
+      "en": "Google Artifact / Container Registry",
+      "zh": "Google Artifact / Container 镜像仓库",
+      "file": "source/compose.manager/javascript/credentialManager.js"
+    },
+    {
+      "en": "e.g. Google Artifact Registry",
+      "zh": "例如：Google Artifact Registry",
+      "file": "source/compose.manager/javascript/credentialManager.js"
+    },
+    {
+      "en": "Service Account JSON key file content",
+      "zh": "服务账号 JSON 密钥文件内容",
+      "file": "source/compose.manager/javascript/credentialManager.js"
+    },
+    {
+      "en": "Open Google Cloud Console",
+      "zh": "打开 Google Cloud 控制台",
+      "file": "source/compose.manager/javascript/credentialManager.js"
+    },
+    {
+      "en": "Other / Custom Registry",
+      "zh": "其他 / 自定义镜像仓库",
+      "file": "source/compose.manager/javascript/credentialManager.js"
+    },
+    {
+      "en": "e.g. Self-hosted Registry",
+      "zh": "例如：自建镜像仓库",
+      "file": "source/compose.manager/javascript/credentialManager.js"
+    },
+    {
+      "en": "Registry username",
+      "zh": "镜像仓库用户名",
+      "file": "source/compose.manager/javascript/credentialManager.js"
+    },
+    {
+      "en": "Password or access token",
+      "zh": "密码或访问令牌",
+      "file": "source/compose.manager/javascript/credentialManager.js"
+    },
+    {
+      "en": "Git repository (HTTPS token, for git stacks)",
+      "zh": "Git 仓库（HTTPS 令牌，用于 Git 栈）",
+      "file": "source/compose.manager/javascript/credentialManager.js"
+    },
+    {
+      "en": "e.g. GitHub stacks repository",
+      "zh": "例如：GitHub 栈仓库",
+      "file": "source/compose.manager/javascript/credentialManager.js"
+    },
+    {
+      "en": "Git user name (any value for a GitHub token)",
+      "zh": "Git 用户名（使用 GitHub 令牌时可随意填写）",
+      "file": "source/compose.manager/javascript/credentialManager.js"
+    },
+    {
+      "en": "Read-only access token",
+      "zh": "只读访问令牌",
+      "file": "source/compose.manager/javascript/credentialManager.js"
+    },
+    {
+      "en": "SSH deploy key (git stack)",
+      "zh": "SSH 部署密钥（Git 栈）",
+      "file": "source/compose.manager/javascript/credentialManager.js"
+    },
+    {
+      "en": "Missing credential",
+      "zh": "缺少凭据",
+      "file": "source/compose.manager/javascript/credentialManager.js"
+    },
+    {
+      "en": "Unable to test credential",
+      "zh": "无法测试凭据",
+      "file": "source/compose.manager/javascript/credentialManager.js"
+    },
+    {
+      "en": "The repository refused this deploy key.",
+      "zh": "仓库拒绝了这个部署密钥。",
+      "file": "source/compose.manager/javascript/credentialManager.js"
+    },
+    {
+      "en": "Credential rejected",
+      "zh": "凭据被拒绝",
+      "file": "source/compose.manager/javascript/credentialManager.js"
+    },
+    {
+      "en": "The repository refused this token.",
+      "zh": "仓库拒绝了这个令牌。",
+      "file": "source/compose.manager/javascript/credentialManager.js"
+    },
+    {
+      "en": "Edit credential",
+      "zh": "编辑凭据",
+      "file": "source/compose.manager/javascript/credentialManager.js"
+    },
+    {
+      "en": "The registry rejected this credential.",
+      "zh": "镜像仓库拒绝了这个凭据。",
+      "file": "source/compose.manager/javascript/credentialManager.js"
+    },
+    {
+      "en": "Could not reach the credential service.",
+      "zh": "无法连接凭据服务。",
+      "file": "source/compose.manager/javascript/credentialManager.js"
+    },
+    {
+      "en": "Credential is in use",
+      "zh": "请先从以下位置移除：",
+      "file": "source/compose.manager/javascript/credentialManager.js"
+    },
+    {
+      "en": "Unknown error.",
+      "zh": "未知错误。",
+      "file": "source/compose.manager/javascript/credentialManager.js"
+    },
+    {
+      "en": "Unable to reach credential service.",
+      "zh": "无法连接凭据服务。",
+      "file": "source/compose.manager/javascript/credentialManager.js"
+    },
+    {
+      "en": "Unable to delete credential",
+      "zh": "无法删除凭据",
+      "file": "source/compose.manager/javascript/credentialManager.js"
+    },
+    {
+      "en": "Array not started, aborting script",
+      "zh": "阵列未启动，脚本中止",
+      "file": "source/compose.manager/scripts/arrayNotStarted.sh"
+    },
+    {
+      "en": "The Array must be started in order to run this script",
+      "zh": "必须启动阵列才能运行此脚本",
+      "file": "source/compose.manager/scripts/arrayNotStarted.sh"
+    },
+    {
+      "en": "Failed to canonicalize project name: $raw_name",
+      "zh": "无法规范化项目名：$raw_name",
+      "file": "source/compose.manager/scripts/common.sh"
+    },
+    {
+      "en": "✓ Created missing external network: $network",
+      "zh": "✓ 已创建缺失的外部网络：$network",
+      "file": "source/compose.manager/scripts/common.sh"
+    },
+    {
+      "en": "Created missing external network: $network",
+      "zh": "已创建缺失的外部网络：$network",
+      "file": "source/compose.manager/scripts/common.sh"
+    },
+    {
+      "en": "✗ Failed to create external network: $network",
+      "zh": "✗ 创建外部网络失败：$network",
+      "file": "source/compose.manager/scripts/common.sh"
+    },
+    {
+      "en": "Failed to create external network: $network",
+      "zh": "创建外部网络失败：$network",
+      "file": "source/compose.manager/scripts/common.sh"
+    },
+    {
+      "en": "Ignoring invalid envpath for stack '$stack_dir': $envpath",
+      "zh": "已忽略栈 '$stack_dir' 的无效 envpath：$envpath",
+      "file": "source/compose.manager/scripts/common.sh"
+    },
+    {
+      "en": "Failed to resolve compose args for '$project' action '$action': $COMPOSE_SPEC_ERROR_MESSAGE",
+      "zh": "无法为 '$project' 的动作 '$action' 解析 compose 参数：$COMPOSE_SPEC_ERROR_MESSAGE",
+      "file": "source/compose.manager/scripts/common.sh"
+    },
+    {
+      "en": "Compose args resolution failed for '$project': $COMPOSE_SPEC_ERROR_MESSAGE",
+      "zh": "'$project' 的 compose 参数解析失败：$COMPOSE_SPEC_ERROR_MESSAGE",
+      "file": "source/compose.manager/scripts/common.sh"
+    },
+    {
+      "en": "Compose args resolution returned incomplete data for '$project'",
+      "zh": "'$project' 的 compose 参数解析返回了不完整的数据",
+      "file": "source/compose.manager/scripts/common.sh"
+    },
+    {
+      "en": "Compose args resolution returned no compose files for '$project'",
+      "zh": "'$project' 的 compose 参数解析未返回任何 compose 文件",
+      "file": "source/compose.manager/scripts/common.sh"
+    },
+    {
+      "en": "Could not acquire lock for $lock_name after ${LOCK_TIMEOUT}s - another operation may be in progress",
+      "zh": "获取 $lock_name 的锁失败（已等待 ${LOCK_TIMEOUT}s）—— 可能有另一个操作正在进行",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "✗ Another operation is already in progress for this stack. Please wait and try again.",
+      "zh": "✗ 该栈已有另一个操作正在进行，请稍候重试。",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "⏳ Waiting for another operation to complete...",
+      "zh": "⏳ 正在等待另一个操作完成...",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "using .env: $envFile",
+      "zh": "使用 .env：$envFile",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": ".env doesn't exist: $envFile",
+      "zh": ".env 不存在：$envFile",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "Project directory does not exist: $2",
+      "zh": "项目目录不存在：$2",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "Unexpected option: $1",
+      "zh": "未知选项：$1",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "Selected registry credential could not be loaded",
+      "zh": "无法加载所选的注册表凭据",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "Using registry credential '${credential_label:-$credential_id}' for $name",
+      "zh": "为 $name 使用注册表凭据 '${credential_label:-$credential_id}'",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "No registry credential configured for $name; using default Docker credentials",
+      "zh": "$name 未配置注册表凭据，将使用默认的 Docker 凭据",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "Failed to cd into project directory: $project_directory",
+      "zh": "无法切换到项目目录：$project_directory",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "Could not canonicalize project name",
+      "zh": "无法规范化项目名",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "Follow logs and wait-for-healthy cannot be used together for the same compose up command",
+      "zh": "同一次 compose up 中不能同时使用跟随日志与等待健康检查",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "✗ Follow stack logs and wait-for-healthy cannot be enabled at the same time.",
+      "zh": "✗ 不能同时启用“跟随栈日志”和“等待健康检查”。",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "✓ Stack $name started successfully",
+      "zh": "✓ 栈 $name 启动成功",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "Failed to start stack $name (exit code: $exit_code)",
+      "zh": "启动栈 $name 失败（退出码：$exit_code）",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "✗ Stack $name failed to start (exit code: $exit_code)",
+      "zh": "✗ 栈 $name 启动失败（退出码：$exit_code）",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "✓ Stack $name stopped successfully",
+      "zh": "✓ 栈 $name 停止成功",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "Failed to stop stack $name (exit code: $exit_code)",
+      "zh": "停止栈 $name 失败（退出码：$exit_code）",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "✗ Stack $name failed to stop (exit code: $exit_code)",
+      "zh": "✗ 栈 $name 停止失败（退出码：$exit_code）",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "✓ Images pulled successfully for $name",
+      "zh": "✓ 已成功为 $name 拉取镜像",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "Failed to pull images for $name (exit code: $exit_code)",
+      "zh": "为 $name 拉取镜像失败（退出码：$exit_code）",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "✗ Failed to pull images for $name (exit code: $exit_code)",
+      "zh": "✗ 为 $name 拉取镜像失败（退出码：$exit_code）",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "Pulling latest images...",
+      "zh": "正在拉取最新镜像...",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "Pull failed; retrying without buildable services and rebuilding them from source...",
+      "zh": "拉取失败；正在跳过可构建服务重新拉取，并从源码重新构建...",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "Pull failed for $name, retrying with --ignore-buildable and --build",
+      "zh": "$name 拉取失败，正在用 --ignore-buildable 与 --build 重试",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "Failed to pull images for $name, aborting update",
+      "zh": "为 $name 拉取镜像失败，更新中止",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "✗ Failed to pull images for $name, update aborted",
+      "zh": "✗ 为 $name 拉取镜像失败，更新已中止",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "Recreating containers...",
+      "zh": "正在重建容器...",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "Cleaning up old images...",
+      "zh": "正在清理旧镜像...",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "✓ Stack $name updated successfully",
+      "zh": "✓ 栈 $name 更新成功",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "Failed to update stack $name (exit code: $up_exit)",
+      "zh": "更新栈 $name 失败（退出码：$up_exit）",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "✗ Stack $name failed to update (exit code: $up_exit)",
+      "zh": "✗ 栈 $name 更新失败（退出码：$up_exit）",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "The previous commit was put back and no container was changed.",
+      "zh": "已还原到上一个提交，未改动任何容器。",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "Could not put back commit $previous_commit for git stack $name",
+      "zh": "无法为 Git 栈 $name 还原提交 $previous_commit",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "No container was changed, but the previous commit could not be put back: the clone is still at the new commit.",
+      "zh": "未改动任何容器，但无法还原上一个提交：克隆仍停留在新提交上。",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "gitdeploy needs the stack folder of a git stack (--stack-path)",
+      "zh": "gitdeploy 需要 Git 栈的栈文件夹（--stack-path）",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "✗ $name is not a git stack.",
+      "zh": "✗ $name 不是 Git 栈。",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "Automatic deploy of $name skipped: it no longer applies",
+      "zh": "已跳过 $name 的自动部署：该部署已不再适用",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "Stack $name was not deployed automatically. No container was changed.",
+      "zh": "栈 $name 未自动部署，未改动任何容器。",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "Git deploy of $name stopped before any container was changed",
+      "zh": "$name 的 Git 部署在改动任何容器之前已停止",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "✗ Stack $name was not deployed. No container was changed.",
+      "zh": "✗ 栈 $name 未部署。未改动任何容器。",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "git_stack.php prepare printed something other than a commit id for $name",
+      "zh": "git_stack.php prepare 为 $name 输出的不是提交 ID",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "✗ Stack $name was not deployed. No container was changed, but the clone may be at the new commit.",
+      "zh": "✗ 栈 $name 未部署。未改动任何容器，但克隆可能已位于新提交。",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "Could not read the compose files of git stack $name",
+      "zh": "无法读取 Git 栈 $name 的 compose 文件",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "✗ Stack $name was not deployed.",
+      "zh": "✗ 栈 $name 未部署。",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "Could not find the compose file's folder of git stack $name",
+      "zh": "无法找到 Git 栈 $name 的 compose 文件所在目录",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "Pulling images...",
+      "zh": "正在拉取镜像...",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "Failed to pull images for git stack $name",
+      "zh": "为 Git 栈 $name 拉取镜像失败",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "✗ Pulling images for $name failed.",
+      "zh": "✗ 为 $name 拉取镜像失败。",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "Building images...",
+      "zh": "正在构建镜像...",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "Failed to build images for git stack $name",
+      "zh": "为 Git 栈 $name 构建镜像失败",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "✗ Building images for $name failed.",
+      "zh": "✗ 为 $name 构建镜像失败。",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "Could not compare commits for git stack $name",
+      "zh": "无法比较 Git 栈 $name 的提交",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "git_stack.php up-arguments printed something unexpected for $name",
+      "zh": "git_stack.php up-arguments 为 $name 输出了意外内容",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "A missing external network could not be created for git stack $name",
+      "zh": "无法为 Git 栈 $name 创建缺失的外部网络",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "✗ Stack $name was not deployed: a missing external network could not be created. No container was changed.",
+      "zh": "✗ 栈 $name 未部署：缺失的外部网络无法创建。未改动任何容器。",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "Any network created above is left in place.",
+      "zh": "上面已创建的网络会保留。",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "Starting containers...",
+      "zh": "正在启动容器...",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "Git stack $name started, but its deployed commit could not be recorded",
+      "zh": "Git 栈 $name 已启动，但无法记录其已部署的提交",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "⚠ The stack started, but the deployed commit could not be recorded. Deploy it again to record it.",
+      "zh": "⚠ 栈已启动，但无法记录已部署的提交。请再次部署以记录。",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "✓ Stack $name deployed successfully",
+      "zh": "✓ 栈 $name 部署成功",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "The failed deploy of git stack $name could not be recorded",
+      "zh": "无法记录 Git 栈 $name 的失败部署",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "Failed to deploy git stack $name (exit code: $up_exit)",
+      "zh": "部署 Git 栈 $name 失败（退出码：$up_exit）",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "✗ Stack $name failed to start (exit code: $up_exit). The commit is recorded as failed (compose-git status shows it).",
+      "zh": "✗ 栈 $name 启动失败（退出码：$up_exit）。该提交已记录为失败（可用 compose-git status 查看）。",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "Fix it and deploy again, or deploy a known good commit with --commit.",
+      "zh": "请修复后重新部署，或用 --commit 部署一个已知可用的提交。",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "Unknown command: $command",
+      "zh": "未知命令：$command",
+      "file": "source/compose.manager/scripts/compose.sh"
+    },
+    {
+      "en": "Missing required arguments",
+      "zh": "缺少必需参数",
+      "file": "source/compose.manager/scripts/compose_args.php"
+    },
+    {
+      "en": "Selected registry credential could not be loaded for '$PROJECT_NAME'",
+      "zh": "无法为 '$PROJECT_NAME' 加载所选的注册表凭据",
+      "file": "source/compose.manager/scripts/compose_autoupdate.sh"
+    },
+    {
+      "en": "Using registry credential '${credential_label:-$COMPOSE_CREDENTIAL_ID}' for '$PROJECT_NAME'",
+      "zh": "为 '$PROJECT_NAME' 使用注册表凭据 '${credential_label:-$COMPOSE_CREDENTIAL_ID}'",
+      "file": "source/compose.manager/scripts/compose_autoupdate.sh"
+    },
+    {
+      "en": "No registry credential configured for '$PROJECT_NAME'; using default Docker credentials",
+      "zh": "'$PROJECT_NAME' 未配置注册表凭据，将使用默认的 Docker 凭据",
+      "file": "source/compose.manager/scripts/compose_autoupdate.sh"
+    },
+    {
+      "en": "No compose file paths or project directory were provided",
+      "zh": "未提供 compose 文件路径或项目目录",
+      "file": "source/compose.manager/scripts/compose_autoupdate.sh"
+    },
+    {
+      "en": "Could not acquire lock for $PROJECT_NAME after ${LOCK_TIMEOUT}s - another operation may be in progress",
+      "zh": "获取 $PROJECT_NAME 的锁失败（已等待 ${LOCK_TIMEOUT}s）—— 可能有另一个操作正在进行",
+      "file": "source/compose.manager/scripts/compose_autoupdate.sh"
+    },
+    {
+      "en": "Failed to create temporary output file",
+      "zh": "创建临时输出文件失败",
+      "file": "source/compose.manager/scripts/compose_autoupdate.sh"
+    },
+    {
+      "en": "Background command failed: stack path not found ($STACK_PATH)",
+      "zh": "后台命令失败：找不到栈路径（$STACK_PATH）",
+      "file": "source/compose.manager/scripts/compose_background.sh"
+    },
+    {
+      "en": "Background $OPERATION starting for $PROJECT_NAME",
+      "zh": "正在为 $PROJECT_NAME 启动后台 $OPERATION",
+      "file": "source/compose.manager/scripts/compose_background.sh"
+    },
+    {
+      "en": "Exit code: $RC",
+      "zh": "退出码：$RC",
+      "file": "source/compose.manager/scripts/compose_background.sh"
+    },
+    {
+      "en": "Stack '$PROJECT_NAME' ($OPERATION) skipped: the automatic deploy no longer applied.",
+      "zh": "栈 '$PROJECT_NAME'（$OPERATION）已跳过：该自动部署已不再适用。",
+      "file": "source/compose.manager/scripts/compose_background.sh"
+    },
+    {
+      "en": "--$name needs a value.",
+      "zh": "--$name 需要一个值。",
+      "file": "source/compose.manager/scripts/compose_git.php"
+    },
+    {
+      "en": "Unknown option --$name.",
+      "zh": "未知选项 --{$name}。",
+      "file": "source/compose.manager/scripts/compose_git.php"
+    },
+    {
+      "en": "--$name is required.",
+      "zh": "必须提供 --{$name}。",
+      "file": "source/compose.manager/scripts/compose_git.php"
+    },
+    {
+      "en": "Name exactly one stack.",
+      "zh": "请只指定一个栈。",
+      "file": "source/compose.manager/scripts/compose_git.php"
+    },
+    {
+      "en": "Use --wait or --no-wait, not both.",
+      "zh": "不能同时使用 --wait 和 --no-wait。",
+      "file": "source/compose.manager/scripts/compose_git.php"
+    },
+    {
+      "en": "--wait-timeout must be a number of seconds.",
+      "zh": "--wait-timeout 必须是秒数。",
+      "file": "source/compose.manager/scripts/compose_git.php"
+    },
+    {
+      "en": "Could not start compose.sh.\\n",
+      "zh": "无法启动 compose.sh。\\n",
+      "file": "source/compose.manager/scripts/compose_git.php"
+    },
+    {
+      "en": "--dry-run takes only --commit and --profile, not --$option: a dry run saves nothing and starts no container.",
+      "zh": "--dry-run 只能与 --commit 和 --profile 一起使用，不能使用 --{$option}：试运行不保存任何内容，也不启动任何容器。",
+      "file": "source/compose.manager/scripts/compose_git.php"
+    },
+    {
+      "en": "Dry run of $folder: $target, the commit checked out now.\\n",
+      "zh": "试运行 {$folder}：{$target}，即当前检出的提交。\\n",
+      "file": "source/compose.manager/scripts/compose_git.php"
+    },
+    {
+      "en": "Dry run of $folder: from $previous (checked out now) to $target.\\n",
+      "zh": "试运行 {$folder}：从 {$previous}（当前检出）到 {$target}。\\n",
+      "file": "source/compose.manager/scripts/compose_git.php"
+    },
+    {
+      "en": "Nothing has been deployed yet.\\n",
+      "zh": "尚未部署任何提交。\\n",
+      "file": "source/compose.manager/scripts/compose_git.php"
+    },
+    {
+      "en": "Every check passed. A dry run does not pull or build the images, so a missing image or tag is\\n",
+      "zh": "所有检查均已通过。试运行不会拉取或构建镜像，因此缺失的镜像或标签\\n",
+      "file": "source/compose.manager/scripts/compose_git.php"
+    },
+    {
+      "en": "found only by the deploy.\\n",
+      "zh": "只有在实际部署时才会被发现。\\n",
+      "file": "source/compose.manager/scripts/compose_git.php"
+    },
+    {
+      "en": "Up would recreate every container of the stack (see 'recreateOnFolderChange' in 'deploy --help').\\n",
+      "zh": "up 会重建该栈的所有容器（参见 'deploy --help' 中的 'recreateOnFolderChange'）。\\n",
+      "file": "source/compose.manager/scripts/compose_git.php"
+    },
+    {
+      "en": "The deploy would stop:\\n- ",
+      "zh": "部署会中止：\\n- ",
+      "file": "source/compose.manager/scripts/compose_git.php"
+    },
+    {
+      "en": "How the compose configuration changes is not known. {$result['configProblem']}\\n",
+      "zh": "无法得知 compose 配置会如何变化。{$result['configProblem']}\\n",
+      "file": "source/compose.manager/scripts/compose_git.php"
+    },
+    {
+      "en": "The compose configuration does not change.\\n",
+      "zh": "compose 配置没有变化。\\n",
+      "file": "source/compose.manager/scripts/compose_git.php"
+    },
+    {
+      "en": "How the compose configuration changes (variables as written, not their values):\\n",
+      "zh": "compose 配置的变化如下（变量按原样显示，不展开取值）：\\n",
+      "file": "source/compose.manager/scripts/compose_git.php"
+    },
+    {
+      "en": "\\nNothing was deployed, and the clone is back at $previous.\\n",
+      "zh": "\\n未部署任何内容，克隆已还原到 {$previous}。\\n",
+      "file": "source/compose.manager/scripts/compose_git.php"
+    },
+    {
+      "en": "  problem:      ",
+      "zh": "  问题:         ",
+      "file": "source/compose.manager/scripts/compose_git.php"
+    },
+    {
+      "en": "  repository:   ",
+      "zh": "  仓库:         ",
+      "file": "source/compose.manager/scripts/compose_git.php"
+    },
+    {
+      "en": "  compose file: ",
+      "zh": "  compose 文件: ",
+      "file": "source/compose.manager/scripts/compose_git.php"
+    },
+    {
+      "en": "  clone:        ",
+      "zh": "  克隆:         ",
+      "file": "source/compose.manager/scripts/compose_git.php"
+    },
+    {
+      "en": "  credential:   ",
+      "zh": "  凭据:         ",
+      "file": "source/compose.manager/scripts/compose_git.php"
+    },
+    {
+      "en": "  automatic:    ",
+      "zh": "  自动部署:     ",
+      "file": "source/compose.manager/scripts/compose_git.php"
+    },
+    {
+      "en": " (fix it and deploy again)\\n",
+      "zh": "  失败:         ",
+      "file": "source/compose.manager/scripts/compose_git.php"
+    },
+    {
+      "en": " (the automatic deploy, before up; compose-git resume tries it again)\\n",
+      "zh": "（自动部署，在 up 之前失败；compose-git resume 会重试）\\n",
+      "file": "source/compose.manager/scripts/compose_git.php"
+    },
+    {
+      "en": "  local changes: ",
+      "zh": "  本地改动:     ",
+      "file": "source/compose.manager/scripts/compose_git.php"
+    },
+    {
+      "en": "  made by hand: the checked-out commit was committed in the clone (deploy --save-local-changes saves it)\\n",
+      "zh": "  手工创建: 当前检出的提交是在克隆中提交的（deploy --save-local-changes 可将其保存）\\n",
+      "file": "source/compose.manager/scripts/compose_git.php"
+    },
+    {
+      "en": "Deploy it with: compose-git deploy $folder\\n",
+      "zh": "使用以下命令部署：compose-git deploy $folder\\n",
+      "file": "source/compose.manager/scripts/compose_git.php"
+    },
+    {
+      "en": "The replaced files are in $backup.\\nDeploy it with: compose-git deploy $folder\\n",
+      "zh": "被替换的文件位于 {$backup}。\\n使用以下命令部署：compose-git deploy $folder\\n",
+      "file": "source/compose.manager/scripts/compose_git.php"
+    },
+    {
+      "en": "credential needs a stack and either a credential name or --none.",
+      "zh": "credential 需要一个栈，以及一个凭据名称或 --none。",
+      "file": "source/compose.manager/scripts/compose_git.php"
+    },
+    {
+      "en": "auto-deploy needs a stack and one of: ",
+      "zh": "auto-deploy 需要一个栈，以及以下之一：",
+      "file": "source/compose.manager/scripts/compose_git.php"
+    },
+    {
+      "en": "The setting was saved, but the plugin's cron file could not be updated.\\n",
+      "zh": "设置已保存，但无法更新插件的 cron 文件。\\n",
+      "file": "source/compose.manager/scripts/compose_git.php"
+    },
+    {
+      "en": " available on {$result['branch']}",
+      "zh": " 可在 {$result['branch']} 上获取",
+      "file": "source/compose.manager/scripts/compose_git.php"
+    },
+    {
+      "en": "$folder: up to date ($deployed)\\n",
+      "zh": "{$folder}：已是最新（{$deployed}）\\n",
+      "file": "source/compose.manager/scripts/compose_git.php"
+    },
+    {
+      "en": "$folder: $newer ($deployed, but no longer in the clone, so the changes ",
+      "zh": "{$folder}：{$newer}（{$deployed}，但已不在克隆中，因此这些改动",
+      "file": "source/compose.manager/scripts/compose_git.php"
+    },
+    {
+      "en": "cannot be identified)\\n",
+      "zh": "无法判断）\\n",
+      "file": "source/compose.manager/scripts/compose_git.php"
+    },
+    {
+      "en": "$folder: $newer, changing $stackFolder ($deployed)\\n",
+      "zh": "{$folder}：{$newer}，改动了 {$stackFolder}（{$deployed}）\\n",
+      "file": "source/compose.manager/scripts/compose_git.php"
+    },
+    {
+      "en": "$folder: $newer, but it changes nothing in $stackFolder ($deployed); ",
+      "zh": "{$folder}：{$newer}，但未改动 {$stackFolder}（{$deployed}）中的任何内容；",
+      "file": "source/compose.manager/scripts/compose_git.php"
+    },
+    {
+      "en": "deploy it anyway if the stack uses files outside that folder\\n",
+      "zh": "如果该栈使用了该文件夹之外的文件，仍可部署\\n",
+      "file": "source/compose.manager/scripts/compose_git.php"
+    },
+    {
+      "en": "$folder: could not check: ",
+      "zh": "{$folder}：无法检查：",
+      "file": "source/compose.manager/scripts/compose_git.php"
+    },
+    {
+      "en": "The old clone is in $movedTo. Copy back anything you need from it, then delete it yourself.\\n",
+      "zh": "旧克隆位于 {$movedTo}。请复制回你需要的内容，然后自行删除它。\\n",
+      "file": "source/compose.manager/scripts/compose_git.php"
+    },
+    {
+      "en": "There are no git stacks.\\n",
+      "zh": "没有 Git 栈。\\n",
+      "file": "source/compose.manager/scripts/compose_git.php"
+    },
+    {
+      "en": "scheduled-check checks every git stack whose auto-deploy is not off; name no stack.",
+      "zh": "scheduled-check 会检查所有自动部署未关闭的 Git 栈；请勿指定栈名。",
+      "file": "source/compose.manager/scripts/compose_git.php"
+    },
+    {
+      "en": "Unknown command '{$args[0]}'.",
+      "zh": "未知命令 '{$args[0]}'。",
+      "file": "source/compose.manager/scripts/compose_git.php"
+    },
+    {
+      "en": "Unknown command '$command'.",
+      "zh": "未知命令 '$command'。",
+      "file": "source/compose.manager/scripts/compose_git.php"
+    },
+    {
+      "en": "git_stack.php prepare: the project name is required.",
+      "zh": "git_stack.php prepare：必须提供项目名称。",
+      "file": "source/compose.manager/scripts/git_stack.php"
+    }
+  ]
+}
