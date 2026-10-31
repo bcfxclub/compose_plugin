@@ -376,7 +376,7 @@ function submitGitStackFromAddStackModal(name, desc, overrideManagementAutomatic
         });
     }).fail(function() {
         showError('请求失败。若仓库较大，克隆可能仍在进行：'
-            + 'refresh the stack list before trying again.');
+            + '请刷新栈列表后再试。');
     });
 }
 
@@ -4236,7 +4236,7 @@ function editStackSettings(myID) {
             if (rawEnvPath.result == 'success') {
                 var formHtml = `<div class="swal-text" style="font-weight: bold; padding-left: 0px; margin-top: 0px;">ENV 文件路径</div>`;
                 formHtml += `<br>`;
-                formHtml += `<input type='text' id='env_path' class='swal-content__input' pattern="(\/mnt\/.*\/.+)" oninput="this.reportValidity()" title="A path under /mnt/user/ or /mnt/cache/ or /mnt/pool/" placeholder=Default value='${rawEnvPath.content}'>`;
+                formHtml += `<input type='text' id='env_path' class='swal-content__input' pattern="(\/mnt\/.*\/.+)" oninput="this.reportValidity()" title="路径必须位于 /mnt/user/、/mnt/cache/ 或 /mnt/pool/ 之下" placeholder=Default value='${rawEnvPath.content}'>`;
                 swal({
                     title: "栈设置",
                     text: formHtml,
@@ -5169,7 +5169,7 @@ function gitDeployStack(path, project, commit, profile) {
             return;
         }
         var git = response.git;
-        var target = commit ? 'commit ' + gitShortCommit(commit) : 'the latest commit on ' + git.branch;
+        var target = commit ? '提交 ' + gitShortCommit(commit) : '以下分支的最新提交：' + git.branch;
         var deployedNow = git.deployedCommit ? gitShortCommit(git.deployedCommit) : 'nothing yet';
         var changes = git.localChanges || [];
         // A problem found without asking the remote (the clone missing, say) stops the
@@ -5199,15 +5199,15 @@ function gitDeployStack(path, project, commit, profile) {
         // The deploy refuses either kind of change unless it may save and discard it.
         var found = [];
         if (git.commitMadeByHand) {
-            found.push('当前检出的提交 ' + gitShortCommit(git.checkedOutCommit) + ' was made in the clone by hand');
+            found.push('当前检出的提交 ' + gitShortCommit(git.checkedOutCommit) + ' 是在克隆中手工创建的');
         }
         if (changes.length > 0) {
             found.push('这些文件与仓库不一致：' + changes.join(', '));
         }
         swal({
             title: '克隆中的改动',
-            text: '在克隆中：' + project + ', ' + found.join('; and ') +
-                '. Save the changes as a patch in the stack folder\'s git-changes folder, discard them, and deploy ' + target + '?',
+            text: '在克隆中：' + project + '，' + found.join('；并且 ') +
+                '。是否将这些改动保存为补丁（放在栈文件夹的 git-changes 目录中）后丢弃，并部署 ' + target + '？',
             type: 'warning',
             showCancelButton: true,
             confirmButtonText: '保存、丢弃并部署'
@@ -5250,7 +5250,7 @@ function checkGitStack(path, project) {
         var check = response.check;
         if (check.upToDate) {
             swal({
-                title: project + ' is up to date',
+                title: project + ' 已是最新',
                 text: '最新提交位于' + check.branch + ' (' + gitShortCommit(check.remoteCommit) + '）已部署。',
                 type: 'success'
             });
@@ -5267,8 +5267,8 @@ function checkGitStack(path, project) {
             // to this one if it uses files from outside its folder, so deploying stays offered.
             // A stack at the top of the repository gets this answer only for commits that change no file.
             var unchanged = check.stackFolder
-                ? 'nothing in ' + check.stackFolder + '/, the folder holding this stack\'s compose file. In a repository '
-                    + '存在多个栈时，这通常是另一个栈的提交。'
+                ? '没有改动 ' + check.stackFolder + '/（存放该栈 compose 文件的文件夹）中的任何文件。在包含'
+                    + '多个栈的仓库中，这通常是另一个栈的提交。'
                 : '没有文件。';
             dialog = {
                 title: '有更新的提交位于：' + check.branch + '，位于该栈文件夹之外',
@@ -5281,8 +5281,8 @@ function checkGitStack(path, project) {
             };
         } else if (!check.deployedCommit) {
             dialog = {
-                title: '有一个提交位于 ' + check.branch + ' to deploy',
-                text: '提交 ' + gitShortCommit(check.remoteCommit) + ' on ' + check.branch + ' 已可部署。\n'
+                title: '有一个提交待部署，位于 ' + check.branch,
+                text: '提交 ' + gitShortCommit(check.remoteCommit) + '（位于 ' + check.branch + '）已可部署。\n'
                     + '当前没有部署任何提交。',
                 confirmButtonText: '拉取并重新部署'
             };
@@ -5292,7 +5292,7 @@ function checkGitStack(path, project) {
             dialog = {
                 title: '有更新的提交位于：' + check.branch,
                 text: latestLine + '\n' + deployedLine + '，但它已不在克隆中，因此这些改动 '
-                    + 'cannot be identified.',
+                    + '无法判断。',
                 confirmButtonText: '拉取并重新部署'
             };
         } else {
@@ -6880,7 +6880,7 @@ function submitConvertToGit() {
         doCloseEditorModal();
         composeLoadlist();
         swal({
-            title: projectName + ' is now a git stack',
+            title: projectName + ' 现在是 Git 栈',
             text: (response.messages || []).join('\n\n') + '\n\n请从其栈菜单执行“拉取并重新部署”来部署。',
             type: 'success'
         }, function() {
@@ -6957,7 +6957,7 @@ function renderGitSource(git) {
     $('#settings-git-failed').text(gitShortCommit(git.failedCommit) + '（请修复后重新部署）');
     $('#settings-git-failed-row').toggle(!!git.failedCommit);
     // A scheduled deploy that failed before up (an image pull, say); Resume makes the next check try again.
-    $('#settings-git-failed-automatic').text(gitShortCommit(git.failedAutomaticCommit) + ' (before up; Resume Automatic Deploys in the stack menu tries it again)');
+    $('#settings-git-failed-automatic').text(gitShortCommit(git.failedAutomaticCommit) + '（up 之前失败；栈菜单中的“恢复自动部署”会重试）');
     $('#settings-git-failed-automatic-row').toggle(!!git.failedAutomaticCommit);
     $('#settings-git-checked-out').text(gitShortCommit(git.checkedOutCommit));
     $('#settings-git-source-table').show();
@@ -7363,7 +7363,7 @@ function loadLabelsData(callback) {
             }
 
         } catch (e) {
-            composeLogger('Failed to parse compose files for labels', {
+            composeLogger('解析 compose 文件以提取标签失败', {
                 error: e && e.toString()
             }, 'user', 'error', 'loadLabelsData');
             $('#labels-services-container').html('<div class="labels-empty-state"><i class="fa fa-exclamation-triangle"></i> Error loading services: ' + composeEscapeHtml(e.message) + '</div>');
@@ -7454,7 +7454,7 @@ function createEnvTemplate() {
             if (!data) throw new Error('服务器响应为空');
             var response = JSON.parse(data);
             if (response.result !== 'success') {
-                if (handleStaleEditorResponse(response, '.env file location changed while this dialog was open. Reloading the editor.')) {
+                if (handleStaleEditorResponse(response, '.env 文件位置在对话框打开期间已改变，正在重新加载编辑器。')) {
                     return;
                 }
                 throw new Error(response.message || '创建 .env 模板失败。');

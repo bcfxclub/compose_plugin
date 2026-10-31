@@ -151,7 +151,7 @@
                     '<div id="credential-github-oauth-section">' +
                         '<button type="button" id="credential-github-signin"><i class="fa fa-github"></i>使用 GitHub 登录</button>' +
                         '<div id="credential-github-device" style="display:none;">' +
-                            '<p>Enter this code on GitHub:</p>' +
+                            '<p>请在 GitHub 上输入此代码：</p>' +
                             '<div class="credential-github-code-row">' +
                                 '<strong id="credential-github-code"></strong>' +
                                 '<button type="button" id="credential-github-copy" title="复制代码"><i class="fa fa-copy"></i>复制</button>' +

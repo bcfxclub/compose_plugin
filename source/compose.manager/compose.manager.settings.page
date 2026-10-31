@@ -2131,7 +2131,7 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
             settings: JSON.stringify(settings)
         }, function(response) {
             var result = JSON.parse(response);
-            $btn.prop('disabled', false).val('Save Settings');
+            $btn.prop('disabled', false).val('保存设置');
 
             if (result.result === 'success') {
                 showBackupStatus('#backup-create-status', '备份设置已保存。', 'success');
@@ -2142,8 +2142,8 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
                 showBackupStatus('#backup-create-status', result.message || 'Failed to save settings', 'error');
             }
         }).fail(function() {
-            $btn.prop('disabled', false).val('Save Settings');
-            showBackupStatus('#backup-create-status', 'Failed to communicate with server', 'error');
+            $btn.prop('disabled', false).val('保存设置');
+            showBackupStatus('#backup-create-status', '与服务器通信失败', 'error');
         });
     }
 
