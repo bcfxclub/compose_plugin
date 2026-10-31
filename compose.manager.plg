@@ -36,22 +36,10 @@
 >
 
 <CHANGES>
-###2026.10.31c
-- 新功能 (i18n): 汉化 compose-git 的 --help 帮助文档
-- 新功能 (i18n): 汉化 compose-git CLI 的试运行、状态与检查输出
-- 新功能 (i18n): 汉化 Web 界面残留英文（设置页、Git 部署对话框、GitHub 登录）
-- 新功能 (i18n): 汉化 shell 脚本的操作输出与日志
-- 新功能 (i18n): 汉化 Exec.php 与 Util.php 的操作结果、通知与异常提示
-- 新功能 (i18n): 汉化部署检查与计划检查的全部提示与通知
-- 新功能 (i18n): 汉化 GitClone/GitCommand/GitCredentials/GitStackState/GitSsh/GitStackWebActions/GitStackSettings 残留英文
-- 新功能 (i18n): 汉化 GitStackManager、GitClone、GitDeploy、GitPathGuard、CredentialVault 与 GitStackSettings 的用户可见文案
-- 新功能 (i18n): 汉化设置页弹窗、列设置空项与 Git 相关错误提示
-- 新功能 (i18n): 汉化列表更新状态、编辑器标签与状态文案，并修复中文标签导致的状态判断失效
-- 新功能 (i18n): 汉化容器明细表头、栈操作对话框与凭据仓库说明
-- 问题修复 (git): 用 is_link() 检测 git 运行 HOME 是否为符号链接
-- 问题修复 (i18n): 修复中文标点紧跟变量导致 PHP 变量名被吞的插值缺陷
-- 问题修复 (i18n): 修正中文紧邻变量导致的 PHP 变量名解析错误
-- [View all changes](https://github.com/bcfxclub/compose_plugin/compare/v2026.10.31b...v2026.10.31c)
+###2026.10.31d
+- 新功能 (i18n): 补完第二批界面与日志文案汉化，扩充翻译记忆库
+- 杂项 (i18n): 添加翻译记忆库工具与 EN-&gt;ZH 对照表 [skip ci]
+- [View all changes](https://github.com/bcfxclub/compose_plugin/compare/v2026.10.31c...v2026.10.31d)
 </CHANGES>
 
 <!-- The 'pre-install' script. -->
