@@ -559,17 +559,17 @@ function composeHealthMeta(status) {
     var normalized = composeNormalizeHealthStatus(status, 'running');
     switch (normalized) {
         case 'healthy':
-            return { icon: 'check-circle', textClass: 'green-text', label: 'healthy' };
+            return { icon: 'check-circle', textClass: 'green-text', label: '健康' };
         case 'unhealthy':
-            return { icon: 'times-circle', textClass: 'red-text', label: 'unhealthy' };
+            return { icon: 'times-circle', textClass: 'red-text', label: '不健康' };
         case 'starting':
-            return { icon: 'refresh fa-spin', textClass: 'orange-text', label: 'starting' };
+            return { icon: 'refresh fa-spin', textClass: 'orange-text', label: '启动中' };
         case 'stopped':
-            return { icon: 'stop-circle', textClass: 'grey-text', label: 'stopped' };
+            return { icon: 'stop-circle', textClass: 'grey-text', label: '已停止' };
         case 'none':
-            return { icon: 'minus-circle', textClass: 'compose-text-muted', label: 'n/a' };
+            return { icon: 'minus-circle', textClass: 'compose-text-muted', label: '不适用' };
         default:
-            return { icon: 'question-circle', textClass: 'compose-text-muted', label: 'unknown' };
+            return { icon: 'question-circle', textClass: 'compose-text-muted', label: '未知' };
     }
 }
 
@@ -1135,8 +1135,8 @@ function initStackListUI() {
         if ($el.data('switchbutton-initialized')) return;
         $el.switchButton({
             labels_placement: 'right',
-            on_label: "On",
-            off_label: "Off",
+            on_label: "开",
+            off_label: "关",
             clear: false
         });
         $el.data('switchbutton-initialized', true);
@@ -1194,8 +1194,8 @@ function initializeProgressiveLoadedRows($rowChunk) {
         if ($el.data('switchbutton-initialized')) return;
         $el.switchButton({
             labels_placement: 'right',
-            on_label: 'On',
-            off_label: 'Off',
+            on_label: '开',
+            off_label: '关',
             clear: false
         });
         $el.data('switchbutton-initialized', true);
@@ -9407,7 +9407,7 @@ function updateParentStackFromContainers(stackId, project) {
         // displayed value doesn't jump when details are expanded.
         try {
             var $uptimeCell = $stackRow.find('td.col-uptime');
-            var uptimeText = 'stopped';
+            var uptimeText = '已停止';
             var uptimeClass = 'grey-text';
             if (anyRunning) {
                 var stackStarted = stackStartedAtCache[stackId] || null;
@@ -9420,20 +9420,20 @@ function updateParentStackFromContainers(stackId, project) {
                         var days = Math.floor(secs / 86400);
                         var weeks = Math.floor(days / 7);
                         var months = Math.floor(days / 30);
-                        if (mins < 120) uptimeText = mins + ' min' + (mins !== 1 ? 's' : '');
-                        else if (hours < 48) uptimeText = hours + ' hour' + (hours !== 1 ? 's' : '');
-                        else if (days < 14) uptimeText = days + ' day' + (days !== 1 ? 's' : '');
-                        else if (weeks < 8) uptimeText = weeks + ' week' + (weeks !== 1 ? 's' : '');
-                        else if (months < 24) uptimeText = months + ' month' + (months !== 1 ? 's' : '');
+                        if (mins < 120) uptimeText = mins + ' 分钟';
+                        else if (hours < 48) uptimeText = hours + ' 小时';
+                        else if (days < 14) uptimeText = days + ' 天';
+                        else if (weeks < 8) uptimeText = weeks + ' 周';
+                        else if (months < 24) uptimeText = months + ' 个月';
                         else {
                             var years = Math.floor(days / 365);
-                            uptimeText = years + ' year' + (years !== 1 ? 's' : '');
+                            uptimeText = years + ' 年';
                         }
                     } else {
-                        uptimeText = 'running';
+                        uptimeText = '运行中';
                     }
                 } else {
-                    uptimeText = 'running';
+                    uptimeText = '运行中';
                 }
                 uptimeClass = 'green-text';
             }

@@ -460,7 +460,7 @@
         if (!$body.length) return;
         $body.empty();
         if (!credentials.length) {
-            $body.append('<tr><td colspan="6" class="credential-empty">No credentials saved.</td></tr>');
+            $body.append('<tr><td colspan="6" class="credential-empty">尚未保存任何凭据。</td></tr>');
             return;
         }
         credentials.forEach(function(credential) {
