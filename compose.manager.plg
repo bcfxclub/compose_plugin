@@ -2,11 +2,11 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name "compose.manager">
 <!ENTITY author "mstrhakr">
-<!ENTITY version     "2026.10.31a">
+<!ENTITY version     "2026.10.31b">
 <!ENTITY launch "Settings/&name;.settings">
 <!ENTITY packageVER "&version;">
-<!ENTITY packageMD5  "b0cd29679b3ac23aeceed4188884f292">
-<!ENTITY pkgBUILD    "0455">
+<!ENTITY packageMD5  "df6ae5e8e8152b321ef8a241dca304e8">
+<!ENTITY pkgBUILD    "0607">
 <!ENTITY packageName "&name;-&packageVER;-noarch-&pkgBUILD;">
 <!ENTITY packagefile "&packageName;.txz">
 <!ENTITY github "bcfxclub/compose_plugin">
