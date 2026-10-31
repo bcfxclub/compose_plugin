@@ -472,7 +472,7 @@ foreach ($stackInfos as $stackInfo) {
     // Description column (toggleable via column customizer)
     $descriptionCell = "<td class='col-description' style='overflow-wrap:break-word;word-wrap:break-word;'>";
     if ($hasInvalidIndirect) {
-        $descriptionCell .= "<div class='orange-text' style='margin-bottom:4px;font-size:0.85em;'><i class='fa fa-warning'></i> External compose path unavailable, using local stack path.</div>";
+        $descriptionCell .= "<div class='orange-text' style='margin-bottom:4px;font-size:0.85em;'><i class='fa fa-warning'></i> 外部 compose 路径不可用，已改用本地栈路径。</div>";
     }
     $descriptionCell .= "<span class='docker_readmore'>$descriptionHtml</span></td>";
     $stackCells['description'] = $descriptionCell;
@@ -507,7 +507,7 @@ foreach ($stackInfos as $stackInfo) {
 
 // If no stacks found, show a message
 if ($mode !== 'row' && $stackCount === 0) {
-    $o = "<tr><td colspan='14' style='text-align:center;padding:20px;color:var(--alt-text-color);'>No Docker Compose stacks found. Click 'Add New Stack' to create one.</td></tr>";
+    $o = "<tr><td colspan='14' style='text-align:center;padding:20px;color:var(--alt-text-color);'>未找到任何 Docker Compose 栈。点击“新增栈”创建一个。</td></tr>";
 }
 
 // Output the HTML

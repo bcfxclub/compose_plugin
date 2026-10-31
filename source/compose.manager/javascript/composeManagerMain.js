@@ -255,7 +255,7 @@ function loadAddStackGitCredentials() {
 function showGitDeployKeyPanel($panel, publicKey, details, buttonName) {
     // Named for screen readers: the panel's title is not tied to this box.
     var $key = $('<textarea class="compose-git-deploy-key" rows="3" readonly>')
-        .attr('aria-label', 'Deploy key to add to the repository')
+        .attr('aria-label', '需要添加到仓库的部署密钥')
         .val(publicKey);
     var $copy = $('<button type="button" class="btn btn-sm">').text('复制密钥').on('click', function() {
         // The clipboard API needs https, which Unraid often is not on, so copy the selection.
@@ -274,8 +274,8 @@ function showGitDeployKeyPanel($panel, publicKey, details, buttonName) {
             $('<span>').text('将此部署密钥添加到仓库')
         ),
         $('<div>').text('在仓库设置中，将此密钥添加为只读部署密钥（在 GitHub 上：'
-            + 'Settings, then Deploy keys), then select ' + buttonName + ' again. The stack keeps this key, '
-            + 'so this is needed only once.'),
+            + '设置 → 部署密钥），然后再次点击 ' + buttonName + '。该栈会保留这个密钥，'
+            + '因此只需操作一次。'),
         $key,
         $copy,
         $('<div class="compose-git-deploy-key-panel-details">').text(details)
@@ -336,7 +336,7 @@ function submitGitStackFromAddStackModal(name, desc, overrideManagementAutomatic
             return;
         }
         if (response.result !== 'success') {
-            showError((messages ? messages + '\n\n' : '') + (response.message || 'The stack was not created.'));
+            showError((messages ? messages + '\n\n' : '') + (response.message || '该栈未被创建。'));
             return;
         }
         window.closeComposeStackModal();
@@ -366,9 +366,9 @@ var DISCOVERY_MODE_SCOPE_CONFIGS = {
         noticeId: 'settings-default-compose-files-disabled-note',
         getManualOverrideReasons: function() {
             var reasons = [];
-            if (($('#settings-env-path').val() || '').trim() !== '') reasons.push('External ENV File Path');
-            if (($('#settings-external-compose-file').val() || '').trim() !== '') reasons.push('External Compose File');
-            if (getExtraComposeFilesValue() !== '') reasons.push('Additional Compose Files');
+            if (($('#settings-env-path').val() || '').trim() !== '') reasons.push('外部 ENV 文件路径');
+            if (($('#settings-external-compose-file').val() || '').trim() !== '') reasons.push('外部 Compose 文件');
+            if (getExtraComposeFilesValue() !== '') reasons.push('额外 Compose 文件');
             return reasons;
         }
     },
@@ -379,8 +379,8 @@ var DISCOVERY_MODE_SCOPE_CONFIGS = {
         noticeId: 'compose-stack-default-compose-files-disabled-note',
         getManualOverrideReasons: function() {
             var reasons = [];
-            if (($('#compose-stack-env-path').val() || '').trim() !== '') reasons.push('External ENV File Path');
-            if (($('#compose-stack-external-file').val() || '').trim() !== '') reasons.push('External Compose File');
+            if (($('#compose-stack-env-path').val() || '').trim() !== '') reasons.push('外部 ENV 文件路径');
+            if (($('#compose-stack-external-file').val() || '').trim() !== '') reasons.push('外部 Compose 文件');
             return reasons;
         }
     }
@@ -1023,7 +1023,7 @@ function composeLoadlist() {
                                 elapsedMs: failElapsedMs,
                                 reason: 'request_failed',
                                 projectPath: compose_root + '/' + project,
-                                errorMessage: 'Row request failed before payload returned.',
+                                errorMessage: '请求在返回数据前就中断了。',
                                 failureDetail: 'HTTP ' + (xhr && xhr.status ? xhr.status : 0) + ' ' + (textStatus || '') + (errorThrown ? ' - ' + errorThrown : ''),
                                 checkedComposePaths: [],
                                 missingMetadataFiles: []
@@ -1550,7 +1550,7 @@ function initEditorModal() {
             return;
         }
         if (/\[PORT\]/i.test(url)) {
-            setSettingsFieldError('webui-url', 'Bare [PORT] placeholder is not supported at stack level. Use [PORT:xxxx] with a default port instead (e.g. [PORT:8080]).');
+            setSettingsFieldError('webui-url', '不支持单独使用 [PORT] 占位符。请改用带默认端口的 [PORT:xxxx]（例如 [PORT:8080]）。');
             return;
         }
         clearSettingsFieldError('webui-url');
@@ -1796,9 +1796,9 @@ function updateEditorFileInfo() {
     var savePath = getEditorSaveTargetPath();
     var fallbackText = savePath && savePath !== stackPath
         ? 'No raw file in current tab; changes save via ' + savePath
-        : 'No raw file in current tab';
+        : '当前标签页没有原始文件';
 
-    setEditorPathText('#editor-project-dir', stackPath, 'Project directory unavailable');
+    setEditorPathText('#editor-project-dir', stackPath, '项目目录不可用');
     setEditorPathText('#editor-edit-file', activeFilePath, fallbackText);
 }
 
@@ -2374,8 +2374,8 @@ function updateAllStacks() {
     var stackNames = stacks.map(function(s) {
         return composeEscapeHtml(s.projectName);
     }).join('<br>');
-    var title = autostartOnly ? 'Update Autostart Stacks?' : '更新所有栈？';
-    var confirmText = 'Yes, update ' + stacks.length + ' stack' + (stacks.length > 1 ? 's' : '');
+    var title = autostartOnly ? '更新自动启动的栈？' : '更新所有栈？';
+    var confirmText = '是，更新 ' + stacks.length + ' stack' + (stacks.length > 1 ? 's' : '');
 
     var bgCheckboxHtml = '<div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--dynamix-box-inner-div-border-color);display:flex;align-items:center;gap:8px;">' +
         '<input type="checkbox" id="swal-run-bg-updateall" style="width:16px;height:16px;cursor:pointer;">' +
@@ -2860,8 +2860,8 @@ $(function() {
             var stackName = $("#" + myID).attr("data-scriptname");
             instance.content(composeEscapeHtml(stackName) + "<br> \
                                 <center> \
-                                <input type='button' onclick='editName(&quot;" + myID + "&quot;);' value='Edit Name' " + disabled + "> \
-                                <input type='button' onclick='editDesc(&quot;" + myID + "&quot;);' value='Edit Description' > \
+                                <input type='button' onclick='editName(&quot;" + myID + "&quot;);' value='编辑名称' " + disabled + "> \
+                                <input type='button' onclick='editDesc(&quot;" + myID + "&quot;);' value='编辑描述' > \
                                 <input type='button' onclick='editStack(&quot;" + myID + "&quot;);' value='编辑栈'> \
                                 <input type='button' onclick='deleteStack(&quot;" + myID + "&quot;);' value='删除栈' " + disabled + "> \
                                 <input type='button' onclick='ComposeLogs(&quot;" + myID + "&quot;);' value='日志' " + notdisabled + "> \
@@ -3641,7 +3641,7 @@ function addStack() {
             <div class="compose-modal" role="dialog" aria-modal="true" aria-labelledby="compose-stack-modal-title" aria-describedby="compose-stack-modal-desc" tabindex="-1" style="max-width:680px;">
                 <div class="compose-modal-header">
                     <span id="compose-stack-modal-title">新建 Compose 栈</span>
-                    <button type="button" class="editor-btn editor-btn-cancel" onclick="closeComposeStackModal()" aria-label="Close modal"><i class="fa fa-times"></i></button>
+                    <button type="button" class="editor-btn editor-btn-cancel" onclick="closeComposeStackModal()" aria-label="关闭对话框"><i class="fa fa-times"></i></button>
                 </div>
                 <div class="compose-modal-body">
                     <div id="compose-stack-modal-error" class="compose-status-danger" style="margin-bottom:12px;display:none;"></div>
@@ -3652,7 +3652,7 @@ function addStack() {
 
                         <div class="settings-field">
                             <label for="compose-stack-name">栈名称</label>
-                            <input type="text" id="compose-stack-name" placeholder="e.g. My Compose Stack" autofocus>
+                            <input type="text" id="compose-stack-name" placeholder="例如：我的 Compose 栈" autofocus>
                             <div id="compose-stack-name-error" class="compose-status-danger" style="margin-top:6px;display:none;font-size:0.9em;"></div>
                             <div class="settings-field-help" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
                                 <span>界面中显示的名称。</span>
@@ -3719,14 +3719,14 @@ function addStack() {
                                 <label for="compose-stack-git-compose-path" style="font-weight:normal;margin-top:8px;">仓库中的 compose 文件</label>
                                 <input type="text" id="compose-stack-git-compose-path" placeholder="myapp/compose.yaml">
                                 <div id="compose-stack-git-compose-path-error" class="compose-status-danger" style="margin-top:6px;display:none;font-size:0.9em;"></div>
-                                <div class="settings-field-help">The path from the top of the repository.</div>
+                                <div class="settings-field-help">从仓库根目录开始的路径。</div>
 
                                 <div id="compose-stack-git-credential-wrap">
                                     <label for="compose-stack-git-credential" style="font-weight:normal;margin-top:8px;">凭据</label>
-                                    <select id="compose-stack-git-credential"><option value="">None (a public repository)</option></select>
-                                    <div class="settings-field-help">For a private https repository, first add a git token on the Credentials tab of the plugin's settings, then choose it here. For an ssh repository, no credential is needed: the stack uses its repository's deploy key.</div>
+                                    <select id="compose-stack-git-credential"><option value="">无（公开仓库）</option></select>
+                                    <div class="settings-field-help">私有 https 仓库请先在插件设置的“凭据”标签中添加 Git 令牌，然后在此选择。ssh 仓库无需凭据：该栈会使用其仓库的部署密钥。</div>
                                 </div>
-                                <div class="settings-field-help">Create clones the repository but starts nothing. Deploy the stack from its menu when you are ready.</div>
+                                <div class="settings-field-help">“创建”只会克隆仓库，不会启动任何东西。准备好后从栈菜单中部署。</div>
                             </div>
                         </div>
 
@@ -4068,7 +4068,7 @@ function loadComposeYaml(content) {
     var yamlLib = getComposeYamlLibrary();
 
     if (!yamlLib || typeof yamlLib.load !== 'function') {
-        throw new Error('YAML parser is unavailable. Please reload the page and try again.');
+        throw new Error('YAML 解析器不可用，请刷新页面后重试。');
     }
 
     if (!composeYamlSchemaCache) {
@@ -4397,7 +4397,7 @@ function composeShowIdentityChooser(info) {
     var project = info.project || '';
     var legacy = info.legacyCandidate || '';
     var folder = info.folderCandidate || '';
-    var html = composeEscapeHtml(info.message || 'This stack has an ambiguous Docker Compose project name.');
+    var html = composeEscapeHtml(info.message || '该栈的 Docker Compose 项目名称存在歧义。');
 
     if (project && legacy && folder) {
         html += "<br><br><button type='button' class='compose-identity-choice' data-project='" + composeEscapeAttr(project) +
@@ -4451,7 +4451,7 @@ $(document).on('click', '.compose-identity-choice', function () {
                 location.reload();
             });
         } else {
-            swal('错误', (parsed && parsed.message) || 'Failed to pin project identity.', 'error');
+            swal('错误', (parsed && parsed.message) || '固定项目标识失败。', 'error');
         }
     });
 });
@@ -5254,17 +5254,17 @@ function checkGitStack(path, project) {
             dialog = {
                 title: '有更新的提交位于：' + check.branch + '，位于该栈文件夹之外',
                 text: latestLine + '\n' + deployedLine + '.\n'
-                    + 'The commits since then change ' + unchanged
-                    + '\n\nDeploy it anyway if this stack uses files from outside that folder: '
-                    + 'a bind mount or build context of ../something, or an env_file, extends or include in another '
-                    + 'folder. Changes there are not counted as changes to this stack.',
+                    + '之后的提交改动了 ' + unchanged
+                    + '\n\n如果该栈使用了该文件夹之外的文件，仍可部署：'
+                    + '例如 ../ 形式的绑定挂载或构建上下文，或位于另一个 '
+                    + ' 文件夹中的 env_file、extends 或 include。那里的改动不计入该栈的改动。',
                 confirmButtonText: '仍然部署'
             };
         } else if (!check.deployedCommit) {
             dialog = {
                 title: '有一个提交位于 ' + check.branch + ' to deploy',
                 text: '提交 ' + gitShortCommit(check.remoteCommit) + ' on ' + check.branch + ' 已可部署。\n'
-                    + 'Nothing is currently deployed.',
+                    + '当前没有部署任何提交。',
                 confirmButtonText: '拉取并重新部署'
             };
         } else if (check.deployedCommitMissing) {
@@ -5280,7 +5280,7 @@ function checkGitStack(path, project) {
             // The stack's folder is the folder holding its compose file in the repository.
             var changed = check.stackFolder
                 ? check.stackFolder + '/, this stack\'s folder'
-                : 'this stack\'s files (its compose file is at the top of the repository)';
+                : '该栈的文件（其 compose 文件位于仓库根目录）';
             dialog = {
                 title: '有更新的提交位于：' + check.branch,
                 text: latestLine + '\n' + deployedLine + '.\nThe commits since then change ' + changed + '.',
@@ -5405,8 +5405,8 @@ function startAllStacks() {
     var stackNames = stacks.map(function(s) {
         return composeEscapeHtml(s.projectName);
     }).join('<br>');
-    var title = autostartOnly ? 'Start Autostart Stacks?' : '启动所有栈？';
-    var confirmText = autostartOnly ? 'Yes, start ' + stacks.length + ' autostart stack' + (stacks.length > 1 ? 's' : '') : 'Yes, start ' + stacks.length + ' stack' + (stacks.length > 1 ? 's' : '');
+    var title = autostartOnly ? '启动自动启动的栈？' : '启动所有栈？';
+    var confirmText = autostartOnly ? '是，启动 ' + stacks.length + ' autostart stack' + (stacks.length > 1 ? 's' : '') : '是，启动 ' + stacks.length + ' stack' + (stacks.length > 1 ? 's' : '');
 
     var bgCheckboxHtml = '<div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--dynamix-box-inner-div-border-color);display:flex;align-items:center;gap:8px;">' +
         '<input type="checkbox" id="swal-run-bg-startall" style="width:16px;height:16px;cursor:pointer;">' +
@@ -5822,13 +5822,13 @@ function waitForStackActionDialogClose(callback) {
 function renderStackActionDialog(action, displayName, path, profile, containers, hasBuild, showRemoveOrphans) {
     hasBuild = hasBuild || false;
     // Action-specific configuration
-    var pullLabel = hasBuild ? 'Build' : 'Pull';
+    var pullLabel = hasBuild ? '构建' : '拉取';
     var config = {
         'up': {
             title: 'Compose 启动：' + composeEscapeHtml(displayName),
-            description: 'This will create and start all containers in <b>' + composeEscapeHtml(displayName) + '</b>.',
-            listTitle: 'CONTAINERS',
-            warning: 'Images will be pulled if not present locally.',
+            description: '这将创建并启动 <b>' + composeEscapeHtml(displayName) + '</b> 中的所有容器。',
+            listTitle: '容器',
+            warning: '本地没有镜像时会自动拉取。',
             warningIcon: 'info-circle',
             warningColor: window.getComputedStyle(document.documentElement).getPropertyValue('--dynamix-ui-dropdownchecklist-color'),
             confirmText: '启动',
@@ -5838,9 +5838,9 @@ function renderStackActionDialog(action, displayName, path, profile, containers,
         },
         'down': {
             title: 'Compose 停止并移除：' + composeEscapeHtml(displayName),
-            description: 'This will stop and remove all containers in <b>' + composeEscapeHtml(displayName) + '</b>.',
-            listTitle: 'CONTAINERS',
-            warning: 'Containers will be removed but data in volumes is preserved.',
+            description: '这将停止并移除 <b>' + composeEscapeHtml(displayName) + '</b> 中的所有容器。',
+            listTitle: '容器',
+            warning: '容器会被移除，但数据卷中的数据会保留。',
             warningIcon: 'exclamation-triangle',
             warningColor: window.getComputedStyle(document.documentElement).getPropertyValue('--dynamix-sb-message-link-color'),
             confirmText: '停止',
@@ -5850,9 +5850,9 @@ function renderStackActionDialog(action, displayName, path, profile, containers,
         },
         'stop': {
             title: 'Compose 停止：' + composeEscapeHtml(displayName),
-            description: 'This will stop all containers in <b>' + composeEscapeHtml(displayName) + '</b> without removing them.',
-            listTitle: 'CONTAINERS',
-            warning: 'Containers will be stopped but not removed. Use Compose Up to start them again.',
+            description: '这将停止 <b>' + composeEscapeHtml(displayName) + '</b> 中的所有容器，但不会移除它们。',
+            listTitle: '容器',
+            warning: '容器会被停止但不会移除。再次启动请使用 Compose Up。',
             warningIcon: 'info-circle',
             warningColor: window.getComputedStyle(document.documentElement).getPropertyValue('--dynamix-ui-dropdownchecklist-color'),
             confirmText: '停止',
@@ -5861,9 +5861,9 @@ function renderStackActionDialog(action, displayName, path, profile, containers,
         },
         'restart': {
             title: 'Compose 重启：' + composeEscapeHtml(displayName),
-            description: 'This will restart all containers in <b>' + composeEscapeHtml(displayName) + '</b>.',
-            listTitle: 'CONTAINERS',
-            warning: 'Containers will be recreated. Data in volumes is preserved.',
+            description: '这将重启 <b>' + composeEscapeHtml(displayName) + '</b> 中的所有容器。',
+            listTitle: '容器',
+            warning: '容器会被重建，数据卷中的数据会保留。',
             warningIcon: 'info-circle',
             warningColor: window.getComputedStyle(document.documentElement).getPropertyValue('--dynamix-ui-dropdownchecklist-color'),
             confirmText: '重启',
@@ -5872,9 +5872,9 @@ function renderStackActionDialog(action, displayName, path, profile, containers,
         },
         'pull': {
             title: pullLabel + ': ' + composeEscapeHtml(displayName),
-            description: 'This will ' + (hasBuild ? 'build images for' : '拉取以下栈的最新镜像：') + ' <b>' + composeEscapeHtml(displayName) + '</b> without starting containers.',
-            listTitle: 'CONTAINERS',
-            warning: hasBuild ? 'Images will be built from Dockerfile.' : '将从镜像仓库拉取镜像。',
+            description: '这将' + (hasBuild ? '为以下栈构建镜像：' : '拉取以下栈的最新镜像：') + ' <b>' + composeEscapeHtml(displayName) + '</b>，但不启动容器。',
+            listTitle: '容器',
+            warning: hasBuild ? '将根据 Dockerfile 构建镜像。' : '将从镜像仓库拉取镜像。',
             warningIcon: 'info-circle',
             warningColor: window.getComputedStyle(document.documentElement).getPropertyValue('--dynamix-ui-dropdownchecklist-color'),
             confirmText: pullLabel,
@@ -5883,20 +5883,20 @@ function renderStackActionDialog(action, displayName, path, profile, containers,
         },
         'update': {
             title: '更新：' + composeEscapeHtml(displayName),
-            description: 'This will pull the latest images and recreate containers in <b>' + composeEscapeHtml(displayName) + '</b>.',
-            listTitle: 'CONTAINERS',
-            warning: 'Running containers will be recreated with the latest images.',
+            description: '这将拉取最新镜像并重建 <b>' + composeEscapeHtml(displayName) + '</b> 中的所有容器。',
+            listTitle: '容器',
+            warning: '运行中的容器会用最新镜像重建。',
             warningIcon: 'exclamation-triangle',
             warningColor: window.getComputedStyle(document.documentElement).getPropertyValue('--brand-orange') || window.getComputedStyle(document.documentElement).getPropertyValue('--dynamix-sb-message-link-color'),
-            confirmText: 'Update',
+            confirmText: '更新',
             showVersionArrow: true,
             confirmedFn: UpdateStackConfirmed
         },
         'forceUpdate': {
             title: '强制更新：' + composeEscapeHtml(displayName),
-            description: 'This will pull the latest images and rebuild containers in <b>' + composeEscapeHtml(displayName) + '</b>, even if no updates are detected.',
-            listTitle: 'CONTAINERS',
-            warning: 'All containers will be recreated with freshly pulled images.',
+            description: '这将拉取最新镜像并重新构建 <b>' + composeEscapeHtml(displayName) + '</b> 中的容器，即使没有检测到更新。',
+            listTitle: '容器',
+            warning: '所有容器都会用新拉取的镜像重建。',
             warningIcon: 'exclamation-triangle',
             warningColor: window.getComputedStyle(document.documentElement).getPropertyValue('--brand-orange') || window.getComputedStyle(document.documentElement).getPropertyValue('--dynamix-sb-message-link-color'),
             confirmText: '强制更新',
@@ -6731,7 +6731,7 @@ function showGitLocalChanges($box, git) {
     );
     if (git.commitMadeByHand) {
         $box.append($('<div>').text('已检出的提交 ' + gitShortCommit(git.checkedOutCommit)
-            + ' was made in the clone by hand, not in the repository.'));
+            + ' 是在克隆中手工改的，不是仓库里的改动。'));
     }
     if (changes.length > 0) {
         $box.append($('<div>').text('已更改的文件：' + changes.join(', ')));
@@ -6789,8 +6789,8 @@ function openConvertToGitModal() {
                     </div>
                     <div class="settings-field" id="compose-convert-git-credential-wrap">
                         <label for="compose-convert-git-credential">凭据</label>
-                        <select id="compose-convert-git-credential"><option value="">None (a public repository)</option></select>
-                        <div class="settings-field-help">For a private https repository, first add a git token on the Credentials tab of the plugin's settings, then choose it here. For an ssh repository, no credential is needed: the stack uses its repository's deploy key.</div>
+                        <select id="compose-convert-git-credential"><option value="">无（公开仓库）</option></select>
+                        <div class="settings-field-help">私有 https 仓库请先在插件设置的“凭据”标签中添加 Git 令牌，然后在此选择。ssh 仓库无需凭据：该栈会使用其仓库的部署密钥。</div>
                     </div>
                 </div>
                 <div class="compose-modal-footer">
@@ -7371,12 +7371,12 @@ function createOverrideTemplate() {
     }).done(function(data) {
         try {
             if (!data) {
-                throw new Error('Empty server response');
+                throw new Error('服务器响应为空');
             }
 
             var response = JSON.parse(data);
             if (response.result !== 'success') {
-                if (handleStaleEditorResponse(response, 'Override file location changed while this dialog was open. Reloading the editor.')) {
+                if (handleStaleEditorResponse(response, '此对话框打开期间覆盖文件位置已变更，正在重新加载编辑器。')) {
                     return;
                 }
                 throw new Error(response.message || '创建覆盖模板失败。');
@@ -7432,7 +7432,7 @@ function createEnvTemplate() {
         expectedPath: editorModal.filePaths.env || ''
     }).done(function(data) {
         try {
-            if (!data) throw new Error('Empty server response');
+            if (!data) throw new Error('服务器响应为空');
             var response = JSON.parse(data);
             if (response.result !== 'success') {
                 if (handleStaleEditorResponse(response, '.env file location changed while this dialog was open. Reloading the editor.')) {
@@ -7625,7 +7625,7 @@ function renderLabelsUI(mainDoc, overrideDoc) {
     if (!hasServices) {
         var $empty = $('<div>', { 'class': 'labels-empty-state' });
         $empty.append($('<i>', { 'class': 'fa fa-cubes' }));
-        $empty.append(document.createTextNode(' No services defined in compose file'));
+        $empty.append(document.createTextNode(' compose 文件中未定义任何服务'));
         $container.append($empty);
     }
 
@@ -7633,7 +7633,7 @@ function renderLabelsUI(mainDoc, overrideDoc) {
         var $deletedSection = $('<div>', { 'class': 'labels-deleted-section' });
         var $deletedTitle = $('<div>', { 'class': 'labels-deleted-title' }).attr('onclick', 'toggleDeletedServices(this)');
         $deletedTitle.append($('<i>', { 'class': 'fa fa-chevron-right' }));
-        $deletedTitle.append(document.createTextNode(' Orphaned Services (copy values before saving)'));
+        $deletedTitle.append(document.createTextNode(' 孤立服务（保存前请先复制所需的值）'));
         $deletedSection.append($deletedTitle).append($deletedServices);
         $container.append($deletedSection);
     }
@@ -7879,7 +7879,7 @@ function handleStaleEditorResponse(response, message) {
         return false;
     }
 
-    reloadEditorModal(editorModal.currentTab, message || response.message || 'Stack paths changed while this dialog was open.');
+    reloadEditorModal(editorModal.currentTab, message || response.message || '此对话框打开期间栈路径已变更。');
     return true;
 }
 
@@ -8010,7 +8010,7 @@ function parseSaveResponse(data, saveErrors, saveTarget) {
         if (response.result === 'success') {
             return true;
         }
-        if (handleStaleEditorResponse(response, 'The save target changed while this dialog was open. Reloading the editor.')) {
+        if (handleStaleEditorResponse(response, '此对话框打开期间保存目标已变更，正在重新加载编辑器。')) {
             if (saveErrors) saveErrors.push('__STALE_PATH__');
             return false;
         }
@@ -8022,7 +8022,7 @@ function parseSaveResponse(data, saveErrors, saveTarget) {
 }
 
 function saveTab(tabName, saveErrors) {
-    if (!editorModal.editors[tabName]) return Promise.reject('Editor not available');
+    if (!editorModal.editors[tabName]) return Promise.reject('编辑器不可用');
     var content = editorModal.editors[tabName].getValue();
     var project = editorModal.currentProject;
     var actionStr = null;
@@ -8038,7 +8038,7 @@ function saveTab(tabName, saveErrors) {
             actionStr = 'saveOverride';
             break;
         default:
-            return Promise.reject('Unknown tab');
+            return Promise.reject('未知标签页');
     }
 
     var savePayload = {
@@ -8205,7 +8205,7 @@ function saveSettings(saveErrors) {
                 }
                 return false;
             }).fail(function() {
-                if (saveErrors) saveErrors.push('Failed to save stack settings (network error).');
+                if (saveErrors) saveErrors.push('保存栈设置失败（网络错误）。');
                 return false;
             })
         );
@@ -8240,7 +8240,7 @@ function saveSettings(saveErrors) {
                 if (saveErrors) saveErrors.push('保存覆盖管理方式失败，服务器返回为空。');
                 return false;
             }).fail(function() {
-                if (saveErrors) saveErrors.push('Failed to save override management mode (network error).');
+                if (saveErrors) saveErrors.push('保存覆盖文件管理方式失败（网络错误）。');
                 return false;
             })
         );
@@ -8417,7 +8417,7 @@ function saveLabels(saveErrors) {
 
     if (editorModal.labelsData.overrideHasCustomTags) {
         if (saveErrors) {
-            saveErrors.push('WebUI labels cannot be saved because compose.override.yaml uses !override, !reset, or !merge tags. Edit the override file directly to preserve those tags.');
+            saveErrors.push('无法保存 WebUI 标签，因为 compose.override.yaml 使用了 !override、!reset 或 !merge 标签。请直接编辑覆盖文件以保留这些标签。');
         }
         return $.Deferred().resolve(false).promise();
     }
@@ -9050,13 +9050,13 @@ function renderContainerDetails(stackId, containers, project) {
     html += '<th class="ct-col-source">来源</th>';
     html += '<th class="ct-col-tag">标签</th>';
     html += '<th class="ct-col-net">网络</th>';
-    html += '<th class="ct-col-ip">Container IP</th>';
+    html += '<th class="ct-col-ip">容器 IP</th>';
     html += '<th class="ct-col-cpu">CPU</th>';
-    html += '<th class="ct-col-memory">Memory</th>';
-    html += '<th class="ct-col-net_io">Net I/O</th>';
-    html += '<th class="ct-col-block_io">Disk I/O</th>';
-    html += '<th class="ct-col-cport">Container Port</th>';
-    html += '<th class="ct-col-lport">LAN IP:Port</th>';
+    html += '<th class="ct-col-memory">内存</th>';
+    html += '<th class="ct-col-net_io">网络 I/O</th>';
+    html += '<th class="ct-col-block_io">磁盘 I/O</th>';
+    html += '<th class="ct-col-cport">容器端口</th>';
+    html += '<th class="ct-col-lport">局域网 IP:端口</th>';
     html += '</tr></thead>';
     html += '<tbody>';
 

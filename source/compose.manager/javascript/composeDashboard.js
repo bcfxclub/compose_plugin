@@ -94,21 +94,21 @@
                     window.open(webui, '_blank');
                 }});
             }
-            opts.push({text:'Logs', icon:'fa-file-text-o', action:function(e){
+            opts.push({text:'日志', icon:'fa-file-text-o', action:function(e){
                 e.preventDefault();
                 openStackLogs(stackName);
             }});
             opts.push({divider:true});
-            opts.push({text:'Stop', icon:'fa-stop', action:function(e){
+            opts.push({text:'停止', icon:'fa-stop', action:function(e){
                 e.preventDefault();
                 stackAction(stackName, 'stop');
             }});
-            opts.push({text:'Restart', icon:'fa-refresh', action:function(e){
+            opts.push({text:'重启', icon:'fa-refresh', action:function(e){
                 e.preventDefault();
                 stackAction(stackName, 'restart');
             }});
         } else {
-            opts.push({text:'Start', icon:'fa-play', action:function(e){
+            opts.push({text:'启动', icon:'fa-play', action:function(e){
                 e.preventDefault();
                 stackAction(stackName, 'start');
             }});
@@ -190,21 +190,21 @@
                 e.preventDefault();
                 openDockerTerminal(ctName, false, shell || '/bin/bash');
             }});
-            opts.push({text:'Logs', icon:'fa-file-text-o', action:function(e){
+            opts.push({text:'日志', icon:'fa-file-text-o', action:function(e){
                 e.preventDefault();
                 openDockerTerminal(ctName, true);
             }});
             opts.push({divider:true});
-            opts.push({text:'Stop', icon:'fa-stop', action:function(e){
+            opts.push({text:'停止', icon:'fa-stop', action:function(e){
                 e.preventDefault();
                 dockerAction(ctName, 'stop');
             }});
-            opts.push({text:'Restart', icon:'fa-refresh', action:function(e){
+            opts.push({text:'重启', icon:'fa-refresh', action:function(e){
                 e.preventDefault();
                 dockerAction(ctName, 'restart');
             }});
         } else {
-            opts.push({text:'Start', icon:'fa-play', action:function(e){
+            opts.push({text:'启动', icon:'fa-play', action:function(e){
                 e.preventDefault();
                 dockerAction(ctName, 'start');
             }});
