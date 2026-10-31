@@ -449,7 +449,7 @@ foreach ($stackInfos as $stackInfo) {
     $stackCells['uptime'] = "<td class='col-uptime'><span class='$uptimeClass'>$uptimeDisplay</span></td>";
 
     // Health column (updated from detailed inspect data by frontend; initial fallback here)
-    $healthDisplay = $isrunning ? 'n/a' : '已停止';
+    $healthDisplay = $isrunning ? '不适用' : '已停止';
     $healthClass = $isrunning ? 'compose-text-muted' : 'grey-text';
     $stackCells['health'] = "<td class='col-health'><span class='$healthClass'>$healthDisplay</span></td>";
 

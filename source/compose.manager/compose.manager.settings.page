@@ -847,8 +847,8 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
                 
                 var options = {
                     labels_placement: 'right',
-                    on_label: 'YES',
-                    off_label: 'NO'
+                    on_label: '是',
+                    off_label: '否'
                 };
                 
                 // Use custom labels if data attributes are present
@@ -1339,8 +1339,8 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
             $('#global-settings-apply').prop('disabled', !hasChanges);
             $('#global-settings-reset').prop('disabled', !hasChanges);
             $('#global-settings-default').prop('disabled', settingsUnifiedState.activeTab !== 'settings');
-            var changedTabsText = changedTabs + (changedTabs === 1 ? ' tab changed' : ' tabs changed');
-            var changedSettingsText = changedSettings + (changedSettings === 1 ? ' setting changed' : ' settings changed');
+            var changedTabsText = changedTabs + ' 个标签页已更改';
+            var changedSettingsText = changedSettings + ' 项设置已更改';
             $('#global-settings-change-count').text(changedTabsText + ' | ' + changedSettingsText);
 
             var debugSignature = [
@@ -1744,14 +1744,14 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
                     $('#compose-log-container').html('<span class="compose-status-danger">Error loading logs: ' + (result.message || '未知错误') + '</span>');
                 }
             } catch (e) {
-                $('#compose-log-container').html('<span class="compose-status-danger">Error parsing response</span>');
+                $('#compose-log-container').html('<span class="compose-status-danger">解析响应失败</span>');
             }
         });
     }
 
     function formatLogEntries(logs) {
         if (!logs || logs.length === 0) {
-            return '<span class="compose-text-muted">No log entries found. Enable Debug Logging in Settings to capture compose commands.</span>';
+            return '<span class="compose-text-muted">未找到日志记录。请在设置中启用“调试日志”以捕获 compose 命令。</span>';
         }
 
         var html = '';
@@ -1909,7 +1909,7 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
                     $list.html('<tr><td colspan="4" class="compose-status-danger" style="text-align:center;">加载归档出错</td></tr>');
                 }
             } catch (e) {
-                $list.html('<tr><td colspan="4" class="compose-status-danger" style="text-align:center;">Error parsing response</td></tr>');
+                $list.html('<tr><td colspan="4" class="compose-status-danger" style="text-align:center;">解析响应失败</td></tr>');
             }
         });
     }
@@ -1964,7 +1964,7 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
                     selectedManifest = result;
                     renderStackChecklist(result.stacks);
                 } else {
-                    $('#restore-stack-checklist').html('<span class="compose-status-danger">' + composeEscapeHtml(result.message || 'Failed to read archive.') + '</span>');
+                    $('#restore-stack-checklist').html('<span class="compose-status-danger">' + composeEscapeHtml(result.message || '读取归档失败。') + '</span>');
                 }
             } catch (e) {
                 $('#restore-stack-checklist').html('<span class="compose-status-danger">解析响应出错。</span>');
@@ -1983,7 +1983,7 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
         }
 
         var html = '<label style="font-weight:bold;border-bottom:1px solid var(--dynamix-box-inner-div-border-color);padding-bottom:6px;margin-bottom:4px;">' +
-            '<input type="checkbox" id="restore-select-all" onchange="toggleRestoreSelectAll(this)"> Select All (' + stacks.length + ' stacks)</label>';
+            '<input type="checkbox" id="restore-select-all" onchange="toggleRestoreSelectAll(this)"> 全选（' + stacks.length + ' 个栈）</label>';
 
         stacks.forEach(function(stack) {
             html += '<label><input type="checkbox" class="restore-stack-cb" value="' + composeEscapeAttr(stack) + '" onchange="updateRestoreButton()"> ' + composeEscapeHtml(stack) + '</label>';
@@ -2648,7 +2648,7 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
                 <input type="text" name="PROJECTS_FOLDER" id="PROJECTS_FOLDER" autocomplete="off" spellcheck="false" value="<?= $cfg['PROJECTS_FOLDER'] ?>" placeholder="_(例如)_ /mnt/user/appdata/compose_projects" data-pickcloseonfile="true" data-pickfilter="img" data-pickroot="/" data-picktop="/mnt" data-pickfolders="true" required pattern="^(\/mnt\/.+\/.+|\/boot\/config\/plugins\/compose\.manager\/projects)$">
                 <a class='info nohand' id="PROJECTS_FOLDER_WARNING" onclick="HelpButton();return false;" style="display: none;">
                     <i class='fa fa-warning orb yellow-orb'></i>
-                    <span style='left:18px'><strong>Projects exist that will not be moved to the new project folder.</strong></span>
+                    <span style='left:18px'><strong>存在不会迁移到新项目文件夹的项目。</strong></span>
                 </a>
                 <blockquote class="inline_help">选择 compose.manager 存放栈的文件夹。<br> <strong>警告：</strong>修改此路径不会自动迁移已有的项目文件夹。</blockquote>
             </dd>
@@ -2676,7 +2676,7 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
             </dl>
 
             <div id="aggressive-mode-warning">
-                <span style="font-size:0.95em;">⚠️ <strong>警告：</strong> action confirmations are disabled and commands default to background mode. Operations execute immediately in background.</span>
+                <span style="font-size:0.95em;">⚠️ <strong>警告：</strong> 操作确认已禁用，命令默认在后台运行，操作会立即在后台执行。</span>
             </div>
 
         </div>
@@ -2727,7 +2727,7 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
         <dl>
             <dt style="cursor: help;" onclick="toggleHelp(this)">_(Compose 文件发现)_:</dt>
             <dd>
-                <input type="checkbox" name="NEW_STACK_USE_DEFAULT_COMPOSE_FILES" id="NEW_STACK_USE_DEFAULT_COMPOSE_FILES" class="compose-toggle custom-toggle" data-on-label="Auto" data-off-label="Manual" <?= ($cfg['NEW_STACK_USE_DEFAULT_COMPOSE_FILES'] ?? 'false') == 'true' ? 'checked' : '' ?>>
+                <input type="checkbox" name="NEW_STACK_USE_DEFAULT_COMPOSE_FILES" id="NEW_STACK_USE_DEFAULT_COMPOSE_FILES" class="compose-toggle custom-toggle" data-on-label="自动" data-off-label="手动" <?= ($cfg['NEW_STACK_USE_DEFAULT_COMPOSE_FILES'] ?? 'false') == 'true' ? 'checked' : '' ?>>
                 <blockquote class="inline_help"><strong>自动：</strong>使用 Docker Compose 默认的文件发现机制（不显式传入 <code>-f</code> 参数）。适用于依赖自动加载 <code>compose.override.*</code> 和/或 <code>.env</code> 中 <code>COMPOSE_FILE</code> 的项目。<br> <strong>手动：</strong>显式指定要使用的 compose 文件。</blockquote>
             </dd>
         </dl>
@@ -2735,7 +2735,7 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
         <dl>
             <dt style="cursor: help;" onclick="toggleHelp(this)">_(覆盖文件管理)_:</dt>
             <dd>
-                <input type="checkbox" name="NEW_STACK_OVERRIDE_MANAGEMENT_AUTOMATIC" id="NEW_STACK_OVERRIDE_MANAGEMENT_AUTOMATIC" class="compose-toggle custom-toggle" data-on-label="Auto" data-off-label="Manual" <?= ($cfg['NEW_STACK_OVERRIDE_MANAGEMENT_AUTOMATIC'] ?? 'true') == 'true' ? 'checked' : '' ?>>
+                <input type="checkbox" name="NEW_STACK_OVERRIDE_MANAGEMENT_AUTOMATIC" id="NEW_STACK_OVERRIDE_MANAGEMENT_AUTOMATIC" class="compose-toggle custom-toggle" data-on-label="自动" data-off-label="手动" <?= ($cfg['NEW_STACK_OVERRIDE_MANAGEMENT_AUTOMATIC'] ?? 'true') == 'true' ? 'checked' : '' ?>>
                 <blockquote class="inline_help"><strong>自动：</strong>插件自动管理项目覆盖文件，以便进行自动化修改。<br> <strong>手动：</strong>阻止自动化修改，使用原始覆盖文件编辑模式。</blockquote>
             </dd>
         </dl>
@@ -2862,9 +2862,9 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
                 <label>
                     <select name="COMPOSE_STATS_RATE_MODE" id="COMPOSE_STATS_RATE_MODE" style="min-width:180px;">
                         <?php $statsRateMode = strtolower(trim((string)($cfg['COMPOSE_STATS_RATE_MODE'] ?? 'live'))); ?>
-                        <option value="live" <?= $statsRateMode === 'live' ? 'selected' : '' ?>>_(Live (max updates))_</option>
-                        <option value="medium" <?= $statsRateMode === 'medium' ? 'selected' : '' ?>>_(Medium (~2s))_</option>
-                        <option value="slow" <?= $statsRateMode === 'slow' ? 'selected' : '' ?>>_(Slow (~5s))_</option>
+                        <option value="live" <?= $statsRateMode === 'live' ? 'selected' : '' ?>>_(实时（最高刷新率）)_</option>
+                        <option value="medium" <?= $statsRateMode === 'medium' ? 'selected' : '' ?>>_(中等（约 2 秒）)_</option>
+                        <option value="slow" <?= $statsRateMode === 'slow' ? 'selected' : '' ?>>_(较慢（约 5 秒）)_</option>
                         <option value="custom" <?= $statsRateMode === 'custom' ? 'selected' : '' ?>>_(自定义)_</option>
                     </select>
                 </label>
@@ -2995,7 +2995,7 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
     <!-- Per-Stack Configuration Section -->
     <div class="backup-section">
         <div class="title"><span class="left"><i class="fa fa-cubes icon"></i>_(各栈自动更新设置)_</span></div>
-        <p style="margin:0 0 15px 0;color:var(--dynamix-sb-title-text-color);font-size:0.95em;">Enable or disable auto-updates for individual stacks and set their specific schedules.</p>
+        <p style="margin:0 0 15px 0;color:var(--dynamix-sb-title-text-color);font-size:0.95em;">为各个栈启用或停用自动更新，并设置各自的计划。</p>
 
         <dl>
             <dt>_(栈)_:</dt>
@@ -3028,7 +3028,7 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
     <!-- Backup Settings Section -->
     <div class="backup-section">
         <div class="title"><span class="left"><i class="fa fa-download icon"></i>_(备份配置)_</span></div>
-        <p style="margin:0 0 15px 0;color:var(--dynamix-sb-title-text-color);font-size:0.95em;">Configure backup storage location, retention policy, and create scheduled backups.</p>
+        <p style="margin:0 0 15px 0;color:var(--dynamix-sb-title-text-color);font-size:0.95em;">配置备份存储位置、保留份数，并创建定时备份。</p>
 
         <dl>
             <dt style="cursor: help;" onclick="toggleHelp(this)">_(备份目标)_:</dt>
@@ -3163,7 +3163,7 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
         <input type="button" id="global-settings-default" class="settings-action-btn" value="_(默认)_">
         <input type="button" id="global-settings-apply" class="settings-action-btn" value="_(应用)_" disabled>
         <input type="button" id="global-settings-reset" class="settings-action-btn" value="_(重置)_" disabled>
-        <span class="settings-actions-meta" id="global-settings-change-count">0 tabs changed | 0 settings changed</span>
+        <span class="settings-actions-meta" id="global-settings-change-count">0 个标签页已更改 | 0 项设置已更改</span>
     </div>
 </div>
 
@@ -3221,7 +3221,7 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
 
     <div class="credits-section" style="padding:12px;">
         <p><strong>原始 GitHub 仓库：</strong> <a href="https://github.com/dcflachs/compose_plugin" target="_blank" rel="noopener noreferrer">dcflachs/compose_plugin</a></p>
-        <p>Thanks to the original authors and all contributors for their work on the upstream project.</p>
+        <p>感谢原项目作者以及所有贡献者的工作。</p>
     </div>
 
     <div class="credits-section" style="padding:12px;">
@@ -3230,27 +3230,27 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
             <a href="https://github.com/ajaxorg/ace" target="_blank" rel="noopener noreferrer">https://github.com/ajaxorg/ace</a>
             &nbsp;&mdash;&nbsp;Version: <span id="ace-version">检测中...</span>
         </p>
-        <p>Used for the built-in YAML editor in stack configuration. Thanks to the Ace team for providing this powerful editor component.</p>
+        <p>用于栈配置中的内置 YAML 编辑器。感谢 Ace 团队提供这一强大的编辑器组件。</p>
     </div>
 
     <div class="credits-section" style="padding:12px;">
         <h3>第三方库</h3>
         <ul>
-            <li><a href="https://github.com/nodeca/js-yaml" target="_blank" rel="noopener noreferrer">js-yaml</a> — client-side YAML parsing.</li>
-            <li><a href="https://jquery.com/" target="_blank" rel="noopener noreferrer">jQuery</a> — DOM and AJAX utilities.</li>
-            <li><a href="https://github.com/jedfoster/Readmore.js" target="_blank" rel="noopener noreferrer">Readmore.js</a> — collapsing/expanding long descriptions.</li>
-            <li><a href="https://sweetalert2.github.io/" target="_blank" rel="noopener noreferrer">SweetAlert2</a> — modal/confirmation dialogs.</li>
-            <li><a href="https://github.com/js-cookie/js-cookie" target="_blank" rel="noopener noreferrer">js-cookie</a> / <a href="https://github.com/carhartl/jquery-cookie" target="_blank" rel="noopener noreferrer">jquery.cookie</a> — small persistence helpers.</li>
-            <li><a href="https://fontawesome.com/" target="_blank" rel="noopener noreferrer">Font Awesome</a> — iconography used across the UI.</li>
+            <li><a href="https://github.com/nodeca/js-yaml" target="_blank" rel="noopener noreferrer">js-yaml</a> —— 客户端 YAML 解析。</li>
+            <li><a href="https://jquery.com/" target="_blank" rel="noopener noreferrer">jQuery</a> —— DOM 与 AJAX 工具。</li>
+            <li><a href="https://github.com/jedfoster/Readmore.js" target="_blank" rel="noopener noreferrer">Readmore.js</a> —— 折叠/展开长描述。</li>
+            <li><a href="https://sweetalert2.github.io/" target="_blank" rel="noopener noreferrer">SweetAlert2</a> —— 弹窗与确认对话框。</li>
+            <li><a href="https://github.com/js-cookie/js-cookie" target="_blank" rel="noopener noreferrer">js-cookie</a> / <a href="https://github.com/carhartl/jquery-cookie" target="_blank" rel="noopener noreferrer">jquery.cookie</a> —— 轻量持久化辅助。</li>
+            <li><a href="https://fontawesome.com/" target="_blank" rel="noopener noreferrer">Font Awesome</a> —— 界面使用的图标库。</li>
         </ul>
-        <p>These libraries are bundled or referenced by the plugin to provide editing, UI, and persistence features.</p>
+        <p>这些库被插件打包或引用，用于提供编辑、界面与持久化功能。</p>
     </div>
 
     <div class="credits-section" style="padding:12px;">
-        <h3>Runtime & Platform</h3>
+        <h3>运行时与平台</h3>
         <ul>
-            <li><a href="https://www.docker.com/" target="_blank" rel="noopener noreferrer">Docker</a> &amp; <a href="https://docs.docker.com/compose/" target="_blank" rel="noopener noreferrer">Docker Compose</a> — runtime and compose format.</li>
-            <li><a href="https://unraid.net/" target="_blank" rel="noopener noreferrer">unRAID</a> &amp; <a href="https://github.com/unraid/dynamix" target="_blank" rel="noopener noreferrer">Dynamix</a> — platform integration and WebUI pieces (e.g., `dynamix.docker.manager`).</li>
+            <li><a href="https://www.docker.com/" target="_blank" rel="noopener noreferrer">Docker</a> &amp; <a href="https://docs.docker.com/compose/" target="_blank" rel="noopener noreferrer">Docker Compose</a> —— 运行时与 compose 格式。</li>
+            <li><a href="https://unraid.net/" target="_blank" rel="noopener noreferrer">unRAID</a> &amp; <a href="https://github.com/unraid/dynamix" target="_blank" rel="noopener noreferrer">Dynamix</a> —— 平台集成与 WebUI 组件（例如 `dynamix.docker.manager`）。</li>
         </ul>
     </div>
 
@@ -3260,7 +3260,7 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
         <div id="contributors-list">
             <div class="credits-loading"><i class="fa fa-spinner fa-spin"></i>正在加载贡献者...</div>
         </div>
-        <p>Thank you to everyone who has contributed code, issues, testing, and documentation.</p>
+        <p>感谢所有贡献代码、反馈问题、参与测试和撰写文档的人。</p>
     </div>
 
     <script>
@@ -3270,7 +3270,7 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
             var $list = $('#contributors-list');
 
             function showFallback() {
-                $list.html('<p>Unable to load contributors. View on GitHub: <a href="https://github.com/' + repo + '/graphs/contributors" target="_blank" rel="noopener noreferrer">' + repo + ' — Contributors</a></p>');
+                $list.html('<p>无法加载贡献者列表。可在 GitHub 查看：<a href="https://github.com/' + repo + '/graphs/contributors" target="_blank" rel="noopener noreferrer">' + repo + ' — Contributors</a></p>');
             }
 
             // Use GitHub public contributors API (CORS-enabled). Limit to top N contributors.
@@ -3292,7 +3292,7 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
                             '<a href="' + url + '" target="_blank" rel="noopener noreferrer"><img src="' + avatar + '" alt="' + login + '" style="width:48px;height:48px;border-radius:4px;"></a>' +
                             '<div style="flex:1;min-width:0;overflow:hidden;">' +
                             '<a href="' + url + '" target="_blank" rel="noopener noreferrer" style="font-weight:600;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + login + '</a>' +
-                            '<span style="color: var(--dynamix-sb-title-text-color);font-size:0.9em;">' + contributions + ' contributions</span>' +
+                            '<span style="color: var(--dynamix-sb-title-text-color);font-size:0.9em;">' + contributions + ' 次贡献</span>' +
                             '</div>' +
                             '</li>';
                     });
@@ -3308,10 +3308,10 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
     <div class="credits-section" style="padding:12px;">
         <h3>构建与打包</h3>
         <ul>
-            <li>`pkg_build.sh` — packaging helper used when assembling plugin releases.</li>
-            <li><a href="https://github.com/ajaxorg/ace-builds" target="_blank" rel="noopener noreferrer">ace-builds</a> — Ace editor (provided by Unraid 7.0.0+ via Dynamix; downloaded during install on older versions).</li>
+            <li>`pkg_build.sh` —— 组装插件发布包时使用的打包脚本。</li>
+            <li><a href="https://github.com/ajaxorg/ace-builds" target="_blank" rel="noopener noreferrer">ace-builds</a> —— Ace 编辑器（Unraid 7.0.0+ 由 Dynamix 提供；更早版本会在安装时下载）。</li>
         </ul>
-        <p>If you maintain packaging scripts or upstream libraries we reference and would like a more explicit mention, let me know and I'll add it.</p>
+        <p>如果你维护我们引用的打包脚本或上游库，并希望获得更明确的署名，请告诉我，我会补充。</p>
     </div>
 
 

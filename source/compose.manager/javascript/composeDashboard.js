@@ -44,7 +44,7 @@
 
     // Smart uptime formatting - single unit, less granularity over time
     function formatUptime(startedAt, isRunning) {
-        if (!isRunning) return 'stopped';
+        if (!isRunning) return '已停止';
         if (!startedAt) return '';
 
         var started = new Date(startedAt);
@@ -58,17 +58,17 @@
         var years = Math.floor(days / 365);
 
         if (mins < 120) {
-            return mins + ' min' + (mins !== 1 ? 's' : '');
+            return mins + ' 分钟';
         } else if (hours < 48) {
-            return hours + ' hour' + (hours !== 1 ? 's' : '');
+            return hours + ' 小时';
         } else if (days < 14) {
-            return days + ' day' + (days !== 1 ? 's' : '');
+            return days + ' 天';
         } else if (weeks < 8) {
-            return weeks + ' week' + (weeks !== 1 ? 's' : '');
+            return weeks + ' 周';
         } else if (months < 24) {
-            return months + ' month' + (months !== 1 ? 's' : '');
+            return months + ' 个月';
         } else {
-            return years + ' year' + (years !== 1 ? 's' : '');
+            return years + ' 年';
         }
     }
 
