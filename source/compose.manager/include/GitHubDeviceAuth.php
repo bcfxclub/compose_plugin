@@ -27,12 +27,12 @@ final class GitHubDeviceAuth
     public function start(?string $renewCredentialId = null): array
     {
         if ($this->clientId === '') {
-            throw new RuntimeException('GitHub sign-in is not configured.');
+            throw new RuntimeException('未配置 GitHub 登录。');
         }
         $renewCredentialId = trim((string) $renewCredentialId);
         if ($renewCredentialId !== '') {
             if (!$this->vault->hasCredential($renewCredentialId)) {
-                throw new RuntimeException('The credential to renew no longer exists.');
+                throw new RuntimeException('要续期的凭据已不存在。');
             }
             $existing = $this->vault->getCredentialSummary($renewCredentialId);
             if (($existing['provider'] ?? '') !== 'github' || ($existing['authMethod'] ?? '') !== 'oauth_device') {
@@ -59,7 +59,7 @@ final class GitHubDeviceAuth
             'renewCredentialId' => $renewCredentialId,
         ]);
         composeLogger(
-            $renewCredentialId !== '' ? 'GitHub sign-in started to renew credential' : 'GitHub sign-in started for new credential',
+            $renewCredentialId !== '' ? 'GitHub 登录已开始，用于续期凭据' : 'GitHub 登录已开始，用于新建凭据',
             $renewCredentialId !== '' ? ['id' => $renewCredentialId] : null,
             'user',
             'info',
@@ -81,7 +81,7 @@ final class GitHubDeviceAuth
         $session = $this->readState($state);
         if ((int) $session['expiresAt'] <= time()) {
             $this->deleteState($state);
-            composeLogger('GitHub sign-in expired before authorization completed', null, 'user', 'warning', 'credential');
+            composeLogger('GitHub 登录在授权完成前已过期', null, 'user', 'warning', 'credential');
             return ['status' => 'expired'];
         }
         if ((int) $session['nextPollAt'] > time()) {
@@ -106,12 +106,12 @@ final class GitHubDeviceAuth
         }
         if ($error !== '') {
             $this->deleteState($state);
-            composeLogger('GitHub sign-in failed', ['error' => $error], 'user', 'warning', 'credential');
+            composeLogger('GitHub 登录失败', ['error' => $error], 'user', 'warning', 'credential');
             return ['status' => $error === 'access_denied' ? 'denied' : 'expired'];
         }
         $token = trim((string) ($response['access_token'] ?? ''));
         if ($token === '') {
-            throw new RuntimeException('GitHub did not return an access token.');
+            throw new RuntimeException('GitHub 未返回访问令牌。');
         }
         $user = ($this->request)('GET', 'https://api.github.com/user', [], [
             'Authorization: Bearer ' . $token,
@@ -119,7 +119,7 @@ final class GitHubDeviceAuth
         ]);
         $username = trim((string) ($user['login'] ?? ''));
         if ($username === '') {
-            throw new RuntimeException('Unable to read the authorized GitHub account.');
+            throw new RuntimeException('无法读取已授权的 GitHub 账号。');
         }
         $renewCredentialId = trim((string) ($session['renewCredentialId'] ?? ''));
         $name = 'GitHub - ' . $username;
@@ -141,7 +141,7 @@ final class GitHubDeviceAuth
         $this->deleteState($state);
         // Suffix matches GitHub's security log ("token ending in ...") for correlation.
         composeLogger(
-            "GitHub sign-in " . ($renewCredentialId !== '' ? 'renewed' : 'created') . " credential '{$credential['name']}' for {$username}",
+            "GitHub 登录" . ($renewCredentialId !== '' ? '已续期' : '已新建') . "凭据 '{$credential['name']}'，账号 {$username}",
             ['id' => $credential['id'], 'tokenSuffix' => substr($token, -8)],
             'user',
             'info',
@@ -174,7 +174,7 @@ final class GitHubDeviceAuth
         }
         $decoded = json_decode((string) $body, true);
         if (!is_array($decoded)) {
-            throw new RuntimeException('GitHub returned an invalid response.');
+            throw new RuntimeException('GitHub 返回了无效响应。');
         }
         return $decoded;
     }
@@ -201,12 +201,12 @@ final class GitHubDeviceAuth
     private function readState(string $state): array
     {
         if (preg_match('/^[a-f0-9]{48}$/', $state) !== 1) {
-            throw new InvalidArgumentException('Invalid GitHub sign-in session.');
+            throw new InvalidArgumentException('GitHub 登录会话无效。');
         }
         $path = COMPOSE_GITHUB_DEVICE_DIR . '/' . $state . '.json';
         $session = is_file($path) ? json_decode((string) file_get_contents($path), true) : null;
         if (!is_array($session)) {
-            throw new RuntimeException('GitHub sign-in session expired.');
+            throw new RuntimeException('GitHub 登录会话已过期。');
         }
         return $session;
     }

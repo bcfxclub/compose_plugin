@@ -606,7 +606,7 @@ class ExecActionsTest extends TestCase
         $this->assertEquals('success', $result['result']);
         $this->assertSame($stackPath . '/compose.override.yaml', $result['fileName']);
         $this->assertTrue($result['exists']);
-        $this->assertStringContainsString('Manual example:', $result['content']);
+        $this->assertStringContainsString('手动示例：', $result['content']);
         $this->assertStringContainsString('net.unraid.docker.webui', $result['content']);
         $this->assertFileExists($stackPath . '/compose.override.yaml');
         $this->assertStringContainsString('services: {}', file_get_contents($stackPath . '/compose.override.yaml'));
@@ -964,7 +964,7 @@ class ExecActionsTest extends TestCase
 
         $deleteResult = json_decode($this->executeAction('deleteCredential', ['id' => $saved['credential']['id']]), true);
         $this->assertSame('error', $deleteResult['result']);
-        $this->assertStringContainsString('start the array first', $deleteResult['message']);
+        $this->assertStringContainsString('请先启动阵列', $deleteResult['message']);
         $this->assertCount(1, (new \CredentialVault())->listCredentials());
     }
 
@@ -1009,7 +1009,7 @@ class ExecActionsTest extends TestCase
         ]), true);
 
         $this->assertSame('error', $saved['result']);
-        $this->assertStringContainsString('made by compose-git', $saved['message']);
+        $this->assertStringContainsString('由 compose-git', $saved['message']);
         $this->assertSame([], (new \CredentialVault())->listCredentials());
     }
 

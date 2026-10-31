@@ -333,7 +333,7 @@ switch ($_POST['action']) {
         $ok = @file_put_contents($tmp, json_encode($normalized, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
         $renameOk = ($ok !== false) ? @rename($tmp, $prefFile) : false;
         if ($ok === false || !$renameOk) {
-            composeLogger('Failed to persist column visibility', [
+            composeLogger('保存列可见性失败', [
                 'prefFile' => $prefFile,
                 'tmpFile' => $tmp,
                 'writeOk' => ($ok !== false),
@@ -382,7 +382,7 @@ switch ($_POST['action']) {
         exec('pgrep --ns $$ -f ' . escapeshellarg($composeInfoScript), $pgrepOutput, $pgrepStatus);
         $publisherWasRunning = ($pgrepStatus === 0);
         if (!$publisherWasRunning) {
-            composeLogger('compose_info publisher was not running; starting it', null, 'user', 'debug', 'nchan');
+            composeLogger('compose_info 推送进程未运行，正在启动', null, 'user', 'debug', 'nchan');
             exec(escapeshellarg($composeInfoScript) . ' >/dev/null 2>&1 &');
         }
         echo json_encode([
@@ -403,17 +403,17 @@ switch ($_POST['action']) {
         if ($indirectDir !== '') {
             $realIndirect = realpath($indirectDir);
             if ($realIndirect === false) {
-                composeLogger("Failed to create stack: Could not resolve indirect path: $indirectDir", null, 'user', 'error', 'stack');
+                composeLogger("创建栈失败：无法解析 indirect 路径：$indirectDir", null, 'user', 'error', 'stack');
                 echo json_encode(['result' => 'error', 'message' => '栈路径无效或不存在。']);
                 break;
             }
             if (!Path::isAllowedPath($realIndirect, ['/mnt', '/boot/config'])) {
-                composeLogger("Failed to create stack: Invalid indirect path: $indirectDir", null, 'user', 'error', 'stack');
+                composeLogger("创建栈失败：indirect 路径无效：$indirectDir", null, 'user', 'error', 'stack');
                 echo json_encode(['result' => 'error', 'message' => '栈路径必须位于 /mnt/ 或 /boot/config/ 下。']);
                 break;
             }
             if (!is_dir($realIndirect)) {
-                composeLogger("Failed to create stack: Indirect stack path does not exist: $indirectDir", null, 'user', 'error', 'stack');
+                composeLogger("创建栈失败：indirect 栈路径不存在：$indirectDir", null, 'user', 'error', 'stack');
                 echo json_encode(['result' => 'error', 'message' => '外部栈路径不存在。']);
                 break;
             }
@@ -423,12 +423,12 @@ switch ($_POST['action']) {
         } elseif ($indirectFile !== '') {
             $realFile = realpath($indirectFile);
             if ($realFile === false || !is_file($realFile)) {
-                composeLogger("Failed to create stack: Indirect compose file does not exist: $indirectFile", null, 'user', 'error', 'stack');
+                composeLogger("创建栈失败：indirect compose 文件不存在：$indirectFile", null, 'user', 'error', 'stack');
                 echo json_encode(['result' => 'error', 'message' => '外部 Compose 文件不存在。']);
                 break;
             }
             if (!Path::isAllowedPath($realFile, ['/mnt', '/boot/config'])) {
-                composeLogger("Failed to create stack: Invalid indirect compose file path: $indirectFile", null, 'user', 'error', 'stack');
+                composeLogger("创建栈失败：indirect compose 文件路径无效：$indirectFile", null, 'user', 'error', 'stack');
                 echo json_encode(['result' => 'error', 'message' => '外部 Compose 文件必须位于 /mnt/ 或 /boot/config/ 下。']);
                 break;
             }
@@ -446,7 +446,7 @@ switch ($_POST['action']) {
         try {
             $stack = StackInfo::createNew($compose_root, $stackName, $stackDesc, $indirect);
         } catch (\RuntimeException $e) {
-            composeLogger('Failed to create stack: ' . $e->getMessage(), null, 'user', 'error', 'stack');
+            composeLogger('创建栈失败：' . $e->getMessage(), null, 'user', 'error', 'stack');
             // Return user-safe messages; avoid exposing filesystem paths
             $userMessage = match (true) {
                 str_contains($e->getMessage(), '栈名称不能为空') => '栈名称不能为空。',
@@ -524,7 +524,7 @@ switch ($_POST['action']) {
     case 'deleteStack':
         $stackName = isset($_POST['stackName']) ? basename(trim($_POST['stackName'])) : "";
         if (!$stackName) {
-            composeLogger("Stack deletion failed: Stack name not specified.", null, 'user', 'error', 'stack');
+            composeLogger("删除栈失败：未指定栈名称。", null, 'user', 'error', 'stack');
             echo json_encode(['result' => 'error', 'message' => '未指定栈。']);
             break;
         }
@@ -540,7 +540,7 @@ switch ($_POST['action']) {
             $filesRemain = $gitLeftBehind['path'] ?? $filesRemain;
             $filesRemainNote = $gitLeftBehind['note'];
         }
-        composeLogger("Deleting stack: $stackName", [
+        composeLogger("正在删除栈：$stackName", [
             'folderName' => $folderName,
             'isIndirect' => $isIndirect,
             'isInvalidIndirect' => $isInvalidIndirect,
@@ -562,9 +562,9 @@ switch ($_POST['action']) {
             ], 'user', 'error', 'stack');
             $msg = "删除栈目录失败：" .
                 ($deleteError !== '' ? "$deleteError " : "") .
-                ($folderStillExists ? "Folder still exists after delete. " : "") .
-                (isset($deleteMeta['failedPath']) ? "Path: " . $deleteMeta['failedPath'] . ". " : "");
-            composeSendNotification("Stack delete failed: $stackName", trim($msg), 'warning');
+                ($folderStillExists ? "删除后文件夹仍然存在。" : "") .
+                (isset($deleteMeta['failedPath']) ? "路径：" . $deleteMeta['failedPath'] . "。" : "");
+            composeSendNotification("删除栈失败：$stackName", trim($msg), 'warning');
             echo json_encode(['result' => 'error', 'message' => $msg]);
             break;
         }
@@ -572,22 +572,22 @@ switch ($_POST['action']) {
         $cachePurgeMeta = composePurgeDeletedStackCaches($stackName);
 
         if ($filesRemain == "") {
-            $message = "Stack '$stackName' was deleted successfully.";
-            composeLogger("Deleted stack: $stackName", [
+            $message = "栈 '$stackName' 已成功删除。";
+            composeLogger("已删除栈：$stackName", [
                 'deleteMeta' => $deleteMeta,
                 'cachePurgeMeta' => $cachePurgeMeta,
             ], 'user', 'info', 'stack');
-            composeSendNotification("Stack delete complete: $stackName", $message);
+            composeSendNotification("栈删除完成：$stackName", $message);
             echo json_encode(['result' => 'success', 'message' => '', 'cachePurge' => $cachePurgeMeta]);
         } else {
-            $message = "Stack '$stackName' was deleted. Files remain on disk at '$filesRemain'." . ($filesRemainNote !== '' ? " $filesRemainNote" : '');
-            composeLogger("Deleted stack: $stackName (indirect, external files remain at $filesRemain)", [
+            $message = "栈 '$stackName' 已删除。磁盘上仍保留文件：'$filesRemain'。" . ($filesRemainNote !== '' ? "$filesRemainNote" : '');
+            composeLogger("已删除栈：$stackName（indirect，外部文件仍位于 $filesRemain）", [
                 'deleteMeta' => $deleteMeta,
                 'filesRemain' => $filesRemain,
                 'cachePurgeMeta' => $cachePurgeMeta,
             ], 'user', 'warning', 'stack');
-            composeSendNotification("Stack delete complete: $stackName", $message, 'warning');
-            echo json_encode(['result' => 'warning', 'message' => $filesRemain . ($filesRemainNote !== '' ? ". $filesRemainNote" : ''), 'cachePurge' => $cachePurgeMeta]);
+            composeSendNotification("栈删除完成：$stackName", $message, 'warning');
+            echo json_encode(['result' => 'warning', 'message' => $filesRemain . ($filesRemainNote !== '' ? "。$filesRemainNote" : ''), 'cachePurge' => $cachePurgeMeta]);
         }
         break;
     case 'changeName':
@@ -636,7 +636,7 @@ switch ($_POST['action']) {
         if (is_file($composeFilePath)) {
             $scriptContents = file_get_contents($composeFilePath);
             if ($scriptContents === false) {
-                echo json_encode(['result' => 'error', 'message' => "Unable to read compose file: $composeFilePath"]);
+                echo json_encode(['result' => 'error', 'message' => "无法读取 compose 文件：$composeFilePath"]);
                 break;
             }
         } else {
@@ -979,7 +979,7 @@ switch ($_POST['action']) {
             }
             DockerUtil::saveJSON($unraidUpdateStatusFile, $cleaned);
         }
-        echo json_encode(['result' => 'success', 'message' => 'Update cache cleared']);
+        echo json_encode(['result' => 'success', 'message' => '更新缓存已清除']);
         break;
     case 'clearAllIconCache':
         $cleared = 0;
@@ -991,7 +991,7 @@ switch ($_POST['action']) {
                 }
             }
         }
-        composeLogger('Cleared all plugin icon cache entries', ['count' => $cleared], 'user', 'debug', 'icon-cache');
+        composeLogger('已清除插件的所有图标缓存', ['count' => $cleared], 'user', 'debug', 'icon-cache');
         echo json_encode(['result' => 'success', 'cleared' => $cleared]);
         break;
     case 'setEnvPath':
@@ -1059,7 +1059,7 @@ switch ($_POST['action']) {
             $renewCredentialId = trim((string) ($_POST['credentialId'] ?? ''));
             echo json_encode(['result' => 'success', 'device' => $auth->start($renewCredentialId !== '' ? $renewCredentialId : null)]);
         } catch (\Throwable $error) {
-            composeLogger('Unable to start GitHub sign-in', ['error' => $error->getMessage()], 'user', 'warning', 'credentials');
+            composeLogger('无法启动 GitHub 登录', ['error' => $error->getMessage()], 'user', 'warning', 'credentials');
             echo json_encode(['result' => 'error', 'message' => $error->getMessage()]);
         }
         break;
@@ -1069,7 +1069,7 @@ switch ($_POST['action']) {
             $auth = new GitHubDeviceAuth((string) ($cfg['GITHUB_OAUTH_CLIENT_ID'] ?? ''));
             echo json_encode(['result' => 'success', 'auth' => $auth->poll(trim((string) ($_POST['state'] ?? '')))]);
         } catch (\Throwable $error) {
-            composeLogger('Unable to complete GitHub sign-in', ['error' => $error->getMessage()], 'user', 'warning', 'credentials');
+            composeLogger('无法完成 GitHub 登录', ['error' => $error->getMessage()], 'user', 'warning', 'credentials');
             echo json_encode(['result' => 'error', 'message' => $error->getMessage()]);
         }
         break;
@@ -1077,7 +1077,7 @@ switch ($_POST['action']) {
         try {
             // Deploy keys are made by compose-git for a repository's ssh stacks, never on the Credentials tab.
             if (strtolower(trim((string) ($_POST['provider'] ?? ''))) === 'git-ssh') {
-                throw new \InvalidArgumentException('A deploy key is made by compose-git for the ssh stacks of a repository, not added here.');
+                throw new \InvalidArgumentException('部署密钥由 compose-git 为仓库的 SSH 栈生成，不能在此添加。');
             }
             $credential = (new CredentialVault())->saveCredential([
                 'id' => trim((string) ($_POST['id'] ?? '')),
@@ -1105,8 +1105,8 @@ switch ($_POST['action']) {
                 // A projects folder on the array is gone while the array is stopped: no stack would be
                 // found, and every credential would look unused.
                 if (!is_dir($compose_root)) {
-                    $refusal = "The projects folder ($compose_root) is not there, so the stacks that use this credential "
-                        . 'cannot be checked. If it is on the array, start the array first.';
+                    $refusal = "项目文件夹（{$compose_root}）不存在，因此无法检查使用该凭据的栈。"
+                        . '如果它位于阵列上，请先启动阵列。';
                     return false;
                 }
                 $stacks = composeBuildCredentialStackMap($compose_root)[$credentialId] ?? [];
@@ -1352,9 +1352,9 @@ switch ($_POST['action']) {
         }
         $result = (new GitStackWebActions($compose_root))->convert($script, $_POST);
         if ($result['result'] === 'success') {
-            composeLogger("Converted stack to a git stack: $script", ['backupDir' => $result['backupDir']], 'user', 'info', 'stack');
+            composeLogger("已将栈转换为 Git 栈：$script", ['backupDir' => $result['backupDir']], 'user', 'info', 'stack');
         } else {
-            composeLogger("Failed to convert stack to a git stack: $script", ['error' => $result['message']], 'user', 'error', 'stack');
+            composeLogger("将栈转换为 Git 栈失败：$script", ['error' => $result['message']], 'user', 'error', 'stack');
         }
         echo json_encode($result);
         break;
@@ -1557,13 +1557,13 @@ switch ($_POST['action']) {
                 continue;
             }
             if (preg_match('/\.ya?ml$/i', $extraLine) !== 1) {
-                $extraComposeFilesError = 'Additional compose file must be a .yml or .yaml file: ' . $extraLine;
+                $extraComposeFilesError = '附加的 Compose 文件必须是 .yml 或 .yaml 文件：' . $extraLine;
                 break;
             }
             if (Path::isAbsolutePath($extraLine)) {
                 $realExtra = realpath($extraLine);
                 if ($realExtra === false || !is_file($realExtra)) {
-                    $extraComposeFilesError = 'Additional compose file does not exist: ' . $extraLine;
+                    $extraComposeFilesError = '附加的 Compose 文件不存在：' . $extraLine;
                     break;
                 }
                 if (!Path::isAllowedPath($realExtra, ['/mnt', '/boot/config'])) {
@@ -1571,7 +1571,7 @@ switch ($_POST['action']) {
                     break;
                 }
             } elseif (strpos($extraLine, '..') !== false) {
-                $extraComposeFilesError = 'Relative additional compose file paths must not contain "..": ' . $extraLine;
+                $extraComposeFilesError = '附加 Compose 文件的相对路径不能包含 ".."：' . $extraLine;
                 break;
             }
             $extraComposeFilesNormalized[] = $extraLine;
@@ -1590,7 +1590,7 @@ switch ($_POST['action']) {
             try {
                 CredentialVault::withCredentialAssignmentLock(function () use ($credentialId, $credentialIdFile): void {
                     if ($credentialId !== '' && !(new CredentialVault())->hasCredential($credentialId)) {
-                        throw new RuntimeException('Selected credential no longer exists.');
+                        throw new RuntimeException('所选凭据已不存在。');
                     }
                     if ($credentialId !== '' && in_array((new CredentialVault())->getCredentialSummary($credentialId)['provider'] ?? '', ['git', 'git-ssh'], true)) {
                         throw new RuntimeException('Git 仓库凭据不能用于拉取镜像。');
@@ -2190,7 +2190,7 @@ switch ($_POST['action']) {
         // ComposeUpdateCheck (see checkStackUpdates rationale).
         require_once("/usr/local/emhttp/plugins/compose.manager/include/UpdateCheck.php");
 
-        composeLogger('Starting update check for all stacks', null, 'user', 'debug', 'update-check');
+        composeLogger('开始检查所有栈的更新', null, 'user', 'debug', 'update-check');
 
         $allUpdates = [];
         $updater = new ComposeUpdateCheck();
@@ -2331,7 +2331,7 @@ switch ($_POST['action']) {
             if ($si['hasUpdate'])
                 $updatesFound++;
         }
-        composeLogger("Completed: $totalStacks stacks checked, $updatesFound with updates", null, 'user', 'debug', 'update-check');
+        composeLogger("已完成：共检查 $totalStacks 个栈，其中 $updatesFound 个有更新", null, 'user', 'debug', 'update-check');
 
         echo json_encode(['result' => 'success', 'stacks' => $allUpdates]);
         break;
@@ -2600,7 +2600,7 @@ switch ($_POST['action']) {
         }
         $targetPath = $dest . '/' . $filename;
         if (file_exists($targetPath)) {
-            composeLogger('Archive already exists in backup destination: ' . $filename, null, 'user', 'error', 'backup');
+            composeLogger('备份目标中已存在同名归档：' . $filename, null, 'user', 'error', 'backup');
             echo json_encode(['result' => 'error', 'message' => 'Archive "' . $filename . '" already exists in backup destination.']);
             break;
         }
@@ -2640,7 +2640,7 @@ switch ($_POST['action']) {
             echo json_encode(['result' => 'error', 'message' => '未选择要恢复的栈。']);
             break;
         }
-        composeLogger('Restore starting from archive: ' . $archive . ' with ' . count($stacks) . ' stacks selected', null, 'user', 'info', 'restore');
+        composeLogger('开始从归档恢复：' . $archive . '，已选择 ' . count($stacks) . ' 个栈', null, 'user', 'info', 'restore');
         $archivePath = resolveArchivePath($archive);
         $result = restoreStacks($archivePath, $stacks);
         if ($result['result'] === 'error') {

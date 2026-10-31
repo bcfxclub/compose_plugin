@@ -202,11 +202,11 @@ final class CredentialVault
         // A git token or deploy key is never a registry login. Stack settings refuse to assign one, but a
         // hand-edited or restored credential_id could still name one: never write it out as a Docker login.
         if (in_array($credential['provider'] ?? '', ['git', 'git-ssh'], true)) {
-            throw new RuntimeException("The credential '{$credential['name']}' is a git repository credential, not a registry login.");
+            throw new RuntimeException("凭据 '{$credential['name']}' 是 git 仓库凭据，不能用作注册表登录。");
         }
         // Confirms which named credential a compose operation is using, without ever logging the secret.
         composeLogger(
-            "Using registry credential '{$credential['name']}' ({$credential['registry']}) for this operation",
+            "本次操作使用注册表凭据 '{$credential['name']}'（{$credential['registry']}）",
             null,
             'user',
             'info',
@@ -330,7 +330,7 @@ final class CredentialVault
             return [false, '该凭据未配置注册表主机。'];
         }
         if (!function_exists('curl_init')) {
-            return [false, 'Unable to verify credential: the PHP curl extension is unavailable.'];
+            return [false, '无法验证凭据：PHP curl 扩展不可用。'];
         }
 
         $ping = self::registryRequest('https://' . $host . '/v2/', $username, $secret);
@@ -352,17 +352,17 @@ final class CredentialVault
                 return [true, '注册表已接受该凭据。'];
             }
             if ($tokenResponse['status'] === 401 || $tokenResponse['status'] === 403) {
-                return [false, 'Registry rejected the credential (invalid or expired token).'];
+                return [false, '注册表拒绝了该凭据（令牌无效或已过期）。'];
             }
-            return [false, 'Unable to verify credential (auth service returned HTTP ' . $tokenResponse['status'] . ').'];
+            return [false, '无法验证凭据（认证服务返回 HTTP ' . $tokenResponse['status'] . '）。'];
         }
         if ($ping['status'] === 401 || $ping['status'] === 403) {
-            return [false, 'Registry rejected the credential (invalid or expired token).'];
+            return [false, '注册表拒绝了该凭据（令牌无效或已过期）。'];
         }
         if ($ping['status'] === 0) {
-            return [false, 'Could not reach the registry: ' . $ping['error']];
+            return [false, '无法访问注册表：' . $ping['error']];
         }
-        return [false, 'Unable to verify credential (registry returned HTTP ' . $ping['status'] . ').'];
+        return [false, '无法验证凭据（注册表返回 HTTP ' . $ping['status'] . '）。'];
     }
 
     /** @return array{status: int, authHeader: string, error: string} */

@@ -49,7 +49,7 @@ function execComposeCommandInTTY($cmd, $debug, $logFile = '', $socketOverride = 
     $effectiveSocket = $socketOverride !== '' ? $socketOverride : $socket_name;
     $socketFile = rtrim(COMPOSE_TTYD_SOCKET_DIR, '/') . "/$effectiveSocket.sock";
     if (defined('COMPOSE_SKIP_TTYD_EXEC') && COMPOSE_SKIP_TTYD_EXEC) {
-        composeLogger("Skipping ttyd execution in test mode: " . $cmd, ['command' => $cmd], 'user', 'debug', 'ttyd');
+        composeLogger("测试模式，跳过 ttyd 执行：" . $cmd, ['command' => $cmd], 'user', 'debug', 'ttyd');
         return;
     }
     // Use pkill -f for more robust process matching instead of pgrep|awk pipeline
@@ -67,7 +67,7 @@ function execComposeCommandInTTY($cmd, $debug, $logFile = '', $socketOverride = 
         $command = "ttyd -R -o -i $socketPath $cmd > /dev/null &";
     }
     exec($command);
-    composeLogger("Executing command in ttyd: " . $cmd, ['command' => $cmd], 'user', 'debug', 'ttyd');
+    composeLogger("正在 ttyd 中执行命令：" . $cmd, ['command' => $cmd], 'user', 'debug', 'ttyd');
 
     // Wait for the socket to be created to avoid 502 on first open.
     waitForTtydSocket($effectiveSocket);
@@ -129,7 +129,7 @@ function suspendComposeFollowProcess(string $path): bool
     }
 
     exec('kill -TSTP -- -' . escapeshellarg($pgid) . ' 2>/dev/null');
-    composeLogger('Suspended live follow session for stack', ['path' => $realStackRoot, 'pid' => $pid, 'pgid' => $pgid], 'user', 'info', 'compose');
+    composeLogger('已暂停该栈的实时跟随会话', ['path' => $realStackRoot, 'pid' => $pid, 'pgid' => $pgid], 'user', 'info', 'compose');
     return true;
 }
 
@@ -274,7 +274,7 @@ function echoComposeCommand($action, array $options = [])
     $unRaidVars = parse_ini_file("/var/local/emhttp/var.ini");
     if ($unRaidVars['mdState'] != "STARTED") {
         echo $plugin_root . "/scripts/arrayNotStarted.sh";
-        composeLogger("Cannot perform action: array not started", ['action' => $action, 'path' => $path], 'user', 'debug', 'compose');
+        composeLogger("无法执行操作：阵列未启动", ['action' => $action, 'path' => $path], 'user', 'debug', 'compose');
     } else {
         composeLogger("Preparing compose command", ['action' => $action, 'path' => $path, 'profile' => $profile, 'recreate' => $recreate, 'background' => $background, 'removeOrphans' => $removeOrphans], 'user', 'debug', 'compose');
         $composeCommand = array($plugin_root . "scripts/compose.sh");
@@ -364,8 +364,8 @@ function echoComposeCommand($action, array $options = [])
 
         if ($action === 'up' && $waitForHealthy) {
             if ($followLogs) {
-                composeLogger("Blocked wait-for-healthy with follow logs enabled", ['action' => $action, 'path' => $path], 'user', 'warning', 'compose');
-                echo json_encode(['error' => 'wait_conflict', 'message' => 'Follow stack logs and wait-for-healthy cannot be enabled at the same time.']);
+                composeLogger("已阻止在启用跟随日志时使用等待健康检查", ['action' => $action, 'path' => $path], 'user', 'warning', 'compose');
+                echo json_encode(['error' => 'wait_conflict', 'message' => '不能同时启用“跟随栈日志”和“等待健康检查”。']);
                 return;
             }
             $composeCommand[] = "--wait";
@@ -399,7 +399,7 @@ function echoComposeCommand($action, array $options = [])
                 $logsSocket = 'compose_logs_' . preg_replace('/[^a-zA-Z0-9_.-]/', '_', basename($path));
             }
             execComposeCommandInTTY($composeCommandStr, $debug, $logFile, $logsSocket);
-            composeLogger("Executing command in ttyd: " . $composeCommandStr, ['command' => $composeCommandStr], 'user', 'debug', 'compose');
+            composeLogger("正在 ttyd 中执行命令：" . $composeCommandStr, ['command' => $composeCommandStr], 'user', 'debug', 'compose');
             if ($action === 'logs') {
                 $composeCommand = "/plugins/compose.manager/include/ShowTtyd.php?socket=" . urlencode($logsSocket);
             } else {
@@ -542,12 +542,12 @@ function echoGitDeployCommand(array $options = []): void
     try {
         $stack = StackInfo::fromProject($compose_root, basename($path));
     } catch (\Throwable $e) {
-        composeLogger("Cannot deploy: invalid stack", ['path' => $path, 'error' => $e->getMessage()], 'user', 'warning', 'compose');
+        composeLogger("无法部署：无效的栈", ['path' => $path, 'error' => $e->getMessage()], 'user', 'warning', 'compose');
         echo json_encode(['error' => 'git', 'message' => '没有该栈。']);
         return;
     }
     if (!$stack->isGitStack()) {
-        echo json_encode(['error' => 'git', 'message' => "'{$stack->projectFolder}' is not a git stack."]);
+        echo json_encode(['error' => 'git', 'message' => "'{$stack->projectFolder}' 不是 Git 栈。"]);
         return;
     }
     if (!$stack->hasResolvedIdentity()) {
@@ -625,7 +625,7 @@ function echoComposeCommandMultiple($action, array $options = [])
     $blockedStacks = array();
 
     foreach ($paths as $path) {
-        composeLogger("Processing stack for multi-compose action: " . $path, ['path' => $path, 'action' => $action], 'user', 'debug', 'compose-multi');
+        composeLogger("正在处理多 compose 操作的目标栈：" . $path, ['path' => $path, 'action' => $action], 'user', 'debug', 'compose-multi');
         $composeCommand = array($plugin_root . "scripts/compose.sh");
 
         $project = basename($path);
@@ -712,7 +712,7 @@ function echoComposeCommandMultiple($action, array $options = [])
     }
 
     if (empty($commands)) {
-        composeLogger("Multi Compose operation aborted: no valid stacks resolved", ['action' => $action, 'blocked' => $blockedStacks], 'user', 'warning', 'compose-multi');
+        composeLogger("多 compose 操作已中止：未解析到有效的栈", ['action' => $action, 'blocked' => $blockedStacks], 'user', 'warning', 'compose-multi');
         if (!empty($blockedStacks)) {
             echo json_encode([
                 'error' => 'identity',

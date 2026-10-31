@@ -440,14 +440,14 @@ if (!function_exists('compose_fetch_icon_to_cache')) {
 
         $pngBytes = compose_icon_to_png_bytes($rawBytes, $mimeHint);
         if ($pngBytes === null) {
-            composeLogger('Icon conversion returned null; not caching', ['source' => $source, 'mime' => $mimeHint], 'system', 'debug', 'icon-cache');
+            composeLogger('图标转换返回空值，因此不写入缓存', ['source' => $source, 'mime' => $mimeHint], 'system', 'debug', 'icon-cache');
             return '';
         }
 
         // Docker Manager renders cache files as PNG by extension, so never
         // store non-PNG bytes even if conversion silently passed them through.
         if (!compose_bytes_are_png($pngBytes)) {
-            composeLogger('Icon conversion did not produce PNG; not caching', ['source' => $source, 'mime' => $mimeHint], 'system', 'warning', 'icon-cache');
+            composeLogger('图标转换未生成 PNG，因此不写入缓存', ['source' => $source, 'mime' => $mimeHint], 'system', 'warning', 'icon-cache');
             return '';
         }
 
@@ -777,7 +777,7 @@ function composeDeleteStackFolder(string $composeRoot, string $stackName, string
     $composeRootReal = realpath($composeRoot);
     $meta['composeRootReal'] = $composeRootReal;
     if ($composeRootReal === false) {
-        $errorMessage = 'Compose root is not available.';
+        $errorMessage = 'Compose 根目录不可用。';
         return false;
     }
 
@@ -789,7 +789,7 @@ function composeDeleteStackFolder(string $composeRoot, string $stackName, string
 
     if (is_link($targetPath)) {
         if (!@unlink($targetPath) && file_exists($targetPath)) {
-            $errorMessage = 'Failed to remove stack symlink.';
+            $errorMessage = '删除栈符号链接失败。';
             return false;
         }
         $appendRemovedPath($targetPath . ' [symlink]');
@@ -799,13 +799,13 @@ function composeDeleteStackFolder(string $composeRoot, string $stackName, string
     $targetReal = realpath($targetPath);
     $meta['targetReal'] = $targetReal;
     if ($targetReal === false || !Path::isAllowedPath($targetReal, [$composeRootReal]) || $targetReal === $composeRootReal) {
-        $errorMessage = 'Invalid stack path resolved for deletion.';
+        $errorMessage = '解析出的待删除栈路径无效。';
         return false;
     }
 
     if (!is_dir($targetPath)) {
         if (!@unlink($targetPath) && file_exists($targetPath)) {
-            $errorMessage = 'Failed to remove stack file.';
+            $errorMessage = '删除栈文件失败。';
             return false;
         }
         $appendRemovedPath($targetPath . ' [file]');
@@ -815,7 +815,7 @@ function composeDeleteStackFolder(string $composeRoot, string $stackName, string
     $removeTree = static function (string $path) use (&$removeTree, &$errorMessage, &$meta, $appendRemovedPath): bool {
         $entries = @scandir($path);
         if (!is_array($entries)) {
-            $errorMessage = 'Failed to enumerate stack folder for deletion.';
+            $errorMessage = '枚举待删除的栈文件夹失败。';
             $meta['failedPath'] = $path;
             return false;
         }
@@ -828,7 +828,7 @@ function composeDeleteStackFolder(string $composeRoot, string $stackName, string
             $itemPath = rtrim($path, '/') . '/' . $entry;
             if (is_link($itemPath)) {
                 if (!@unlink($itemPath) && file_exists($itemPath)) {
-                    $errorMessage = 'Failed to remove stack symlink contents.';
+                    $errorMessage = '删除栈中的符号链接失败。';
                     $meta['failedPath'] = $itemPath;
                     return false;
                 }
@@ -841,7 +841,7 @@ function composeDeleteStackFolder(string $composeRoot, string $stackName, string
                     return false;
                 }
                 if (!@rmdir($itemPath)) {
-                    $errorMessage = 'Failed to remove stack directory contents.';
+                    $errorMessage = '删除栈中的目录失败。';
                     $meta['failedPath'] = $itemPath;
                     return false;
                 }
@@ -850,7 +850,7 @@ function composeDeleteStackFolder(string $composeRoot, string $stackName, string
             }
 
             if (!@unlink($itemPath)) {
-                $errorMessage = 'Failed to remove stack file contents.';
+                $errorMessage = '删除栈中的文件失败。';
                 $meta['failedPath'] = $itemPath;
                 return false;
             }
@@ -865,7 +865,7 @@ function composeDeleteStackFolder(string $composeRoot, string $stackName, string
     }
 
     if (!@rmdir($targetPath)) {
-        $errorMessage = 'Failed to remove stack folder.';
+        $errorMessage = '删除栈文件夹失败。';
         return false;
     }
     $appendRemovedPath($targetPath . ' [dir]');
@@ -1509,10 +1509,10 @@ class OverrideInfo
      */
     public static function buildTemplateContent(): string
     {
-        return "# Override file for UI labels (icon, webui, shell)\n"
-            . "# This file is managed by Compose Manager\n"
+        return "# 用于界面标签（图标、WebUI、Shell）的覆盖文件\n"
+            . "# 此文件由 Compose Manager 管理\n"
             . "#\n"
-            . "# Manual example:\n"
+            . "# 手动示例：\n"
             . "# services:\n"
             . "#   my-service:\n"
             . "#     labels:\n"
@@ -1529,10 +1529,10 @@ class OverrideInfo
      */
     public static function buildEnvTemplateContent(): string
     {
-        return "# .env file - define environment variables used by docker compose\n"
-            . "# Variables defined here are automatically available in compose.yaml via \${VAR_NAME}\n"
+        return "# .env 文件 —— 定义 docker compose 使用的环境变量\n"
+            . "# 此处定义的变量会自动以 \${VAR_NAME} 形式在 compose.yaml 中可用\n"
             . "#\n"
-            . "# Example:\n"
+            . "# 示例：\n"
             . "# IMAGE_TAG=latest\n"
             . "# DATA_DIR=/mnt/user/appdata/myapp\n"
             . "# PORT=8080\n";
@@ -1642,7 +1642,7 @@ class OverrideInfo
         $removedServices = $result['removed'] ?? [];
         if (!empty($removedServices)) {
             composeLogger(
-                "Pruned orphaned override services from " . basename($overridePath) . ": " . implode(', ', $removedServices),
+                "已从覆盖文件 " . basename($overridePath) . " 中移除孤立服务：" . implode('、', $removedServices),
                 null,
                 'user',
                 'info',
@@ -2210,7 +2210,7 @@ class StackInfo
         $this->setPath();
 
         if (!is_dir($this->path)) {
-            throw new \RuntimeException("Project path is not a directory: $this->path");
+            throw new \RuntimeException("项目路径不是目录：{$this->path}");
         }
 
         // projectFolder is the directory name as-is; projectName is the sanitized
@@ -2256,7 +2256,7 @@ class StackInfo
             if ($this->invalidIndirectPath !== null) {
                 // Stack has a broken indirect reference — allow degraded construction
                 // so the user can fix it in the Settings editor.
-                composeLogger('Preparing degraded stack load due to invalid indirect path', [
+                composeLogger('因 indirect 路径无效，正在以降级模式加载栈', [
                     'project' => $this->projectFolder,
                     'projectPath' => $this->path,
                     'indirectMode' => $this->indirectMode,
@@ -2265,11 +2265,11 @@ class StackInfo
                     'composeSource' => $this->composeSource,
                     'composeFilePath' => $this->composeFilePath,
                 ], 'user', 'debug', 'stack');
-                composeLogger("Stack $this->projectFolder has an invalid indirect path; loading in degraded mode", null, 'user', 'warning', 'stack');
+                composeLogger("栈 {$this->projectFolder} 的 indirect 路径无效，正在以降级模式加载", null, 'user', 'warning', 'stack');
                 $this->overrideInfo = OverrideInfo::fromStackInfo($this);
                 return;
             }
-            throw new \RuntimeException("Not a valid compose stack: no compose file found at $this->composeSource");
+            throw new \RuntimeException("不是有效的 compose 栈：在 {$this->composeSource} 处找不到 compose 文件");
         }
 
         // Eagerly resolve override info using pre-resolved identity (no duplicate I/O)
@@ -2455,7 +2455,7 @@ class StackInfo
                     'hasWindowsStylePath' => Path::hasWindowsStylePath($indirectPath),
                     'hasTraversal' => Path::hasTraversal($indirectPath),
                 ], 'user', 'debug', 'stack');
-                composeLogger("Ignoring structurally invalid indirect path at $this->path/indirect: " . sanitizeLogText($indirectPath), null, 'user', 'warning', 'stack');
+                composeLogger("已忽略 {$this->path}/indirect 处结构无效的 indirect 路径：" . sanitizeLogText($indirectPath), null, 'user', 'warning', 'stack');
                 return false;
             }
             return true;
@@ -2542,10 +2542,10 @@ class StackInfo
         $sanitizedProjectString = compose_manager_sanitize_project_name($rawProjectString, $wasEmpty);
 
         if ($wasEmpty) {
-            composeLogger('Project name sanitization produced empty output; fallback name will be used', [
+            composeLogger('项目名清理后为空，将使用备用名称', [
                 'input' => $rawProjectString,
             ], 'user', 'debug', 'stack');
-            composeLogger("Sanitized project string is empty after processing; defaulting to 'compose'", ['input' => $rawProjectString], 'user', 'warning', 'stack');
+            composeLogger("清理后的项目名为空，将默认使用 'compose'", ['input' => $rawProjectString], 'user', 'warning', 'stack');
         }
 
         return $sanitizedProjectString;
@@ -2566,12 +2566,12 @@ class StackInfo
             // If no display name is set, initialize it from the project folder name.
             $displayName = $this->projectFolder;
             $this->writeMetadata('name', $displayName);
-            composeLogger('Missing display name metadata detected; initializing from project folder', [
+            composeLogger('缺少显示名称元数据，正在从项目文件夹初始化', [
                 'project' => $this->projectFolder,
                 'displayName' => $displayName,
                 'metadataFile' => $this->path . '/name',
             ], 'user', 'debug', 'stack');
-            composeLogger("Initialized missing display name from project folder: '$displayName'", ['project' => $this->projectFolder, 'displayName' => $displayName], 'user', 'warning', 'stack');
+            composeLogger("已从项目文件夹初始化缺失的显示名称：'$displayName'", ['project' => $this->projectFolder, 'displayName' => $displayName], 'user', 'warning', 'stack');
         }
         $this->displayName = $displayName;
         return $this->displayName;
@@ -2757,12 +2757,12 @@ class StackInfo
             }
         }
 
-        composeLogger('Explicit envpath is set but not resolvable to a file; falling back to default env resolution', [
+        composeLogger('已设置显式 envpath，但无法解析为文件；回退到默认的 .env 解析方式', [
             'project' => $this->projectFolder,
             'envpath' => $rawEnvPath,
             'composeSource' => $this->composeSource,
         ], 'user', 'debug', 'stack');
-        composeLogger("Ignoring invalid envpath for stack $this->projectFolder: file not found", ['envpath' => $rawEnvPath], 'user', 'warning', 'stack');
+        composeLogger("已忽略栈 {$this->projectFolder} 的无效 envpath：找不到文件", ['envpath' => $rawEnvPath], 'user', 'warning', 'stack');
         return null;
     }
 
@@ -2965,11 +2965,11 @@ class StackInfo
         }
 
         if (!is_dir(dirname($targetPath)) && !@mkdir(dirname($targetPath), 0755, true) && !is_dir(dirname($targetPath))) {
-            composeLogger("Failed to create icon-normalization directory for stack $this->projectFolder", ['dir' => dirname($targetPath)], 'user', 'warning', 'stack');
+            composeLogger("无法为栈 {$this->projectFolder} 创建图标规范化目录", ['dir' => dirname($targetPath)], 'user', 'warning', 'stack');
             return null;
         }
         if (@file_put_contents($targetPath, $yaml) === false) {
-            composeLogger("Failed to write icon-normalization override for stack $this->projectFolder", ['path' => $targetPath], 'user', 'warning', 'stack');
+            composeLogger("无法为栈 {$this->projectFolder} 写入图标规范化覆盖文件", ['path' => $targetPath], 'user', 'warning', 'stack');
             return null;
         }
 
@@ -2992,7 +2992,7 @@ class StackInfo
             }
             $path = Path::isAbsolutePath($line) ? $line : $this->composeSource . '/' . $line;
             if (!is_file($path)) {
-                composeLogger("Ignoring missing extra compose file for stack $this->projectFolder", ['path' => $path], 'user', 'warning', 'stack');
+                composeLogger("已忽略栈 {$this->projectFolder} 缺失的附加 compose 文件", ['path' => $path], 'user', 'warning', 'stack');
                 continue;
             }
             $files[] = $path;
@@ -3981,7 +3981,7 @@ class StackInfo
 
         // Validate stack name is not empty
         if (trim($stackName) === '') {
-            composeLogger("Attempted to create a new stack with an empty name, which is not allowed.", null, 'user', 'error', 'stack');
+            composeLogger("尝试用空名称创建新栈，这是不允许的。", null, 'user', 'error', 'stack');
             throw new \RuntimeException("栈名称不能为空");
         }
         $projectName = $stackName;
@@ -3989,8 +3989,8 @@ class StackInfo
         // Set the project name to the folder-and-project sanitized version of the display name.
         $project = self::sanitizeProjectString($stackName);
         if ($project === '') {
-            composeLogger("Sanitized stack name is empty, cannot create stack directory.", ['stackName' => $stackName], 'user', 'error', 'stack');
-            throw new \RuntimeException("Stack name produced an empty folder name after sanitization.");
+            composeLogger("清理后的栈名称为空，无法创建栈目录。", ['stackName' => $stackName], 'user', 'error', 'stack');
+            throw new \RuntimeException("栈名称清理后得到空的文件夹名。");
         }
 
         // Set the path to composeRoot/project (even if indirect, we want the folder there for metadata and override)
@@ -3999,7 +3999,7 @@ class StackInfo
         // Verify the resolved path stays within composeRoot (defense-in-depth)
         $realComposeRoot = realpath($composeRoot);
         if ($realComposeRoot === false) {
-            composeLogger("Failed to resolve real path for compose root.", ['composeRoot' => $composeRoot], 'user', 'error', 'stack');
+            composeLogger("无法解析 Compose 根目录的真实路径。", ['composeRoot' => $composeRoot], 'user', 'error', 'stack');
             throw new \RuntimeException("无效的 Compose 根目录。");
         }
 
@@ -4015,13 +4015,13 @@ class StackInfo
             $path = self::getAvailablePath($composeRoot, $project);
         } catch (\RuntimeException $e) {
             composeLogger("获取栈可用路径失败。", ['stackName' => $stackName, 'error' => $e->getMessage()], 'user', 'error', 'stack');
-            throw new \RuntimeException("Failed to create stack: " . $e->getMessage());
+            throw new \RuntimeException("创建栈失败：" . $e->getMessage());
         }
 
         // Create the directory
         if (!mkdir($path, 0755, true) && !is_dir($path)) {
-            composeLogger("Failed to create stack directory.", ['path' => $path], 'user', 'error', 'stack');
-            throw new \RuntimeException("Failed to create stack directory: $path");
+            composeLogger("创建栈目录失败。", ['path' => $path], 'user', 'error', 'stack');
+            throw new \RuntimeException("创建栈目录失败：$path");
         }
 
         // Create indirect file to store path to indirect project directory
@@ -4065,7 +4065,7 @@ class StackInfo
             && !is_dir($projectOverridePath)
         ) {
             if (@file_put_contents($projectOverridePath, OverrideInfo::buildTemplateContent()) === false) {
-                throw new \RuntimeException("Failed to create override template: $projectOverridePath");
+                throw new \RuntimeException("创建覆盖文件模板失败：$projectOverridePath");
             }
         }
 
@@ -4089,7 +4089,7 @@ class StackInfo
 
         $filePath = "$dir/" . COMPOSE_FILE_NAMES[0];
         if (file_put_contents($filePath, "services:\n") === false) {
-            throw new \RuntimeException("Failed to create default compose file: $filePath");
+            throw new \RuntimeException("创建默认 compose 文件失败：$filePath");
         }
         return $filePath;
     }
