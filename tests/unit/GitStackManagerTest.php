@@ -1262,7 +1262,7 @@ final class GitStackManagerTest extends TestCase
         [$exit, $output] = $this->runCliCapturingOutput(['compose-git', $command, '--help']);
 
         $this->assertSame(0, $exit);
-        $this->assertStringStartsWith("Usage: compose-git $command", $output);
+        $this->assertStringStartsWith("用法：compose-git $command", $output);
         foreach ($options as $option) {
             $this->assertStringContainsString($option, $output);
         }
@@ -1280,7 +1280,7 @@ final class GitStackManagerTest extends TestCase
         [$exit, $output] = $this->runCliCapturingOutput(['compose-git', 'deploy', 'nosuchstack', '--help']);
 
         $this->assertSame(0, $exit);
-        $this->assertStringStartsWith('Usage: compose-git deploy', $output);
+        $this->assertStringStartsWith('用法：compose-git deploy', $output);
     }
 
     public function testAMistakeInACommandShowsThatCommandsHelp(): void
@@ -1288,7 +1288,7 @@ final class GitStackManagerTest extends TestCase
         [$exit, , $errors] = $this->runCliCapturingOutput(['compose-git', 'add', 'whoami', '--path', 'whoami/compose.yaml']);
 
         $this->assertSame(2, $exit);
-        $this->assertStringStartsWith("--url is required.\n\nUsage: compose-git add", $errors);
+        $this->assertStringStartsWith("必须提供 --url。\n\n用法：compose-git add", $errors);
     }
 
     public function testTheOverviewPointsToTheCommandHelp(): void

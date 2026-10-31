@@ -32,43 +32,51 @@ final class ComposeGitUsageError extends InvalidArgumentException
 }
 
 const COMPOSE_GIT_USAGE = <<<'TEXT'
-Usage:
-  compose-git add <name> --url <url> --path <compose file> [--branch <branch>] [--clones-root <folder>] [--description <text>] [--credential <name>]
-  compose-git convert <stack> --url <url> --path <compose file> [--branch <branch>] [--clones-root <folder>] [--credential <name>]
+用法：
+  compose-git add <name> --url <url> --path <compose file> [--branch <branch>]
+              [--clones-root <folder>] [--description <text>] [--credential <name>]
+  compose-git convert <stack> --url <url> --path <compose file> [--branch <branch>]
+              [--clones-root <folder>] [--credential <name>]
   compose-git credential <stack> <name>|--none
   compose-git auto-deploy <stack> off|notify|deploy
   compose-git resume <stack>
   compose-git deploy-key <stack>
   compose-git trust-host <stack>
   compose-git check <stack>|--all
-  compose-git deploy <stack> [--commit <full commit id>] [--save-local-changes] [--wait|--no-wait] [--wait-timeout <seconds>] [--profile <name>]...
-  compose-git deploy <stack> --dry-run [--commit <full commit id>] [--profile <name>]...
+  compose-git deploy <stack> [--commit <提交 ID>] [--save-local-changes] [--wait|--no-wait]
+              [--wait-timeout <秒数>] [--profile <名称>]...
+  compose-git deploy <stack> --dry-run [--commit <提交 ID>] [--profile <名称>]...
   compose-git reclone <stack>
   compose-git status [<stack>|--all] [--json]
   compose-git scheduled-check
 
-<url> is an https address (no user name or password in it), an ssh address (ssh://git@host/path
-or git@host:path), or the path of a repository under /mnt.
-<compose file> is the compose file's path inside the repository, such as stacks/whoami/compose.yaml.
---branch defaults to main. <stack> is the stack's exact folder name.
---credential names a git credential (an HTTPS token) from the plugin's Credentials tab, for a
-private repository; credential changes or removes it on an existing stack.
-An ssh stack gets a deploy key when it is added, one per repository: a second stack of the same
-repository uses the first one's. deploy-key shows it again, to add to the repository as a
-read-only deploy key. Its host's keys are pinned when it is added;
-trust-host pins them again after the server's keys change.
-deploy waits for healthy containers when the stack's wait-for-healthy setting says so;
---wait and --no-wait override it.
-auto-deploy sets what the scheduled check does when a new commit changes the stack: nothing
-(off, the default), send a notification (notify), or deploy it (deploy). After a failed deploy
-the scheduled check leaves the stack alone until a deploy works; resume clears the failure.
-scheduled-check runs the scheduled check now (cron runs it every 15 minutes while any stack
-asks for it).
+<url> 可以是 https 地址（不含用户名和密码）、ssh 地址
+（ssh://git@host/path 或 git@host:path），或 /mnt 下某个仓库的路
+径。
+<compose file> 是 compose 文件在仓库内的路径，例如
+stacks/whoami/compose.yaml。
+--branch 默认为 main。<stack> 是栈的文件夹名，需完全一致。
+--credential 指定插件“凭据”页中的一个 git 凭据（HTTPS 令牌），用
+于私有仓库；对已有栈使用 credential 命令可更换或移除该凭据。
+ssh 栈在添加时会获得一个部署密钥，每个仓库一个：同一仓库的第二个
+栈沿用第一个栈的密钥。deploy-key 可再次显示该密钥，以便作为只读
+部署密钥添加到仓库。添加时会固定其主机的密钥；服务器密钥变更后，
+用 trust-host 重新固定。
+栈的“等待健康检查”设置要求等待时，deploy 会等待容器健康；--wait
+与 --no-wait 可覆盖该设置。
+auto-deploy 设置计划检查在新提交改动栈时做什么：不处理（off，默
+认）、发送通知（notify）、或直接部署（deploy）。某次部署失败后，
+计划检查会暂时放过该栈，直到有一次部署成功；resume 可清除该失败
+状态。
+scheduled-check 立即执行一次计划检查（只要有栈需要，cron 每 15
+分钟运行一次）。
 
-Exit status: 0 success, 1 failed, 2 usage error; for check, 3 a newer commit changes the stack's
-folder, 4 a newer commit changes only files outside it. See 'compose-git check --help'.
+退出状态：0 成功，1 失败，2 用法错误；对 check 而言，3 表示较新
+的提交改动了栈的文件夹，4 表示较新的提交只改动了该文件夹之外的文
+件。详见 'compose-git check --help'。
 
-Run 'compose-git <command> --help' for what a command does and what each option means.
+运行 'compose-git <command> --help' 可查看某条命令的作用，以及各
+选项的含义。
 TEXT;
 
 /**
@@ -78,242 +86,254 @@ function compose_git_command_help(string $command): ?string
 {
     return match ($command) {
         'add' => <<<'TEXT'
-Usage: compose-git add <name> --url <url> --path <compose file> [options]
+用法：compose-git add <name> --url <url> --path <compose file> [选项]
 
-Make a new git stack from a repository. The repository is cloned onto the array, and a new
-stack folder is made that points at the compose file in the clone. Nothing is deployed yet:
-run 'compose-git deploy <stack>' next. If the clone fails, or the branch has no compose file
-at --path, nothing is created.
+从仓库创建一个新的 git 栈：先把仓库克隆到阵列上，再新建一个栈文
+件夹指向克隆中的 compose 文件。此时尚未部署任何内容，接下来请运
+行 'compose-git deploy <stack>'。如果克隆失败，或该分支在 --path
+处没有 compose 文件，则不会创建任何内容。
 
-<name> is the stack's name. Its folder name is the name with unsafe characters replaced, and
-is printed at the end. No stack folder by that name may exist yet; to put an existing stack
-under git, use 'compose-git convert'.
+<name> 是栈的名称。其文件夹名会把不安全的字符替换掉，并在最后打
+印出来。该名称的栈文件夹必须尚不存在；若要把已有栈纳入 git 管
+理，请使用 'compose-git convert'。
 
-Options:
-  --url <url>             The repository: an https:// address with no user name or
-                          password in it, an ssh address (ssh://git@host[:port]/path or
-                          git@host:path), or the path of a repository on this server under
-                          /mnt. Required. An ssh stack gets the repository's deploy key (made
-                          for the first stack of the repository), and the host's ssh keys
-                          are pinned.
-  --path <compose file>   The compose file's path inside the repository, such as
-                          stacks/whoami/compose.yaml. Required.
-  --branch <branch>       The branch to follow. Default: main.
-  --clones-root <folder>  The folder the clone goes in, as <stack>-<id>. It must be on a
-                          share, disk or pool, and the share must exist.
-                          Default: /mnt/user/appdata/compose.manager/git.
-  --description <text>    The description shown for the stack on the Compose page.
-  --credential <name>     A git credential (an HTTPS token) from the Credentials tab, by
-                          its name or id, for a private repository.
+选项：
+  --url <url>
+      仓库地址：不含用户名和密码的 https:// 地址、ssh 地址
+      （ssh://git@host[:port]/path 或 git@host:path），或本服务器上
+      /mnt 下某个仓库的路径。必填。ssh 栈会获得该仓库的部署密钥（为
+      仓库的第一个栈创建），并固定该主机的 ssh 密钥。
+  --path <compose file>
+      compose 文件在仓库内的路径，例如 stacks/whoami/compose.yaml。
+      必填。
+  --branch <branch>
+      要跟随的分支。默认：main。
+  --clones-root <folder>
+      克隆存放的文件夹，形式为 <stack>-<id>。必须位于某个共享文件
+      夹、磁盘或存储池上，且该共享文件夹必须已存在。默认：
+      /mnt/user/appdata/compose.manager/git。
+  --description <text>
+      Compose 页面上该栈显示的说明文字。
+  --credential <name>
+      插件“凭据”页中的 git 凭据（HTTPS 令牌），按名称或 ID 指定，用
+      于私有仓库。
 
-Example:
+示例：
   compose-git add whoami --url https://github.com/you/stacks.git --path whoami/compose.yaml
 TEXT,
         'convert' => <<<'TEXT'
-Usage: compose-git convert <stack> --url <url> --path <compose file> [options]
+用法：compose-git convert <stack> --url <url> --path <compose file> [选项]
 
-Put an existing stack under git. Copy its compose file into the repository and push it first.
-The repository is cloned, and the stack is pointed at the compose file in the clone.
+把一个已有的栈纳入 git 管理。请先把它的 compose 文件复制进仓库并
+推送。之后克隆仓库，并让栈指向克隆中的 compose 文件。
 
-The stack keeps its name, project name, .env, override file and settings, so it keeps its
-volumes and networks. Its old compose file, and its old indirect settings if it had any, are
-moved into a pre-git-<date> folder in the stack folder: that is the way back. Running
-containers are left alone until the next deploy. Folders next to the old compose file are
-listed as a reminder, because a relative bind mount such as ./data now points inside the
-clone.
+栈会保留名称、项目名、.env、覆盖文件与各项设置，因此其数据卷和网
+络也保持不变。它原来的 compose 文件，以及原有的 indirect 设置
+（如有），会被移动到栈文件夹下的 pre-git-<date> 文件夹中：这就是
+回退的办法。正在运行的容器在下次部署前不受影响。原 compose 文件
+旁边的文件夹会被列出来作为提醒，因为像 ./data 这样的相对绑定挂
+载，现在指向的是克隆内部。
 
-If the clone fails, or the branch has no compose file at --path, nothing is changed. It
-refuses to start while another operation on the stack is running.
+如果克隆失败，或该分支在 --path 处没有 compose 文件，则不做任何
+改动。当该栈上还有其他操作正在运行时，它会拒绝启动。
 
-Options:
-  --url <url>             The repository: an https:// address with no user name or
-                          password in it, an ssh address (ssh://git@host[:port]/path or
-                          git@host:path), or the path of a repository on this server under
-                          /mnt. Required. An ssh stack gets the repository's deploy key (made
-                          for the first stack of the repository), and the host's ssh keys
-                          are pinned.
-  --path <compose file>   The compose file's path inside the repository. Required.
-  --branch <branch>       The branch to follow. Default: main.
-  --clones-root <folder>  The folder the clone goes in, as <stack>-<id>. It must be on a
-                          share, disk or pool, and the share must exist.
-                          Default: /mnt/user/appdata/compose.manager/git.
-  --credential <name>     A git credential (an HTTPS token) from the Credentials tab, by
-                          its name or id, for a private repository.
+选项：
+  --url <url>
+      仓库地址：不含用户名和密码的 https:// 地址、ssh 地址
+      （ssh://git@host[:port]/path 或 git@host:path），或本服务器上
+      /mnt 下某个仓库的路径。必填。ssh 栈会获得该仓库的部署密钥（为
+      仓库的第一个栈创建），并固定该主机的 ssh 密钥。
+  --path <compose file>
+      compose 文件在仓库内的路径。必填。
+  --branch <branch>
+      要跟随的分支。默认：main。
+  --clones-root <folder>
+      克隆存放的文件夹，形式为 <stack>-<id>。必须位于某个共享文件
+      夹、磁盘或存储池上，且该共享文件夹必须已存在。默认：
+      /mnt/user/appdata/compose.manager/git。
+  --credential <name>
+      插件“凭据”页中的 git 凭据（HTTPS 令牌），按名称或 ID 指定，用
+      于私有仓库。
 
-Then deploy it: compose-git deploy <stack>
+然后部署它：compose-git deploy <stack>
 TEXT,
         'credential' => <<<'TEXT'
-Usage: compose-git credential <stack> <name>
+用法：compose-git credential <stack> <name>
        compose-git credential <stack> --none
 
-Change the git credential a stack uses to reach its repository, or remove it. <name> is a
-git credential (an HTTPS token) from the plugin's Credentials tab, by its name or id. The
-repository is reached with the new setting first, and nothing is saved unless that works.
-No container is touched.
+更换或移除栈访问其仓库所用的 git 凭据。<name> 是插件“凭据”页中的
+git 凭据（HTTPS 令牌），按名称或 ID 指定。会先用新设置访问仓库，
+只有成功才会保存。不会触碰任何容器。
 
-An ssh stack always has a deploy key. <name> can only be another deploy key of the same
-repository: one that another stack of the repository uses, or the one made for the
-repository. That moves stacks that each got a key of their own (before a repository's
-stacks shared one) onto one key; the old key then stays on the Credentials tab.
+ssh 栈始终有一个部署密钥。<name> 只能是同一仓库的另一个部署密
+钥：即该仓库其他栈正在使用的那个，或为该仓库创建的那个。这样可以
+把各自拥有密钥的多个栈（在仓库的多个栈共用密钥之前）合并到一个密
+钥上；旧密钥仍留在“凭据”页中。
 
-Options:
-  --none   Reach the repository without a credential, as for a public one.
+选项：
+  --none
+      不使用凭据访问仓库，适用于公开仓库。
 TEXT,
         'deploy-key' => <<<'TEXT'
-Usage: compose-git deploy-key <stack>
+用法：compose-git deploy-key <stack>
 
-Print the public half of an ssh stack's deploy key, to add to the repository as a read-only
-deploy key (on GitHub: the repository's Settings, Deploy keys). The key was made when the
-first stack of the repository was added, is used by every ssh stack of that repository, and is
-kept in the plugin's credential vault. Changes nothing.
+打印 ssh 栈部署密钥的公钥部分，以便作为只读部署密钥添加到仓库
+（在 GitHub 上：仓库的 Settings → Deploy keys）。该密钥在仓库的
+第一个栈被添加时创建，由该仓库的所有 ssh 栈共用，并保存在插件的
+凭据保险库中。此命令不做任何改动。
 TEXT,
         'trust-host' => <<<'TEXT'
-Usage: compose-git trust-host <stack>
+用法：compose-git trust-host <stack>
 
-Pin an ssh stack's repository server keys again, after the server was rebuilt or its keys
-were changed on purpose. Until then every fetch fails, because a changed host key is also
-what an attacker in between would look like. The pinned and the offered fingerprints are
-printed: compare the new ones with the ones your git host publishes before you deploy. The
-new keys are saved only after the repository has been reached with them. No container is
-touched.
+重新固定 ssh 栈所属仓库服务器的密钥，用于服务器重建或密钥被有意
+更换之后。在此之前每次拉取都会失败，因为主机密钥发生变化，同样也
+是中间人攻击的特征。命令会打印已固定的指纹和对方提供的指纹：部署
+前请把新指纹与你的 git 主机公布的指纹做比对。只有用新密钥成功访
+问仓库之后，才会保存它们。不会触碰任何容器。
 TEXT,
         'check' => <<<'TEXT'
-Usage: compose-git check <stack>
+用法：compose-git check <stack>
        compose-git check --all
 
-Ask the repository for the newest commit on the stack's branch, and compare it with the
-deployed commit. When there is a newer one, it is fetched into the clone to see what it
-changes. No container and no checked-out file is changed.
+向仓库询问栈所在分支上的最新提交，并与已部署的提交比较。若有更新
+的提交，会把它拉取到克隆中，查看它改动了什么。不会改动任何容器，
+也不会改动任何已检出的文件。
 
-The stack's folder is the folder holding its compose file in the repository (the whole
-repository when the compose file is at the top). A newer commit that changes nothing in that
-folder is reported apart (exit 4): in a repository that holds several stacks, it is usually a
-commit to another stack. But a stack can use files from outside its folder: a bind mount of
-../shared, a build context of .., an env_file, extends or include in another folder. A change
-to those is not seen as a change to the stack, so deploy it anyway when the stack uses them.
+栈的文件夹是指仓库中存放其 compose 文件的文件夹（当 compose 文件
+位于顶层时，即为整个仓库）。若较新的提交没有改动该文件夹中的任何
+内容，会单独报告（退出码 4）：在包含多个栈的仓库中，这通常是针对
+另一个栈的提交。但栈也可能用到其文件夹之外的文件：如指向
+../shared 的绑定挂载、为 .. 的构建上下文、另一个文件夹中的
+env_file、extends 或 include。对这些文件的改动不会被视作对栈的改
+动，因此当栈用到它们时请照常部署。
 
-Options:
-  --all   Check every git stack, one line each.
+选项：
+  --all
+      检查所有 git 栈，每个一行。
 
-Exit status:
-  0  up to date
-  1  the stack or the repository could not be read (or another operation on the stack is
-     running)
-  3  a newer commit changes the stack's folder, or its changes cannot be identified (nothing
-     is deployed yet, or the deployed commit is no longer in the clone); deploy it with
-     'compose-git deploy <stack>'
-  4  a newer commit is on the branch, but it changes only files outside the stack's folder
-With --all: 3 if any stack's folder changed, even when another could not be checked;
-otherwise 1 if any could not be checked; otherwise 4 if any has a newer commit outside its
-folder. A script that should deploy whenever the branch moves treats 4 like 3.
+退出状态：
+  0   已是最新
+  1   无法读取该栈或仓库（或该栈上还有其他操作正在运行）
+  3   较新的提交改动了栈的文件夹，或其改动无法判断（尚未部署任
+      何内容，或已部署的提交已不在克隆中）；可用 'compose-git
+      deploy <stack>' 部署它
+  4   分支上有较新的提交，但它只改动了栈文件夹之外的文件
+使用 --all 时：只要有栈的文件夹发生变化就返回 3，即使另一个栈无
+法检查；否则若有栈无法检查则返回 1；否则若有栈在文件夹之外有较新
+提交则返回 4。若脚本需要在分支变动时就部署，可把 4 当作 3 处理。
 TEXT,
         'deploy' => <<<'TEXT'
-Usage: compose-git deploy <stack> [options]
+用法：compose-git deploy <stack> [选项]
 
-Deploy the newest commit on the stack's branch, or the commit given with --commit. In order:
-fetch the commit, check it out in the clone, check it, pull and build the images, then run
-docker compose up. The checks stop the deploy when the compose file is not valid, a variable
-it uses is not set, a name in the repository's .env.example is missing from the .env, or an
-external network or volume, bind folder, config or secret file, or build folder is missing,
-or a container name or port is already taken.
+部署栈所在分支上的最新提交，或 --commit 指定的提交。顺序为：拉取
+该提交、在克隆中检出、执行检查、拉取并构建镜像，然后运行 docker
+compose up。以下情况检查会中止部署：compose 文件无效、它使用的某
+个变量未设置、仓库 .env.example 中的某个名称在 .env 中缺失、某个
+外部网络或数据卷、绑定挂载文件夹、config 或 secret 文件、构建文
+件夹不存在，或某个容器名或端口已被占用。
 
-If anything before up fails, the previous commit is put back and no container is changed. If
-up itself fails, the commit is recorded as failed ('compose-git status' shows it) and nothing
-is rolled back: fix the cause, usually in the repository, and deploy again.
+如果 up 之前的任何一步失败，会还原到上一个提交，且不改动任何容
+器。如果 up 本身失败，该提交会被记录为失败（'compose-git status'
+会显示），且不做任何回滚：请修复原因（通常在仓库中），然后再次部
+署。
 
-When the commit changes anything in the stack's folder in the repository, every container in
-the stack is recreated, so changed config files take effect. To turn that off, set
-"recreateOnFolderChange": false in the stack's git.json.
+当提交改动了仓库中该栈文件夹内的任何内容时，栈内的所有容器都会被
+重建，以便改动后的配置文件生效。要关闭该行为，请在栈的 git.json
+中设置 "recreateOnFolderChange": false。
 
-If another operation on the stack is running, such as a Start from the web UI, it waits up
-to 30 seconds (COMPOSE_LOCK_TIMEOUT) for it to finish, then fails without changing anything.
+若该栈上还有其他操作正在运行（例如从 Web 界面点启动），它会等待
+最多 30 秒（COMPOSE_LOCK_TIMEOUT）让其结束，然后失败，并且不做任
+何改动。
 
-Options:
-  --commit <id>             Deploy this commit instead of the newest, for example to go back
-                            to an older version. Give the full id (40 characters, or 64 in a
-                            SHA-256 repository). A later deploy without --commit returns to
-                            the branch's newest commit.
-  --save-local-changes      If tracked files in the clone were changed, or a commit was made
-                            in it, save the changes as a patch in the stack folder's
-                            git-changes folder, discard them, then deploy. Without it, the
-                            deploy stops and lists the changed files. Files that are not part
-                            of the repository are never touched either way.
-  --wait                    Wait for the containers to be running and healthy, and count the
-                            deploy as failed if they are not. Default: the stack's
-                            wait-for-healthy setting.
-  --no-wait                 Do not wait, whatever the stack's setting says.
-  --wait-timeout <seconds>  How long to wait for healthy containers. Implies --wait.
-  --profile <name>          Start the services in this compose profile too. Repeat it for
-                            more than one profile. Default: the profiles the stack is running
-                            with, else its default profiles, as the web UI's Update uses.
-  --dry-run                 Run the checks without deploying: fetch, check out the commit, run
-                            every check above, show how the compose configuration changes
-                            (variables as written, not their values), and check the commit
-                            from before out again. What the checks find is said as a deploy
-                            says it, with values filled in (a missing folder's path, say).
-                            Nothing is pulled, built or deployed, but while the checks run
-                            the clone holds the tried commit, so a container reading files
-                            from the clone sees them for that time.
-                            Exit status 0 when every check passed, 1 when one did not or the
-                            dry run could not be done. Takes only --commit and --profile.
+选项：
+  --commit <提交 ID>
+      部署该提交而不是最新的提交，例如回退到较早的版本。请给出完整
+      ID（40 个字符，SHA-256 仓库为 64 个）。之后不带 --commit 的部
+      署会回到分支上的最新提交。
+  --save-local-changes
+      如果克隆中被跟踪的文件有改动，或克隆中有人手工创建了提交，就把
+      这些改动保存为栈文件夹下 git-changes 文件夹中的补丁，然后丢弃
+      它们，再部署。不加该选项时，部署会中止并列出被改动的文件。无论
+      哪种情况，不属于仓库的文件都不会被触碰。
+  --wait
+      等待容器运行且健康，若不满足则把本次部署记为失败。默认：采用栈
+      的“等待健康检查”设置。
+  --no-wait
+      不等待，无论栈的设置如何。
+  --wait-timeout <秒数>
+      等待容器健康的时间。隐含 --wait。
+  --profile <名称>
+      同时启动该 compose profile 中的服务。要使用多个 profile 可重复
+      指定。默认：该栈正在使用的 profile；若没有，则用其默认
+      profile，与 Web 界面的“更新”一致。
+  --dry-run
+      只做检查而不部署：拉取、检出该提交、执行上述全部检查、显示
+      compose 配置如何变化（变量按写法显示，不显示其值），然后再把之
+      前的提交检出回来。检查发现的问题会按部署时的说法给出，并填好具
+      体值（例如缺失文件夹的路径）。不会拉取、构建或部署任何内容，但
+      检查运行期间克隆中存放的是试过的那个提交，因此有容器从克隆读取
+      文件时，那段时间它看到的是这些文件。全部检查通过时退出状态为
+      0，有检查未通过或无法完成试运行时为 1。只能与 --commit 和
+      --profile 一起使用。
 
-Examples:
+示例：
   compose-git deploy myapp
   compose-git deploy myapp --commit 4f1c2b0e9d8a7c6b5a4f3e2d1c0b9a8f7e6d5c4b
   compose-git deploy myapp --dry-run
 TEXT,
         'reclone' => <<<'TEXT'
-Usage: compose-git reclone <stack>
+用法：compose-git reclone <stack>
 
-Replace the stack's clone with a fresh one at the deployed commit, for when the clone is in
-a bad state. No container is touched.
+用已部署提交处的一个全新克隆替换该栈的克隆，用于克隆处于不良状态
+时。不会触碰任何容器。
 
-The old clone is moved aside to <clone>.replaced-<date>, never deleted, and any files in it
-that are not part of the repository (data a container wrote there, say) are listed. Copy
-back what you need, then delete the old clone yourself. If the new clone fails, the old one
-is moved back.
+旧克隆会被移到 <clone>.replaced-<date>，绝不会被删除；其中不属于
+仓库的文件（例如容器写入的数据）会被列出来。请把需要的东西复制回
+去，然后自行删除旧克隆。如果新克隆失败，旧克隆会被移回。
 
-It refuses to start while another operation on the stack is running.
+当该栈上还有其他操作正在运行时，它会拒绝启动。
 TEXT,
         'status' => <<<'TEXT'
-Usage: compose-git status [<stack> | --all] [--json]
+用法：compose-git status [<stack> | --all] [--json]
 
-Show what is known about git stacks on this server, without asking the repository: the
-repository and branch, the compose file's path in it, the clone folder, the deployed commit,
-a failed commit if the last deploy failed during up, the commit checked out in the clone,
-and the tracked files changed in the clone. Changes nothing.
+显示本服务器上 git 栈的已知信息，不访问仓库：仓库与分支、compose
+文件在仓库中的路径、克隆文件夹、已部署的提交、若上次部署在 up 阶
+段失败则显示失败的提交、克隆中已检出的提交，以及克隆中被跟踪文件
+的改动。不做任何改动。
 
-Options:
-  --all    Show every git stack. This is what happens when no stack is named, too. A stack
-           whose git settings cannot be read is shown with the reason.
-  --json   Print the same as JSON, for scripts.
+选项：
+  --all
+      显示所有 git 栈。未指定栈时也是这样。git 设置无法读取的栈会连
+      同原因一起显示。
+  --json
+      以 JSON 输出同样的内容，供脚本使用。
 TEXT,
         'auto-deploy' => <<<'TEXT'
-Usage: compose-git auto-deploy <stack> off|notify|deploy
+用法：compose-git auto-deploy <stack> off|notify|deploy
 
-Choose what the scheduled check (every 15 minutes) does when a new commit on the stack's
-branch changes the stack, that is, anything in the stack's folder in the repository:
-  off      nothing is checked (the default)
-  notify   send an Unraid notification, once per commit
-  deploy   deploy the commit, as 'compose-git deploy' does with no options
-Each commit is tried once. A stack that is not running (stopped, or never deployed) is not
-deployed until it runs again, and one taken back to an older commit is brought forward to
-the newest. The plugin's cron line is added while any stack's setting is not off.
+选择当栈所在分支上的新提交改动了栈（即仓库中该栈文件夹内的任何内
+容）时，计划检查（每 15 分钟一次）要做什么：
+  off       不做检查（默认）
+  notify    发送一条 Unraid 通知，每个提交一次
+  deploy    部署该提交，同不带选项的 'compose-git deploy'
+每个提交只会尝试一次。未在运行的栈（已停止或从未部署）不会被部
+署，直到它再次运行；被回退到较早提交的栈会被推进到最新提交。只要
+有任何栈的设置不是 off，就会添加插件的 cron 条目。
 TEXT,
         'resume' => <<<'TEXT'
-Usage: compose-git resume <stack>
+用法：compose-git resume <stack>
 
-Clear a stack's failed deploy, so the scheduled check deploys it again. After a deploy fails
-during up, automatic deploys of the stack are paused until a deploy works; after a scheduled
-deploy fails before up (an image pull, say), that commit is not tried again. Use this once
-you have fixed the cause another way. The deployed commit and the containers are not changed.
+清除栈的部署失败状态，使计划检查再次部署它。up 阶段部署失败后，
+该栈的自动部署会暂停直到有一次部署成功；若计划部署在 up 之前失败
+（例如拉取镜像），该提交不会被再次尝试。在你用其他方式修好原因之
+后使用本命令。已部署的提交与容器不会被改动。
 TEXT,
         'scheduled-check' => <<<'TEXT'
-Usage: compose-git scheduled-check
+用法：compose-git scheduled-check
 
-Run the scheduled check now, for every git stack whose auto-deploy setting is not off. Cron
-runs it every 15 minutes while any stack asks for it. Does nothing while the array is
-stopped, or while another check is still running.
+立即执行计划检查，检查所有 auto-deploy 设置不是 off 的 git 栈。
+只要有栈需要，cron 每 15 分钟运行一次。阵列未启动，或另一次检查
+仍在运行时，不做任何事。
 TEXT,
         default => null,
     };
