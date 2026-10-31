@@ -545,7 +545,7 @@ final class GitStackManagerTest extends TestCase
             $this->manager->add('whoami', 'git@github.com:owner/repo.git', 'main', 'whoami/compose.yaml', $this->clonesRoot, '', $token['id']);
             $this->fail('An ssh stack was added with another credential');
         } catch (\InvalidArgumentException $error) {
-            $this->assertStringContainsString('deploy key the plugin keeps for its repository', $error->getMessage());
+            $this->assertStringContainsString('部署密钥', $error->getMessage());
         }
         $this->assertDirectoryDoesNotExist($this->composeRoot . '/whoami');
         $this->assertSame([], glob($this->clonesRoot . '/*') ?: []);
@@ -928,7 +928,7 @@ final class GitStackManagerTest extends TestCase
 
         $manager->convert($stack->projectFolder, $this->upstream, 'main', 'whoami/compose.yaml', $this->clonesRoot);
 
-        $this->assertStringContainsString('next to the old compose file: db.', implode("\n", $messages));
+        $this->assertStringContainsString('这些文件夹与旧的 compose 文件相邻：db', implode("\n", $messages));
     }
 
     public function testRecloneThatFailsPutsTheOldCloneBack(): void

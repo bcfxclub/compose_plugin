@@ -97,7 +97,7 @@ final class GitHubDeviceAuthTest extends TestCase
         });
 
         $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('Only GitHub OAuth credentials can be renewed');
+        $this->expectExceptionMessage('只有 GitHub OAuth 凭据可以通过 GitHub 登录来续期');
         $auth->start($credential['id']);
     }
 }

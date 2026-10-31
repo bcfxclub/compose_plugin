@@ -114,7 +114,7 @@
             }});
         }
         opts.push({divider:true});
-        opts.push({text:'Open Compose', icon:'fa-cubes', action:function(e){
+        opts.push({text:'打开 Compose', icon:'fa-cubes', action:function(e){
             e.preventDefault();
             location.href = window.composeDashPage || '/Compose';
         }});
@@ -141,9 +141,9 @@
         }, function(data) {
             if (data) {
                 if (typeof openBox === 'function') {
-                    openBox(data, actionTitle + ' Stack ' + stackName, 800, 1200, true);
+                    openBox(data, actionTitle + ' 个栈 ' + stackName, 800, 1200, true);
                 } else {
-                    Shadowbox.open({content: data, player: 'iframe', title: actionTitle + ' Stack ' + stackName, height: 800, width: 1200});
+                    Shadowbox.open({content: data, player: 'iframe', title: actionTitle + ' 个栈 ' + stackName, height: 800, width: 1200});
                 }
             }
             setTimeout(function() { stackContainerCache = {}; loadComposeStacks(); }, 3000);
@@ -359,8 +359,8 @@
 
     function loadComposeStacks() {
         $.post('/plugins/compose.manager/include/DashboardStacks.php', function(data) {
-            var statusText = 'Stacks -- Started: ' + data.started + ', Stopped: ' + data.stopped;
-            if (data.partial > 0) statusText += ', Partial: ' + data.partial;
+            var statusText = '栈 —— 运行中：' + data.started + '，已停止：' + data.stopped;
+            if (data.partial > 0) statusText += '，部分运行：' + data.partial;
             $('#compose_stacks_status').text(statusText);
 
             if (window.hideDockerComposeContainers && data.composeContainerNames && data.composeContainerNames.length > 0) {
@@ -642,7 +642,7 @@
         var started = $('#docker_view').find('span.outer.apps.started').not('.compose-hidden-container').length;
         var stopped = $('#docker_view').find('span.outer.apps.stopped').not('.compose-hidden-container').length;
         var paused  = $('#docker_view').find('span.outer.apps.paused').not('.compose-hidden-container').length;
-        $('.apps.switch').html('容器 -- 已启动：' + started + ', Stopped: ' + stopped + ', Paused: ' + paused);
+        $('.apps.switch').html('容器 -- 已启动：' + started + '，已停止：' + stopped + '，已暂停：' + paused);
     }
 
     $(function() {

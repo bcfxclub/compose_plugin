@@ -283,7 +283,7 @@ class ExecActionsTest extends TestCase
         
         $result = json_decode($output, true);
         $this->assertEquals('error', $result['result']);
-        $this->assertStringContainsString('not specified', $result['message']);
+        $this->assertStringContainsString('未指定', $result['message']);
     }
 
     // ===========================================
@@ -498,7 +498,7 @@ class ExecActionsTest extends TestCase
 
         $result = json_decode($output, true);
         $this->assertEquals('error', $result['result']);
-        $this->assertStringContainsString('directory', $result['message']);
+        $this->assertStringContainsString('目录', $result['message']);
         $this->assertSame($dirTarget, file_get_contents($stackPath . '/envpath'));
     }
 
@@ -627,7 +627,7 @@ class ExecActionsTest extends TestCase
 
         $result = json_decode($output, true);
         $this->assertEquals('error', $result['result']);
-        $this->assertStringContainsString('directory', $result['message']);
+        $this->assertStringContainsString('目录', $result['message']);
         $this->assertTrue(is_dir($stackPath . '/compose.override.yaml'));
     }
 
@@ -770,7 +770,7 @@ class ExecActionsTest extends TestCase
         
         $result = json_decode($output, true);
         $this->assertEquals('error', $result['result']);
-        $this->assertStringContainsString('not specified', $result['message']);
+        $this->assertStringContainsString('未指定', $result['message']);
     }
 
     /**
@@ -989,13 +989,13 @@ class ExecActionsTest extends TestCase
         // No git stack uses it, so there is no repository to try.
         $test = json_decode($this->executeAction('testCredential', ['id' => $credentialId]), true);
         $this->assertSame('error', $test['result']);
-        $this->assertStringContainsString('No git stack uses this credential', $test['message']);
+        $this->assertStringContainsString('尚无 Git 栈使用该凭据', $test['message']);
 
         $settings = json_decode($this->executeAction('setStackSettings', [
             'script' => 'test-stack', 'credentialId' => $credentialId, 'envPath' => 'new.env',
         ]), true);
         $this->assertSame('error', $settings['result']);
-        $this->assertStringContainsString('cannot be used to pull images', $settings['message']);
+        $this->assertStringContainsString('Git 仓库凭据不能用于拉取镜像', $settings['message']);
         // Refused before anything is saved: the other settings and the stack's registry credential are unchanged.
         $this->assertSame('old.env', file_get_contents($stackPath . '/envpath'));
         $this->assertSame('registry-credential', file_get_contents($stackPath . '/credential_id'));
@@ -1022,13 +1022,13 @@ class ExecActionsTest extends TestCase
         ])['id'];
 
         $test = json_decode($this->executeAction('testCredential', ['id' => $credentialId]), true);
-        $this->assertStringContainsString('No git stack uses this credential', $test['message']);
+        $this->assertStringContainsString('尚无 Git 栈使用该凭据', $test['message']);
 
         $settings = json_decode($this->executeAction('setStackSettings', [
             'script' => 'test-stack', 'credentialId' => $credentialId,
         ]), true);
         $this->assertSame('error', $settings['result']);
-        $this->assertStringContainsString('cannot be used to pull images', $settings['message']);
+        $this->assertStringContainsString('Git 仓库凭据不能用于拉取镜像', $settings['message']);
     }
 
     public function testGetStackSettingsReturnsExternalComposeFileForFileMode(): void
@@ -1222,7 +1222,7 @@ class ExecActionsTest extends TestCase
 
         $result = json_decode($output, true);
         $this->assertEquals('error', $result['result']);
-        $this->assertStringContainsString('Set either Indirect Path or Indirect Compose File', $result['message']);
+        $this->assertStringContainsString('外部路径与外部 Compose 文件只能设置其中一个', $result['message']);
     }
 
     public function testAddStackPreservesUserProvidedSymlinkIndirectFolderPath(): void
@@ -1379,7 +1379,7 @@ class ExecActionsTest extends TestCase
             ]);
             $result = json_decode($output, true);
             $this->assertEquals('error', $result['result']);
-            $this->assertStringContainsString('Invalid icon', $result['message']);
+            $this->assertStringContainsString('图标无效', $result['message']);
         }
     }
 

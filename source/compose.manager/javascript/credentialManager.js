@@ -337,7 +337,7 @@
             var response;
             try { response = typeof data === 'string' ? JSON.parse(data) : data; } catch (error) { response = {}; }
             if (response.result !== 'success') {
-                $('#credential-modal-error').text(response.message || 'Unable to start GitHub sign-in.').show();
+                $('#credential-modal-error').text(response.message || '无法启动 GitHub 登录。').show();
                 $button.prop('disabled', false);
                 return;
             }
@@ -393,7 +393,7 @@
 
     // options.registryOnly: opened from a stack's registry credential picker, so the git repository
     // kind is not offered. A git credential cannot be chosen there, and picking one would leave the
-    // picker on "Missing credential", which clears the stack's registry credential when saved.
+    // picker on "缺少凭据", which clears the stack's registry credential when saved.
     function openModal(credential, callback, options) {
         ensureModal();
         credential = credential || {};
@@ -474,7 +474,7 @@
             $row.append($('<td>').text(providerLabel));
             $row.append($('<td>').text(credential.registry));
             $row.append($('<td>').text(credential.username));
-            $row.append($('<td>').text((credential.stacks || []).join(', ') || 'Not assigned'));
+            $row.append($('<td>').text((credential.stacks || []).join(', ') || '未分配'));
             var $actions = $('<td class="credential-list-actions">');
             $('<button type="button" title="测试凭据"><i class="fa fa-plug"></i></button>').on('click', function() { testCredential(credential, $(this)); }).appendTo($actions);
             // A git stack's deploy key is a key pair compose-git made; there is nothing to edit.
@@ -492,19 +492,19 @@
             var response;
             try { response = typeof data === 'string' ? JSON.parse(data) : data; } catch (error) { response = {}; }
             if (response.result !== 'success') {
-                swal({ title: '无法测试凭据', text: response.message || 'Unknown error.', type: 'error' });
+                swal({ title: '无法测试凭据', text: response.message || '未知错误。', type: 'error' });
                 return;
             }
             if (response.valid) {
-                swal({ title: 'Credential is valid', text: response.message || (credential.name + ' authenticated successfully.'), type: 'success' });
+                swal({ title: '凭据有效', text: response.message || (credential.name + ' authenticated successfully.'), type: 'success' });
             } else if (credential.provider === 'git-ssh') {
                 // A deploy key cannot be edited (the modal has no form for it), and its
                 // message already says what failed: a key not added yet, a changed host key.
-                swal({ title: 'Credential rejected', text: response.message || 'The repository refused this deploy key.', type: 'warning' });
+                swal({ title: '凭据被拒绝', text: response.message || '仓库拒绝了这个部署密钥。', type: 'warning' });
             } else if (credential.provider === 'git') {
                 swal({
-                    title: 'Credential rejected',
-                    text: response.message || 'The repository refused this token.',
+                    title: '凭据被拒绝',
+                    text: response.message || '仓库拒绝了这个令牌。',
                     type: 'warning',
                     showCancelButton: true,
                     confirmButtonText: '编辑凭据',
@@ -517,11 +517,11 @@
             } else {
                 var isOAuth = credential.authMethod === 'oauth_device';
                 swal({
-                    title: 'Credential rejected',
-                    text: (response.message || 'The registry rejected this credential.') + ' It may have expired or been revoked.',
+                    title: '凭据被拒绝',
+                    text: (response.message || '镜像仓库拒绝了这个凭据。') + ' 它可能已过期或被吊销。',
                     type: 'warning',
                     showCancelButton: true,
-                    confirmButtonText: isOAuth ? 'Renew access' : '编辑凭据',
+                    confirmButtonText: isOAuth ? '续期授权' : '编辑凭据',
                     cancelButtonText: 'Later'
                 }, function(confirmed) {
                     if (!confirmed) return;
@@ -534,7 +534,7 @@
                 });
             }
         }).fail(function() {
-            swal({ title: '无法测试凭据', text: 'Could not reach the credential service.', type: 'error' });
+            swal({ title: '无法测试凭据', text: '无法连接凭据服务。', type: 'error' });
         }).always(function() {
             $button.prop('disabled', false);
             $icon.removeClass('fa-spinner fa-spin').addClass('fa-plug');
@@ -543,16 +543,16 @@
 
     function deleteCredential(credential) {
         if ((credential.stacks || []).length) {
-            swal({ title: 'Credential is in use', text: 'Remove it from: ' + credential.stacks.join(', '), type: 'warning' });
+            swal({ title: '凭据正在使用中', text: '请先从以下位置移除：' + credential.stacks.join(', '), type: 'warning' });
             return;
         }
-        swal({ title: 'Delete credential?', text: credential.name, type: 'warning', showCancelButton: true }, function(confirmed) {
+        swal({ title: '删除凭据？', text: credential.name, type: 'warning', showCancelButton: true }, function(confirmed) {
             if (!confirmed) return;
             $.post(window.caURL || '/plugins/compose.manager/include/Exec.php', { action: 'deleteCredential', id: credential.id }).done(function(data) {
                 var response;
                 try { response = typeof data === 'string' ? JSON.parse(data) : data; } catch (error) { response = {}; }
                 if (response.result !== 'success') {
-                    showDeleteError(response.message || 'Unknown error.');
+                    showDeleteError(response.message || '未知错误。');
                 }
                 loadCredentials();
             }).fail(function() {
@@ -578,7 +578,7 @@
         });
         $select.val(selectedId || '');
         if (selectedId && $select.val() !== selectedId) {
-            $select.append($('<option>').val(selectedId).text('Missing credential').prop('disabled', true)).val(selectedId);
+            $select.append($('<option>').val(selectedId).text('缺少凭据').prop('disabled', true)).val(selectedId);
         }
     }
 

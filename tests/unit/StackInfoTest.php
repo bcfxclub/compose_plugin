@@ -1629,7 +1629,7 @@ class StackInfoTest extends TestCase
         $state = $info->getStackState();
 
         $this->assertSame('started', $state['state']);
-        $this->assertSame('started', $state['label']);
+        $this->assertSame('运行中', $state['label']);
         $this->assertSame('play', $state['shape']);
         $this->assertSame('green-text', $state['color']);
         $this->assertSame(2, $state['running']);
@@ -1646,7 +1646,7 @@ class StackInfoTest extends TestCase
         $state = $info->getStackState();
 
         $this->assertSame('partial', $state['state']);
-        $this->assertSame('partial (1/3)', $state['label']);
+        $this->assertSame('部分运行 (1/3)', $state['label']);
         $this->assertSame('exclamation-circle', $state['shape']);
         $this->assertSame('orange-text', $state['color']);
         $this->assertSame(1, $state['running']);
@@ -1662,7 +1662,7 @@ class StackInfoTest extends TestCase
         $state = $info->getStackState();
 
         $this->assertSame('stopped', $state['state']);
-        $this->assertSame('stopped', $state['label']);
+        $this->assertSame('已停止', $state['label']);
         $this->assertSame('square', $state['shape']);
         $this->assertSame('grey-text', $state['color']);
         $this->assertSame(0, $state['running']);
@@ -1688,7 +1688,7 @@ class StackInfoTest extends TestCase
         $state = $info->getStackState();
 
         $this->assertSame('paused', $state['state']);
-        $this->assertSame('paused', $state['label']);
+        $this->assertSame('已暂停', $state['label']);
         $this->assertSame('pause', $state['shape']);
         $this->assertSame('orange-text', $state['color']);
     }
@@ -1703,7 +1703,7 @@ class StackInfoTest extends TestCase
         $state = $info->getStackState();
 
         $this->assertSame('partial', $state['state']);
-        $this->assertSame('partial (1/2)', $state['label']);
+        $this->assertSame('部分运行 (1/2)', $state['label']);
     }
 
     public function testGetStackStateCountsOnlyCreatedContainers(): void
@@ -1719,7 +1719,7 @@ class StackInfoTest extends TestCase
 
         $this->assertSame(3, $state['total']);
         $this->assertSame(2, $state['running']);
-        $this->assertSame('partial (2/3)', $state['label']);
+        $this->assertSame('部分运行 (2/3)', $state['label']);
     }
     /**
      * Bug #95: When importing an indirect project that already has docker-compose.yml,

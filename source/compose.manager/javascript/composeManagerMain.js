@@ -121,7 +121,7 @@ function updateAddStackValidity() {
     var $nameErr = $('#compose-stack-name-error');
     if (!name) {
         errors.push('name');
-        $nameErr.text('Stack name is required.').show();
+        $nameErr.text('请填写栈名称。').show();
     } else {
         $nameErr.hide().text('');
     }
@@ -135,10 +135,10 @@ function updateAddStackValidity() {
         var path = ($('#compose-stack-external-path').val() || '').trim();
         if (!path) {
             errors.push('external-path');
-            $pathErr.text('Choose a folder for the external compose source.').show();
+            $pathErr.text('请选择外部 compose 来源的文件夹。').show();
         } else if (!/^\/(mnt|boot\/config)\//.test(path)) {
             errors.push('external-path');
-            $pathErr.text('Path must be under /mnt/ or /boot/config/.').show();
+            $pathErr.text('路径必须位于 /mnt/ 或 /boot/config/ 下。').show();
         } else {
             $pathErr.hide().text('');
         }
@@ -150,13 +150,13 @@ function updateAddStackValidity() {
         var file = ($('#compose-stack-external-file').val() || '').trim();
         if (!file) {
             errors.push('external-file');
-            $fileErr.text('Choose a compose file to use as the source.').show();
+            $fileErr.text('请选择作为来源的 compose 文件。').show();
         } else if (!/^\/(mnt|boot\/config)\//.test(file)) {
             errors.push('external-file');
-            $fileErr.text('Path must be under /mnt/ or /boot/config/.').show();
+            $fileErr.text('路径必须位于 /mnt/ 或 /boot/config/ 下。').show();
         } else if (!/\.ya?ml$/i.test(file)) {
             errors.push('external-file');
-            $fileErr.text('File must have a .yml or .yaml extension.').show();
+            $fileErr.text('文件扩展名必须是 .yml 或 .yaml。').show();
         } else {
             $fileErr.hide().text('');
         }
@@ -171,17 +171,17 @@ function updateAddStackValidity() {
         var gitUrl = ($('#compose-stack-git-url').val() || '').trim();
         if (!gitUrl) {
             errors.push('git-url');
-            $gitUrlErr.text('Enter the repository address.').show();
+            $gitUrlErr.text('请输入仓库地址。').show();
         } else {
             $gitUrlErr.hide().text('');
         }
         var gitComposePath = ($('#compose-stack-git-compose-path').val() || '').trim();
         if (!gitComposePath) {
             errors.push('git-compose-path');
-            $gitPathErr.text('Enter the path of the compose file in the repository.').show();
+            $gitPathErr.text('请输入 compose 文件在仓库中的路径。').show();
         } else if (gitComposePath.charAt(0) === '/') {
             errors.push('git-compose-path');
-            $gitPathErr.text('Give the path from the top of the repository, without a leading /.').show();
+            $gitPathErr.text('请填写从仓库根目录开始的路径，不要以 / 开头。').show();
         } else {
             $gitPathErr.hide().text('');
         }
@@ -257,7 +257,7 @@ function showGitDeployKeyPanel($panel, publicKey, details, buttonName) {
     var $key = $('<textarea class="compose-git-deploy-key" rows="3" readonly>')
         .attr('aria-label', 'Deploy key to add to the repository')
         .val(publicKey);
-    var $copy = $('<button type="button" class="btn btn-sm">').text('Copy key').on('click', function() {
+    var $copy = $('<button type="button" class="btn btn-sm">').text('复制密钥').on('click', function() {
         // The clipboard API needs https, which Unraid often is not on, so copy the selection.
         $key[0].select();
         var copied = false;
@@ -266,14 +266,14 @@ function showGitDeployKeyPanel($panel, publicKey, details, buttonName) {
         } catch (e) {
             copied = false;
         }
-        $copy.text(copied ? 'Copied' : '选择密钥并复制');
+        $copy.text(copied ? '已复制' : '选择密钥并复制');
     });
     $panel.empty().append(
         $('<div class="compose-git-deploy-key-panel-title">').append(
             $('<i class="fa fa-key">'),
-            $('<span>').text('Add this deploy key to the repository')
+            $('<span>').text('将此部署密钥添加到仓库')
         ),
-        $('<div>').text('In the repository\'s settings, add this key as a read-only deploy key (on GitHub: '
+        $('<div>').text('在仓库设置中，将此密钥添加为只读部署密钥（在 GitHub 上：'
             + 'Settings, then Deploy keys), then select ' + buttonName + ' again. The stack keeps this key, '
             + 'so this is needed only once.'),
         $key,
@@ -297,11 +297,11 @@ function submitGitStackFromAddStackModal(name, desc, overrideManagementAutomatic
     $error.hide().text('');
     $deployKeyPanel.hide().empty();
     $modal.find('button').prop('disabled', true);
-    $createButton.text('Cloning...');
+    $createButton.text('正在克隆...');
 
     var enableButtons = function() {
         $modal.find('button').prop('disabled', false);
-        $createButton.text('Create');
+        $createButton.text('创建');
     };
     var showError = function(message) {
         enableButtons();
@@ -323,7 +323,7 @@ function submitGitStackFromAddStackModal(name, desc, overrideManagementAutomatic
         try {
             response = JSON.parse(data);
         } catch (e) {
-            showError('Unexpected response from server.');
+            showError('服务器返回了意外的响应。');
             return;
         }
         // What the server said on the way (an ssh stack's pinned host key fingerprints,
@@ -332,7 +332,7 @@ function submitGitStackFromAddStackModal(name, desc, overrideManagementAutomatic
         if (response.result !== 'success' && response.deployKey) {
             enableButtons();
             showGitDeployKeyPanel($deployKeyPanel, response.deployKey,
-                (messages ? messages + '\n\n' : '') + (response.message || ''), 'Create');
+                (messages ? messages + '\n\n' : '') + (response.message || ''), '创建');
             return;
         }
         if (response.result !== 'success') {
@@ -348,7 +348,7 @@ function submitGitStackFromAddStackModal(name, desc, overrideManagementAutomatic
         var shown = isSsh && messages !== '' ? messages + '\n\n' : '';
         swal({
             title: response.projectName + ' was added',
-            text: shown + 'Deploy it from its stack menu when you are ready.',
+            text: shown + '准备好后，从栈菜单中部署它。',
             type: 'success'
         });
     }).fail(function() {
@@ -410,7 +410,7 @@ function updateDiscoveryModeUI(scope, suppressChangeTracking) {
         }
         $checkbox.prop('disabled', true);
         if ($notice.length) {
-            $notice.text('Locked to explicit -f flags because ' + reasons.join(' and ')
+            $notice.text('已锁定为显式 -f 参数，因为 ' + reasons.join(' and ')
                 + (reasons.length > 1 ? ' are set.' : ' is set.')).show();
         }
     } else {
@@ -430,7 +430,7 @@ function updateDiscoveryModeUI(scope, suppressChangeTracking) {
         if (locked) {
             $toggle.hide();
         } else {
-            $toggle.text(isDefault ? 'Use explicit -f flags' : '使用默认发现').show();
+            $toggle.text(isDefault ? '使用显式 -f 参数' : '使用默认发现').show();
         }
     }
 }
@@ -1509,7 +1509,7 @@ function initEditorModal() {
 
         // Defer labels tab mode switch until save; only stage pending setting locally.
         editorModal.pendingLabelsViewMode = mode;
-        $('#settings-override-management-label').text(mode === 'advanced' ? 'Manual' : 'Automatic');
+        $('#settings-override-management-label').text(mode === 'advanced' ? '手动' : '自动');
 
         if (mode !== originalMode) {
             editorModal.modifiedSettings.add('labels-view-mode');
@@ -1859,27 +1859,27 @@ function renderEffectiveCommandPreview(data) {
 function loadEffectiveCommandPreview(project) {
     var $out = $('#settings-effective-command');
     if (!$out.length || !project) return;
-    $out.text('Loading…');
+    $out.text('加载中…');
     $.post(caURL, { action: 'previewComposeArgs', script: project })
         .then(function(data) {
             var response;
             try {
                 response = JSON.parse(data);
             } catch (e) {
-                $out.text('Unable to parse preview response.');
+                $out.text('无法解析预览响应。');
                 return;
             }
             if (response.result !== 'success') {
-                $out.text(response.message || 'Preview unavailable.');
+                $out.text(response.message || '预览不可用。');
                 return;
             }
             renderEffectiveCommandPreview(response);
         }).fail(function() {
-            $out.text('Failed to load preview (network error).');
+            $out.text('预览加载失败（网络错误）。');
         });
 }
 
-// Show or hide the "Unsaved changes" pill next to the effective command.
+// Show or hide the "未保存的改动" pill next to the effective command.
 function updateEffectiveCommandDirtyIndicator() {
     var dirty = editorModal.modifiedSettings && editorModal.modifiedSettings.size > 0;
     $('#settings-effective-command-dirty').toggle(!!dirty);
@@ -2364,8 +2364,8 @@ function updateAllStacks() {
 
     if (stacks.length === 0) {
         swal({
-            title: 'No Updates Available',
-            text: autostartOnly ? 'No stacks with Autostart enabled have updates available.' : '没有栈有可用更新。',
+            title: '没有可用更新',
+            text: autostartOnly ? '没有启用自动启动的栈有可用更新。' : '没有栈有可用更新。',
             type: 'info'
         });
         return;
@@ -2398,7 +2398,7 @@ function updateAllStacks() {
             type: 'warning',
             showCancelButton: true,
             confirmButtonText: confirmText,
-            cancelButtonText: 'Cancel'
+            cancelButtonText: '取消'
         }, function(confirmed) {
             if (confirmed) {
                 var runInBackground = $('#swal-run-bg-updateall').is(':checked');
@@ -2864,7 +2864,7 @@ $(function() {
                                 <input type='button' onclick='editDesc(&quot;" + myID + "&quot;);' value='Edit Description' > \
                                 <input type='button' onclick='editStack(&quot;" + myID + "&quot;);' value='编辑栈'> \
                                 <input type='button' onclick='deleteStack(&quot;" + myID + "&quot;);' value='删除栈' " + disabled + "> \
-                                <input type='button' onclick='ComposeLogs(&quot;" + myID + "&quot;);' value='Logs' " + notdisabled + "> \
+                                <input type='button' onclick='ComposeLogs(&quot;" + myID + "&quot;);' value='日志' " + notdisabled + "> \
                                 </center>");
         }
     });
@@ -3907,7 +3907,7 @@ function addStack() {
                         }, 'user', 'error', 'addStack');
                         swal({
                             title: "创建栈失败",
-                            text: "Unexpected response from server",
+                            text: "服务器返回了意外的响应",
                             type: "error"
                         });
                         return;
@@ -4219,11 +4219,11 @@ function editStackSettings(myID) {
                 formHtml += `<br>`;
                 formHtml += `<input type='text' id='env_path' class='swal-content__input' pattern="(\/mnt\/.*\/.+)" oninput="this.reportValidity()" title="A path under /mnt/user/ or /mnt/cache/ or /mnt/pool/" placeholder=Default value='${rawEnvPath.content}'>`;
                 swal({
-                    title: "Stack Settings",
+                    title: "栈设置",
                     text: formHtml,
                     html: true,
                     showCancelButton: true,
-                    confirmButtonText: "Save",
+                    confirmButtonText: "保存",
                     closeOnConfirm: false
                 }, function(confirmed) {
                     if (confirmed) {
@@ -4294,7 +4294,7 @@ function notifyBackgroundStarted(label, shouldNotify = true) {
 
     swal({
         title: '正在后台运行',
-        text: label + ' has been started in the background.\nYou will receive a notification when it completes.',
+        text: label + ' 已在后台启动。\n完成后你会收到通知。',
         type: 'info',
         timer: 3000,
         showConfirmButton: false
@@ -4413,7 +4413,7 @@ function composeShowIdentityChooser(info) {
         type: 'warning',
         showConfirmButton: false,
         showCancelButton: true,
-        cancelButtonText: 'Cancel'
+        cancelButtonText: '取消'
     });
 }
 
@@ -4447,11 +4447,11 @@ $(document).on('click', '.compose-identity-choice', function () {
     $.post(caURL, { action: 'setProjectIdentity', stackName: project, projectName: choice }, function (data) {
         var parsed = tryParseJson(data);
         if (parsed && parsed.result === 'success') {
-            swal({ title: 'Identity pinned', text: 'Using project name "' + choice + '".', type: 'success' }, function () {
+            swal({ title: '标识已固定', text: '使用项目名称 "' + choice + '".', type: 'success' }, function () {
                 location.reload();
             });
         } else {
-            swal('Error', (parsed && parsed.message) || 'Failed to pin project identity.', 'error');
+            swal('错误', (parsed && parsed.message) || 'Failed to pin project identity.', 'error');
         }
     });
 });
@@ -4754,7 +4754,7 @@ function promptRecreateContainers(closeAfterSave) {
     var project = editorModal.currentProject;
     if (!project) {
         swal({
-            title: "Saved!",
+            title: "已保存！",
             text: "所有更改已保存。",
             type: "success",
             showConfirmButton: false
@@ -4773,8 +4773,8 @@ function promptRecreateContainers(closeAfterSave) {
             doCloseEditorModal();
         }
         swal({
-            title: "Saved!",
-            text: "All changes have been saved. Container labels will take effect when you start the stack.",
+            title: "已保存！",
+            text: "所有改动已保存。容器标签将在你启动该栈时生效。",
             type: "success"
         }, function() {
             refreshStackByProject(project);
@@ -4784,8 +4784,8 @@ function promptRecreateContainers(closeAfterSave) {
 
     if (!closeAfterSave) {
         swal({
-            title: "Saved!",
-            text: "Container labels were saved. Recreate or restart containers to apply the changes.",
+            title: "已保存！",
+            text: "容器标签已保存。请重建或重启容器以应用改动。",
             type: "info",
             showConfirmButton: false
         });
@@ -4799,7 +4799,7 @@ function promptRecreateContainers(closeAfterSave) {
     // Stack is running, ask if user wants to recreate
     var path = compose_root + '/' + project;
     swal({
-        title: "Recreate Containers?",
+        title: "重建容器？",
         text: '<div style="text-align:left;max-width:400px;margin:0 auto;">' +
             '<p>容器标签（图标、WebUI）已保存。</p>' +
             '<p class="compose-status-warning"><i class="fa fa-exclamation-triangle"></i> <strong>容器必须重建</strong>这些更改才会生效。</p>' +
@@ -4808,8 +4808,8 @@ function promptRecreateContainers(closeAfterSave) {
         html: true,
         type: "warning",
         showCancelButton: true,
-        confirmButtonText: "Recreate Now",
-        cancelButtonText: "Later",
+        confirmButtonText: "立即重建",
+        cancelButtonText: "稍后",
         closeOnConfirm: true
     }, function(confirmed) {
         doCloseEditorModal();
@@ -4820,8 +4820,8 @@ function promptRecreateContainers(closeAfterSave) {
             }, 300);
         } else {
             swal({
-                title: "Saved!",
-                text: "Changes saved. Remember to restart or recreate containers to apply label changes.",
+                title: "已保存！",
+                text: "改动已保存。记得重启或重建容器以应用标签改动。",
                 type: "info",
 showConfirmButton: false
         });
@@ -5158,18 +5158,18 @@ function gitDeployStack(path, project, commit, profile) {
         if (git.problem) {
             swal({
                 title: '无法部署：' + project,
-                text: '发现问题：' + git.problem + '\n\nDeployed now: ' + deployedNow + '. Nothing was changed.',
+                text: '发现问题：' + git.problem + '\n\n当前已部署：' + deployedNow + '. Nothing was changed.',
                 type: 'error'
             });
             return;
         }
         if (changes.length === 0 && !git.commitMadeByHand) {
             swal({
-                title: 'Deploy ' + project + '?',
-                text: 'Deploy will fetch ' + target + ' from ' + git.url + ', check it, and start the stack from it. Deployed now: ' + deployedNow + '.',
+                title: '部署 ' + project + '?',
+                text: '部署将拉取 ' + target + ' from ' + git.url + '，检查它，并从它启动该栈。当前已部署：' + deployedNow + '.',
                 type: 'info',
                 showCancelButton: true,
-                confirmButtonText: 'Deploy'
+                confirmButtonText: '部署'
             }, function(confirmed) {
                 if (confirmed) {
                     gitDeployConfirmed(path, commit, false, profile);
@@ -5186,12 +5186,12 @@ function gitDeployStack(path, project, commit, profile) {
             found.push('这些文件与仓库不一致：' + changes.join(', '));
         }
         swal({
-            title: 'Changes made in the clone',
-            text: 'In the clone of ' + project + ', ' + found.join('; and ') +
+            title: '克隆中的改动',
+            text: '在克隆中：' + project + ', ' + found.join('; and ') +
                 '. Save the changes as a patch in the stack folder\'s git-changes folder, discard them, and deploy ' + target + '?',
             type: 'warning',
             showCancelButton: true,
-            confirmButtonText: 'Save, discard and deploy'
+            confirmButtonText: '保存、丢弃并部署'
         }, function(confirmed) {
             if (confirmed) {
                 gitDeployConfirmed(path, commit, true, profile);
@@ -5210,7 +5210,7 @@ function gitDeployStack(path, project, commit, profile) {
 // deployed one, and offer to deploy it.
 function checkGitStack(path, project) {
     swal({
-        title: 'Checking ' + project + '...',
+        title: '正在检查 ' + project + '...',
         text: '正在向仓库查询最新提交。',
         type: 'info',
         showConfirmButton: false
@@ -5222,8 +5222,8 @@ function checkGitStack(path, project) {
         var response = tryParseJson(data);
         if (!response || response.result !== 'success') {
             swal({
-                title: 'Could not check ' + project,
-                text: (response && response.message) || 'Unexpected response from server.',
+                title: '无法检查 ' + project,
+                text: (response && response.message) || '服务器返回了意外的响应。',
                 type: 'error'
             });
             return;
@@ -5232,15 +5232,15 @@ function checkGitStack(path, project) {
         if (check.upToDate) {
             swal({
                 title: project + ' is up to date',
-                text: '最新提交位于' + check.branch + ' (' + gitShortCommit(check.remoteCommit) + ') is deployed.',
+                text: '最新提交位于' + check.branch + ' (' + gitShortCommit(check.remoteCommit) + '）已部署。',
                 type: 'success'
             });
             return;
         }
         // One line per fact: the latest commit, the deployed one, then what changed between them.
-        var latestLine = 'Commit ' + gitShortCommit(check.remoteCommit) + ' is the latest on ' + check.branch + '.';
+        var latestLine = '提交 ' + gitShortCommit(check.remoteCommit) + ' 是 ' + check.branch + ' 上的最新提交。';
         var deployedLine = check.deployedCommit
-            ? 'Commit ' + gitShortCommit(check.deployedCommit) + ' is currently deployed'
+            ? '当前部署的是提交 ' + gitShortCommit(check.deployedCommit)
             : '';
         var dialog;
         if (check.changesStack === false) {
@@ -5252,18 +5252,18 @@ function checkGitStack(path, project) {
                     + '存在多个栈时，这通常是另一个栈的提交。'
                 : '没有文件。';
             dialog = {
-                title: '有更新的提交位于：' + check.branch + ', outside this stack\'s folder',
+                title: '有更新的提交位于：' + check.branch + '，位于该栈文件夹之外',
                 text: latestLine + '\n' + deployedLine + '.\n'
                     + 'The commits since then change ' + unchanged
                     + '\n\nDeploy it anyway if this stack uses files from outside that folder: '
                     + 'a bind mount or build context of ../something, or an env_file, extends or include in another '
                     + 'folder. Changes there are not counted as changes to this stack.',
-                confirmButtonText: 'Deploy anyway'
+                confirmButtonText: '仍然部署'
             };
         } else if (!check.deployedCommit) {
             dialog = {
-                title: 'A commit is on ' + check.branch + ' to deploy',
-                text: 'Commit ' + gitShortCommit(check.remoteCommit) + ' on ' + check.branch + ' is ready to deploy.\n'
+                title: '有一个提交位于 ' + check.branch + ' to deploy',
+                text: '提交 ' + gitShortCommit(check.remoteCommit) + ' on ' + check.branch + ' 已可部署。\n'
                     + 'Nothing is currently deployed.',
                 confirmButtonText: '拉取并重新部署'
             };
@@ -5272,7 +5272,7 @@ function checkGitStack(path, project) {
             // nothing to compare the new commit with.
             dialog = {
                 title: '有更新的提交位于：' + check.branch,
-                text: latestLine + '\n' + deployedLine + ', but it is no longer in the clone, so the changes '
+                text: latestLine + '\n' + deployedLine + '，但它已不在克隆中，因此这些改动 '
                     + 'cannot be identified.',
                 confirmButtonText: '拉取并重新部署'
             };
@@ -5293,7 +5293,7 @@ function checkGitStack(path, project) {
             type: 'info',
             showCancelButton: true,
             confirmButtonText: dialog.confirmButtonText,
-            cancelButtonText: 'Not now'
+            cancelButtonText: '暂不'
         }, function(confirmed) {
             if (confirmed) {
                 // The deploy's own confirmation opens after this one has closed.
@@ -5304,7 +5304,7 @@ function checkGitStack(path, project) {
         });
     }).fail(function() {
         swal({
-            title: 'Could not check ' + project,
+            title: '无法检查 ' + project,
             text: '请求失败。',
             type: 'error'
         });
@@ -5314,13 +5314,13 @@ function checkGitStack(path, project) {
 // Ask for a commit id, then deploy that commit (to go back to an older version).
 function promptGitDeployCommit(path, project) {
     swal({
-        title: 'Deploy a commit of ' + project,
-        text: 'Enter the full commit id (40 characters, or 64 in a SHA-256 repository). A later Pull and Redeploy brings the stack back to the branch\'s latest.',
+        title: '部署以下栈的某个提交：' + project,
+        text: '请输入完整的提交 ID（40 位，SHA-256 仓库为 64 位）。之后执行“拉取并重新部署”会让该栈回到分支的最新提交。',
         type: 'input',
-        inputPlaceholder: 'Full commit id',
+        inputPlaceholder: '完整提交 ID',
         showCancelButton: true,
         closeOnConfirm: true,
-        confirmButtonText: 'Next'
+        confirmButtonText: '下一步'
     }, function(commit) {
         if (commit === false) {
             return;
@@ -5350,7 +5350,7 @@ function promptGitDeployCommit(path, project) {
 function gitDeployConfirmed(path, commit, saveLocalChanges, profile) {
     confirmedComposeAction(path, {
         actionName: 'gitDeploy',
-        titlePrefix: 'Deploy',
+        titlePrefix: '部署',
         requestUrl: compURL,
         payload: {
             action: 'composeGitDeploy',
@@ -5435,7 +5435,7 @@ function startAllStacks() {
             type: 'warning',
             showCancelButton: true,
             confirmButtonText: confirmText,
-            cancelButtonText: 'Cancel'
+            cancelButtonText: '取消'
         }, function(confirmed) {
             if (confirmed) {
                 var runInBackground = $('#swal-run-bg-startall').is(':checked');
@@ -5570,7 +5570,7 @@ function stopAllStacks() {
             type: 'warning',
             showCancelButton: true,
             confirmButtonText: confirmText,
-            cancelButtonText: 'Cancel'
+            cancelButtonText: '取消'
         }, function(confirmed) {
             if (confirmed) {
                 var runInBackground = $('#swal-run-bg-stopall').is(':checked');
@@ -5825,7 +5825,7 @@ function renderStackActionDialog(action, displayName, path, profile, containers,
     var pullLabel = hasBuild ? 'Build' : 'Pull';
     var config = {
         'up': {
-            title: 'Compose Up: ' + composeEscapeHtml(displayName),
+            title: 'Compose 启动：' + composeEscapeHtml(displayName),
             description: 'This will create and start all containers in <b>' + composeEscapeHtml(displayName) + '</b>.',
             listTitle: 'CONTAINERS',
             warning: 'Images will be pulled if not present locally.',
@@ -5837,7 +5837,7 @@ function renderStackActionDialog(action, displayName, path, profile, containers,
             confirmedFn: ComposeUpConfirmed
         },
         'down': {
-            title: 'Compose Down: ' + composeEscapeHtml(displayName),
+            title: 'Compose 停止并移除：' + composeEscapeHtml(displayName),
             description: 'This will stop and remove all containers in <b>' + composeEscapeHtml(displayName) + '</b>.',
             listTitle: 'CONTAINERS',
             warning: 'Containers will be removed but data in volumes is preserved.',
@@ -5849,7 +5849,7 @@ function renderStackActionDialog(action, displayName, path, profile, containers,
             confirmedFn: ComposeDownConfirmed
         },
         'stop': {
-            title: 'Compose Stop: ' + composeEscapeHtml(displayName),
+            title: 'Compose 停止：' + composeEscapeHtml(displayName),
             description: 'This will stop all containers in <b>' + composeEscapeHtml(displayName) + '</b> without removing them.',
             listTitle: 'CONTAINERS',
             warning: 'Containers will be stopped but not removed. Use Compose Up to start them again.',
@@ -5860,7 +5860,7 @@ function renderStackActionDialog(action, displayName, path, profile, containers,
             confirmedFn: ComposeStopConfirmed
         },
         'restart': {
-            title: 'Compose Restart: ' + composeEscapeHtml(displayName),
+            title: 'Compose 重启：' + composeEscapeHtml(displayName),
             description: 'This will restart all containers in <b>' + composeEscapeHtml(displayName) + '</b>.',
             listTitle: 'CONTAINERS',
             warning: 'Containers will be recreated. Data in volumes is preserved.',
@@ -5882,7 +5882,7 @@ function renderStackActionDialog(action, displayName, path, profile, containers,
             confirmedFn: ComposePullConfirmed
         },
         'update': {
-            title: 'Update: ' + composeEscapeHtml(displayName),
+            title: '更新：' + composeEscapeHtml(displayName),
             description: 'This will pull the latest images and recreate containers in <b>' + composeEscapeHtml(displayName) + '</b>.',
             listTitle: 'CONTAINERS',
             warning: 'Running containers will be recreated with the latest images.',
@@ -5893,7 +5893,7 @@ function renderStackActionDialog(action, displayName, path, profile, containers,
             confirmedFn: UpdateStackConfirmed
         },
         'forceUpdate': {
-            title: 'Force Update: ' + composeEscapeHtml(displayName),
+            title: '强制更新：' + composeEscapeHtml(displayName),
             description: 'This will pull the latest images and rebuild containers in <b>' + composeEscapeHtml(displayName) + '</b>, even if no updates are detected.',
             listTitle: 'CONTAINERS',
             warning: 'All containers will be recreated with freshly pulled images.',
@@ -6035,7 +6035,7 @@ function renderStackActionDialog(action, displayName, path, profile, containers,
             type: 'warning',
             showCancelButton: true,
             confirmButtonText: cfg.confirmText,
-            cancelButtonText: 'Cancel'
+            cancelButtonText: '取消'
         }, function(confirmed) {
             if (confirmed) {
                 // Capture checkbox state before swal destroys the DOM
@@ -6080,7 +6080,7 @@ function ViewLastCmdLog(project, displayName) {
         var parsed = tryParseJson(response);
         if (!parsed || parsed.result !== 'success') {
             swal({
-                title: 'Error',
+                title: '错误',
                 text: '无法获取日志。',
                 type: 'error'
             });
@@ -6089,7 +6089,7 @@ function ViewLastCmdLog(project, displayName) {
         if (!parsed.log) {
             swal({
                 title: '没有可用日志',
-                text: 'No command log has been saved for ' + composeEscapeHtml(displayName) + ' yet.\nRun a command to generate one.',
+                text: '尚未保存命令日志：' + composeEscapeHtml(displayName) + '。\n运行一条命令即可生成。',
                 type: 'info'
             });
             return;
@@ -6100,11 +6100,11 @@ function ViewLastCmdLog(project, displayName) {
             'font-size:0.82em;line-height:1.4;white-space:pre-wrap;word-break:break-all;">' +
             composeEscapeHtml(parsed.log) + '</pre></div>';
         swal({
-            title: 'Last Cmd Log: ' + composeEscapeHtml(displayName),
+            title: '最近命令日志：' + composeEscapeHtml(displayName),
             text: logHtml,
             html: true,
             type: null,
-            confirmButtonText: 'Close'
+            confirmButtonText: '关闭'
         });
     });
 }
@@ -6386,8 +6386,8 @@ function showProfileSelector(action, path, profiles, runningProfile, defaultProf
         text: "选择要用于以下栈的配置档：" + actionNames[action] + "<br><br>" + profileHtml,
         html: true,
         showCancelButton: true,
-        confirmButtonText: "Continue",
-        cancelButtonText: "Cancel"
+        confirmButtonText: "继续",
+        cancelButtonText: "取消"
     }, function(confirmed) {
         if (confirmed) {
             var selectedProfiles = [];
@@ -6485,7 +6485,7 @@ function openEditorModalByProject(project, projectName, initialTab) {
     // Clear any lingering inline error slots from a previous open.
     $('[id^="settings-"][id$="-error"]').hide().text('');
     $('#settings-override-management').prop('checked', true);
-    $('#settings-override-management-label').text('Automatic');
+    $('#settings-override-management-label').text('自动');
 
     // Reset all tabs to unmodified state
     $('.editor-tab').removeClass('modified active');
@@ -6508,7 +6508,7 @@ function openEditorModalByProject(project, projectName, initialTab) {
     $('#editor-compose-git-banner, #editor-compose-git-changed').hide();
 
     // Set modal title
-    $('#editor-modal-title').text('Editing: ' + projectName);
+    $('#editor-modal-title').text('正在编辑：' + projectName);
     updateEditorFileInfo();
 
     // Ensure overlay is in top-level document layer for tabbed mode
@@ -6641,19 +6641,19 @@ function switchComposeFile(path) {
             updateEditorFileInfo();
             validateYaml('compose', response.content || '');
         }).fail(function() {
-            swal({ type: 'error', title: '加载失败', text: 'Unable to load file (network error).' });
+            swal({ type: 'error', title: '加载失败', text: '无法加载文件（网络错误）。' });
             $('#compose-file-selector').val(editorModal.filePaths.compose);
         });
     };
 
     if (editorModal.modifiedTabs.has('compose')) {
         swal({
-            title: 'Discard changes?',
-            text: 'The current compose file has unsaved changes that will be lost when switching files.',
+            title: '丢弃改动？',
+            text: '当前 compose 文件有未保存的改动，切换文件时会丢失。',
             type: 'warning',
             showCancelButton: true,
-            confirmButtonText: 'Discard',
-            cancelButtonText: 'Cancel'
+            confirmButtonText: '丢弃',
+            cancelButtonText: '取消'
         }, function(confirmed) {
             if (confirmed) {
                 doSwitch();
@@ -6699,7 +6699,7 @@ function showGitSourceForStack(project, isGitStack) {
         try {
             response = JSON.parse(data);
         } catch (e) {
-            response = { result: 'error', message: 'Unexpected response from server.' };
+            response = { result: 'error', message: '服务器返回了意外的响应。' };
         }
         if (response.result !== 'success') {
             $('#settings-git-source-error').text(response.message || '无法读取 Git 栈。').show();
@@ -6730,7 +6730,7 @@ function showGitLocalChanges($box, git) {
         )
     );
     if (git.commitMadeByHand) {
-        $box.append($('<div>').text('The checked-out commit ' + gitShortCommit(git.checkedOutCommit)
+        $box.append($('<div>').text('已检出的提交 ' + gitShortCommit(git.checkedOutCommit)
             + ' was made in the clone by hand, not in the repository.'));
     }
     if (changes.length > 0) {
@@ -6750,7 +6750,7 @@ function openConvertToGitModal() {
     }
     if (editorModal.modifiedTabs.size + editorModal.modifiedSettings.size + editorModal.modifiedLabels.size > 0) {
         swal({
-            title: 'Unsaved changes',
+            title: '未保存的改动',
             text: '请先保存或放弃编辑器中的更改。',
             type: 'warning'
         });
@@ -6762,7 +6762,7 @@ function openConvertToGitModal() {
             <div class="compose-modal" role="dialog" aria-modal="true" aria-labelledby="compose-convert-git-title" style="max-width:640px;">
                 <div class="compose-modal-header">
                     <span id="compose-convert-git-title"></span>
-                    <button type="button" class="editor-btn editor-btn-cancel" onclick="closeConvertToGitModal()" aria-label="Close"><i class="fa fa-times"></i></button>
+                    <button type="button" class="editor-btn editor-btn-cancel" onclick="closeConvertToGitModal()" aria-label="关闭"><i class="fa fa-times"></i></button>
                 </div>
                 <div class="compose-modal-body">
                     <div id="compose-convert-git-error" class="compose-status-danger" style="margin-bottom:12px;display:none;white-space:pre-wrap;"></div>
@@ -6804,7 +6804,7 @@ function openConvertToGitModal() {
     var holder = document.createElement('div');
     holder.innerHTML = modalHtml;
     document.body.appendChild(holder.firstElementChild);
-    $('#compose-convert-git-title').text('Move ' + (editorModal.currentProjectName || project) + ' into git');
+    $('#compose-convert-git-title').text('移动 ' + (editorModal.currentProjectName || project) + ' into git');
 
     $('#compose-convert-git-url').on('input', function() {
         var isSsh = isGitSshAddress(($(this).val() || '').trim());
@@ -6825,12 +6825,12 @@ function submitConvertToGit() {
     var composePath = ($('#compose-convert-git-compose-path').val() || '').trim();
     var $error = $('#compose-convert-git-error');
     if (!url || !composePath) {
-        $error.text('Enter the repository address and the path of the compose file in the repository.').show();
+        $error.text('请输入仓库地址以及 compose 文件在仓库中的路径。').show();
         return;
     }
     var $buttons = $('#compose-convert-git-overlay button');
     $buttons.prop('disabled', true);
-    $('#compose-convert-git-btn').text('Cloning...');
+    $('#compose-convert-git-btn').text('正在克隆...');
     $error.hide();
     $('#compose-convert-git-deploy-key-panel').hide().empty();
 
@@ -6853,7 +6853,7 @@ function submitConvertToGit() {
                     (messages ? messages + '\n\n' : '') + (response.message || ''), '迁移到 Git');
                 return;
             }
-            $error.text((messages ? messages + '\n\n' : '') + ((response && response.message) || 'Unexpected response from server.')).show();
+            $error.text((messages ? messages + '\n\n' : '') + ((response && response.message) || '服务器返回了意外的响应。')).show();
             return;
         }
         closeConvertToGitModal();
@@ -6862,7 +6862,7 @@ function submitConvertToGit() {
         composeLoadlist();
         swal({
             title: projectName + ' is now a git stack',
-            text: (response.messages || []).join('\n\n') + '\n\nDeploy it with Pull and Redeploy from its stack menu.',
+            text: (response.messages || []).join('\n\n') + '\n\n请从其栈菜单执行“拉取并重新部署”来部署。',
             type: 'success'
         }, function() {
             openEditorModalByProject(project, projectName, 'sources');
@@ -6879,7 +6879,7 @@ function submitConvertToGit() {
 function saveGitAutoDeploy(autoDeploy) {
     var project = editorModal.currentProject;
     var $saved = $('#settings-git-auto-deploy-saved');
-    $saved.text('Saving...').show();
+    $saved.text('正在保存...').show();
     $.post(caURL, {
         action: 'setGitAutoDeploy',
         script: project,
@@ -6890,13 +6890,13 @@ function saveGitAutoDeploy(autoDeploy) {
             $saved.hide();
             swal({
                 title: '自动部署设置未改变',
-                text: (response && response.message) || 'Unexpected response from server.',
+                text: (response && response.message) || '服务器返回了意外的响应。',
                 type: 'error'
             });
             showGitSourceForStack(project, true);
             return;
         }
-        $saved.text('Saved').show();
+        $saved.text('已保存').show();
     }).fail(function() {
         $saved.hide();
         swal({ title: '自动部署设置未改变', text: '请求失败。', type: 'error' });
@@ -6913,8 +6913,8 @@ function resumeGitStack(project) {
         var response = tryParseJson(data);
         if (!response || response.result !== 'success') {
             swal({
-                title: 'Could not resume ' + project,
-                text: (response && response.message) || 'Unexpected response from server.',
+                title: '无法恢复 ' + project,
+                text: (response && response.message) || '服务器返回了意外的响应。',
                 type: 'error'
             });
             return;
@@ -6922,7 +6922,7 @@ function resumeGitStack(project) {
         swal({ title: project, text: (response.messages || []).join('\n'), type: 'success' });
         composeLoadlist();
     }).fail(function() {
-        swal({ title: 'Could not resume ' + project, text: '请求失败。', type: 'error' });
+        swal({ title: '无法恢复 ' + project, text: '请求失败。', type: 'error' });
     });
 }
 
@@ -6934,8 +6934,8 @@ function renderGitSource(git) {
     $('#settings-git-clone-dir').text(git.cloneDir);
     $('#settings-git-credential').text(git.credential || '');
     $('#settings-git-credential-row').toggle(!!git.credential);
-    $('#settings-git-deployed').text(git.deployedCommit ? gitShortCommit(git.deployedCommit) : 'Not deployed yet');
-    $('#settings-git-failed').text(gitShortCommit(git.failedCommit) + ' (fix it and deploy again)');
+    $('#settings-git-deployed').text(git.deployedCommit ? gitShortCommit(git.deployedCommit) : '尚未部署');
+    $('#settings-git-failed').text(gitShortCommit(git.failedCommit) + '（请修复后重新部署）');
     $('#settings-git-failed-row').toggle(!!git.failedCommit);
     // A scheduled deploy that failed before up (an image pull, say); Resume makes the next check try again.
     $('#settings-git-failed-automatic').text(gitShortCommit(git.failedAutomaticCommit) + ' (before up; Resume Automatic Deploys in the stack menu tries it again)');
@@ -7030,7 +7030,7 @@ function loadSettingsData(project, projectName) {
                         var currentVal = $('#settings-webui-url').val();
                         if (currentVal === dr.detected.url) return; // already set to detected value
                         $('#settings-webui-detected-url').text(dr.detected.url);
-                        $('#settings-webui-detected-source').text('(from ' + dr.detected.source + ')');
+                        $('#settings-webui-detected-source').text('（来自 ' + dr.detected.source + ')');
                         $('#settings-webui-suggestion').show();
                         $('#settings-webui-use-btn').off('click').on('click', function() {
                             $('#settings-webui-url').val(dr.detected.url).trigger('input');
@@ -7157,11 +7157,11 @@ function loadSettingsData(project, projectName) {
                 editorModal.labelsViewMode = labelsViewMode;
                 editorModal.pendingLabelsViewMode = labelsViewMode;
                 editorModal.originalSettings['labels-view-mode'] = labelsViewMode;
-                $('#editor-tab-labels-text').text(labelsViewMode === 'advanced' ? 'Override' : 'Labels');
+                $('#editor-tab-labels-text').text(labelsViewMode === 'advanced' ? '覆盖文件' : '标签');
 
                 // Always sync settings control state, even when Labels tab is not active.
                 $('#settings-override-management').prop('checked', labelsViewMode !== 'advanced');
-                $('#settings-override-management-label').text(labelsViewMode === 'advanced' ? 'Manual' : 'Automatic');
+                $('#settings-override-management-label').text(labelsViewMode === 'advanced' ? '手动' : '自动');
 
                 if (editorModal.currentProject === project && editorModal.currentTab === 'labels') {
                     toggleLabelsViewMode(labelsViewMode === 'advanced', true);
@@ -7206,9 +7206,9 @@ function loadSettingsData(project, projectName) {
         editorModal.filePaths.stackMeta = compose_root + '/' + project;
         editorModal.filePaths.projectOverride = compose_root + '/' + project + '/compose.override.yaml';
         editorModal.filePaths.effectiveOverride = editorModal.filePaths.projectOverride;
-        $('#editor-tab-labels-text').text('Labels');
+        $('#editor-tab-labels-text').text('标签');
         $('#settings-override-management').prop('checked', true);
-        $('#settings-override-management-label').text('Automatic');
+        $('#settings-override-management-label').text('自动');
         $('#settings-icon-preview').hide();
         $('#settings-available-profiles').hide();
         updateEditorFileInfo();
@@ -7216,7 +7216,7 @@ function loadSettingsData(project, projectName) {
         setComposeSource('project', true);
         $('#settings-external-compose-info').hide();
         $('#settings-invalid-indirect-warning').hide();
-        $('#settings-effective-command').text('Preview unavailable.');
+        $('#settings-effective-command').text('预览不可用。');
         $('#settings-effective-command-dirty').hide();
     });
 }
@@ -7229,7 +7229,7 @@ function toggleLabelsViewMode(isAdvanced, skipPersist) {
     if (isAdvanced) {
         $('#labels-basic-view').hide();
         $('#labels-advanced-view').show();
-        $('#editor-tab-labels-text').text('Override');
+        $('#editor-tab-labels-text').text('覆盖文件');
 
         // Pre-populate override editor if labelsData is available (loaded via loadLabelsData)
         // If not yet loaded, load it now
@@ -7243,7 +7243,7 @@ function toggleLabelsViewMode(isAdvanced, skipPersist) {
     } else {
         $('#labels-advanced-view').hide();
         $('#labels-basic-view').show();
-        $('#editor-tab-labels-text').text('Labels');
+        $('#editor-tab-labels-text').text('标签');
 
         // If the override editor has unsaved changes, warn before switching back
         // (already tracked in modifiedTabs so save button will prompt)
@@ -7400,14 +7400,14 @@ function createOverrideTemplate() {
             updateSaveButtonState();
         } catch (error) {
             swal({
-                title: 'Create Failed',
+                title: '创建失败',
                 text: error && error.message ? error.message : '创建覆盖模板失败。',
                 type: 'error'
             });
         }
     }).fail(function() {
         swal({
-            title: 'Create Failed',
+            title: '创建失败',
             text: '创建覆盖模板失败。',
             type: 'error'
         });
@@ -7457,14 +7457,14 @@ function createEnvTemplate() {
             updateSaveButtonState();
         } catch (error) {
             swal({
-                title: 'Create Failed',
+                title: '创建失败',
                 text: error && error.message ? error.message : '创建 .env 模板失败。',
                 type: 'error'
             });
         }
     }).fail(function() {
         swal({
-            title: 'Create Failed',
+            title: '创建失败',
             text: '创建 .env 模板失败。',
             type: 'error'
         });
@@ -7594,7 +7594,7 @@ function renderLabelsUI(mainDoc, overrideDoc) {
             );
             $deletedName.append(
                 $('<span>', { 'class': 'compose-status-danger', style: 'font-size:0.8em;' })
-                    .text('(will be removed on save)')
+                    .text('（保存时会被移除）')
             );
             $deletedHeader.append($deletedName);
 
@@ -7732,7 +7732,7 @@ function updateValidation(type, content, isValid, errorMsg) {
     // Handle env files separately (no YAML validation needed)
     if (type === 'env') {
         var lines = content.split('\n').filter(l => l.trim() && !l.trim().startsWith('#'));
-        validationEl.html('<i class="fa fa-info-circle editor-validation-icon"></i> ' + lines.length + ' environment variable(s)');
+        validationEl.html('<i class="fa fa-info-circle editor-validation-icon"></i> ' + lines.length + ' 个环境变量');
         validationEl.removeClass('error warning').addClass('valid');
         return;
     }
@@ -7820,12 +7820,12 @@ function enforcePathSettingsExclusivity(actionLabel) {
     }
 
     swal({
-        title: 'Save Sources First',
-        text: 'Compose Sources changed. Save the Sources tab and reload the editor before ' + actionLabel + '.',
+        title: '请先保存来源',
+        text: 'Compose 来源已变更。请先保存“来源”标签并重新加载编辑器，然后再' + actionLabel + '.',
         type: 'warning',
         showCancelButton: true,
-        confirmButtonText: 'Save Sources & Reload',
-        cancelButtonText: 'Cancel'
+        confirmButtonText: '保存来源并重新加载',
+        cancelButtonText: '取消'
     }, function(confirmed) {
         if (confirmed) {
             saveSettingsWithOptionalReload(false);
@@ -7865,7 +7865,7 @@ function reloadEditorModal(targetTab, message) {
 
     if (message) {
         swal({
-            title: 'Editor Reloaded',
+            title: '编辑器已重新加载',
             text: message,
             type: 'info',
             timer: 1800,
@@ -8314,7 +8314,7 @@ function saveAllChanges(closeAfterSave) {
                 if (skippedManualLabels) {
                     swal({
                         title: "部分保存",
-                        text: "Non-label changes were saved. WebUI label form edits were not saved because Override File Management is set to Manual. Switch to Automatic to save Labels form changes.",
+                        text: "非标签改动已保存。由于“覆盖文件管理”设为手动，WebUI 标签表单的编辑未被保存。切换到自动后才能保存标签表单的改动。",
                         type: "warning"
                     });
                     updateTabModifiedState();
@@ -8335,7 +8335,7 @@ function saveAllChanges(closeAfterSave) {
                         doCloseEditorModal();
                     }
                     swal({
-                        title: "Saved!",
+                        title: "已保存！",
                         text: "所有更改已保存。",
                         type: "success",
                         showConfirmButton: false
@@ -8369,12 +8369,12 @@ function saveAllChanges(closeAfterSave) {
 
     if (pathSensitiveSettingsChanged && pathDependentEdits) {
         swal({
-            title: 'Reload Required',
-            text: 'Compose path or discovery settings changed. Save settings and reload the editor before saving compose, .env, override, or label edits.',
+            title: '需要重新加载',
+            text: 'Compose 路径或发现设置已变更。请先保存设置并重新加载编辑器，然后再保存 compose、.env、覆盖文件或标签的编辑。',
             type: 'warning',
             showCancelButton: true,
-            confirmButtonText: 'Save Settings Only',
-            cancelButtonText: 'Cancel'
+            confirmButtonText: '仅保存设置',
+            cancelButtonText: '取消'
         }, function(confirmed) {
             if (confirmed) {
                 saveSettingsWithOptionalReload(closeAfterSave);
@@ -8394,8 +8394,8 @@ function saveAllChanges(closeAfterSave) {
             text: '该栈正在运行，而 compose 文件不再定义：' + removedServices.join(', ') + '. Saving now can leave orphaned containers behind. Stop the stack first, or use Remove orphans from the Compose Up/Down dialog to clean them up.',
             type: 'warning',
             showCancelButton: true,
-            confirmButtonText: 'Save Anyway',
-            cancelButtonText: 'Cancel'
+            confirmButtonText: '仍然保存',
+            cancelButtonText: '取消'
         }, function(confirmed) {
             if (confirmed) {
                 continueSave();
@@ -8520,12 +8520,12 @@ function closeEditorModal() {
     var totalChanges = editorModal.modifiedTabs.size + editorModal.modifiedSettings.size + editorModal.modifiedLabels.size;
     if (totalChanges > 0) {
         swal({
-            title: "Unsaved Changes",
+            title: "未保存的改动",
             text: "你有未保存的更改，确定要关闭吗？",
             type: "warning",
             showCancelButton: true,
             confirmButtonText: "放弃更改",
-            cancelButtonText: "Cancel"
+            cancelButtonText: "取消"
         }, function(confirmed) {
             if (confirmed) {
                 doCloseEditorModal();
@@ -8580,14 +8580,14 @@ function doCloseEditorModal() {
     $('#settings-external-compose-file').val('');
     $('#settings-use-default-compose-files').prop('checked', false);
     $('#settings-override-management').prop('checked', true);
-    $('#settings-override-management-label').text('Automatic');
+    $('#settings-override-management-label').text('自动');
     $('#settings-icon-preview').hide();
     $('#settings-available-profiles').hide();
     $('#settings-external-compose-info').hide();
     $('#settings-invalid-indirect-warning').hide();
     $('#settings-effective-override-path').hide();
     $('#settings-effective-override-path-value').text('');
-    $('#settings-effective-command').text('Loading…');
+    $('#settings-effective-command').text('加载中…');
     $('#settings-effective-command-dirty').hide();
     clearAllSettingsValidationErrors();
     setComposeSource('project', true);
@@ -8605,13 +8605,13 @@ function doCloseEditorModal() {
 function deleteStackByProject(project, projectName) {
     var msgHtml = "Are you sure you want to delete <font color='red'><b>" + composeEscapeHtml(projectName) + "</b></font> (<font color='green'>" + composeEscapeHtml(compose_root) + "/" + composeEscapeHtml(project) + "</font>)?";
     swal({
-        title: "Delete Stack?",
+        title: "删除栈？",
         text: msgHtml,
         html: true,
         type: "warning",
         showCancelButton: true,
-        confirmButtonText: "Delete",
-        cancelButtonText: "Cancel"
+        confirmButtonText: "删除",
+        cancelButtonText: "取消"
     }, function(confirmed) {
         if (confirmed) {
             setStackActionInProgress(project, true, '正在删除栈...');
@@ -9502,7 +9502,7 @@ function addComposeContainerContext(elementId) {
     // Console (if running) — start writable ttyd, open in new window
     if (running) {
         opts.push({
-            text: 'Console',
+            text: '控制台',
             icon: 'fa-terminal',
             action: function(e) {
                 e.preventDefault();
@@ -9528,7 +9528,7 @@ function addComposeContainerContext(elementId) {
     // Start/Stop/Pause/Resume
     if (running) {
         opts.push({
-            text: 'Stop',
+            text: '停止',
             icon: 'fa-stop',
             action: function(e) {
                 e.preventDefault();
@@ -9536,7 +9536,7 @@ function addComposeContainerContext(elementId) {
             }
         });
         opts.push({
-            text: 'Pause',
+            text: '暂停',
             icon: 'fa-pause',
             action: function(e) {
                 e.preventDefault();
@@ -9544,7 +9544,7 @@ function addComposeContainerContext(elementId) {
             }
         });
         opts.push({
-            text: 'Restart',
+            text: '重启',
             icon: 'fa-refresh',
             action: function(e) {
                 e.preventDefault();
@@ -9553,7 +9553,7 @@ function addComposeContainerContext(elementId) {
         });
     } else if (paused) {
         opts.push({
-            text: 'Resume',
+            text: '继续运行',
             icon: 'fa-play',
             action: function(e) {
                 e.preventDefault();
@@ -9562,7 +9562,7 @@ function addComposeContainerContext(elementId) {
         });
     } else {
         opts.push({
-            text: 'Start',
+            text: '启动',
             icon: 'fa-play',
             action: function(e) {
                 e.preventDefault();
@@ -9577,7 +9577,7 @@ function addComposeContainerContext(elementId) {
 
     // Logs — start ttyd via plugin, open in new window (same as stack logs)
     opts.push({
-        text: 'Logs',
+        text: '日志',
         icon: 'fa-navicon',
         action: function(e) {
             e.preventDefault();
@@ -9735,8 +9735,8 @@ function containerAction(containerName, action, stackId) {
                     } catch (e) {}
                 }
                 swal({
-                    title: 'Action Failed',
-                    text: composeEscapeHtml(response.message) || 'Failed to ' + action + ' container',
+                    title: '操作失败',
+                    text: composeEscapeHtml(response.message) || '执行失败：' + action + ' container',
                     type: 'error'
                 });
             }
@@ -9764,8 +9764,8 @@ function containerAction(containerName, action, stackId) {
             } catch (e) {}
         }
         swal({
-            title: 'Action Failed',
-            text: 'Failed to ' + action + ' container',
+            title: '操作失败',
+            text: '执行失败：' + action + ' container',
             type: 'error'
         });
     });

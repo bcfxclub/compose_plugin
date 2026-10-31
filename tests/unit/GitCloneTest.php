@@ -601,7 +601,7 @@ final class GitCloneTest extends TestCase
             $clone->checkOut($commit);
             $this->fail('Checked out over local changes');
         } catch (RuntimeException $error) {
-            $this->assertStringContainsString('local changes', $error->getMessage());
+            $this->assertStringContainsString('本地改动', $error->getMessage());
         }
         $this->assertSame("edited\n", file_get_contents($clone->settings()->cloneDir . '/whoami/compose.yaml'));
     }
