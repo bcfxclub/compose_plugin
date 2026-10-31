@@ -889,7 +889,7 @@ class ExecActionsTest extends TestCase
         $deleteResult = json_decode($this->executeAction('deleteCredential', ['id' => $credentialId]), true);
         $this->assertSame('error', $deleteResult['result']);
         $this->assertStringContainsString('git-stack', $deleteResult['message']);
-        $this->assertStringContainsString('could not be read', $deleteResult['message']);
+        $this->assertStringContainsString('无法读取', $deleteResult['message']);
         $this->assertCount(1, (new \CredentialVault())->listCredentials());
 
         // Once the file is fixed, the stack counts as using it in the usual way.
@@ -947,7 +947,7 @@ class ExecActionsTest extends TestCase
 
         $deleteResult = json_decode($this->executeAction('deleteCredential', ['id' => $key['id']]), true);
         $this->assertSame('error', $deleteResult['result']);
-        $this->assertStringContainsString('first-stack, second-stack could not be read, so they may use', $deleteResult['message']);
+        $this->assertStringContainsString('first-stack, second-stack 的 git 设置（git.json）无法读取', $deleteResult['message']);
         $this->assertCount(1, (new \CredentialVault())->listCredentials());
     }
 
@@ -972,7 +972,7 @@ class ExecActionsTest extends TestCase
     {
         $deleteResult = json_decode($this->executeAction('deleteCredential', ['id' => str_repeat('ab', 16)]), true);
         $this->assertSame('error', $deleteResult['result']);
-        $this->assertSame('Credential not found.', $deleteResult['message']);
+        $this->assertSame('未找到该凭据。', $deleteResult['message']);
     }
 
     public function testGitCredentialIsNotTestedAsARegistryAndCannotBeARegistryCredential(): void
@@ -1209,7 +1209,7 @@ class ExecActionsTest extends TestCase
 
         $result = json_decode($output, true);
         $this->assertEquals('error', $result['result']);
-        $this->assertStringContainsString('Set either External Compose Path or External Compose File', $result['message']);
+        $this->assertStringContainsString('只能设置其中一个', $result['message']);
     }
 
     public function testAddStackRejectsBothIndirectPathAndFile(): void

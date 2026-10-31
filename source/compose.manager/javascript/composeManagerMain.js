@@ -1,4 +1,27 @@
 
+// Read a stack row's raw (untranslated) state. The visible label is localized,
+// so the icon's data-status attribute is the source of truth; the text is only
+// a fallback for rows rendered before the attribute existed.
+function composeStackRawState($row) {
+    if (!$row || !$row.length) return '';
+    var $icon = $row.find('.compose-status-icon').first();
+    var raw = $icon.length ? String($icon.attr('data-status') || '') : '';
+    if (raw) return raw;
+    var text = ($row.find('.state').first().text() || '').trim();
+    if (text.indexOf('部分运行') !== -1) return 'partial';
+    if (text.indexOf('运行中') !== -1) return 'started';
+    if (text.indexOf('已暂停') !== -1) return 'paused';
+    if (text.indexOf('重启中') !== -1) return 'restarting';
+    if (text.indexOf('已停止') !== -1) return 'stopped';
+    return text.toLowerCase();
+}
+
+// A stack counts as running when it is fully or partially up.
+function composeStackIsRunning($row) {
+    var state = composeStackRawState($row);
+    return state === 'started' || state === 'partial';
+}
+
 // Parse a single memory value (for example "123.4MiB" or "512MB") to bytes.
 // Supports both IEC (KiB, MiB, GiB, TiB) and SI (kB, MB, GB, TB) suffixes.
 function parseMemValueToBytes(memVal) {
@@ -817,18 +840,18 @@ function composeLoadlist() {
             try {
                 $('#compose_stacks tr.compose-sortable').each(function() {
                     var $row = $(this);
-                    var stateText = $row.find('.state').text().toLowerCase();
+                    var stateText = composeStackRawState($row);
                     var $icon = $row.find('.compose-status-icon').first();
                     if (!$icon.length) return;
                     var desiredShape = null;
                     var desiredColor = 'grey-text';
-                    if (stateText.indexOf('partial') !== -1) {
+                    if (stateText === 'partial') {
                         desiredShape = 'exclamation-circle';
                         desiredColor = 'orange-text';
-                    } else if (stateText.indexOf('started') !== -1) {
+                    } else if (stateText === 'started') {
                         desiredShape = 'play';
                         desiredColor = 'green-text';
-                    } else if (stateText.indexOf('paused') !== -1) {
+                    } else if (stateText === 'paused') {
                         desiredShape = 'pause';
                         desiredColor = 'orange-text';
                     } else {
@@ -903,7 +926,7 @@ function composeLoadlist() {
                     composeLogger('无效的栈元数据响应', {
                         response: metaRaw
                     }, 'user', 'error', 'composeLoadlist');
-                    $('#compose_list').html('<tr><td colspan="14" class="compose-status-danger" style="text-align:center;padding:20px;">Failed to load stack list. Please refresh the page.</td></tr>');
+                    $('#compose_list').html('<tr><td colspan="14" class="compose-status-danger" style="text-align:center;padding:20px;">栈列表加载失败，请刷新页面重试。</td></tr>');
                     clearTimeout(composeTimers.load);
                     hideComposeSpinner();
                     reject(new Error('无效的栈列表响应'));
@@ -1108,7 +1131,7 @@ function composeLoadlist() {
                 }, 'user', 'error', 'composeLoadlist');
                 clearTimeout(composeTimers.load);
                 hideComposeSpinner();
-                $('#compose_list').html('<tr><td colspan="14" class="compose-status-danger" style="text-align:center;padding:20px;">Failed to load stack list. Please refresh the page.</td></tr>');
+                $('#compose_list').html('<tr><td colspan="14" class="compose-status-danger" style="text-align:center;padding:20px;">栈列表加载失败，请刷新页面重试。</td></tr>');
 
                 // Reject the promise so callers can handle the error
                 try {
@@ -1795,7 +1818,7 @@ function updateEditorFileInfo() {
     var activeFilePath = getEditorActiveFilePath();
     var savePath = getEditorSaveTargetPath();
     var fallbackText = savePath && savePath !== stackPath
-        ? 'No raw file in current tab; changes save via ' + savePath
+        ? '当前标签页没有原始文件，改动将保存到 ' + savePath
         : '当前标签页没有原始文件';
 
     setEditorPathText('#editor-project-dir', stackPath, '项目目录不可用');
@@ -2269,11 +2292,10 @@ function checkAllUpdates() {
     // Show checking indicator only on running stack update columns (not stopped ones)
     $('#compose_stacks tr.compose-sortable').each(function() {
         var $row = $(this);
-        var isRunning = $row.find('.state').text().indexOf('started') !== -1 ||
-            $row.find('.state').text().indexOf('partial') !== -1;
+        var isRunning = composeStackIsRunning($row);
         if (isRunning) {
             var $updateCell = $row.find('.compose-updatecolumn');
-            $updateCell.html('<span class="compose-status-info"><i class="fa fa-refresh fa-spin"></i> checking...</span>');
+            $updateCell.html('<span class="compose-status-info"><i class="fa fa-refresh fa-spin"></i> 检查中…</span>');
         }
     });
 
@@ -2325,8 +2347,7 @@ function updateUpdateAllButton() {
         // Derive running state from DOM — saved status may be stale
         var $row = $('#compose_stacks tr.compose-sortable[data-project="' + stackName + '"]');
         if ($row.length === 0) continue;
-        var stateText = $row.find('.state').text();
-        var isRunning = stateText.indexOf('started') !== -1 || stateText.indexOf('partial') !== -1;
+        var isRunning = composeStackIsRunning($row);
         if (isRunning) stacksWithUpdates++;
     }
     $('#updateAllBtn').prop('disabled', stacksWithUpdates === 0);
@@ -2344,8 +2365,7 @@ function updateAllStacks() {
         var $stackRow = $('#compose_stacks tr.compose-sortable[data-project="' + stackName + '"]');
         if ($stackRow.length === 0) continue;
         // Derive running state from DOM — saved status may be stale
-        var rowStateText = $stackRow.find('.state').text();
-        if (rowStateText.indexOf('started') === -1 && rowStateText.indexOf('partial') === -1) continue;
+        if (!composeStackIsRunning($stackRow)) continue;
 
         var autostart = $stackRow.find('.auto_start').is(':checked');
 
@@ -2483,8 +2503,7 @@ function updateStackUpdateUI(stackName, stackInfo) {
     // stackInfo payload.  The saved update-status file may contain a stale
     // isRunning value from when the check originally ran (e.g. the stack
     // was stopped then but has since been started).
-    var stateText = $stackRow.find('.state').text();
-    var isRunning = stateText.indexOf('started') !== -1 || stateText.indexOf('partial') !== -1;
+    var isRunning = composeStackIsRunning($stackRow);
 
     if (!isRunning) {
         // Stack is not running - show stopped
@@ -2543,15 +2562,15 @@ function updateStackUpdateUI(stackName, stackInfo) {
             $updateCell.html(html);
         } else if (pinnedCount > 0) {
             // Some containers pinned, rest up-to-date
-            var html = '<span class="green-text" style="white-space:nowrap;"><i class="fa fa-check fa-fw"></i> up-to-date</span>';
+            var html = '<span class="green-text" style="white-space:nowrap;"><i class="fa fa-check fa-fw"></i> 已是最新</span>';
             html += '<div class="compose-status-info" style="font-size:0.8em;margin-top:2px;"><i class="fa fa-thumb-tack fa-fw"></i> ' + pinnedCount + ' pinned</div>';
-            html += '<div><a class="exec" style="cursor:pointer;" onclick="showUpdateWarning(\'' + composeEscapeAttr(stackName) + '\', \'' + composeEscapeAttr(stackId) + '\', \'forceUpdate\');"><span style="white-space:nowrap;"><i class="fa fa-cloud-download fa-fw"></i> force update</span></a></div>';
+            html += '<div><a class="exec" style="cursor:pointer;" onclick="showUpdateWarning(\'' + composeEscapeAttr(stackName) + '\', \'' + composeEscapeAttr(stackId) + '\', \'forceUpdate\');"><span style="white-space:nowrap;"><i class="fa fa-cloud-download fa-fw"></i> 强制更新</span></a></div>';
             $updateCell.html(html);
         } else {
             // No updates, no pinned - green "up-to-date" style (like Docker tab)
             // Additional row details are conditionally shown by column layout CSS.
-            var html = '<span class="green-text" style="white-space:nowrap;"><i class="fa fa-check fa-fw"></i> up-to-date</span>';
-            html += '<div><a class="exec" style="cursor:pointer;" onclick="showUpdateWarning(\'' + composeEscapeAttr(stackName) + '\', \'' + composeEscapeAttr(stackId) + '\', \'forceUpdate\');"><span style="white-space:nowrap;"><i class="fa fa-cloud-download fa-fw"></i> force update</span></a></div>';
+            var html = '<span class="green-text" style="white-space:nowrap;"><i class="fa fa-check fa-fw"></i> 已是最新</span>';
+            html += '<div><a class="exec" style="cursor:pointer;" onclick="showUpdateWarning(\'' + composeEscapeAttr(stackName) + '\', \'' + composeEscapeAttr(stackId) + '\', \'forceUpdate\');"><span style="white-space:nowrap;"><i class="fa fa-cloud-download fa-fw"></i> 强制更新</span></a></div>';
             $updateCell.html(html);
         }
     } else {
@@ -2613,7 +2632,7 @@ function checkStackUpdates(stackName) {
     }
 
     var $updateCell = $stackRow.find('.compose-updatecolumn');
-    $updateCell.html('<span class="compose-status-info"><i class="fa fa-refresh fa-spin"></i> checking...</span>');
+    $updateCell.html('<span class="compose-status-info"><i class="fa fa-refresh fa-spin"></i> 检查中…</span>');
 
     $.post(caURL, {
         action: 'checkStackUpdates',
@@ -7744,7 +7763,7 @@ function updateValidation(type, content, isValid, errorMsg) {
     }
 
     if (isValid) {
-        validationEl.html('<i class="fa fa-check editor-validation-icon"></i> YAML syntax is valid');
+        validationEl.html('<i class="fa fa-check editor-validation-icon"></i> YAML 语法正确');
         validationEl.removeClass('error warning').addClass('valid');
     } else {
         // Truncate error message to first line for cleaner display
@@ -7763,7 +7782,7 @@ function updateSaveButtonState() {
     var hasChanges = totalChanges > 0;
     var hasErrors = editorModal.settingsValidationErrors && editorModal.settingsValidationErrors.size > 0;
     $('#editor-btn-apply').prop('disabled', !hasChanges || hasErrors);
-    $('#editor-change-count').text(totalChanges + (totalChanges === 1 ? ' change' : ' changes'));
+    $('#editor-change-count').text(totalChanges + ' 处改动');
 }
 
 // Inline settings validation — errors block Apply until cleared.
@@ -9168,7 +9187,7 @@ function renderContainerDetails(stackId, containers, project) {
         } else if (ctHasUpdate) {
             // Update available - orange "有可用更新" style with SHA diff
             html += '<a class="exec" style="cursor:pointer;" onclick="showUpdateWarning(\'' + composeEscapeAttr(project) + '\', \'' + composeEscapeAttr(stackId) + '\', \'update\');">';
-            html += '<span class="orange-text" style="white-space:nowrap;"><i class="fa fa-flash fa-fw"></i> update ready</span>';
+            html += '<span class="orange-text" style="white-space:nowrap;"><i class="fa fa-flash fa-fw"></i> 可更新</span>';
             html += '</a>';
             if (ctLocalSha && ctRemoteSha) {
                 // Always show SHA diff when available.
@@ -9180,7 +9199,7 @@ function renderContainerDetails(stackId, containers, project) {
             }
         } else if (ctUpdateStatus === 'up-to-date') {
             // No update - green "up-to-date" style
-            html += '<span class="green-text" style="white-space:nowrap;"><i class="fa fa-check fa-fw"></i> up-to-date</span>';
+            html += '<span class="green-text" style="white-space:nowrap;"><i class="fa fa-check fa-fw"></i> 已是最新</span>';
             if (ctLocalSha) {
                 // Show SHA snippet in toggleable detail area for up-to-date containers (15 chars).
                 html += '<div style="font-family:var(--font-bitstream);font-size:0.85em;" title="' + composeEscapeAttr(ctLocalSha) + '"><span class="compose-text-muted">' + composeEscapeHtml(ctLocalSha.substring(0, 15)) + '</span></div>';
@@ -9382,6 +9401,7 @@ function updateParentStackFromContainers(stackId, project) {
 
             // Apply the new shape and color
             $icon.addClass('fa fa-' + shape + ' ' + colorClass + ' compose-status-icon');
+            $icon.attr('data-status', newState);
 
             // Clear any saved orig-class since we've now applied the new state
             if ($icon.data('orig-class')) {
@@ -9612,13 +9632,13 @@ function containerAction(containerName, action, stackId) {
     var $stateTextEl = $iconWrap.closest('td').find('.inner .state').first();
     var stateOrigText = null;
     var actionStatusTextMap = {
-        start: 'starting',
-        stop: 'stopping',
-        restart: 'restarting',
-        pause: 'pausing',
-        unpause: 'resuming'
+        start: '启动中',
+        stop: '停止中',
+        restart: '重启中',
+        pause: '暂停中',
+        unpause: '恢复中'
     };
-    var actionStatusText = actionStatusTextMap[action] || 'working';
+    var actionStatusText = actionStatusTextMap[action] || '处理中';
     if ($statusIcon.length) {
         try {
             statusOrigClass = $statusIcon.attr('class') || '';

@@ -84,22 +84,22 @@ if (!function_exists('composeRowBuildFailurePayload')) {
     {
         $projectPath = rtrim($composeRoot, '/') . '/' . $project;
         $reason = 'project_load_failed';
-        $message = 'Project failed to load.';
+        $message = '项目加载失败。';
         $details = [];
         $checkedComposePaths = [];
         $missingMetadataFiles = [];
 
         if ($project === '') {
             $reason = 'project_not_specified';
-            $message = 'Project not specified.';
+            $message = '未指定项目。';
         } elseif (!file_exists($projectPath)) {
             $reason = 'project_not_found';
-            $message = 'Project folder does not exist.';
-            $details[] = "Missing project path: $projectPath";
+            $message = '项目文件夹不存在。';
+            $details[] = "缺少项目路径：$projectPath";
         } elseif (!is_dir($projectPath)) {
             $reason = 'invalid_project_path';
-            $message = 'Project path is not a directory.';
-            $details[] = "Path is not a directory: $projectPath";
+            $message = '项目路径不是目录。';
+            $details[] = "路径不是目录：$projectPath";
         } else {
             foreach (['name', 'description', 'indirect', 'indirect_mode'] as $metadataFile) {
                 if (!is_file($projectPath . '/' . $metadataFile)) {
@@ -111,15 +111,15 @@ if (!function_exists('composeRowBuildFailurePayload')) {
             $indirectMode = composeRowReadMetadataValue($projectPath, 'indirect_mode') ?? 'auto';
 
             if ($indirectPath !== null) {
-                $details[] = "indirect metadata points to: $indirectPath";
-                $details[] = "indirect_mode metadata: $indirectMode";
+                $details[] = "间接指向的元数据：$indirectPath";
+                $details[] = "indirect_mode 元数据：$indirectMode";
 
                 if ($indirectMode === 'file' || is_file($indirectPath)) {
                     $checkedComposePaths[] = $indirectPath;
                     if (!is_file($indirectPath)) {
                         $reason = 'missing_indirect_compose_file';
-                        $message = 'Indirect compose file is missing.';
-                        $details[] = "Missing indirect compose file: $indirectPath";
+                        $message = '间接引用的 compose 文件不存在。';
+                        $details[] = "缺少间接 compose 文件：$indirectPath";
                     }
                 } elseif (is_dir($indirectPath)) {
                     foreach (COMPOSE_FILE_NAMES as $filename) {
@@ -128,13 +128,13 @@ if (!function_exists('composeRowBuildFailurePayload')) {
                     $composeFile = composeRowFindComposeFile($indirectPath);
                     if ($composeFile === null) {
                         $reason = 'missing_compose_file';
-                        $message = 'No compose file found in indirect source directory.';
-                        $details[] = "No compose file found under indirect path: $indirectPath";
+                        $message = '间接源目录中未找到 compose 文件。';
+                        $details[] = "间接路径下未找到 compose 文件：$indirectPath";
                     }
                 } else {
                     $reason = 'missing_indirect_path';
-                    $message = 'Indirect source path does not exist.';
-                    $details[] = "Missing indirect source path: $indirectPath";
+                    $message = '间接源路径不存在。';
+                    $details[] = "缺少间接源路径：$indirectPath";
                 }
             } else {
                 foreach (COMPOSE_FILE_NAMES as $filename) {
@@ -143,8 +143,8 @@ if (!function_exists('composeRowBuildFailurePayload')) {
                 $composeFile = composeRowFindComposeFile($projectPath);
                 if ($composeFile === null) {
                     $reason = 'missing_compose_file';
-                    $message = 'No compose file found in stack directory.';
-                    $details[] = "No compose file found under project path: $projectPath";
+                    $message = '栈目录中未找到 compose 文件。';
+                    $details[] = "项目路径下未找到 compose 文件：$projectPath";
                 }
             }
         }

@@ -380,15 +380,16 @@
                                    (state === 'partial' ? 'fa-exclamation-circle' : 'fa-square');
                     var stateColor = state === 'started' ? 'green-text' :
                                     (state === 'partial' ? 'orange-text' : 'red-text');
-                    var stateText = state === 'partial' ? 'partial' : state;
+                    var stateLabelMap = { started: '运行中', partial: '部分运行', paused: '已暂停', restarting: '重启中', stopped: '已停止' };
+                    var stateText = stateLabelMap[state] || state;
                     var imgSrc = composeIconSrc(stack.icon);
                     var isRunning = state === 'started' || state === 'partial';
 
                     var updateIcon, updateText, updateColor;
                     if (stack.update === 'up-to-date') {
-                        updateIcon = 'fa-check'; updateText = 'current'; updateColor = 'green-text';
+                        updateIcon = 'fa-check'; updateText = '最新'; updateColor = 'green-text';
                     } else if (stack.update === 'update-available') {
-                        updateIcon = 'fa-arrow-up'; updateText = 'update'; updateColor = 'orange-text';
+                        updateIcon = 'fa-arrow-up'; updateText = '有更新'; updateColor = 'orange-text';
                     } else {
                         updateIcon = 'fa-question-circle'; updateText = ''; updateColor = 'grey-text';
                     }
@@ -407,7 +408,7 @@
                     html += '<span class="compose-dash-cols">';
                     html += '<span class="compose-dash-col update ' + updateColor + '" title="更新状态"><i class="fa ' + updateIcon + '"></i> ' + updateText + '</span>';
                     html += '<span class="compose-dash-col containers" title="运行中/总容器">' + containerText + '</span>';
-                    html += '<span class="compose-dash-col runtime" title="Uptime">' + uptimeText + '</span>';
+                    html += '<span class="compose-dash-col runtime" title="运行时长">' + uptimeText + '</span>';
                     html += '</span>';
                     html += '</div>';
                     html += '<div class="compose-dash-containers" id="compose-dash-ct-' + stackId + '"></div>';

@@ -531,12 +531,12 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
                 </button>
                 <button class="editor-tab" id="editor-tab-sources" onclick="switchTab('sources')" role="tab" aria-selected="false" aria-controls="editor-panel-sources">
                     <i class="fa fa-files-o" aria-hidden="true"></i>
-                    Sources
+                    来源
                     <span class="editor-tab-modified" aria-hidden="true"></span>
                 </button>
                 <button class="editor-tab" id="editor-tab-settings" onclick="switchTab('settings')" role="tab" aria-selected="false" aria-controls="editor-panel-settings">
                     <i class="fa fa-sliders" aria-hidden="true"></i>
-                    Settings
+                    设置
                     <span class="editor-tab-modified" aria-hidden="true"></span>
                 </button>
             </div>
@@ -545,7 +545,7 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
             <div class="editor-panel active" id="editor-panel-compose" role="group" aria-labelledby="editor-tab-compose">
                 <div class="editor-modal-body">
                     <div id="editor-compose-git-banner" class="compose-status-warning" style="display:none;padding:6px 12px;font-size:0.9em;">
-                        <i class="fa fa-code-fork"></i> <strong>这是一个 Git 栈。</strong> This file is in the plugin's clone of the repository: change it in the repository, then use Pull and Redeploy. An edit saved here is a local change, which the next deploy stops on (it can save it as a patch and discard it). Changes that must survive deploys belong in the Labels tab (the plugin's override) or the .env tab.
+                        <i class="fa fa-code-fork"></i> <strong>这是一个 Git 栈。</strong> 该文件位于插件克隆的仓库中：请在仓库里修改，然后使用「拉取」并重新部署。在此保存的修改属于本地改动，下一次部署会因此中止（可选择将其保存为补丁后再丢弃）。需要长期保留的修改请写到「标签」标签页（插件的覆盖文件）或 .env 标签页。
                     </div>
                     <div id="editor-compose-git-changed" class="compose-git-warning-box" style="display:none;margin:6px 12px;"></div>
                     <div id="compose-file-selector-wrap" style="display:none;align-items:center;gap:8px;padding:6px 12px;">
@@ -557,7 +557,7 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
                     </div>
                 </div>
                 <div class="editor-validation" id="editor-validation-compose">
-                    <i class="fa fa-check editor-validation-icon"></i> Ready
+                    <i class="fa fa-check editor-validation-icon"></i> 就绪
                 </div>
             </div>
 
@@ -575,7 +575,7 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
                     </div>
                 </div>
                 <div class="editor-validation" id="editor-validation-env">
-                    <i class="fa fa-check editor-validation-icon"></i> Ready
+                    <i class="fa fa-check editor-validation-icon"></i> 就绪
                 </div>
             </div>
 
@@ -591,7 +591,7 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
                     <div id="labels-services-container">
                         <div class="labels-empty-state">
                             <i class="fa fa-spinner fa-spin"></i>
-                            Loading services...
+                            正在加载服务…
                         </div>
                     </div>
                 </div>
@@ -613,7 +613,7 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
                         <div id="editor-override" style="width:100%;height:100%;"></div>
                     </div>
                     <div class="editor-validation" id="editor-validation-override">
-                        <i class="fa fa-check editor-validation-icon"></i> Ready
+                        <i class="fa fa-check editor-validation-icon"></i> 就绪
                     </div>
                 </div>
             </div>
@@ -805,8 +805,8 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
                             <label for="settings-default-profile">默认配置档</label>
                             <input type="text" id="settings-default-profile" placeholder="留空表示所有服务">
                             <div class="settings-field-help">
-                                Comma-separated list of profiles to use by default for Autostart and multi-stack operations (e.g., "production,monitoring").
-                                <br>Leave empty to start all services. Available profiles are auto-detected from your compose file.
+                                开机自启与多栈操作默认使用的配置档，多个用逗号分隔（例如 “production,monitoring”）。
+                                <br>留空表示启动所有服务。可用的配置档会从你的 compose 文件自动识别。
                             </div>
                             <div id="settings-available-profiles" style="margin-top:8px;display:none;">
                                 <span class="compose-text-muted" style="font-size:0.9em;">可用配置档：</span>
@@ -882,7 +882,7 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
                         </div>
                     </div>
                     <span class="editor-shortcuts">
-                        <kbd>Ctrl+S</kbd> Save &nbsp; <kbd>Esc</kbd> Close
+                        <kbd>Ctrl+S</kbd> 保存 &nbsp; <kbd>Esc</kbd> 关闭
                     </span>
                 </div>
                 <div class="editor-footer-right">

@@ -493,7 +493,7 @@ test.describe('Compose Manager isolated lifecycle (GUID stack)', () => {
       });
       expect(bothExternalModes.response.ok(), bothExternalModes.body).toBeTruthy();
       expect(bothExternalModes.json?.result, bothExternalModes.body).toBe('error');
-      expect(String(bothExternalModes.json?.message || '')).toContain('Set either External Compose Path or External Compose File');
+      expect(String(bothExternalModes.json?.message || '')).toContain('只能设置其中一个');
 
       const disallowedExternalPath = await postForm(page, '/plugins/compose.manager/include/Exec.php', {
         action: 'setStackSettings',

@@ -1126,13 +1126,13 @@ switch ($_POST['action']) {
                     ? composeListUnreadableGitStacksThatMayUse($compose_root, $credentialId)
                     : [];
                 if (count($unreadable) === 1) {
-                    $refusal = "The git settings (git.json) of {$unreadable[0]} could not be read, so it may use this credential. "
+                    $refusal = "{$unreadable[0]} 的 git 设置（git.json）无法读取，该栈可能会用到这个凭据。"
                         . "请先修复该文件：栈的「来源」标签页或 compose-git status 会显示错误。";
                     return false;
                 }
                 if (count($unreadable) > 1) {
-                    $refusal = 'The git settings (git.json) of ' . implode(', ', $unreadable) . ' could not be read, so they may use '
-                        . "this credential. Fix the files first: each stack's Sources tab, or compose-git status, shows the error.";
+                    $refusal = implode(', ', $unreadable) . ' 的 git 设置（git.json）无法读取，这些栈可能会用到这个凭据。'
+                        . '请先修复这些文件：各栈的「来源」标签页或 compose-git status 会显示错误。';
                     return false;
                 }
                 return (new CredentialVault())->deleteCredential($credentialId);
@@ -1144,7 +1144,7 @@ switch ($_POST['action']) {
             if ($deleted) {
                 composeLogger('已删除凭据', ['id' => $credentialId], 'user', 'info', 'credential');
             }
-            echo json_encode(['result' => $deleted ? 'success' : 'error', 'message' => $deleted ? '' : 'Credential not found.']);
+            echo json_encode(['result' => $deleted ? 'success' : 'error', 'message' => $deleted ? '' : '未找到该凭据。']);
         } catch (\Throwable $error) {
             if (str_starts_with($error->getMessage(), '凭据已分配给：')) {
                 $stacks = composeBuildCredentialStackMap($compose_root)[$credentialId] ?? [];
@@ -1500,7 +1500,7 @@ switch ($_POST['action']) {
         }
 
         if (!empty($externalComposePath) && !empty($externalComposeFilePath)) {
-            echo json_encode(['result' => 'error', 'message' => 'Set either External Compose Path or External Compose File, not both.']);
+            echo json_encode(['result' => 'error', 'message' => '「外部 compose 路径」与「外部 compose 文件」只能设置其中一个。']);
             break;
         }
 

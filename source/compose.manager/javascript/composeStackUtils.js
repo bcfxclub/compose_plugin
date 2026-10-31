@@ -42,7 +42,17 @@ function deriveStackState(containers) {
 
     var label = state;
     if (state === 'partial') {
-        label = 'partial (' + runningCount + '/' + totalCount + ')';
+        label = '部分运行 (' + runningCount + '/' + totalCount + ')';
+    } else {
+        var labelMap = {
+            stopped: '已停止',
+            started: '运行中',
+            paused: '已暂停',
+            restarting: '重启中'
+        };
+        if (Object.prototype.hasOwnProperty.call(labelMap, state)) {
+            label = labelMap[state];
+        }
     }
 
     var shape, colorClass;

@@ -41,7 +41,7 @@ async function waitForStackListReady(page: Page): Promise<void> {
 
         const noStacks = await page
           .locator('#compose_list td')
-          .filter({ hasText: 'No Docker Compose stacks found.' })
+          .filter({ hasText: '未找到任何 Docker Compose 栈' })
           .count();
         return noStacks > 0;
       },

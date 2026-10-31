@@ -113,6 +113,6 @@ class ComposeListEndpointTest extends TestCase
     public function testDefaultModeShowsEmptyStateWhenNoStacks(): void
     {
         $output = $this->executeComposeList();
-        $this->assertStringContainsString('No Docker Compose stacks found', $output);
+        $this->assertStringContainsString('未找到任何 Docker Compose 栈', $output);
     }
 }
