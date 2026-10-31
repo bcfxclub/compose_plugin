@@ -197,7 +197,7 @@ class CronManager
 
         // Only rewrite if we actually removed something
         if (count($filtered) === count($lines)) {
-            composeLogger('cleanupLegacy: no legacy entries found in crontab', null, 'daemon', 'debug', 'cron');
+            composeLogger('cleanupLegacy：crontab 中没有旧的条目', null, 'daemon', 'debug', 'cron');
             return;
         }
 

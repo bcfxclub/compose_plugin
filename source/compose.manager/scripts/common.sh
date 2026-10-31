@@ -73,7 +73,7 @@ echo compose_manager_sanitize_project_name((string) ($argv[2] ?? ""));
 ' "$helper_file" "$raw_name" 2>/dev/null)
 
     if [ -z "$canonical_name" ]; then
-        composeLogger "Failed to canonicalize project name: $raw_name" error compose
+        composeLogger "无法规范化项目名：$raw_name" error compose
         return 1
     fi
 
@@ -156,11 +156,11 @@ create_missing_external_networks() {
             continue
         fi
         if "${network_docker_command[@]}" network create "$network" > /dev/null; then
-            echo "✓ Created missing external network: $network"
-            composeLogger "Created missing external network: $network" info compose
+            echo "✓ 已创建缺失的外部网络：$network"
+            composeLogger "已创建缺失的外部网络：$network" info compose
         else
-            echo "✗ Failed to create external network: $network"
-            composeLogger "Failed to create external network: $network" error compose
+            echo "✗ 创建外部网络失败：$network"
+            composeLogger "创建外部网络失败：$network" error compose
             failed=1
         fi
     done < <(printf '%s' "$config_json" | external_network_names)
@@ -199,7 +199,7 @@ resolve_stack_env_file() {
             return 0
         fi
         if [ -n "$envpath" ]; then
-            composeLogger "Ignoring invalid envpath for stack '$stack_dir': $envpath" warning stack
+            composeLogger "已忽略栈 '$stack_dir' 的无效 envpath：$envpath" warning stack
         fi
     fi
 
@@ -275,7 +275,7 @@ load_compose_action_spec() {
             COMPOSE_SPEC_ERROR_MESSAGE="compose args provider command failed"
         fi
 
-        composeLogger "Failed to resolve compose args for '$project' action '$action': $COMPOSE_SPEC_ERROR_MESSAGE" warning compose-args
+        composeLogger "无法为 '$project' 的动作 '$action' 解析 compose 参数：$COMPOSE_SPEC_ERROR_MESSAGE" warning compose-args
         return 1
     fi
 
@@ -335,17 +335,17 @@ load_compose_action_spec() {
         if [ -z "$COMPOSE_SPEC_ERROR_MESSAGE" ]; then
             COMPOSE_SPEC_ERROR_MESSAGE="compose args provider returned an invalid response"
         fi
-        composeLogger "Compose args resolution failed for '$project': $COMPOSE_SPEC_ERROR_MESSAGE" warning compose-args
+        composeLogger "'$project' 的 compose 参数解析失败：$COMPOSE_SPEC_ERROR_MESSAGE" warning compose-args
         return 1
     fi
 
     if [ -z "$COMPOSE_SPEC_PROJECT_NAME" ]; then
-        composeLogger "Compose args resolution returned incomplete data for '$project'" warning compose-args
+        composeLogger "'$project' 的 compose 参数解析返回了不完整的数据" warning compose-args
         return 1
     fi
 
     if [ "${COMPOSE_SPEC_USE_DEFAULT_FILE_DISCOVERY}" != "true" ] && [ ${#COMPOSE_SPEC_COMPOSE_FILES[@]} -eq 0 ]; then
-        composeLogger "Compose args resolution returned no compose files for '$project'" warning compose-args
+        composeLogger "'$project' 的 compose 参数解析未返回任何 compose 文件" warning compose-args
         return 1
     fi
 

@@ -132,7 +132,7 @@ calls_matching() {
     rm "$STACK/git.json"
     run_gitdeploy
     [ "$status" -eq 1 ]
-    [[ "$output" == *"not a git stack"* ]]
+    [[ "$output" == *"不是 Git 栈"* ]]
     [ "$(calls_matching 'docker')" -eq 0 ]
 }
 
@@ -145,7 +145,7 @@ calls_matching() {
     run_gitdeploy
     exec 8>&-
     [ "$status" -eq 1 ]
-    [[ "$output" == *"Another operation is already in progress"* ]]
+    [[ "$output" == *"该栈已有另一个操作正在进行"* ]]
     [ "$(calls_matching 'git_stack')" -eq 0 ]
     [ "$(calls_matching 'docker')" -eq 0 ]
 }
@@ -154,7 +154,7 @@ calls_matching() {
     export PREPARE_EXIT=1
     run_gitdeploy
     [ "$status" -eq 1 ]
-    [[ "$output" == *"No container was changed"* ]]
+    [[ "$output" == *"未改动任何容器"* ]]
     [ "$(calls_matching 'docker')" -eq 0 ]
     grep -q '"result":"failed"' "$STACK/last_result.json"
 }
@@ -173,7 +173,7 @@ calls_matching() {
     cp "$STACK/last_result.json" "$TEST_TEMP_DIR/last_result.before"
     run_gitdeploy --automatic-deploy-from none
     [ "$status" -eq 75 ]
-    [[ "$output" == *"was not deployed automatically. No container was changed."* ]]
+    [[ "$output" == *"未自动部署，未改动任何容器。"* ]]
     [ "$(calls_matching 'docker')" -eq 0 ]
     [ "$(calls_matching 'restore')" -eq 0 ]
     cmp -s "$STACK/last_result.json" "$TEST_TEMP_DIR/last_result.before"
@@ -192,7 +192,7 @@ calls_matching() {
     export BUILD_EXIT=1
     run_gitdeploy
     [ "$status" -eq 1 ]
-    [[ "$output" == *"Building images for whoami failed"* ]]
+    [[ "$output" == *"为 whoami 构建镜像失败"* ]]
     grep -q "git_stack restore $STACK 0000000000000000000000000000000000000001" "$CALLS"
     [ "$(calls_matching ' up ')" -eq 0 ]
     [ "$(calls_matching 'finish')" -eq 0 ]
@@ -202,7 +202,7 @@ calls_matching() {
     export PULL_EXIT=1 RESTORE_EXIT=1
     run_gitdeploy
     [ "$status" -eq 1 ]
-    [[ "$output" == *"could not be put back"* ]]
+    [[ "$output" == *"无法还原上一个提交"* ]]
     [[ "$output" != *"was put back"* ]]
     [ "$(calls_matching ' up ')" -eq 0 ]
 }
@@ -266,7 +266,7 @@ calls_matching() {
     grep -q "git_stack finish $STACK failed" "$CALLS"
     [ "$(calls_matching 'restore')" -eq 0 ]
     [ "$(calls_matching 'rmi')" -eq 0 ]
-    [[ "$output" == *"The commit is recorded as failed"* ]]
+    [[ "$output" == *"该提交已记录为失败"* ]]
 }
 
 @test "gitdeploy never reports a failed up with the skipped exit status" {
@@ -280,22 +280,22 @@ calls_matching() {
     export FINISH_EXIT=1
     run_gitdeploy
     [ "$status" -eq 0 ]
-    [[ "$output" == *"the deployed commit could not be recorded"* ]]
-    [[ "$output" == *"deployed successfully"* ]]
+    [[ "$output" == *"无法记录已部署的提交"* ]]
+    [[ "$output" == *"部署成功"* ]]
 }
 
 @test "gitdeploy still reports a failed up when the failure cannot be recorded" {
     export UP_EXIT=3 FINISH_EXIT=1
     run_gitdeploy
     [ "$status" -eq 3 ]
-    [[ "$output" == *"failed to start"* ]]
+    [[ "$output" == *"启动失败"* ]]
     [ "$(calls_matching 'restore')" -eq 0 ]
 }
 
 @test "gitdeploy runs the steps in order and removes only superseded images" {
     run_gitdeploy
     [ "$status" -eq 0 ]
-    [[ "$output" == *"deployed successfully"* ]]
+    [[ "$output" == *"部署成功"* ]]
 
     prepare_line=$(grep -n 'git_stack prepare' "$CALLS" | cut -d: -f1)
     pull_line=$(grep -n ' pull --ignore-buildable' "$CALLS" | cut -d: -f1)
@@ -365,7 +365,7 @@ calls_matching() {
     export CONFIG_JSON='{"networks":{"proxy":{"name":"zz-proxy","external":true}}}' NETWORK_INSPECT_EXIT=1
     run_gitdeploy
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Created missing external network: zz-proxy"* ]]
+    [[ "$output" == *"已创建缺失的外部网络：zz-proxy"* ]]
 
     build_line=$(grep -n ' build$' "$CALLS" | cut -d: -f1)
     create_line=$(grep -n 'docker network create zz-proxy$' "$CALLS" | cut -d: -f1)
@@ -380,7 +380,7 @@ calls_matching() {
     export NETWORK_CREATE_EXIT=1
     run_gitdeploy
     [ "$status" -eq 1 ]
-    [[ "$output" == *"a missing external network could not be created"* ]]
+    [[ "$output" == *"缺失的外部网络无法创建"* ]]
     grep -q "git_stack restore $STACK 0000000000000000000000000000000000000001" "$CALLS"
     [ "$(calls_matching ' up ')" -eq 0 ]
     [ "$(calls_matching 'finish')" -eq 0 ]

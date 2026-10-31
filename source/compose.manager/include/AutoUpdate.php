@@ -132,7 +132,7 @@ switch ($action) {
         }
         // Security: validate path is under allowed directories
         if (!isAllowedAutoUpdatePath($path)) {
-            composeLogger('Rejected invalid path: ' . sanitizeLogText($path), null, 'user', 'error', 'autoupdate');
+            composeLogger('已拒绝无效路径：' . sanitizeLogText($path), null, 'user', 'error', 'autoupdate');
             http_response_code(403);
             echo json_encode(array('error' => '不允许的路径'));
             break;
@@ -167,7 +167,7 @@ switch ($action) {
             $projectName = StackInfo::sanitizeProjectString($projectName);
         }
 
-        composeLogger("Running manual auto-update for: $projectName", null, 'user', 'info', 'autoupdate');
+        composeLogger("正在为以下栈手动执行自动更新：$projectName", null, 'user', 'info', 'autoupdate');
 
         $script = $plugin_root . "scripts/compose_autoupdate.sh";
         if ($stackInfo !== null) {

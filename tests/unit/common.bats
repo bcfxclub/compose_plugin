@@ -224,7 +224,7 @@ NETWORKS_CONFIG_JSON='{"networks":{"internalnet":{"name":"stack_internalnet"},"s
     run create_missing_external_networks docker compose -p teststack
 
     assert_success
-    assert_output_contains "Created missing external network: svc-real-name"
+    assert_output_contains "已创建缺失的外部网络：svc-real-name"
     [[ "$(cat "$TEST_TEMP_DIR/created")" == "svc-real-name" ]]
 }
 

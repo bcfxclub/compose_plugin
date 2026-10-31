@@ -51,7 +51,7 @@ foreach ($data as $path => $entry) {
 
     // Validate path is within allowed locations for security
     if (!isAllowedAutoUpdatePath($path)) {
-        composeLogger('Skipping disallowed path: ' . sanitizeLogText($path), null, 'daemon', 'warn', 'autoupdate');
+        composeLogger('已跳过不允许的路径：' . sanitizeLogText($path), null, 'daemon', 'warn', 'autoupdate');
         continue;
     }
 
@@ -121,7 +121,7 @@ foreach ($data as $path => $entry) {
         }
 
         // Log the scheduled auto-update trigger
-        composeLogger("Scheduled auto-update triggered for: $projectName ($schedule)", null, 'daemon', 'info', 'autoupdate');
+        composeLogger("已触发计划自动更新：$projectName（$schedule）", null, 'daemon', 'info', 'autoupdate');
 
         $script = $plugin_root . "scripts/compose_autoupdate.sh";
         if ($stackInfo !== null) {

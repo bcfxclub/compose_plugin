@@ -33,7 +33,7 @@ final class ProcessResult
             static fn(string $line): bool => $line !== ''
         ));
         if ($lines === []) {
-            return "The command exited with code $this->exitCode.";
+            return "命令以代码 {$this->exitCode} 退出。";
         }
         // git and docker put the useful line after "fatal:" or "error:"; hints may follow it.
         foreach (array_reverse($lines) as $line) {
@@ -68,7 +68,7 @@ final class ProcessRunner
         $startedAt = microtime(true);
         $process = proc_open($fullCommand, $descriptors, $pipes, $workingDirectory, $environment);
         if (!is_resource($process)) {
-            return new ProcessResult(127, '', 'Could not start ' . $command[0] . '.', false);
+            return new ProcessResult(127, '', '无法启动 ' . $command[0] . '。', false);
         }
 
         // The command gets no input: its stdin is closed straight away.

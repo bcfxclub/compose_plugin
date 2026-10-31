@@ -65,13 +65,13 @@ acquire_lock() {
     local waited=0
     while ! flock -n 9 2>/dev/null; do
         if [ "$waited" -ge "$LOCK_TIMEOUT" ]; then
-            log_msg "ERROR" "Could not acquire lock for $lock_name after ${LOCK_TIMEOUT}s - another operation may be in progress"
-            echo "✗ Another operation is already in progress for this stack. Please wait and try again."
+            log_msg "ERROR" "获取 $lock_name 的锁失败（已等待 ${LOCK_TIMEOUT}s）—— 可能有另一个操作正在进行"
+            echo "✗ 该栈已有另一个操作正在进行，请稍候重试。"
             return 1
         fi
         
         if [ $waited -eq 0 ]; then
-            echo "⏳ Waiting for another operation to complete..."
+            echo "⏳ 正在等待另一个操作完成..."
         fi
         
         sleep 1
@@ -148,9 +148,9 @@ do
       shift 2
       
       if [ -f "$envFile" ]; then
-        echo "using .env: $envFile"
+        echo "使用 .env：$envFile"
       else
-        echo ".env doesn't exist: $envFile"
+        echo ".env 不存在：$envFile"
         exit 1
       fi
 
@@ -184,7 +184,7 @@ do
       if [ -d "$2" ]; then
         project_directory="$2"
       else
-        log_msg "ERROR" "Project directory does not exist: $2"
+        log_msg "ERROR" "项目目录不存在：$2"
         exit 1
       fi
       shift 2
@@ -243,7 +243,7 @@ do
       break
       ;;
     *)
-      echo "Unexpected option: $1"
+      echo "未知选项：$1"
       shift
       ;;
   esac
@@ -251,15 +251,15 @@ done
 
 if [ -n "$credential_id" ]; then
   if ! credential_output=$(php "$(dirname "$0")/credential_config.php" --credential-id "$credential_id"); then
-    log_msg "ERROR" "Selected registry credential could not be loaded"
+    log_msg "ERROR" "无法加载所选的注册表凭据"
     exit 1
   fi
   docker_config_dir=$(printf '%s\n' "$credential_output" | sed -n '1p')
   credential_label=$(printf '%s\n' "$credential_output" | sed -n '2p')
   export DOCKER_CONFIG="$docker_config_dir"
-  log_msg "DEBUG" "Using registry credential '${credential_label:-$credential_id}' for $name"
+  log_msg "DEBUG" "为 $name 使用注册表凭据 '${credential_label:-$credential_id}'"
 elif [[ "$command" =~ ^(up|pull|update|gitdeploy)$ ]]; then
-  log_msg "DEBUG" "No registry credential configured for $name; using default Docker credentials"
+  log_msg "DEBUG" "$name 未配置注册表凭据，将使用默认的 Docker 凭据"
 fi
 
 # Build docker compose profile flags from canonical profile names.
@@ -269,7 +269,7 @@ done
 
 if [ -n "$project_directory" ]; then
   if ! cd "$project_directory" 2>/dev/null; then
-    log_msg "ERROR" "Failed to cd into project directory: $project_directory"
+    log_msg "ERROR" "无法切换到项目目录：$project_directory"
     exit 1
   fi
 fi
@@ -282,7 +282,7 @@ compose_base=(docker compose "${env_args[@]}" "${file_args[@]}" "${profile_args[
 
 # Canonicalize project name through shared PHP sanitizer.
 if ! name=$(canonicalize_project_name "$name"); then
-  log_msg "ERROR" "Could not canonicalize project name"
+  log_msg "ERROR" "无法规范化项目名"
   exit 1
 fi
 
@@ -311,8 +311,8 @@ case $command in
 
   up)
     if [ "$follow_logs" = true ] && [ "$wait_for_healthy" = true ]; then
-      log_msg "ERROR" "Follow logs and wait-for-healthy cannot be used together for the same compose up command"
-      echo "✗ Follow stack logs and wait-for-healthy cannot be enabled at the same time."
+      log_msg "ERROR" "同一次 compose up 中不能同时使用跟随日志与等待健康检查"
+      echo "✗ 不能同时启用“跟随栈日志”和“等待健康检查”。"
       exit 1
     fi
 
@@ -346,12 +346,12 @@ case $command in
       fi
       save_result "success" $exit_code "up"
       echo ""
-      echo "✓ Stack $name started successfully"
+      echo "✓ 栈 $name 启动成功"
     else
       save_result "failed" $exit_code "up"
-      log_msg "ERROR" "Failed to start stack $name (exit code: $exit_code)"
+      log_msg "ERROR" "启动栈 $name 失败（退出码：$exit_code）"
       echo ""
-      echo "✗ Stack $name failed to start (exit code: $exit_code)"
+      echo "✗ 栈 $name 启动失败（退出码：$exit_code）"
     fi
     ;;
 
@@ -371,12 +371,12 @@ case $command in
       fi
       save_result "success" $exit_code "down"
       echo ""
-      echo "✓ Stack $name stopped successfully"
+      echo "✓ 栈 $name 停止成功"
     else
       save_result "failed" $exit_code "down"
-      log_msg "ERROR" "Failed to stop stack $name (exit code: $exit_code)"
+      log_msg "ERROR" "停止栈 $name 失败（退出码：$exit_code）"
       echo ""
-      echo "✗ Stack $name failed to stop (exit code: $exit_code)"
+      echo "✗ 栈 $name 停止失败（退出码：$exit_code）"
     fi
     ;;
 
@@ -392,12 +392,12 @@ case $command in
     if [ $exit_code -eq 0 ]; then
       save_result "success" $exit_code "pull"
       echo ""
-      echo "✓ Images pulled successfully for $name"
+      echo "✓ 已成功为 $name 拉取镜像"
     else
       save_result "failed" $exit_code "pull"
-      log_msg "ERROR" "Failed to pull images for $name (exit code: $exit_code)"
+      log_msg "ERROR" "为 $name 拉取镜像失败（退出码：$exit_code）"
       echo ""
-      echo "✗ Failed to pull images for $name (exit code: $exit_code)"
+      echo "✗ 为 $name 拉取镜像失败（退出码：$exit_code）"
     fi
     ;;
     
@@ -440,15 +440,15 @@ case $command in
     fi
     
     # Pull latest images. Buildable services are only skipped when we rebuild them below.
-    echo "Pulling latest images..."
+    echo "正在拉取最新镜像..."
     "${compose_base[@]}" -p "$name" pull "${pull_args[@]}"
     pull_exit=$?
 
     # Local-only images (build: + image:) can't be pulled; rebuild those from source instead.
     if [ $pull_exit -ne 0 ] && [ "$build_on_update" != true ]; then
       echo ""
-      echo "Pull failed; retrying without buildable services and rebuilding them from source..."
-      log_msg "WARNING" "Pull failed for $name, retrying with --ignore-buildable and --build"
+      echo "拉取失败；正在跳过可构建服务重新拉取，并从源码重新构建..."
+      log_msg "WARNING" "$name 拉取失败，正在用 --ignore-buildable 与 --build 重试"
       "${compose_base[@]}" -p "$name" pull --ignore-buildable
       pull_exit=$?
       if [ $pull_exit -eq 0 ]; then
@@ -459,15 +459,15 @@ case $command in
     if [ $pull_exit -ne 0 ]; then
       operation_exit_code=$pull_exit
       save_result "failed" $pull_exit "update"
-      log_msg "ERROR" "Failed to pull images for $name, aborting update"
+      log_msg "ERROR" "为 $name 拉取镜像失败，更新中止"
       echo ""
-      echo "✗ Failed to pull images for $name, update aborted"
+      echo "✗ 为 $name 拉取镜像失败，更新已中止"
       exit $operation_exit_code
     fi
     
     # Recreate containers with new images
     echo ""
-    echo "Recreating containers..."
+    echo "正在重建容器..."
     "${compose_base[@]}" -p "$name" up "${up_args[@]}"
     up_exit=$?
 
@@ -488,7 +488,7 @@ case $command in
           log_msg "DEBUG" "docker rmi ${images[*]}"
         fi
         echo ""
-        echo "Cleaning up old images..."
+        echo "正在清理旧镜像..."
         docker rmi "${images[@]}" 2>/dev/null || true
       fi
       
@@ -499,13 +499,13 @@ case $command in
       fi
       save_result "success" 0 "update"
       echo ""
-      echo "✓ Stack $name updated successfully"
+      echo "✓ 栈 $name 更新成功"
     else
       operation_exit_code=$up_exit
       save_result "failed" $up_exit "update"
-      log_msg "ERROR" "Failed to update stack $name (exit code: $up_exit)"
+      log_msg "ERROR" "更新栈 $name 失败（退出码：$up_exit）"
       echo ""
-      echo "✗ Stack $name failed to update (exit code: $up_exit)"
+      echo "✗ 栈 $name 更新失败（退出码：$up_exit）"
     fi
     ;;
 
@@ -522,15 +522,15 @@ case $command in
     # where the clone is now.
     put_back_previous_commit() {
       if git_stack restore "$stack_path" "$previous_commit"; then
-        echo "The previous commit was put back and no container was changed."
+        echo "已还原到上一个提交，未改动任何容器。"
       else
-        log_msg "ERROR" "Could not put back commit $previous_commit for git stack $name"
-        echo "No container was changed, but the previous commit could not be put back: the clone is still at the new commit."
+        log_msg "ERROR" "无法为 Git 栈 $name 还原提交 $previous_commit"
+        echo "未改动任何容器，但无法还原上一个提交：克隆仍停留在新提交上。"
       fi
     }
     if [ -z "$stack_path" ] || [ ! -f "$stack_path/git.json" ]; then
-      log_msg "ERROR" "gitdeploy needs the stack folder of a git stack (--stack-path)"
-      echo "✗ $name is not a git stack."
+      log_msg "ERROR" "gitdeploy 需要 Git 栈的栈文件夹（--stack-path）"
+      echo "✗ $name 不是 Git 栈。"
       exit 1
     fi
 
@@ -554,23 +554,23 @@ case $command in
     prepare_exit=$?
     if [ "$prepare_exit" -eq "$GIT_DEPLOY_EXIT_SKIPPED" ]; then
       # Not a failure: no result is saved, and the next scheduled check decides again.
-      log_msg "INFO" "Automatic deploy of $name skipped: it no longer applies"
+      log_msg "INFO" "已跳过 $name 的自动部署：该部署已不再适用"
       echo ""
-      echo "Stack $name was not deployed automatically. No container was changed."
+      echo "栈 $name 未自动部署，未改动任何容器。"
       exit "$GIT_DEPLOY_EXIT_SKIPPED"
     fi
     if [ "$prepare_exit" -ne 0 ]; then
       save_result "failed" 1 "gitdeploy"
-      log_msg "ERROR" "Git deploy of $name stopped before any container was changed"
+      log_msg "ERROR" "$name 的 Git 部署在改动任何容器之前已停止"
       echo ""
-      echo "✗ Stack $name was not deployed. No container was changed."
+      echo "✗ 栈 $name 未部署。未改动任何容器。"
       exit 1
     fi
     if ! [[ "$previous_commit" =~ ^[0-9a-f]{40}([0-9a-f]{24})?$ ]]; then
       save_result "failed" 1 "gitdeploy"
-      log_msg "ERROR" "git_stack.php prepare printed something other than a commit id for $name"
+      log_msg "ERROR" "git_stack.php prepare 为 $name 输出的不是提交 ID"
       echo ""
-      echo "✗ Stack $name was not deployed. No container was changed, but the clone may be at the new commit."
+      echo "✗ 栈 $name 未部署。未改动任何容器，但克隆可能已位于新提交。"
       exit 1
     fi
 
@@ -581,9 +581,9 @@ case $command in
     if ! git_stack compose-args "$stack_path" > "$git_args_file"; then
       rm -f "$git_args_file"
       save_result "failed" 1 "gitdeploy"
-      log_msg "ERROR" "Could not read the compose files of git stack $name"
+      log_msg "ERROR" "无法读取 Git 栈 $name 的 compose 文件"
       echo ""
-      echo "✗ Stack $name was not deployed."
+      echo "✗ 栈 $name 未部署。"
       put_back_previous_commit
       exit 1
     fi
@@ -598,9 +598,9 @@ case $command in
     # the deploy do something other than what was checked.
     if ! git_compose_folder=$(git_stack compose-folder "$stack_path") || ! cd "$git_compose_folder"; then
       save_result "failed" 1 "gitdeploy"
-      log_msg "ERROR" "Could not find the compose file's folder of git stack $name"
+      log_msg "ERROR" "无法找到 Git 栈 $name 的 compose 文件所在目录"
       echo ""
-      echo "✗ Stack $name was not deployed."
+      echo "✗ 栈 $name 未部署。"
       put_back_previous_commit
       exit 1
     fi
@@ -643,22 +643,22 @@ case $command in
 
     # 2. Pull and build images. If either fails, put the previous commit back:
     #    still no container has changed.
-    echo "Pulling images..."
+    echo "正在拉取镜像..."
     if ! "${git_compose[@]}" -p "$name" pull --ignore-buildable; then
       save_result "failed" 1 "gitdeploy"
-      log_msg "ERROR" "Failed to pull images for git stack $name"
+      log_msg "ERROR" "为 Git 栈 $name 拉取镜像失败"
       echo ""
-      echo "✗ Pulling images for $name failed."
+      echo "✗ 为 $name 拉取镜像失败。"
       put_back_previous_commit
       exit 1
     fi
     echo ""
-    echo "Building images..."
+    echo "正在构建镜像..."
     if ! "${git_compose[@]}" -p "$name" build; then
       save_result "failed" 1 "gitdeploy"
-      log_msg "ERROR" "Failed to build images for git stack $name"
+      log_msg "ERROR" "为 Git 栈 $name 构建镜像失败"
       echo ""
-      echo "✗ Building images for $name failed."
+      echo "✗ 为 $name 构建镜像失败。"
       put_back_previous_commit
       exit 1
     fi
@@ -667,9 +667,9 @@ case $command in
     #    "recreate on any change in its folder" setting).
     if ! git_up_extra=$(git_stack up-arguments "$stack_path" "$previous_commit"); then
       save_result "failed" 1 "gitdeploy"
-      log_msg "ERROR" "Could not compare commits for git stack $name"
+      log_msg "ERROR" "无法比较 Git 栈 $name 的提交"
       echo ""
-      echo "✗ Stack $name was not deployed."
+      echo "✗ 栈 $name 未部署。"
       put_back_previous_commit
       exit 1
     fi
@@ -683,9 +683,9 @@ case $command in
         ;;
       *)
         save_result "failed" 1 "gitdeploy"
-        log_msg "ERROR" "git_stack.php up-arguments printed something unexpected for $name"
+        log_msg "ERROR" "git_stack.php up-arguments 为 $name 输出了意外内容"
         echo ""
-        echo "✗ Stack $name was not deployed."
+        echo "✗ 栈 $name 未部署。"
         put_back_previous_commit
         exit 1
         ;;
@@ -699,10 +699,10 @@ case $command in
     if plugin_setting_enabled CREATE_MISSING_EXTERNAL_NETWORKS; then
       if ! create_missing_external_networks "${git_compose[@]}" -p "$name"; then
         save_result "failed" 1 "gitdeploy"
-        log_msg "ERROR" "A missing external network could not be created for git stack $name"
+        log_msg "ERROR" "无法为 Git 栈 $name 创建缺失的外部网络"
         echo ""
-        echo "✗ Stack $name was not deployed: a missing external network could not be created. No container was changed."
-        echo "Any network created above is left in place."
+        echo "✗ 栈 $name 未部署：缺失的外部网络无法创建。未改动任何容器。"
+        echo "上面已创建的网络会保留。"
         put_back_previous_commit
         exit 1
       fi
@@ -710,7 +710,7 @@ case $command in
 
     # 4. Start the stack at the new commit.
     echo ""
-    echo "Starting containers..."
+    echo "正在启动容器..."
     "${git_compose[@]}" -p "$name" up "${up_args[@]}"
     up_exit=$?
     operation_exit_code=$up_exit
@@ -721,8 +721,8 @@ case $command in
 
     if [ $up_exit -eq 0 ]; then
       if ! git_stack finish "$stack_path" success; then
-        log_msg "ERROR" "Git stack $name started, but its deployed commit could not be recorded"
-        echo "⚠ The stack started, but the deployed commit could not be recorded. Deploy it again to record it."
+        log_msg "ERROR" "Git 栈 $name 已启动，但无法记录其已部署的提交"
+        echo "⚠ 栈已启动，但无法记录已部署的提交。请再次部署以记录。"
       fi
 
       new_images=()
@@ -741,7 +741,7 @@ case $command in
       done
       if (( ${#superseded_images[@]} )); then
         echo ""
-        echo "Cleaning up old images..."
+        echo "正在清理旧镜像..."
         # Plain docker rmi leaves alone any image another container still uses.
         "${git_docker[@]}" rmi "${superseded_images[@]}" 2>/dev/null || true
       fi
@@ -752,18 +752,18 @@ case $command in
       fi
       save_result "success" 0 "gitdeploy"
       echo ""
-      echo "✓ Stack $name deployed successfully"
+      echo "✓ 栈 $name 部署成功"
     else
       # A half-finished up cannot be undone reliably, so it is not rolled back:
       # the commit is recorded as failed, for a person to fix and deploy again.
       if ! git_stack finish "$stack_path" failed; then
-        log_msg "ERROR" "The failed deploy of git stack $name could not be recorded"
+        log_msg "ERROR" "无法记录 Git 栈 $name 的失败部署"
       fi
       save_result "failed" $up_exit "gitdeploy"
-      log_msg "ERROR" "Failed to deploy git stack $name (exit code: $up_exit)"
+      log_msg "ERROR" "部署 Git 栈 $name 失败（退出码：$up_exit）"
       echo ""
-      echo "✗ Stack $name failed to start (exit code: $up_exit). The commit is recorded as failed (compose-git status shows it)."
-      echo "Fix it and deploy again, or deploy a known good commit with --commit."
+      echo "✗ 栈 $name 启动失败（退出码：$up_exit）。该提交已记录为失败（可用 compose-git status 查看）。"
+      echo "请修复后重新部署，或用 --commit 部署一个已知可用的提交。"
     fi
     ;;
 
@@ -779,12 +779,12 @@ case $command in
     if [ $exit_code -eq 0 ]; then
       save_result "success" $exit_code "stop"
       echo ""
-      echo "✓ Stack $name stopped successfully"
+      echo "✓ 栈 $name 停止成功"
     else
       save_result "failed" $exit_code "stop"
-      log_msg "ERROR" "Failed to stop stack $name (exit code: $exit_code)"
+      log_msg "ERROR" "停止栈 $name 失败（退出码：$exit_code）"
       echo ""
-      echo "✗ Stack $name failed to stop (exit code: $exit_code)"
+      echo "✗ 栈 $name 停止失败（退出码：$exit_code）"
     fi
     ;;
 
@@ -816,7 +816,7 @@ case $command in
     ;;
 
   *)
-    echo "Unknown command: $command"
+    echo "未知命令：$command"
     log_msg "ERROR" "Unknown command: $command (name: $name, files: ${file_args[*]})"
     exit 1
     ;;

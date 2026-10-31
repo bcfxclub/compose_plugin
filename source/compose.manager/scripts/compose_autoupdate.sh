@@ -39,15 +39,15 @@ fi
 
 if [ -n "$COMPOSE_CREDENTIAL_ID" ]; then
   if ! credential_output=$(php "$(dirname "$0")/credential_config.php" --credential-id "$COMPOSE_CREDENTIAL_ID"); then
-    composeLogger "Selected registry credential could not be loaded for '$PROJECT_NAME'" error autoupdate daemon
+    composeLogger "无法为 '$PROJECT_NAME' 加载所选的注册表凭据" error autoupdate daemon
     exit 1
   fi
   DOCKER_CONFIG_DIR=$(printf '%s\n' "$credential_output" | sed -n '1p')
   credential_label=$(printf '%s\n' "$credential_output" | sed -n '2p')
   export DOCKER_CONFIG="$DOCKER_CONFIG_DIR"
-  composeLogger "Using registry credential '${credential_label:-$COMPOSE_CREDENTIAL_ID}' for '$PROJECT_NAME'" debug autoupdate daemon
+  composeLogger "为 '$PROJECT_NAME' 使用注册表凭据 '${credential_label:-$COMPOSE_CREDENTIAL_ID}'" debug autoupdate daemon
 else
-  composeLogger "No registry credential configured for '$PROJECT_NAME'; using default Docker credentials" debug autoupdate daemon
+  composeLogger "'$PROJECT_NAME' 未配置注册表凭据，将使用默认的 Docker 凭据" debug autoupdate daemon
 fi
 
 NOTIFY="/usr/local/emhttp/webGui/scripts/notify"
@@ -130,7 +130,7 @@ if [ -n "$COMPOSE_PROJECT_DIR" ] && [ -d "$COMPOSE_PROJECT_DIR" ]; then
 fi
 
 if [ ${#compose_file_args[@]} -eq 0 ] && [ ${#project_dir_args[@]} -eq 0 ]; then
-  echo "No compose file paths or project directory were provided" >&2
+  echo "未提供 compose 文件路径或项目目录" >&2
   exit 2
 fi
 
@@ -144,7 +144,7 @@ exec 9>"$LOCK_FILE"
 waited=0
 while ! flock -n 9 2>/dev/null; do
     if [ "$waited" -ge "$LOCK_TIMEOUT" ]; then
-        echo "Could not acquire lock for $PROJECT_NAME after ${LOCK_TIMEOUT}s - another operation may be in progress" >&2
+        echo "获取 $PROJECT_NAME 的锁失败（已等待 ${LOCK_TIMEOUT}s）—— 可能有另一个操作正在进行" >&2
         exit 1
     fi
     sleep 1
@@ -156,7 +156,7 @@ echo "{\"pid\":$$,\"command\":\"autoupdate\",\"time\":\"$(date -Iseconds)\"}" >&
 
 OUT=$(mktemp 2>/dev/null || echo "")
 if [ -z "$OUT" ]; then
-  echo "Failed to create temporary output file" >&2
+  echo "创建临时输出文件失败" >&2
   exit 1
 fi
 RC=0

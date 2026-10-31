@@ -380,7 +380,7 @@ foreach ($stackInfos as $stackInfo) {
     $o .= "<span class='inner'><span class='appname'>$projectNameHtml</span><br>";
     $o .= "<i class='fa fa-$shape $status $color compose-status-icon' data-status='$status'></i><span class='state'>$statusLabel</span>";
     if ($hasInvalidIndirect) {
-        composeLogger('Rendering invalid indirect warning in stack list', [
+        composeLogger('正在渲染栈列表中的 indirect 无效警告', [
             'project' => $stackInfo->projectFolder,
             'projectPath' => $stackInfo->path,
             'invalidIndirectPath' => $invalidIndirectPath,

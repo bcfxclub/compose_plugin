@@ -35,7 +35,7 @@ PROJECT_NAME=$(basename "$STACK_PATH")
 
 # Ensure the stack directory exists before writing
 if [ -z "$STACK_PATH" ] || [ ! -d "$STACK_PATH" ]; then
-  composeLogger "Background command failed: stack path not found ($STACK_PATH)" error compose daemon
+  composeLogger "后台命令失败：找不到栈路径（$STACK_PATH）" error compose daemon
   if [ -x "$NOTIFY" ]; then
     "$NOTIFY" -e 'Compose Manager' -s "Background command failed: $PROJECT_NAME" \
       -d "Could not determine stack path for background operation." -i 'warning'
@@ -57,7 +57,7 @@ fi
 
 # Create a readable header in the log
 {
-  echo "=== Compose Manager Background Run ==="
+  echo "=== Compose Manager 后台运行 ==="
   echo "Stack:     $PROJECT_NAME"
   echo "Operation: $OPERATION"
   echo "Started:   $(date)"
@@ -66,7 +66,7 @@ fi
 } > "$LOG_FILE"
 
 # Run compose.sh, capturing all output (stdout + stderr) and appending to the log
-composeLogger "Background $OPERATION starting for $PROJECT_NAME" info compose daemon
+composeLogger "正在为 $PROJECT_NAME 启动后台 $OPERATION" info compose daemon
 sh "$COMPOSE_SH" "$@" >> "$LOG_FILE" 2>&1
 RC=$?
 
@@ -74,7 +74,7 @@ RC=$?
   echo ""
   echo "======================================="
   echo "Finished:  $(date)"
-  echo "Exit code: $RC"
+  echo "退出码：$RC"
   echo "======================================="
 } >> "$LOG_FILE"
 
@@ -90,7 +90,7 @@ if [ $RC -eq 0 ]; then
 elif [ "$OPERATION" = "gitdeploy" ] && [ $RC -eq "$GIT_DEPLOY_EXIT_SKIPPED" ]; then
   # An automatic deploy that no longer applied changed nothing; the scheduled check
   # that started it notifies, if anything needs saying, at its next pass.
-  composeLogger "Stack '$PROJECT_NAME' ($OPERATION) skipped: the automatic deploy no longer applied." info compose daemon
+  composeLogger "栈 '$PROJECT_NAME'（$OPERATION）已跳过：该自动部署已不再适用。" info compose daemon
 else
   # Include last few lines of output in the notification for quick diagnosis
   TAIL=$(tail -n 10 "$LOG_FILE" 2>/dev/null | tr -cd '[:print:]\n\t')

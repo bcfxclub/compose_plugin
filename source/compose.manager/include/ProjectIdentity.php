@@ -171,7 +171,7 @@ final class ProjectIdentity
             $identity->conflictReason = self::CONFLICT_AMBIGUOUS;
             $identity->resolved = false;
             composeLogger(
-                "Ambiguous compose project identity for '$projectFolder'; mutating actions are blocked until an identity is chosen",
+                "栈 '$projectFolder' 的 compose 项目标识不明确；在选择标识之前，变更类操作会被阻止",
                 ['folderCandidate' => $identity->folderCandidate, 'legacyCandidate' => $identity->legacyCandidate, 'evidence' => $identity->evidence],
                 'user',
                 'warning',
@@ -216,10 +216,10 @@ final class ProjectIdentity
     {
         $choice = compose_manager_sanitize_project_name(trim($choice));
         if ($choice !== $this->folderCandidate && $choice !== $this->legacyCandidate) {
-            throw new \RuntimeException("Project identity '$choice' is not a candidate for '$this->projectFolder'");
+            throw new \RuntimeException("项目标识 '$choice' 不是 '$this->projectFolder' 的候选");
         }
         if (!self::pin($stackPath, $choice)) {
-            throw new \RuntimeException("Failed to persist project identity for '$this->projectFolder'");
+            throw new \RuntimeException("无法为 '$this->projectFolder' 持久化项目标识");
         }
 
         $this->projectName = $choice;
