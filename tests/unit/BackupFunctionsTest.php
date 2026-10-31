@@ -317,7 +317,7 @@ class BackupFunctionsTest extends TestCase
         // Empty projects folder — no stacks
         $result = createBackup();
         $this->assertEquals('error', $result['result']);
-        $this->assertStringContainsString('No stacks found', $result['message']);
+        $this->assertStringContainsString('没有找到可备份的栈', $result['message']);
     }
 
     /**
@@ -371,7 +371,7 @@ class BackupFunctionsTest extends TestCase
 
         $result = createBackup();
         $this->assertEquals('error', $result['result']);
-        $this->assertStringContainsString('does not exist', $result['message']);
+        $this->assertStringContainsString('项目目录不存在', $result['message']);
 
         $compose_root = $this->testComposeRoot;
     }
@@ -490,7 +490,7 @@ class BackupFunctionsTest extends TestCase
     {
         $result = readArchiveStacks('/nonexistent/archive.tar.gz');
         $this->assertEquals('error', $result['result']);
-        $this->assertStringContainsString('not found', $result['message']);
+        $this->assertStringContainsString('未找到归档', $result['message']);
     }
 
     // ===========================================
@@ -530,7 +530,7 @@ class BackupFunctionsTest extends TestCase
     {
         $result = restoreStacks('/nonexistent/archive.tar.gz', ['some-stack']);
         $this->assertEquals('error', $result['result']);
-        $this->assertStringContainsString('not found', $result['message']);
+        $this->assertStringContainsString('未找到归档', $result['message']);
     }
 
     public function testRestoreStacksErrorOnEmptyStackList(): void
@@ -540,7 +540,7 @@ class BackupFunctionsTest extends TestCase
 
         $result = restoreStacks($archivePath, []);
         $this->assertEquals('error', $result['result']);
-        $this->assertStringContainsString('No stacks selected', $result['message']);
+        $this->assertStringContainsString('未选择要恢复的栈', $result['message']);
     }
 
     // ===========================================

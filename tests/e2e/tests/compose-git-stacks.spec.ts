@@ -87,7 +87,7 @@ test.describe('Compose Manager git stacks (GUID stack)', () => {
       await page.goto(composePath, { waitUntil: 'domcontentloaded' });
       const row = page.locator(`tr.compose-sortable[data-project="${createdProject}"]`);
       await expect(row).toHaveAttribute('data-gitstack', '1', { timeout: 30_000 });
-      await expect(row.locator('.compose-git-line')).toContainText(`${gitBranch} @ not deployed`);
+      await expect(row.locator('.compose-git-line')).toContainText(`${gitBranch} @ 未部署`);
       await row.locator('[id^="stack-"][data-stackid]').first().click();
       const menu = page.locator('.dropdown-context:visible');
       await expect(menu.getByText('Check for Changes')).toBeVisible();

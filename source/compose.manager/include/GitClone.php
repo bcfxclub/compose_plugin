@@ -33,15 +33,18 @@ final class GitCloneFailedException extends RuntimeException
      * does not know the key. False for anything else: an unreachable host, a wrong host
      * key, a missing branch. Each host words a refusal its own way:
      *  - "Permission denied (publickey)": ssh itself, when no account has the key
-     *  - "未找到仓库": GitHub, when the key belongs to another repository
+     *  - "repository not found": GitHub, when the key belongs to another repository
      *  - "you don't have permission to view it": GitLab
      *  - "User permission denied": Gitea and Forgejo
-     *  - "仓库访问被拒绝": Bitbucket
+     *  - "access denied": Bitbucket
+     *
+     * The wordings stay English on purpose: they are matched against git's own
+     * output, which is never translated.
      */
     public function serverRefusedAccess(): bool
     {
         $output = strtolower($this->gitOutput);
-        foreach (['permission denied', '未找到仓库', "you don't have permission", 'access denied'] as $wording) {
+        foreach (['permission denied', 'repository not found', "you don't have permission", 'access denied'] as $wording) {
             if (str_contains($output, $wording)) {
                 return true;
             }
@@ -358,7 +361,7 @@ final class GitClone
         if ($changed !== []) {
             throw new RuntimeException(
                 '克隆中存在本地改动（' . implode(', ', array_slice($changed, 0, 5))
-                . (count($changed) > 5 ? ', ...' : '') . '). Save or discard them first.'
+                . (count($changed) > 5 ? ', ...' : '') . '）。请先保存或丢弃这些改动。'
             );
         }
         GitPathGuard::assertSafeToWrite($this->settings->cloneDir);

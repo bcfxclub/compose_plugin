@@ -454,8 +454,8 @@ final class GitStackWebActionsTest extends TestCase
 
         $html = $this->stackListHtml();
 
-        $this->assertStringContainsString("main @ <span title='Deployed commit $deployed'>1234567</span>", $html);
-        $this->assertStringContainsString('>failed</span>', $html);
+        $this->assertStringContainsString("main @ <span title='已部署提交 $deployed'>1234567</span>", $html);
+        $this->assertStringContainsString('>失败</span>', $html);
     }
 
     public function testTheStackListSaysWhenAGitStacksSettingsCannotBeRead(): void
@@ -463,7 +463,7 @@ final class GitStackWebActionsTest extends TestCase
         $folder = $this->addGitStack('whoami');
         file_put_contents($this->composeRoot . '/' . $folder . '/git.json', '{"version": 99}');
 
-        $this->assertStringContainsString('git settings cannot be read', $this->stackListHtml());
+        $this->assertStringContainsString('无法读取 Git 设置', $this->stackListHtml());
     }
 
     // ----- the editor's settings -----
@@ -609,7 +609,7 @@ final class GitStackWebActionsTest extends TestCase
         $answer = json_decode($this->deploy(['path' => $this->composeRoot . '/' . $folder, 'commit' => 'abc1234']), true);
 
         $this->assertSame('git', $answer['error']);
-        $this->assertStringContainsString('full commit id', $answer['message']);
+        $this->assertStringContainsString('完整的提交 ID', $answer['message']);
     }
 
     public function testDeployDoesNothingWhileTheArrayIsStopped(): void

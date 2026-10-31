@@ -387,13 +387,13 @@ foreach ($stackInfos as $stackInfo) {
             'isIndirect' => $stackInfo->isIndirect,
             'composeSource' => $stackInfo->composeSource,
         ], 'user', 'debug', 'stack-list');
-        $o .= " <i class='fa fa-warning orange-text' title='External compose path is invalid or unavailable: $invalidIndirectPathHtml'></i>";
+        $o .= " <i class='fa fa-warning orange-text' title='外部 compose 路径无效或不可用：$invalidIndirectPathHtml'></i>";
     }
     if ($identityBlocked) {
         $o .= " <i class='fa fa-exclamation-triangle red-text compose-identity-warning hand' title='$identityMessageHtml'></i>";
     }
     $o .= "<div class='compose-text-muted' style='margin-top:4px;font-size:0.85em;'>";
-    $o .= "Project: $projectHtml";
+    $o .= "项目：$projectHtml";
     $o .= "</div>";
     // A git stack's branch and deployed commit
     if ($git !== null) {
@@ -403,19 +403,19 @@ foreach ($stackInfos as $stackInfo) {
         } else {
             $o .= "<span style='white-space:nowrap;'>" . htmlspecialchars((string) $git['branch'], ENT_QUOTES, 'UTF-8') . ' @ ';
             $o .= $git['deployedCommit'] === null
-                ? 'not deployed'
-                : "<span title='Deployed commit " . htmlspecialchars($git['deployedCommit'], ENT_QUOTES, 'UTF-8') . "'>"
+                ? '未部署'
+                : "<span title='已部署提交 " . htmlspecialchars($git['deployedCommit'], ENT_QUOTES, 'UTF-8') . "'>"
                     . htmlspecialchars(substr($git['deployedCommit'], 0, 7), ENT_QUOTES, 'UTF-8') . '</span>';
             $o .= '</span>';
             if ($git['behind']) {
                 $o .= " <span class='orange-text' title='分支上有更新的提交会改动该栈。'>落后</span>";
             }
             if ($git['failedCommit'] !== null) {
-                $failedTitle = 'The deploy of commit ' . substr($git['failedCommit'], 0, 12) . ' failed. Fix it and deploy again.';
+                $failedTitle = '提交 ' . substr($git['failedCommit'], 0, 12) . ' 的部署失败。请修复后重新部署。';
                 $o .= " <span class='red-text' title='" . htmlspecialchars($failedTitle, ENT_QUOTES, 'UTF-8') . "'>失败</span>";
             } elseif ($git['failedAutomaticCommit'] !== null) {
-                $failedTitle = 'The automatic deploy of commit ' . substr($git['failedAutomaticCommit'], 0, 12)
-                    . ' failed before any container was started. Fix it and deploy again, or resume automatic deploys to try again.';
+                $failedTitle = '提交 ' . substr($git['failedAutomaticCommit'], 0, 12)
+                    . ' 的自动部署在启动任何容器之前就失败了。请修复后重新部署，或恢复自动部署以重试。';
                 $o .= " <span class='red-text' title='" . htmlspecialchars($failedTitle, ENT_QUOTES, 'UTF-8') . "'>失败</span>";
             }
         }

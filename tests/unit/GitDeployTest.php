@@ -121,10 +121,10 @@ final class GitDeployTest extends TestCase
             }, 'The deployed commit changed since the scheduled check decided'],
             'local changes' => [static function (self $test): void {
                 file_put_contents(GitStackSettings::load($test->stackDir)->composeFileInClone(), "services: {}\n");
-            }, 'The clone has local changes'],
+            }, '克隆中存在本地改动'],
             'stopped' => [static function (self $test): void {
                 $test->docker->setRunning([]);
-            }, 'The stack is not running'],
+            }, '栈未运行'],
             'git cannot be asked' => [static function (self $test): void {
                 file_put_contents(GitStackSettings::load($test->stackDir)->cloneDir . '/.git/HEAD', "not a ref\n");
             }, "Could not read the clone's local changes"],
@@ -802,7 +802,7 @@ final class GitDeployTest extends TestCase
         // The Labels tab saves the override as the checks start.
         $savedMeanwhile = "services:\n  whoami:\n    labels:\n      net.unraid.docker.webui: http://z\n";
         $deploy = new GitDeploy($this->stackDir, static function (string $message) use ($override, $savedMeanwhile): void {
-            if (str_starts_with($message, 'Checking the stack')) {
+            if (str_starts_with($message, '部署前正在检查栈')) {
                 file_put_contents($override, $savedMeanwhile);
             }
         });

@@ -325,7 +325,7 @@ final class GitStackSettingsTest extends TestCase
             $this->makeSettings()->withCredentialId(str_repeat('ab', 16))->saveCheckingCredential($this->stackDir);
             $this->fail('Settings naming a deleted credential were saved.');
         } catch (RuntimeException $error) {
-            $this->assertStringContainsString('was deleted while the repository was being reached', $error->getMessage());
+            $this->assertStringContainsString('连接仓库期间凭据被删除', $error->getMessage());
         }
         $this->assertFileDoesNotExist($this->stackDir . '/' . GitStackSettings::FILE_NAME);
     }
