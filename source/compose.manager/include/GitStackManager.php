@@ -1044,7 +1044,7 @@ final class GitStackManager
             $untrackedInOldClone = [];
             if (file_exists($cloneDir) || @readlink($cloneDir) !== false) {
                 if (@readlink($cloneDir) !== false) {
-                    throw new RuntimeException("$cloneDir is a symlink, so it was left alone.");
+                    throw new RuntimeException("$cloneDir 是符号链接，因此未做处理。");
                 }
                 // Data a container wrote through a relative bind mount stays in
                 // the old clone; list it so the person knows what to copy back.
@@ -1092,9 +1092,9 @@ final class GitStackManager
                         $clone->checkOut($deployed);
                     } catch (Throwable $error) {
                         throw new RuntimeException(
-                            'The new clone could not be put at the deployed commit ' . substr($deployed, 0, 12) . ': '
-                            . $error->getMessage() . "\nIt is at " . substr($head, 0, 12) . '.'
-                            . ($movedTo !== null ? " The old clone is at $movedTo." : ''),
+                            '新克隆无法切换到已部署提交 ' . substr($deployed, 0, 12) . '：'
+                            . $error->getMessage() . "\n当前位于 " . substr($head, 0, 12) . '。'
+                            . ($movedTo !== null ? " 旧克隆位于 $movedTo。" : ''),
                             0,
                             $error
                         );

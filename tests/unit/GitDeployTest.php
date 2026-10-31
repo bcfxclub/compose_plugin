@@ -107,18 +107,18 @@ final class GitDeployTest extends TestCase
         return [
             'switched to notify' => [static function (self $test): void {
                 $test->setAutoDeploy(GitStackSettings::AUTO_DEPLOY_NOTIFY);
-            }, 'no longer set to Deploy'],
+            }, '已不再设为“部署”'],
             'switched off' => [static function (self $test): void {
                 $test->setAutoDeploy(GitStackSettings::AUTO_DEPLOY_OFF);
-            }, 'no longer set to Deploy'],
+            }, '已不再设为“部署”'],
             'a deploy failed' => [static function (self $test): void {
                 $state = GitStackState::load($test->stackDir);
                 (new GitStackState($state->deployedCommit, str_repeat('b', 40)))->save($test->stackDir);
-            }, 'automatic deploys of this stack are paused'],
+            }, '该栈的自动部署已暂停'],
             'another commit deployed meanwhile' => [static function (self $test): void {
                 // Pull and Redeploy, or a rollback, ran while the automatic deploy waited for the lock.
                 (new GitStackState(str_repeat('c', 40), null))->save($test->stackDir);
-            }, 'The deployed commit changed since the scheduled check decided'],
+            }, '自定时检查决定部署后，已部署提交又发生了变化'],
             'local changes' => [static function (self $test): void {
                 file_put_contents(GitStackSettings::load($test->stackDir)->composeFileInClone(), "services: {}\n");
             }, '克隆中存在本地改动'],
@@ -127,7 +127,7 @@ final class GitDeployTest extends TestCase
             }, '栈未运行'],
             'git cannot be asked' => [static function (self $test): void {
                 file_put_contents(GitStackSettings::load($test->stackDir)->cloneDir . '/.git/HEAD', "not a ref\n");
-            }, "Could not read the clone's local changes"],
+            }, '无法读取克隆的本地改动'],
             'docker cannot be asked' => [static function (self $test): void {
                 $test->docker->fail('ps', 'Cannot connect to the Docker daemon');
             }, 'Could not ask docker'],

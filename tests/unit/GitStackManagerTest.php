@@ -958,7 +958,7 @@ final class GitStackManagerTest extends TestCase
             $this->manager->reclone($folder);
             $this->fail('Recloned through a symlink');
         } catch (RuntimeException $error) {
-            $this->assertStringContainsString('is a symlink', $error->getMessage());
+            $this->assertStringContainsString('是符号链接', $error->getMessage());
         }
         $this->assertSame($settings->cloneDir . '.real', readlink($settings->cloneDir));
         $this->assertFileExists($settings->cloneDir . '.real/whoami/compose.yaml');

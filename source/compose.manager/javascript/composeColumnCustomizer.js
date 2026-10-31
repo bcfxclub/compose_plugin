@@ -343,10 +343,10 @@
         });
 
         if (!hiddenHtml) {
-            hiddenHtml = '<option value="" disabled>(none)</option>';
+            hiddenHtml = '<option value="" disabled>（无）</option>';
         }
         if (!visibleHtml) {
-            visibleHtml = '<option value="" disabled>(none)</option>';
+            visibleHtml = '<option value="" disabled>（无）</option>';
         }
 
         $hidden.html(hiddenHtml);

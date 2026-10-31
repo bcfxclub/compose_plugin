@@ -90,19 +90,19 @@ final class GitDeploy
     {
         $settings = $this->loadSettings();
         if ($settings->autoDeploy !== GitStackSettings::AUTO_DEPLOY_DEPLOY) {
-            throw new GitDeploySkipped('Automatic deploys of this stack are no longer set to Deploy, so it was not deployed.');
+            throw new GitDeploySkipped('该栈的自动部署已不再设为“部署”，因此未执行部署。');
         }
         $state = GitStackState::load($this->stackDir);
         if ($state->failedCommit !== null) {
             throw new GitDeploySkipped(
-                'The deploy of ' . substr($state->failedCommit, 0, 12) . ' failed, so automatic deploys of this stack are paused'
-                . ' and it was not deployed.'
+                '提交 ' . substr($state->failedCommit, 0, 12) . ' 的部署失败，该栈的自动部署已暂停'
+                . '，因此未执行部署。'
             );
         }
         if ($state->deployedCommit !== $deployedWhenDecided) {
             throw new GitDeploySkipped(
-                'The deployed commit changed since the scheduled check decided to deploy (another deploy ran'
-                . ' meanwhile), so the stack was not deployed automatically.'
+                '自定时检查决定部署后，已部署提交又发生了变化（其间有另一次部署运行），'
+                . '因此该栈未自动部署。'
             );
         }
         // A question git or docker could not answer is a skip too, not a failure: the next scheduled
@@ -112,7 +112,7 @@ final class GitDeploy
             $hasLocalChanges = self::localChanges($clone, $state) !== [];
         } catch (RuntimeException $error) {
             throw new GitDeploySkipped(
-                'Could not read the clone\'s local changes (' . $error->getMessage() . '), so the stack was not deployed automatically.',
+                '无法读取克隆的本地改动（' . $error->getMessage() . '），因此该栈未自动部署。',
                 0,
                 $error
             );
@@ -313,9 +313,9 @@ final class GitDeploy
             $configDiff = null;
             $configProblem = null;
             if ($configBefore === null) {
-                $configProblem = 'The compose configuration of ' . substr($previous, 0, 12) . " could not be read: $configBeforeProblem";
+                $configProblem = '提交 ' . substr($previous, 0, 12) . " 的 compose 配置无法读取：$configBeforeProblem";
             } elseif ($configAfter === null) {
-                $configProblem = 'The compose configuration of ' . substr($target, 0, 12) . " could not be read: $configAfterProblem";
+                $configProblem = '提交 ' . substr($target, 0, 12) . " 的 compose 配置无法读取：$configAfterProblem";
             } else {
                 try {
                     $configDiff = self::configDiff($configBefore, $configAfter, $previous, $target);
@@ -655,8 +655,8 @@ final class GitDeploy
             $base = $clone->lastCommitSharedWithBranch($checkedOut) ?? $state->deployedCommit;
             if ($base === null) {
                 throw new RuntimeException(
-                    'The clone is at ' . substr($checkedOut, 0, 12) . ', which shares no history with the branch '
-                    . "{$clone->settings()->branch}, so nothing was deployed. Clone it again with compose-git reclone."
+                    '克隆当前位于 ' . substr($checkedOut, 0, 12) . '，与分支 '
+                    . "{$clone->settings()->branch} 没有共同历史，因此未执行部署。请用 compose-git reclone 重新克隆。"
                 );
             }
         }
@@ -722,7 +722,7 @@ final class GitDeploy
     {
         $problems = $this->findProblems($settings, $projectName, $profiles);
         if ($problems !== []) {
-            throw new RuntimeException("The stack was not deployed:\n- " . implode("\n- ", $problems));
+            throw new RuntimeException("该栈未部署：\n- " . implode("\n- ", $problems));
         }
     }
 

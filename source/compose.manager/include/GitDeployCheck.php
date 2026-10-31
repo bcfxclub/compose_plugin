@@ -152,7 +152,7 @@ final class GitDeployCheck
         if ($missing === []) {
             return [];
         }
-        return ['The repository\'s .env.example lists keys missing from the stack\'s .env: '
+        return ['仓库的 .env.example 列出了栈 .env 中缺少的键：'
             . implode(', ', $missing) . '.'];
     }
 

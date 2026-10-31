@@ -665,11 +665,11 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
 
     function clearAllIconCache() {
         swal({
-            title: 'Clear Icon Cache',
-            text: 'This will delete all locally cached icon files. Icons will be re-downloaded on next page load.',
+            title: '清除图标缓存',
+            text: '这会删除本地缓存的所有图标文件，下次打开页面时会重新下载。',
             type: 'warning',
             showCancelButton: true,
-            confirmButtonText: 'Clear Cache'
+            confirmButtonText: '清除缓存'
         }, function(confirmed) {
             if (!confirmed) return;
             $.post(caURL, {
@@ -677,20 +677,20 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
             }, function(data) {
                 var result = JSON.parse(data);
                 if (result.result === 'success') {
-                    swal('Success', 'Icon cache cleared (' + result.cleared + ' files removed).', 'success');
+                    swal('成功', '图标缓存已清除（删除 ' + result.cleared + ' 个文件）。', 'success');
                 } else {
-                    swal('Error', result.message || 'Failed to clear icon cache', 'error');
+                    swal('错误', result.message || '清除图标缓存失败', 'error');
                 }
             });
         });
     }
 
     function clearUpdateCache() {        swal({
-            title: 'Clear Update Cache',
-            text: 'This will clear the update status cache and remove stale entries. You will need to check for updates again.',
+            title: '清除更新缓存',
+            text: '这会清空更新状态缓存并移除过期条目，之后需要重新检查更新。',
             type: 'warning',
             showCancelButton: true,
-            confirmButtonText: 'Clear Cache'
+            confirmButtonText: '清除缓存'
         }, function(confirmed) {
             if (!confirmed) return;
             $.post(caURL, {
@@ -698,9 +698,9 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
             }, function(data) {
                 var result = JSON.parse(data);
                 if (result.result === 'success') {
-                    swal('Success', 'Update cache has been cleared.', 'success');
+                    swal('成功', '更新缓存已清除。', 'success');
                 } else {
-                    swal('Error', result.message || 'Failed to clear cache', 'error');
+                    swal('错误', result.message || '清除缓存失败', 'error');
                 }
             });
         });
@@ -1026,11 +1026,11 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
             if (isCrossed && eitherChanged) {
                 e.preventDefault();
                 swal({
-                    title: 'Confirm aggressive mode',
-                    text: 'Both Disable action warnings and Run in background are enabled and one or both have changed. This means actions will execute immediately in background. Proceed?',
+                    title: '确认激进模式',
+                    text: '“禁用操作警告”与“后台运行”同时启用，且其中一项或两项刚刚被修改。这意味着操作会立即在后台执行。是否继续？',
                     type: 'warning',
                     showCancelButton: true,
-                    confirmButtonText: 'Yes, apply'
+                    confirmButtonText: '是，应用'
                 }, function(confirmed) {
                     if (!confirmed) {
                         // do nothing; keep user on settings page
@@ -1783,11 +1783,11 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
 
     function clearLogs() {
         swal({
-            title: 'Clear Logs',
-            text: 'This will clear compose-related entries from the syslog. Are you sure?',
+            title: '清除日志',
+            text: '这会从系统日志（syslog）中清除与 compose 相关的条目，确定继续吗？',
             type: 'warning',
             showCancelButton: true,
-            confirmButtonText: 'Clear'
+            confirmButtonText: '清除'
         }, function(confirmed) {
             if (!confirmed) return;
             // Note: We can't actually clear syslog entries, so just refresh
@@ -1824,7 +1824,7 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
                     URL.revokeObjectURL(url);
                 }
             } catch (e) {
-                swal('Error', 'Failed to download logs', 'error');
+                swal('错误', '下载日志失败', 'error');
             }
         });
     }
@@ -2026,12 +2026,12 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
         // Show confirmation modal
         var stackNames = stacks.join(', ');
         swal({
-            title: 'Confirm Restore',
-            text: 'This action will permanently replace existing configurations for the selected stacks (' + stackNames + '). Confirm to proceed.',
+            title: '确认还原',
+            text: '此操作会永久替换所选栈的现有配置（' + stackNames + '）。确认继续吗？',
             type: 'warning',
             showCancelButton: true,
-            confirmButtonText: 'Restore',
-            cancelButtonText: 'Cancel',
+            confirmButtonText: '还原',
+            cancelButtonText: '取消',
             confirmButtonColor: window.getComputedStyle(document.documentElement).getPropertyValue('--dynamix-jquery-ui-button-background-end')
         }, function() {
             doRestore(stacks);
@@ -2070,11 +2070,11 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
         if (!selectedArchive) return;
 
         swal({
-            title: 'Delete Backup',
-            text: 'Delete "' + selectedArchive + '"? This cannot be undone.',
+            title: '删除备份',
+            text: '要删除“' + selectedArchive + '”吗？此操作无法撤销。',
             type: 'warning',
             showCancelButton: true,
-            confirmButtonText: 'Delete',
+            confirmButtonText: '删除',
             confirmButtonColor: window.getComputedStyle(document.documentElement).getPropertyValue('--dynamix-jquery-ui-button-background-start')
         }, function() {
             $.post(caURL, {
@@ -2090,10 +2090,10 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
                         $('#btn-restore-stacks').prop('disabled', true);
                         loadBackupArchives();
                     } else {
-                        swal('Error', result.message || 'Failed to delete backup.', 'error');
+                        swal('错误', result.message || '删除备份失败。', 'error');
                     }
                 } catch (e) {
-                    swal('Error', 'Error parsing response.', 'error');
+                    swal('错误', '解析响应失败。', 'error');
                 }
             });
         });
@@ -2153,7 +2153,7 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
 
         // Validate extension
         if (!file.name.match(/\.(tar\.gz|tgz)$/i)) {
-            swal('Invalid File', 'Please select a .tar.gz archive file.', 'error');
+            swal('文件无效', '请选择 .tar.gz 归档文件。', 'error');
             input.value = '';
             return;
         }
@@ -2576,7 +2576,7 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
                 }
             });
             if (paths.length === 0) {
-                swal('Info', 'No stacks are enabled for auto-update.', 'info');
+                swal('提示', '没有启用自动更新的栈。', 'info');
                 return;
             }
 

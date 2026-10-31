@@ -68,7 +68,7 @@ switch ($action) {
         if (!$handle || !flock($handle, LOCK_EX)) {
             if ($handle) fclose($handle);
             http_response_code(500);
-            echo json_encode(array('error' => 'Failed to lock config file'));
+            echo json_encode(array('error' => '无法锁定配置文件'));
             break;
         }
         // The settings page only sends the fields it shows, so keep the stored ones it does not

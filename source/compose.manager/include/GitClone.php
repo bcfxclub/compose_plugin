@@ -200,7 +200,7 @@ final class GitClone
     {
         $cloneDir = $this->settings->cloneDir;
         if (@readlink($cloneDir) !== false) {
-            throw new GitCloneNotOwnedException("$cloneDir is a symlink, so it was not used.");
+            throw new GitCloneNotOwnedException("$cloneDir 是符号链接，因此未被使用。");
         }
         if (!is_dir($cloneDir)) {
             throw new GitCloneNotOwnedException("The clone folder $cloneDir is missing. (Is the array started?)");
@@ -385,9 +385,9 @@ final class GitClone
         $inTheWay = self::untrackedPathsGitRefusedToOverwrite($result->stderr);
         if ($inTheWay !== []) {
             throw new RuntimeException(
-                'The new commit adds files where untracked local files already are, so nothing was changed: '
+                '新提交要写入的文件位置已被未跟踪的本地文件占用，因此未做任何改动：'
                 . implode(', ', array_slice($inTheWay, 0, 5)) . (count($inTheWay) > 5 ? ', ...' : '')
-                . '. Move them out of the way, then deploy again.'
+                . '. 请先移走这些文件，然后重新部署。'
             );
         }
         throw new RuntimeException("Could not check out $commit: " . $result->errorSummary());
@@ -568,10 +568,10 @@ final class GitClone
         if ($atRisk !== []) {
             $paths = array_keys($atRisk);
             throw new RuntimeException(
-                'Discarding the local changes would delete or overwrite untracked files at '
+                '丢弃本地改动会删除或覆盖以下未跟踪文件：'
                 . implode(', ', array_slice($paths, 0, 5)) . (count($paths) > 5 ? ', ...' : '')
-                . ', because the checked-out commit has a tracked file or folder there. Nothing was changed. '
-                . 'Move them out of the clone, then deploy again.'
+                . '，因为检出提交在该位置有已跟踪的文件或目录。未做任何改动。'
+                . '请先把它们移出克隆目录，然后重新部署。'
             );
         }
     }
@@ -793,9 +793,9 @@ final class GitClone
                 . 'the stack uses. Use the address the server redirects to (usually the one ending in .git).';
         }
         if (!$hasCredential && str_contains($stderr, 'terminal prompts disabled')) {
-            return 'The repository asks for a user name and password, so it needs a credential: add a git token on the '
-                . 'Credentials tab, then name it with --credential when adding the stack, or with compose-git credential '
-                . '<stack> <name> for a stack that exists.';
+            return '仓库要求输入用户名和密码，因此需要凭据：请在「凭据」标签页添加 git 令牌，'
+                . '然后在新增栈时用 --credential 指定名称，或对已有栈使用 compose-git credential '
+                . '<栈名> <名称>。';
         }
         return null;
     }

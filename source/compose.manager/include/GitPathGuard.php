@@ -189,30 +189,30 @@ final class GitPathGuard
      */
     public static function assertValidClonesRoot(string $path): void
     {
-        self::assertCleanAbsolutePath($path, 'The git clones folder');
+        self::assertCleanAbsolutePath($path, 'git 克隆目录');
         $path = self::followExclusiveShare($path);
 
         $mount = self::findMountFor($path);
         if ($mount === null) {
             throw new InvalidArgumentException(
-                "The git clones folder $path is not on a disk, pool or share under "
-                . COMPOSE_GIT_MNT_DIR . ". Anything written there would be kept in RAM and lost at reboot. "
-                . "Check the path for a typo, and that the array is started."
+                "git 克隆目录 $path 不在以下路径的磁盘、存储池或共享目录中："
+                . COMPOSE_GIT_MNT_DIR . "。写入该位置的数据会留在内存中，重启后丢失。"
+                . "请检查路径是否拼写有误，并确认阵列已启动。"
             );
         }
         $share = self::shareFolder($path);
         if ($share === null) {
             throw new InvalidArgumentException(
-                "The git clones folder must be a folder inside $mount, not $mount itself."
+                "git 克隆目录必须是 $mount 内的子目录，不能是 $mount 本身。"
             );
         }
         if (self::isSymlink($share)) {
-            throw new InvalidArgumentException("$share is a symlink, so it was not used. Check the path for a typo.");
+            throw new InvalidArgumentException("$share 是符号链接，因此未被使用。请检查路径是否拼写有误。");
         }
         if (!is_dir($share)) {
             throw new InvalidArgumentException(
-                "$share does not exist. Create it first (for a user share, add the share in Unraid), "
-                . "or check the path for a typo."
+                "$share 不存在。请先创建它（若为用户共享目录，请在 Unraid 中添加该共享），"
+                . "或检查路径是否拼写有误。"
             );
         }
 
@@ -304,7 +304,7 @@ final class GitPathGuard
         foreach ($levelsToCreate as $part) {
             $current .= '/' . $part;
             if (self::isSymlink($current)) {
-                throw new RuntimeException("$current is a symlink, so $path was not created.");
+                throw new RuntimeException("$current 是符号链接，因此未创建 $path。");
             }
             if (is_dir($current)) {
                 continue;

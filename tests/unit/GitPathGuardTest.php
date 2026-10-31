@@ -274,7 +274,7 @@ final class GitPathGuardTest extends TestCase
     {
         symlink($this->outside, $this->mnt . '/user/etc');
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('is a symlink');
+        $this->expectExceptionMessage('是符号链接');
         GitPathGuard::assertValidClonesRoot($this->mnt . '/user/etc/git');
     }
 
