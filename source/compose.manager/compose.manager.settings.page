@@ -1,7 +1,7 @@
 Menu="Utilities"
 Icon="cubes"
 Author="mstrhakr"
-Title="Compose Manager Plus"
+Title="Compose 管理器 Plus"
 Type="xmenu"
 Lock="true"
 ---
@@ -1741,7 +1741,7 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
                         container.scrollTop = container.scrollHeight;
                     }
                 } else {
-                    $('#compose-log-container').html('<span class="compose-status-danger">Error loading logs: ' + (result.message || 'Unknown error') + '</span>');
+                    $('#compose-log-container').html('<span class="compose-status-danger">Error loading logs: ' + (result.message || '未知错误') + '</span>');
                 }
             } catch (e) {
                 $('#compose-log-container').html('<span class="compose-status-danger">Error parsing response</span>');
@@ -1888,14 +1888,14 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
             }
         }).fail(function() {
             setBackupSpinner('#btn-create-backup', false);
-            showBackupStatus('#backup-create-status', 'Request failed.', 'error');
+            showBackupStatus('#backup-create-status', '请求失败。', 'error');
         });
     }
 
     function loadBackupArchives() {
         var dir = $('#BACKUP_DESTINATION').val() || '';
         var $list = $('#backup-archive-list');
-        $list.html('<tr><td colspan="4" class="compose-text-muted" style="text-align:center;padding:15px;font-style:italic;">Loading...</td></tr>');
+        $list.html('<tr><td colspan="4" class="compose-text-muted" style="text-align:center;padding:15px;font-style:italic;">加载中...</td></tr>');
 
         $.post(caURL, {
             action: 'listBackups',
@@ -1906,7 +1906,7 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
                 if (result.result === 'success') {
                     renderArchiveList(result.archives);
                 } else {
-                    $list.html('<tr><td colspan="4" class="compose-status-danger" style="text-align:center;">Error loading archives</td></tr>');
+                    $list.html('<tr><td colspan="4" class="compose-status-danger" style="text-align:center;">加载归档出错</td></tr>');
                 }
             } catch (e) {
                 $list.html('<tr><td colspan="4" class="compose-status-danger" style="text-align:center;">Error parsing response</td></tr>');
@@ -1918,7 +1918,7 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
         var $list = $('#backup-archive-list');
 
         if (!archives || archives.length === 0) {
-            $list.html('<tr><td colspan="4" class="compose-text-muted" style="text-align:center;padding:15px;">No backups found. Create one using the button above.</td></tr>');
+            $list.html('<tr><td colspan="4" class="compose-text-muted" style="text-align:center;padding:15px;">没有找到备份，请使用上方按钮创建一个。</td></tr>');
             return;
         }
 
@@ -1948,7 +1948,7 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
         selectedManifest = null;
 
         // Load stack list from archive
-        $('#restore-stack-checklist').html('<span class="compose-text-muted" style="font-style:italic;">Reading archive contents...</span>');
+        $('#restore-stack-checklist').html('<span class="compose-text-muted" style="font-style:italic;">正在读取归档内容...</span>');
         $('#btn-restore-stacks').prop('disabled', true);
         hideBackupStatus('#restore-status');
 
@@ -1967,10 +1967,10 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
                     $('#restore-stack-checklist').html('<span class="compose-status-danger">' + composeEscapeHtml(result.message || 'Failed to read archive.') + '</span>');
                 }
             } catch (e) {
-                $('#restore-stack-checklist').html('<span class="compose-status-danger">Error parsing response.</span>');
+                $('#restore-stack-checklist').html('<span class="compose-status-danger">解析响应出错。</span>');
             }
         }).fail(function() {
-            $('#restore-stack-checklist').html('<span class="compose-status-danger">Request failed. Check server logs.</span>');
+            $('#restore-stack-checklist').html('<span class="compose-status-danger">请求失败，请检查服务器日志。</span>');
         });
     }
 
@@ -1978,7 +1978,7 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
         var $checklist = $('#restore-stack-checklist');
 
         if (!stacks || stacks.length === 0) {
-            $checklist.html('<span class="compose-text-muted">No stacks found in this archive.</span>');
+            $checklist.html('<span class="compose-text-muted">该归档中没有找到栈。</span>');
             return;
         }
 
@@ -2062,7 +2062,7 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
             }
         }).fail(function() {
             setBackupSpinner('#btn-restore-stacks', false);
-            showBackupStatus('#restore-status', 'Request failed.', 'error');
+            showBackupStatus('#restore-status', '请求失败。', 'error');
         });
     }
 
@@ -2086,7 +2086,7 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
                     if (result.result === 'success') {
                         selectedArchive = null;
                         selectedManifest = null;
-                        $('#restore-stack-checklist').html('<span class="compose-text-muted" style="text-align:center;display:block;padding:15px;font-size:0.85em;">Select a backup archive above to see its contents.</span>');
+                        $('#restore-stack-checklist').html('<span class="compose-text-muted" style="text-align:center;display:block;padding:15px;font-size:0.85em;">请在上方选择备份归档以查看内容。</span>');
                         $('#btn-restore-stacks').prop('disabled', true);
                         loadBackupArchives();
                     } else {
@@ -2134,7 +2134,7 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
             $btn.prop('disabled', false).val('Save Settings');
 
             if (result.result === 'success') {
-                showBackupStatus('#backup-create-status', 'Backup settings saved.', 'success');
+                showBackupStatus('#backup-create-status', '备份设置已保存。', 'success');
                 if (window.composeSettingsUnifiedState && typeof window.composeSettingsUnifiedState.markBackupSaved === 'function') {
                     window.composeSettingsUnifiedState.markBackupSaved();
                 }
@@ -2241,13 +2241,13 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
         if (!$lockNav.length) return;
 
         if (unlocked) {
-            $lockNav.find('a').prop('title', "_(Lock sortable items)_");
+            $lockNav.find('a').prop('title', "_(锁定可排序项)_");
             $lockNav.find('b').removeClass('icon-u-lock green-text').addClass('icon-u-lock-open red-text');
-            $lockNav.find('span').text("_(Lock sortable items)_");
+            $lockNav.find('span').text("_(锁定可排序项)_");
         } else {
-            $lockNav.find('a').prop('title', "_(Unlock sortable items)_");
+            $lockNav.find('a').prop('title', "_(解锁可排序项)_");
             $lockNav.find('b').removeClass('icon-u-lock-open red-text').addClass('icon-u-lock green-text');
-            $lockNav.find('span').text("_(Unlock sortable items)_");
+            $lockNav.find('span').text("_(解锁可排序项)_");
         }
     }
 
@@ -2301,7 +2301,7 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
         var updateBaseline = options.updateBaseline !== false;
         var onComplete = typeof options.onComplete === 'function' ? options.onComplete : null;
 
-        $('#updates-tbody').html('<tr><td colspan="5" class="compose-text-muted" style="text-align:center;padding:12px;">_(Loading stacks...)_</td></tr>');
+        $('#updates-tbody').html('<tr><td colspan="5" class="compose-text-muted" style="text-align:center;padding:12px;">_(正在加载栈...)_</td></tr>');
         $.post('/plugins/compose.manager/include/Exec.php', {
             action: 'listProjects'
         }, function(projects) {
@@ -2327,18 +2327,18 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
                     var row = '<tr class="sortable" data-path="' + composeEscapeAttr(key) + '">';
                     row += '<td>' + composeEscapeHtml(p.name) + '</td>';
                     row += '<td><input type="checkbox" class="au-enabled compose-toggle" ' + enabled + '></td>';
-                    row += '<td><select class="au-schedule"><option value="daily">_(Daily)_</option><option value="weekly">_(Weekly)_</option><option value="monthly">_(Monthly)_</option></select></td>';
+                    row += '<td><select class="au-schedule"><option value="daily">_(每天)_</option><option value="weekly">_(每周)_</option><option value="monthly">_(每月)_</option></select></td>';
                     row += '<td><input type="time" class="au-time" value="' + composeEscapeAttr(time) + '"></td>';
                     row += '<td>';
                     row += '<span class="au-placeholder">---</span>';
                     row += '<select class="au-weekday">';
-                    row += '<option value="0">_(Sunday)_</option>';
-                    row += '<option value="1">_(Monday)_</option>';
-                    row += '<option value="2">_(Tuesday)_</option>';
-                    row += '<option value="3">_(Wednesday)_</option>';
-                    row += '<option value="4">_(Thursday)_</option>';
-                    row += '<option value="5">_(Friday)_</option>';
-                    row += '<option value="6">_(Saturday)_</option>';
+                    row += '<option value="0">_(周日)_</option>';
+                    row += '<option value="1">_(周一)_</option>';
+                    row += '<option value="2">_(周二)_</option>';
+                    row += '<option value="3">_(周三)_</option>';
+                    row += '<option value="4">_(周四)_</option>';
+                    row += '<option value="5">_(周五)_</option>';
+                    row += '<option value="6">_(周六)_</option>';
                     row += '</select>';
                     row += '<input type="number" class="au-monthday" min="1" max="31" step="1" value="' + composeEscapeAttr(String(monthday)) + '">';
                     row += '</td>';
@@ -2371,13 +2371,13 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
                     onComplete();
                 }
             }, 'json').fail(function() {
-                $('#updates-tbody').html('<tr><td colspan="5" class="compose-status-danger" style="text-align:center;padding:12px;">_(Failed to load auto-update settings.)_</td></tr>');
+                $('#updates-tbody').html('<tr><td colspan="5" class="compose-status-danger" style="text-align:center;padding:12px;">_(加载自动更新设置失败。)_</td></tr>');
                 if (onComplete) {
                     onComplete();
                 }
             });
         }, 'json').fail(function() {
-            $('#updates-tbody').html('<tr><td colspan="5" class="compose-status-danger" style="text-align:center;padding:12px;">_(Failed to load stacks.)_</td></tr>');
+            $('#updates-tbody').html('<tr><td colspan="5" class="compose-status-danger" style="text-align:center;padding:12px;">_(加载栈失败。)_</td></tr>');
             if (onComplete) {
                 onComplete();
             }
@@ -2613,21 +2613,21 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
 
 <!-- Tab Navigation -->
 <div class="compose-tabs">
-    <div class="compose-tab active" data-tab="settings"><i class="fa fa-cog fa-fw"></i> _(Settings)_</div>
-    <div class="compose-tab" data-tab="updates"><i class="fa fa-refresh fa-fw"></i> _(Updates)_</div>
-    <div class="compose-tab" data-tab="backup"><i class="fa fa-archive fa-fw"></i> _(Backup / Restore)_</div>
-    <div class="compose-tab" data-tab="credentials"><i class="fa fa-key fa-fw"></i> _(Credentials)_</div>
-    <div class="compose-tab" data-tab="log"><i class="fa fa-file-text-o fa-fw"></i> _(Log)_</div>
-    <div class="compose-tab" data-tab="credits"><i class="fa fa-star fa-fw"></i> _(Credits)_</div>
+    <div class="compose-tab active" data-tab="settings"><i class="fa fa-cog fa-fw"></i> _(设置)_</div>
+    <div class="compose-tab" data-tab="updates"><i class="fa fa-refresh fa-fw"></i> _(更新)_</div>
+    <div class="compose-tab" data-tab="backup"><i class="fa fa-archive fa-fw"></i> _(备份与恢复)_</div>
+    <div class="compose-tab" data-tab="credentials"><i class="fa fa-key fa-fw"></i> _(凭据)_</div>
+    <div class="compose-tab" data-tab="log"><i class="fa fa-file-text-o fa-fw"></i> _(日志)_</div>
+    <div class="compose-tab" data-tab="credits"><i class="fa fa-star fa-fw"></i> _(致谢)_</div>
 </div>
 
 <div id="compose-tab-credentials" class="compose-tab-content">
-    <div class="title"><span class="left"><i class="fa fa-key icon"></i>_(Credentials)_</span></div>
-    <p>Store pull credentials locally and assign them to individual stacks.</p>
-    <button type="button" id="add-credential-button"><i class="fa fa-plus"></i> Add credential</button>
+    <div class="title"><span class="left"><i class="fa fa-key icon"></i>_(凭据)_</span></div>
+    <p>在本地保存拉取镜像的凭据，并分配给各个栈。</p>
+    <button type="button" id="add-credential-button"><i class="fa fa-plus"></i>添加凭据</button>
     <table class="tablesorter" style="width:100%;margin-top:16px;">
-        <thead><tr><th>Name</th><th>Provider</th><th>Registry</th><th>Account</th><th>Used by</th><th>Actions</th></tr></thead>
-        <tbody id="credentials-tbody"><tr><td colspan="6" class="credential-empty">Open this tab to load credentials.</td></tr></tbody>
+        <thead><tr><th>名称</th><th>提供方</th><th>仓库</th><th>账号</th><th>使用者</th><th>操作</th></tr></thead>
+        <tbody id="credentials-tbody"><tr><td colspan="6" class="credential-empty">打开该标签页以加载凭据。</td></tr></tbody>
     </table>
 </div>
 
@@ -2637,299 +2637,227 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
         <input type="hidden" name="#file" value="<?= $sName ?>/<?= $sName ?>.cfg">
         <input type="hidden" name="#section" value="">
 
-        <blockquote class="inline_help" style="margin-bottom:20px;">
-            <strong>Settings Tab</strong> — Configure general plugin behavior including where stacks are stored, how they start at boot, and how they appear in the webUI. Most settings take effect immediately.
-        </blockquote>
+        <blockquote class="inline_help" style="margin-bottom:20px;"><strong>设置标签页</strong> — 配置插件的常规行为，包括栈的存放位置、开机启动方式以及在 WebUI 中的显示方式。大部分设置会立即生效。</blockquote>
 
-        <div class="title"><span class="left"><i class="fa fa-cog icon"></i>_(General Settings)_</span></div>
-        <p style="margin:0 0 15px 0;color:var(--dynamix-sb-title-text-color);font-size:0.95em;">Core plugin configuration and project storage location.</p>
+        <div class="title"><span class="left"><i class="fa fa-cog icon"></i>_(常规设置)_</span></div>
+        <p style="margin:0 0 15px 0;color:var(--dynamix-sb-title-text-color);font-size:0.95em;">插件核心配置与项目存储位置。</p>
 
         <dl>
-            <dt style="cursor: help;" onclick="toggleHelp(this)">_(Compose Project Directory)_:</dt>
+            <dt style="cursor: help;" onclick="toggleHelp(this)">_(Compose 项目目录)_:</dt>
             <dd>
-                <input type="text" name="PROJECTS_FOLDER" id="PROJECTS_FOLDER" autocomplete="off" spellcheck="false" value="<?= $cfg['PROJECTS_FOLDER'] ?>" placeholder="_(e.g.)_ /mnt/user/appdata/compose_projects" data-pickcloseonfile="true" data-pickfilter="img" data-pickroot="/" data-picktop="/mnt" data-pickfolders="true" required pattern="^(\/mnt\/.+\/.+|\/boot\/config\/plugins\/compose\.manager\/projects)$">
+                <input type="text" name="PROJECTS_FOLDER" id="PROJECTS_FOLDER" autocomplete="off" spellcheck="false" value="<?= $cfg['PROJECTS_FOLDER'] ?>" placeholder="_(例如)_ /mnt/user/appdata/compose_projects" data-pickcloseonfile="true" data-pickfilter="img" data-pickroot="/" data-picktop="/mnt" data-pickfolders="true" required pattern="^(\/mnt\/.+\/.+|\/boot\/config\/plugins\/compose\.manager\/projects)$">
                 <a class='info nohand' id="PROJECTS_FOLDER_WARNING" onclick="HelpButton();return false;" style="display: none;">
                     <i class='fa fa-warning orb yellow-orb'></i>
                     <span style='left:18px'><strong>Projects exist that will not be moved to the new project folder.</strong></span>
                 </a>
-                <blockquote class="inline_help">
-                    Choose the folder where compose.manager stores your stacks.<br>
-                    <strong>Warning:</strong> Changing this path will not automatically move existing project folders.
-                </blockquote>
+                <blockquote class="inline_help">选择 compose.manager 存放栈的文件夹。<br> <strong>警告：</strong>修改此路径不会自动迁移已有的项目文件夹。</blockquote>
             </dd>
         </dl>
 
-        <div class="title"><span class="left"><i class="fa fa-bolt icon"></i>_(Stack Actions & Behavior)_</span></div>
-        <p style="margin:0 0 15px 0;color:var(--dynamix-sb-title-text-color);font-size:0.95em;">Control how stack operations execute and display results.</p>
+        <div class="title"><span class="left"><i class="fa fa-bolt icon"></i>_(栈操作与行为)_</span></div>
+        <p style="margin:0 0 15px 0;color:var(--dynamix-sb-title-text-color);font-size:0.95em;">控制栈操作如何执行以及如何显示结果。</p>
 
         <div id="aggressive-mode-wrapper">
 
             <dl>
-                <dt style="cursor: help;" onclick="toggleHelp(this)">_(Disable action warnings/confirmations)_:</dt>
+                <dt style="cursor: help;" onclick="toggleHelp(this)">_(禁用操作警告与确认)_:</dt>
                 <dd>
                     <input type="checkbox" name="DISABLE_ACTION_WARNINGS" id="DISABLE_ACTION_WARNINGS" class="compose-toggle" <?= ($cfg['DISABLE_ACTION_WARNINGS'] ?? 'false') == 'true' ? 'checked' : '' ?>>
-                    <blockquote class="inline_help">
-                        When enabled, Compose actions (Up/Down/Stop/Restart/Pull/Update and all-stack actions) run immediately without confirmation dialogs.
-                        Background behavior is still controlled by the Run in Background setting.
-                    </blockquote>
+                    <blockquote class="inline_help">启用后，Compose 操作（启动/停止/重启/拉取/更新以及批量操作）将跳过确认对话框直接执行。后台运行行为仍由「默认后台运行」设置控制。</blockquote>
                 </dd>
             </dl>
 
             <dl>
-                <dt style="cursor: help;" onclick="toggleHelp(this)">_(Run in Background by Default)_:</dt>
+                <dt style="cursor: help;" onclick="toggleHelp(this)">_(默认后台运行)_:</dt>
                 <dd>
                     <input type="checkbox" name="RUN_IN_BACKGROUND_DEFAULT" id="RUN_IN_BACKGROUND_DEFAULT" class="compose-toggle" <?= ($cfg['RUN_IN_BACKGROUND_DEFAULT'] ?? 'false') == 'true' ? 'checked' : '' ?>>
-                    <blockquote class="inline_help">
-                        When enabled, the <em>Run in background</em> checkbox in action dialogs (Compose Up, Down, Update, etc.) will be checked by default.<br>
-                        Background runs skip the terminal window and send an Unraid notification on completion. The output is always saved to a per-stack log file viewable via the stack's context menu.
-                    </blockquote>
+                    <blockquote class="inline_help">启用后，操作对话框（启动、停止、更新等）中的 <em>后台运行</em> 复选框将默认勾选。<br> 后台运行会跳过终端窗口，并在完成后发送 Unraid 通知。输出始终保存到每个栈的日志文件，可通过栈的右键菜单查看。</blockquote>
                 </dd>
             </dl>
 
             <div id="aggressive-mode-warning">
-                <span style="font-size:0.95em;">⚠️ <strong>Warning:</strong> action confirmations are disabled and commands default to background mode. Operations execute immediately in background.</span>
+                <span style="font-size:0.95em;">⚠️ <strong>警告：</strong> action confirmations are disabled and commands default to background mode. Operations execute immediately in background.</span>
             </div>
 
         </div>
 
         <dl>
-            <dt style="cursor: help;" onclick="toggleHelp(this)">_(Remove Orphans by Default)_:</dt>
+            <dt style="cursor: help;" onclick="toggleHelp(this)">_(默认移除孤立容器)_:</dt>
             <dd>
                 <input type="checkbox" name="REMOVE_ORPHANS_DEFAULT" id="REMOVE_ORPHANS_DEFAULT" class="compose-toggle" <?= ($cfg['REMOVE_ORPHANS_DEFAULT'] ?? 'false') == 'true' ? 'checked' : '' ?>>
-                <blockquote class="inline_help">
-                    When enabled, the <em>Remove orphans</em> option is pre-checked in Compose Up/Down dialogs and bulk start/stop dialogs.
-                    Useful when a stack is edited while containers still exist. Adds <code>--remove-orphans</code> to the resulting docker compose command.
-                </blockquote>
+                <blockquote class="inline_help">启用后，启动/停止对话框以及批量启停对话框中的 <em>移除孤立容器</em> 选项将默认勾选。适用于栈已被编辑但容器仍然存在的情况。会在生成的 docker compose 命令中追加 <code>--remove-orphans</code>。</blockquote>
             </dd>
         </dl>
 
         <dl>
-            <dt style="cursor: help;" onclick="toggleHelp(this)">_(Wait for Healthy by Default)_:</dt>
+            <dt style="cursor: help;" onclick="toggleHelp(this)">_(默认等待健康检查)_:</dt>
             <dd>
                 <input type="checkbox" name="WAIT_FOR_HEALTHY_DEFAULT" id="WAIT_FOR_HEALTHY_DEFAULT" class="compose-toggle" <?= ($cfg['WAIT_FOR_HEALTHY_DEFAULT'] ?? 'false') == 'true' ? 'checked' : '' ?>>
-                <blockquote class="inline_help">
-                    Default behavior for stack <code>docker compose up</code> calls: when enabled, compose waits for the stack to report healthy before returning.
-                    This is a global default and can still be overridden per stack. <strong>Follow stack logs</strong> and <strong>wait for healthy</strong> are mutually exclusive in one command.
-                </blockquote>
+                <blockquote class="inline_help">栈执行 <code>docker compose up</code> 时的默认行为：启用后，compose 会等待栈报告健康状态后再返回。这是全局默认值，仍可在单个栈上覆盖。<strong>跟随栈日志</strong> 与 <strong>等待健康检查</strong> 在同一条命令中互斥。</blockquote>
             </dd>
         </dl>
 
         <dl>
-            <dt style="cursor: help;" onclick="toggleHelp(this)">_(Healthy Wait Timeout Default)_:</dt>
+            <dt style="cursor: help;" onclick="toggleHelp(this)">_(默认健康等待超时)_:</dt>
             <dd>
-                <input type="number" name="WAIT_FOR_HEALTHY_TIMEOUT_DEFAULT" min="10" max="1800" step="10" value="<?= $cfg['WAIT_FOR_HEALTHY_TIMEOUT_DEFAULT'] ?? '300' ?>" style="width:90px;"> _(seconds)_
-                <blockquote class="inline_help">
-                    Timeout used with the default wait-for-healthy behavior. Each stack can override this value if needed.
-                </blockquote>
+                <input type="number" name="WAIT_FOR_HEALTHY_TIMEOUT_DEFAULT" min="10" max="1800" step="10" value="<?= $cfg['WAIT_FOR_HEALTHY_TIMEOUT_DEFAULT'] ?? '300' ?>" style="width:90px;"> _(秒)_
+                <blockquote class="inline_help">默认的等待健康检查行为所使用的超时时间。每个栈可按需覆盖此值。</blockquote>
             </dd>
         </dl>
 
         <dl>
-            <dt style="cursor: help;" onclick="toggleHelp(this)">_(Rebuild Images on Update by Default)_:</dt>
+            <dt style="cursor: help;" onclick="toggleHelp(this)">_(更新时默认重建镜像)_:</dt>
             <dd>
                 <input type="checkbox" name="BUILD_ON_UPDATE_DEFAULT" id="BUILD_ON_UPDATE_DEFAULT" class="compose-toggle" <?= ($cfg['BUILD_ON_UPDATE_DEFAULT'] ?? 'false') == 'true' ? 'checked' : '' ?>>
-                <blockquote class="inline_help">
-                    Default behavior for stack <em>Update</em> actions: when enabled, <code>--build</code> is added so services with a <code>build:</code> section are rebuilt from source.
-                    Leave disabled for stacks that publish an image alongside a <code>build:</code> section &mdash; those should be pulled, not rebuilt.
-                    This is a global default and can still be overridden per stack.
-                </blockquote>
+                <blockquote class="inline_help">栈执行 <em>更新</em> 操作时的默认行为：启用后会追加 <code>--build</code>，使带有 <code>build:</code> 段的服务从源码重新构建。对于同时发布镜像和 <code>build:</code> 段的栈请保持关闭 —— 这类栈应当拉取镜像而不是重建。这是全局默认值，仍可在单个栈上覆盖。</blockquote>
             </dd>
         </dl>
 
         <dl>
-            <dt style="cursor: help;" onclick="toggleHelp(this)">_(Create Missing External Networks)_:</dt>
+            <dt style="cursor: help;" onclick="toggleHelp(this)">_(创建缺失的外部网络)_:</dt>
             <dd>
                 <input type="checkbox" name="CREATE_MISSING_EXTERNAL_NETWORKS" id="CREATE_MISSING_EXTERNAL_NETWORKS" class="compose-toggle" <?= ($cfg['CREATE_MISSING_EXTERNAL_NETWORKS'] ?? 'false') == 'true' ? 'checked' : '' ?>>
-                <blockquote class="inline_help">
-                    Docker Compose never creates networks marked <code>external: true</code>, so a stack using one fails to start until the network exists.
-                    When enabled, any missing external network is created as a plain bridge network right before a stack starts (Compose Up, Update and autostart).
-                    Networks that need another driver or options (for example macvlan) must still be created by hand.
-                </blockquote>
+                <blockquote class="inline_help">Docker Compose 不会自动创建标记为 <code>external: true</code> 的网络，因此使用该网络的栈在网络存在之前无法启动。启用后，在栈启动前（启动、更新和自动启动）会自动把缺失的外部网络创建为普通 bridge 网络。需要其他驱动或参数的网络（例如 macvlan）仍需手动创建。</blockquote>
             </dd>
         </dl>
 
-        <div class="title"><span class="left"><i class="fa fa-plus-square icon"></i>_(New Stack Configuration)_</span></div>
-        <p style="margin:0 0 15px 0;color:var(--dynamix-sb-title-text-color);font-size:0.95em;">Default settings applied automatically when creating new compose stacks.</p>
+        <div class="title"><span class="left"><i class="fa fa-plus-square icon"></i>_(新建栈配置)_</span></div>
+        <p style="margin:0 0 15px 0;color:var(--dynamix-sb-title-text-color);font-size:0.95em;">创建新 compose 栈时自动应用的默认设置。</p>
 
         <dl>
-            <dt style="cursor: help;" onclick="toggleHelp(this)">_(Compose File Discovery)_:</dt>
+            <dt style="cursor: help;" onclick="toggleHelp(this)">_(Compose 文件发现)_:</dt>
             <dd>
                 <input type="checkbox" name="NEW_STACK_USE_DEFAULT_COMPOSE_FILES" id="NEW_STACK_USE_DEFAULT_COMPOSE_FILES" class="compose-toggle custom-toggle" data-on-label="Auto" data-off-label="Manual" <?= ($cfg['NEW_STACK_USE_DEFAULT_COMPOSE_FILES'] ?? 'false') == 'true' ? 'checked' : '' ?>>
-                <blockquote class="inline_help">
-                    <strong>Auto:</strong> Use Docker Compose default file discovery (no explicit <code>-f</code> flags). Useful for projects that rely on auto-loaded <code>compose.override.*</code> and/or <code>COMPOSE_FILE</code> from <code>.env</code>.<br>
-                    <strong>Manual:</strong> Explicitly specify which compose files to use.
-                </blockquote>
+                <blockquote class="inline_help"><strong>自动：</strong>使用 Docker Compose 默认的文件发现机制（不显式传入 <code>-f</code> 参数）。适用于依赖自动加载 <code>compose.override.*</code> 和/或 <code>.env</code> 中 <code>COMPOSE_FILE</code> 的项目。<br> <strong>手动：</strong>显式指定要使用的 compose 文件。</blockquote>
             </dd>
         </dl>
 
         <dl>
-            <dt style="cursor: help;" onclick="toggleHelp(this)">_(Override File Management)_:</dt>
+            <dt style="cursor: help;" onclick="toggleHelp(this)">_(覆盖文件管理)_:</dt>
             <dd>
                 <input type="checkbox" name="NEW_STACK_OVERRIDE_MANAGEMENT_AUTOMATIC" id="NEW_STACK_OVERRIDE_MANAGEMENT_AUTOMATIC" class="compose-toggle custom-toggle" data-on-label="Auto" data-off-label="Manual" <?= ($cfg['NEW_STACK_OVERRIDE_MANAGEMENT_AUTOMATIC'] ?? 'true') == 'true' ? 'checked' : '' ?>>
-                <blockquote class="inline_help">
-                    <strong>Auto:</strong> Plugin automatically manages the project override file for automated edits.<br>
-                    <strong>Manual:</strong> Blocks automated edits and uses raw override editing mode.
-                </blockquote>
+                <blockquote class="inline_help"><strong>自动：</strong>插件自动管理项目覆盖文件，以便进行自动化修改。<br> <strong>手动：</strong>阻止自动化修改，使用原始覆盖文件编辑模式。</blockquote>
             </dd>
         </dl>
 
-        <div class="title"><span class="left"><i class="fa fa-power-off icon"></i>_(Boot Autostart)_</span></div>
-        <p style="margin:0 0 15px 0;color:var(--dynamix-sb-title-text-color);font-size:0.95em;">Control how Compose stacks automatically start when Unraid boots up.</p>
+        <div class="title"><span class="left"><i class="fa fa-power-off icon"></i>_(开机自启)_</span></div>
+        <p style="margin:0 0 15px 0;color:var(--dynamix-sb-title-text-color);font-size:0.95em;">控制 Unraid 开机时 Compose 栈的自动启动方式。</p>
 
         <dl>
-            <dt style="cursor: help;" onclick="toggleHelp(this)">_(Recreate During Autostart)_:</dt>
+            <dt style="cursor: help;" onclick="toggleHelp(this)">_(自动启动时重建)_:</dt>
             <dd>
                 <input type="checkbox" name="AUTOSTART_FORCE_RECREATE" class="compose-toggle" <?= $cfg['AUTOSTART_FORCE_RECREATE'] == 'true' ? 'checked' : '' ?>>
-                <blockquote class="inline_help">
-                    Use <code>--force-recreate</code> when autostarting stacks.<br>
-                    Helps when containers fail to start because their attached network no longer exists.
-                </blockquote>
+                <blockquote class="inline_help">自动启动栈时使用 <code>--force-recreate</code>。<br> 当容器因所连接的网络已不存在而启动失败时，这可以解决问题。</blockquote>
             </dd>
         </dl>
 
         <dl>
-            <dt style="cursor: help;" onclick="toggleHelp(this)">_(Wait for Docker Autostart)_:</dt>
+            <dt style="cursor: help;" onclick="toggleHelp(this)">_(等待 Docker 自动启动)_:</dt>
             <dd>
                 <input type="checkbox" name="AUTOSTART_WAIT_FOR_DOCKER" class="compose-toggle" <?= ($cfg['AUTOSTART_WAIT_FOR_DOCKER'] ?? 'false') == 'true' ? 'checked' : '' ?>>
-                <blockquote class="inline_help">
-                    Wait for Docker's autostart containers to finish starting before starting compose stacks.<br>
-                    Useful if your compose stacks depend on services from non-compose Docker containers.<br>
-                    When disabled, compose stacks start in parallel with Docker autostart containers.
-                </blockquote>
+                <blockquote class="inline_help">启动 compose 栈之前，先等待 Docker 的自动启动容器完成启动。<br> 当你的 compose 栈依赖非 compose Docker 容器提供的服务时很有用。<br> 关闭时，compose 栈与 Docker 自动启动容器并行启动。</blockquote>
             </dd>
         </dl>
 
         <dl>
-            <dt style="cursor: help;" onclick="toggleHelp(this)">_(Docker Autostart Wait Timeout)_:</dt>
+            <dt style="cursor: help;" onclick="toggleHelp(this)">_(Docker 自动启动等待超时)_:</dt>
             <dd>
-                <input type="number" name="AUTOSTART_DOCKER_WAIT_TIMEOUT" min="30" max="600" step="10" value="<?= $cfg['AUTOSTART_DOCKER_WAIT_TIMEOUT'] ?? '120' ?>" style="width:80px;"> _(seconds)_
-                <blockquote class="inline_help">
-                    Maximum time to wait for Docker autostart containers to stabilize.<br>
-                    Only applies when "Wait for Docker Autostart" is enabled.
-                </blockquote>
+                <input type="number" name="AUTOSTART_DOCKER_WAIT_TIMEOUT" min="30" max="600" step="10" value="<?= $cfg['AUTOSTART_DOCKER_WAIT_TIMEOUT'] ?? '120' ?>" style="width:80px;"> _(秒)_
+                <blockquote class="inline_help">等待 Docker 自动启动容器稳定下来的最长时间。<br> 仅在启用「等待 Docker 自动启动」时生效。</blockquote>
             </dd>
         </dl>
 
         <dl>
-            <dt style="cursor: help;" onclick="toggleHelp(this)">_(Stack Startup Timeout)_:</dt>
+            <dt style="cursor: help;" onclick="toggleHelp(this)">_(栈启动超时)_:</dt>
             <dd>
-                <input type="number" name="AUTOSTART_TIMEOUT" min="60" max="900" step="30" value="<?= $cfg['AUTOSTART_TIMEOUT'] ?? '300' ?>" style="width:80px;"> _(seconds)_
-                <blockquote class="inline_help">
-                    Maximum time to wait for each stack to start during autostart.<br>
-                    If a stack takes longer, it will be logged as a timeout and the next stack will start.
-                </blockquote>
+                <input type="number" name="AUTOSTART_TIMEOUT" min="60" max="900" step="30" value="<?= $cfg['AUTOSTART_TIMEOUT'] ?? '300' ?>" style="width:80px;"> _(秒)_
+                <blockquote class="inline_help">自动启动时等待每个栈启动的最长时间。<br> 若某个栈超时，会记录为超时并继续启动下一个栈。</blockquote>
             </dd>
         </dl>
 
-        <div class="title"><span class="left"><i class="fa fa-desktop icon"></i>_(WebUI Display)_</span></div>
-        <p style="margin:0 0 15px 0;color:var(--dynamix-sb-title-text-color);font-size:0.95em;">Configure where and how Compose stacks appear throughout the Unraid webUI.</p>
+        <div class="title"><span class="left"><i class="fa fa-desktop icon"></i>_(WebUI 显示)_</span></div>
+        <p style="margin:0 0 15px 0;color:var(--dynamix-sb-title-text-color);font-size:0.95em;">配置 Compose 栈在 Unraid WebUI 中的显示位置与方式。</p>
 
         <dl>
-            <dt style="cursor: help;" onclick="toggleHelp(this)">_(Show Compose in Header Menu)_:</dt>
+            <dt style="cursor: help;" onclick="toggleHelp(this)">_(在顶部菜单显示 Compose)_:</dt>
             <dd>
                 <input type="checkbox" name="SHOW_COMPOSE_IN_HEADER_MENU" id="SHOW_COMPOSE_IN_HEADER_MENU" class="compose-toggle" <?= $cfg['SHOW_COMPOSE_IN_HEADER_MENU'] == 'true' ? 'checked' : '' ?>>
-                <blockquote class="inline_help">
-                    Add a Compose tab to the main Unraid header navigation bar for quick access.<br>
-                    <strong>When disabled:</strong> Compose stacks appear on the Docker page (see options below).
-                </blockquote>
+                <blockquote class="inline_help">在 Unraid 顶部导航栏添加 Compose 标签页，便于快速访问。<br> <strong>关闭时：</strong>Compose 栈会显示在 Docker 页面上（见下方选项）。</blockquote>
             </dd>
         </dl>
 
         <dl style="opacity:0.7;pointer-events:none;" id="docker-page-integration-wrapper">
-            <dt style="cursor: help;" onclick="toggleHelp(this)">_(Show Compose Stacks Above Docker Containers)_:</dt>
+            <dt style="cursor: help;" onclick="toggleHelp(this)">_(在 Docker 容器上方显示 Compose 栈)_:</dt>
             <dd>
                 <input type="checkbox" name="SHOW_COMPOSE_ON_TOP" id="SHOW_COMPOSE_ON_TOP" class="compose-toggle" <?= ($cfg['SHOW_COMPOSE_ON_TOP'] ?? 'false') == 'true' ? 'checked' : '' ?>>
-                <blockquote class="inline_help">
-                    When the Docker page is displayed without tabs, move the Compose Stacks section above the built-in Docker Containers section.<br>
-                    <em>Only available when "Show Compose in Header Menu" is disabled (inline mode).</em>
-                </blockquote>
+                <blockquote class="inline_help">当 Docker 页面以无标签页方式显示时，将 Compose 栈区域移动到内置 Docker 容器区域上方。<br> <em>仅在「在顶部菜单显示 Compose」关闭时（内联模式）可用。</em></blockquote>
             </dd>
         </dl>
 
         <dl style="opacity:0.7;pointer-events:none;" id="docker-page-hide-wrapper">
-            <dt style="cursor: help;" onclick="toggleHelp(this)">_(Hide Compose Containers from Docker Page)_:</dt>
+            <dt style="cursor: help;" onclick="toggleHelp(this)">_(在 Docker 页面隐藏 Compose 容器)_:</dt>
             <dd>
                 <input type="checkbox" name="HIDE_COMPOSE_FROM_DOCKER" id="HIDE_COMPOSE_FROM_DOCKER" class="compose-toggle" <?= ($cfg['HIDE_COMPOSE_FROM_DOCKER'] ?? 'false') == 'true' ? 'checked' : '' ?>>
-                <blockquote class="inline_help">
-                    When enabled, containers managed by Compose stacks will be hidden from the Docker Containers table on the Docker page.<br>
-                    This avoids duplicate display when Compose stacks are shown on the same page (inline mode).<br>
-                    <em>Only available when "Show Compose in Header Menu" is disabled (inline mode).</em>
-                </blockquote>
+                <blockquote class="inline_help">启用后，由 Compose 栈管理的容器将在 Docker 页面的容器表格中隐藏。<br> 当 Compose 栈显示在同一页面时（内联模式），可避免重复显示。<br> <em>仅在「在顶部菜单显示 Compose」关闭时（内联模式）可用。</em></blockquote>
             </dd>
         </dl>
 
         <dl>
-            <dt style="cursor: help;" onclick="toggleHelp(this)">_(Show Dashboard Tile)_:</dt>
+            <dt style="cursor: help;" onclick="toggleHelp(this)">_(显示仪表盘磁贴)_:</dt>
             <dd>
                 <input type="checkbox" id="SHOW_DASHBOARD_TILE" name="SHOW_DASHBOARD_TILE" class="compose-toggle" <?= ($cfg['SHOW_DASHBOARD_TILE'] ?? 'true') == 'true' ? 'checked' : '' ?>>
-                <blockquote class="inline_help">
-                    Display a Compose Stacks tile on the Dashboard showing stack status at a glance.
-                </blockquote>
+                <blockquote class="inline_help">在仪表盘上显示 Compose 栈磁贴，一眼即可看到栈状态。</blockquote>
             </dd>
         </dl>
 
         <dl style="opacity:0.7;pointer-events:none;" id="dashboard-hide-wrapper">
-            <dt style="cursor: help;" onclick="toggleHelp(this)">_(Hide Compose Containers from Docker Dashboard Tile)_:</dt>
+            <dt style="cursor: help;" onclick="toggleHelp(this)">_(在 Docker 仪表盘磁贴隐藏 Compose 容器)_:</dt>
             <dd>
                 <input type="checkbox" name="HIDE_DOCKER_COMPOSE_CONTAINERS" id="HIDE_DOCKER_COMPOSE_CONTAINERS" class="compose-toggle" <?= ($cfg['HIDE_DOCKER_COMPOSE_CONTAINERS'] ?? 'false') == 'true' ? 'checked' : '' ?>>
-                <blockquote class="inline_help">
-                    Hide containers managed by Compose stacks from Unraid's Docker Containers dashboard tile.<br>
-                    This avoids duplicate entries when both the Compose Stacks tile and Docker Containers tile are visible on the Dashboard.<br>
-                    <em>Only available when "Show Dashboard Tile" is enabled.</em>
-                </blockquote>
+                <blockquote class="inline_help">在 Unraid 的 Docker 容器仪表盘磁贴中隐藏由 Compose 栈管理的容器。<br> 当 Compose 栈磁贴与 Docker 容器磁贴同时显示在仪表盘时，可避免重复条目。<br> <em>仅在启用「显示仪表盘磁贴」时可用。</em></blockquote>
             </dd>
         </dl>
 
-        <div class="title"><span class="left"><i class="fa fa-eye icon"></i>_(Compose Page Display)_</span></div>
-        <p style="margin:0 0 15px 0;color:var(--dynamix-sb-title-text-color);font-size:0.95em;">Customize how stack details are displayed on the Compose page.</p>
+        <div class="title"><span class="left"><i class="fa fa-eye icon"></i>_(Compose 页面显示)_</span></div>
+        <p style="margin:0 0 15px 0;color:var(--dynamix-sb-title-text-color);font-size:0.95em;">自定义 Compose 页面中栈详情的显示方式。</p>
 
         <dl>
-            <dt style="cursor: help;" onclick="toggleHelp(this)">_(Expand Stacks by Default)_:</dt>
+            <dt style="cursor: help;" onclick="toggleHelp(this)">_(默认展开栈)_:</dt>
             <dd>
                 <input type="checkbox" name="STACKS_DEFAULT_EXPANDED" id="STACKS_DEFAULT_EXPANDED" class="compose-toggle" <?= ($cfg['STACKS_DEFAULT_EXPANDED'] ?? 'false') == 'true' ? 'checked' : '' ?>>
-                <blockquote class="inline_help">
-                    When enabled, all stack detail rows will be expanded when the page loads.
-                </blockquote>
+                <blockquote class="inline_help">启用后，页面加载时所有栈的详情行都会展开。</blockquote>
             </dd>
         </dl>
 
         <dl>
-            <dt style="cursor: help;" onclick="toggleHelp(this)">_(Only Expand Running Stacks)_:</dt>
+            <dt style="cursor: help;" onclick="toggleHelp(this)">_(仅展开运行中的栈)_:</dt>
             <dd>
                 <input type="checkbox" id="ONLY_EXPAND_RUNNING_STACKS" name="ONLY_EXPAND_RUNNING_STACKS" class="compose-toggle" <?= ($cfg['ONLY_EXPAND_RUNNING_STACKS'] ?? 'false') == 'true' ? 'checked' : '' ?>>
-                <blockquote class="inline_help">
-                    When enabled, only running stacks will be expanded by default. Stopped/paused stacks remain collapsed.<br>
-                    <em>Only applies when "Expand Stacks by Default" is enabled.</em>
-                </blockquote>
+                <blockquote class="inline_help">启用后，默认只展开运行中的栈，已停止或已暂停的栈保持折叠。<br> <em>仅在启用「默认展开栈」时生效。</em></blockquote>
             </dd>
         </dl>
 
-        <div class="title"><span class="left"><i class="fa fa-sliders icon"></i>_(Advanced Options)_</span></div>
-        <p style="margin:0 0 15px 0;color:var(--dynamix-sb-title-text-color);font-size:0.95em;">Performance tuning and troubleshooting options for advanced users.</p>
+        <div class="title"><span class="left"><i class="fa fa-sliders icon"></i>_(高级选项)_</span></div>
+        <p style="margin:0 0 15px 0;color:var(--dynamix-sb-title-text-color);font-size:0.95em;">面向高级用户的性能调优与故障排查选项。</p>
 
         <dl>
-            <dt style="cursor: help;" onclick="toggleHelp(this)">_(Don't close editor modal on outside click)_:</dt>
+            <dt style="cursor: help;" onclick="toggleHelp(this)">_(点击外部不关闭编辑器)_:</dt>
             <dd>
                 <input type="checkbox" name="DONT_CLOSE_EDITOR_MODAL_ON_OUTSIDE_CLICK" id="DONT_CLOSE_EDITOR_MODAL_ON_OUTSIDE_CLICK" class="compose-toggle" <?= ($cfg['DONT_CLOSE_EDITOR_MODAL_ON_OUTSIDE_CLICK'] ?? 'false') == 'true' ? 'checked' : '' ?>>
-                <blockquote class="inline_help">
-                    When enabled, the Compose editor stays open when you click or drag on the backdrop outside the modal. This keeps editing from being interrupted while selecting or moving large blocks of text.
-                </blockquote>
+                <blockquote class="inline_help">启用后，在弹窗外的遮罩上点击或拖动时编辑器不会关闭，避免在选中或移动大段文本时被中断。</blockquote>
             </dd>
         </dl>
 
         <dl>
-            <dt style="cursor: help;" onclick="toggleHelp(this)">_(Debug Logging)_:</dt>
+            <dt style="cursor: help;" onclick="toggleHelp(this)">_(调试日志)_:</dt>
             <dd>
                 <input type="checkbox" name="DEBUG_TO_LOG" id="DEBUG_TO_LOG" class="compose-toggle" <?= $cfg['DEBUG_TO_LOG'] == 'true' ? 'checked' : '' ?>>
-                <blockquote class="inline_help">
-                    Log detailed compose command information to syslog. View logs in the Log tab.<br>
-                    Useful for troubleshooting and understanding what commands are being executed.
-                </blockquote>
+                <blockquote class="inline_help">将详细的 compose 命令信息记录到系统日志。可在「日志」标签页查看。<br> 便于排查问题并了解实际执行的命令。</blockquote>
             </dd>
         </dl>
 
         <dl>
-            <dt style="cursor: help;" onclick="toggleHelp(this)">_(Live Stats Update Rate)_:</dt>
+            <dt style="cursor: help;" onclick="toggleHelp(this)">_(实时统计刷新频率)_:</dt>
             <dd>
                 <label>
                     <select name="COMPOSE_STATS_RATE_MODE" id="COMPOSE_STATS_RATE_MODE" style="min-width:180px;">
@@ -2937,28 +2865,21 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
                         <option value="live" <?= $statsRateMode === 'live' ? 'selected' : '' ?>>_(Live (max updates))_</option>
                         <option value="medium" <?= $statsRateMode === 'medium' ? 'selected' : '' ?>>_(Medium (~2s))_</option>
                         <option value="slow" <?= $statsRateMode === 'slow' ? 'selected' : '' ?>>_(Slow (~5s))_</option>
-                        <option value="custom" <?= $statsRateMode === 'custom' ? 'selected' : '' ?>>_(Custom)_</option>
+                        <option value="custom" <?= $statsRateMode === 'custom' ? 'selected' : '' ?>>_(自定义)_</option>
                     </select>
                 </label>
                 <label style="margin-left:12px;">
-                    _(Custom interval)_:
-                    <input type="number" name="COMPOSE_STATS_CUSTOM_INTERVAL_MS" id="COMPOSE_STATS_CUSTOM_INTERVAL_MS" min="100" max="10000" step="50" value="<?= intval($cfg['COMPOSE_STATS_CUSTOM_INTERVAL_MS'] ?? '1000') ?>" style="width:90px;"> _(ms)_
+                    _(自定义间隔)_:
+                    <input type="number" name="COMPOSE_STATS_CUSTOM_INTERVAL_MS" id="COMPOSE_STATS_CUSTOM_INTERVAL_MS" min="100" max="10000" step="50" value="<?= intval($cfg['COMPOSE_STATS_CUSTOM_INTERVAL_MS'] ?? '1000') ?>" style="width:90px;"> _(毫秒)_
                 </label>
-                <blockquote class="inline_help">
-                    Controls how often Compose live metrics (CPU, memory, etc.) are updated on the UI.<br>
-                    Metrics are only collected for compose-managed containers, and only one update is
-                    published per interval regardless of container count.<br>
-                    <strong>Live:</strong> ~250ms updates (most responsive, still rate-limited).<br>
-                    <strong>Medium/Slow:</strong> Batches updates (~2s or ~5s intervals, lower CPU).<br>
-                    <strong>Custom:</strong> Use the interval in milliseconds.
-                </blockquote>
+                <blockquote class="inline_help">控制 UI 上 Compose 实时指标（CPU、内存等）的刷新频率。<br> 指标仅针对由 compose 管理的容器采集，且无论容器数量多少，每个间隔只发布一次更新。<br> <strong>实时：</strong>约 250 毫秒更新一次（最灵敏，仍有限流）。<br> <strong>中/慢：</strong>批量更新（约 2 秒或 5 秒间隔，CPU 占用更低）。<br> <strong>自定义：</strong>按毫秒填写刷新间隔。</blockquote>
             </dd>
         </dl>
 
         <dl class="settings-actions settings-actions-hidden">
             <dd>
-                <input type="submit" id="settings-submit-default" name="#default" value="_(Default)_">
-                <input type="submit" id="settings-submit-apply" name="#apply" value="_(Apply)_">
+                <input type="submit" id="settings-submit-default" name="#default" value="_(默认)_">
+                <input type="submit" id="settings-submit-apply" name="#apply" value="_(应用)_">
             </dd>
         </dl>
     </form>
@@ -2966,56 +2887,46 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
 
 <!-- Updates Tab -->
 <div id="compose-tab-updates" class="compose-tab-content">
-    <blockquote class="inline_help" style="margin-bottom:20px;">
-        <strong>Updates Tab</strong> — Manage automatic stack updates and container image checking. Define global auto-update schedules and per-stack update policies. Changes save independently from Settings.
-    </blockquote>
+    <blockquote class="inline_help" style="margin-bottom:20px;"><strong>更新标签页</strong> — 管理栈的自动更新与容器镜像检查。可设置全局自动更新计划和各栈的更新策略。此处的更改独立于「设置」保存。</blockquote>
 
     <!-- Auto-Update Settings Section -->
     <div class="backup-section">
-        <div class="title"><span class="left"><i class="fa fa-clock-o icon"></i>_(Global Auto-Update Settings)_</span></div>
-        <p style="margin:0 0 15px 0;color:var(--dynamix-sb-title-text-color);font-size:0.95em;">Enable scheduled updates and set default schedules for all stacks.</p>
+        <div class="title"><span class="left"><i class="fa fa-clock-o icon"></i>_(全局自动更新设置)_</span></div>
+        <p style="margin:0 0 15px 0;color:var(--dynamix-sb-title-text-color);font-size:0.95em;">启用计划更新并为所有栈设置默认计划。</p>
 
         <dl>
-            <dt style="cursor: help;" onclick="toggleHelp(this)">_(Enable Auto-Updates)_:</dt>
+            <dt style="cursor: help;" onclick="toggleHelp(this)">_(启用自动更新)_:</dt>
             <dd>
                 <input type="checkbox" id="AUTOUPDATE_ENABLED" class="compose-toggle">
-                <blockquote class="inline_help">
-                    Enable the auto-update scheduler. When enabled, stacks with auto-update turned on<br>
-                    will be checked every 15 minutes and updated according to their individual schedules.
-                </blockquote>
+                <blockquote class="inline_help">启用自动更新调度器。启用后，开启了自动更新的栈<br> 将每 15 分钟检查一次，并按各自的计划执行更新。</blockquote>
             </dd>
         </dl>
 
         <dl>
-            <dt style="cursor: help;" onclick="toggleHelp(this)">_(Default Schedule)_:</dt>
+            <dt style="cursor: help;" onclick="toggleHelp(this)">_(默认计划)_:</dt>
             <dd>
                 <div class="schedule-options">
-                    <label>_(Frequency)_:
+                    <label>_(频率)_:
                         <select id="default-schedule">
-                            <option value="daily">_(Daily)_</option>
-                            <option value="weekly">_(Weekly)_</option>
-                            <option value="monthly">_(Monthly)_</option>
+                            <option value="daily">_(每天)_</option>
+                            <option value="weekly">_(每周)_</option>
+                            <option value="monthly">_(每月)_</option>
                         </select>
                     </label>
-                    <label>_(Time)_:
+                    <label>_(时间)_:
                         <input type="time" id="default-time" value="02:00">
                     </label>
-                    <input type="button" id="apply-default" class="slim-button" value="_(Apply to All Stacks)_">
+                    <input type="button" id="apply-default" class="slim-button" value="_(应用到所有栈)_">
                 </div>
-                <blockquote class="inline_help">
-                    Set the default schedule for new stacks. Use "Apply to All Stacks" to apply this<br>
-                    schedule to all existing stacks in the table below.
-                </blockquote>
+                <blockquote class="inline_help">为新建栈设置默认计划。使用「应用到所有栈」可将该<br> 计划应用到下方表格中的所有现有栈。</blockquote>
             </dd>
         </dl>
 
         <dl>
-            <dt style="cursor: help;" onclick="toggleHelp(this)">_(Image Pull Concurrency)_:</dt>
+            <dt style="cursor: help;" onclick="toggleHelp(this)">_(镜像拉取并发数)_:</dt>
             <dd>
-                <input type="number" id="default-parallel-limit" min="1" max="16" step="1" value="4" style="width:80px;"> _(pulls)_
-                <blockquote class="inline_help">
-                    Limit concurrent image pulls during auto-updates. Lower values reduce registry throttling; the default is 4.
-                </blockquote>
+                <input type="number" id="default-parallel-limit" min="1" max="16" step="1" value="4" style="width:80px;"> _(次拉取)_
+                <blockquote class="inline_help">限制自动更新时同时拉取的镜像数量。数值越小越不易触发仓库限流；默认值为 4。</blockquote>
             </dd>
         </dl>
 
@@ -3023,8 +2934,8 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
             <dt>&nbsp;</dt>
             <dd>
                 <div class="backup-actions">
-                    <input type="button" id="save-updates" value="_(Save Settings)_" class="orange-button settings-actions-hidden">
-                    <input type="button" id="run-now" value="_(Update Now)_" title="_(Run auto-update now for all enabled stacks)_">
+                    <input type="button" id="save-updates" value="_(保存设置)_" class="orange-button settings-actions-hidden">
+                    <input type="button" id="run-now" value="_(立即更新)_" title="_(立即对所有已启用的栈执行自动更新)_">
                     <i class="fa fa-spinner fa-spin spinner" id="updates-spinner"></i>
                 </div>
                 <div id="updates-status" class="backup-status"></div>
@@ -3034,83 +2945,74 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
 
     <!-- Check for Updates Section -->
     <div class="backup-section">
-        <div class="title"><span class="left"><i class="fa fa-search icon"></i>_(Check for Image Updates)_</span></div>
-        <p style="margin:0 0 15px 0;color:var(--dynamix-sb-title-text-color);font-size:0.95em;">Configure how often to scan for available container image updates.</p>
+        <div class="title"><span class="left"><i class="fa fa-search icon"></i>_(检查镜像更新)_</span></div>
+        <p style="margin:0 0 15px 0;color:var(--dynamix-sb-title-text-color);font-size:0.95em;">配置检查容器镜像更新的频率。</p>
 
         <dl>
-            <dt style="cursor: help;" onclick="toggleHelp(this)">_(Auto Check for Updates)_:</dt>
+            <dt style="cursor: help;" onclick="toggleHelp(this)">_(自动检查更新)_:</dt>
             <dd>
                 <input type="checkbox" name="AUTO_CHECK_UPDATES" id="AUTO_CHECK_UPDATES" class="compose-toggle" <?= $cfg['AUTO_CHECK_UPDATES'] == 'true' ? 'checked' : '' ?>>
-                <blockquote class="inline_help">
-                    Automatically check for container image updates when the Compose page loads.
-                </blockquote>
+                <blockquote class="inline_help">在打开 Compose 页面时自动检查容器镜像更新。</blockquote>
             </dd>
         </dl>
 
         <dl>
-            <dt style="cursor: help;" onclick="toggleHelp(this)">_(Check Interval)_:</dt>
+            <dt style="cursor: help;" onclick="toggleHelp(this)">_(检查间隔)_:</dt>
             <dd>
                 <select id="AUTO_CHECK_UPDATES_MODE" style="width:180px;" <?= $cfg['AUTO_CHECK_UPDATES'] != 'true' ? 'disabled' : '' ?>>
-                    <option value="every_time">_(Every Time)_</option>
-                    <option value="hourly">_(Hourly)_</option>
-                    <option value="daily">_(Daily)_</option>
-                    <option value="weekly">_(Weekly)_</option>
-                    <option value="monthly">_(Monthly)_</option>
-                    <option value="custom">_(Custom)_</option>
+                    <option value="every_time">_(每次)_</option>
+                    <option value="hourly">_(每小时)_</option>
+                    <option value="daily">_(每天)_</option>
+                    <option value="weekly">_(每周)_</option>
+                    <option value="monthly">_(每月)_</option>
+                    <option value="custom">_(自定义)_</option>
                 </select>
                 <span id="AUTO_CHECK_UPDATES_CUSTOM_WRAPPER" style="margin-left:8px;display:none;">
-                    <input type="number" id="AUTO_CHECK_UPDATES_DAYS_CUSTOM" min="0" max="30" step="0.01" value="<?= $cfg['AUTO_CHECK_UPDATES_DAYS'] ?? '1' ?>" style="width:80px;" <?= $cfg['AUTO_CHECK_UPDATES'] != 'true' ? 'disabled' : '' ?>> _(days)_
+                    <input type="number" id="AUTO_CHECK_UPDATES_DAYS_CUSTOM" min="0" max="30" step="0.01" value="<?= $cfg['AUTO_CHECK_UPDATES_DAYS'] ?? '1' ?>" style="width:80px;" <?= $cfg['AUTO_CHECK_UPDATES'] != 'true' ? 'disabled' : '' ?>> _(天)_
                 </span>
                 <input type="hidden" name="AUTO_CHECK_UPDATES_DAYS" id="AUTO_CHECK_UPDATES_DAYS" value="<?= $cfg['AUTO_CHECK_UPDATES_DAYS'] ?? '1' ?>">
-                <blockquote class="inline_help">
-                    How often to check for updates. Only used if "Auto Check for Updates" is enabled.<br>
-                    Use presets for common intervals, or choose Custom to enter days manually.
-                </blockquote>
+                <blockquote class="inline_help">检查更新的频率。仅在启用「自动检查更新」时生效。<br> 可使用预设的常用间隔，或选择「自定义」手动填写天数。</blockquote>
             </dd>
         </dl>
 
         <dl>
-            <dt style="cursor: help;" onclick="toggleHelp(this)">_(Clear Icon Cache)_:</dt>
+            <dt style="cursor: help;" onclick="toggleHelp(this)">_(清除图标缓存)_:</dt>
             <dd>
-                <input type="button" value="_(Clear Cache)_" onclick="clearAllIconCache()" class="orange-button">
-                <blockquote class="inline_help">
-                    Delete all locally cached icon files. Icons are re-downloaded and re-converted on next page load.
-                </blockquote>
+                <input type="button" value="_(清除缓存)_" onclick="clearAllIconCache()" class="orange-button">
+                <blockquote class="inline_help">删除本地缓存的全部图标文件。下次加载页面时会重新下载并转换图标。</blockquote>
             </dd>
         </dl>
 
         <dl>
-            <dt style="cursor: help;" onclick="toggleHelp(this)">_(Clear Update Cache)_:</dt>
+            <dt style="cursor: help;" onclick="toggleHelp(this)">_(清除更新缓存)_:</dt>
             <dd>
-                <input type="button" value="_(Clear Cache)_" onclick="clearUpdateCache()" class="orange-button">
-                <blockquote class="inline_help">
-                    Clear cached update status. Use if update checks show incorrect results.
-                </blockquote>
+                <input type="button" value="_(清除缓存)_" onclick="clearUpdateCache()" class="orange-button">
+                <blockquote class="inline_help">清除缓存的更新状态。当更新检查结果显示不正确时可使用。</blockquote>
             </dd>
         </dl>
     </div>
 
     <!-- Per-Stack Configuration Section -->
     <div class="backup-section">
-        <div class="title"><span class="left"><i class="fa fa-cubes icon"></i>_(Per-Stack Auto-Update Settings)_</span></div>
+        <div class="title"><span class="left"><i class="fa fa-cubes icon"></i>_(各栈自动更新设置)_</span></div>
         <p style="margin:0 0 15px 0;color:var(--dynamix-sb-title-text-color);font-size:0.95em;">Enable or disable auto-updates for individual stacks and set their specific schedules.</p>
 
         <dl>
-            <dt>_(Stacks)_:</dt>
+            <dt>_(栈)_:</dt>
             <dd>
                 <table id="compose_updates" class="tablesorter shift">
                     <thead>
                         <tr>
-                            <th>_(Stack)_</th>
-                            <th><span id="toggle-all-updates" class="toggle-all-btn" title="_(Toggle all auto-updates on/off)_"><i class="fa fa-toggle-off"></i></span><span class="toggle-label">_(Auto-Update)_</span></th>
-                            <th>_(Schedule)_</th>
-                            <th>_(Time)_</th>
-                            <th>_(On)_</th>
+                            <th>_(栈)_</th>
+                            <th><span id="toggle-all-updates" class="toggle-all-btn" title="_(全部启用或关闭自动更新)_"><i class="fa fa-toggle-off"></i></span><span class="toggle-label">_(自动更新)_</span></th>
+                            <th>_(计划)_</th>
+                            <th>_(时间)_</th>
+                            <th>_(开)_</th>
                         </tr>
                     </thead>
                     <tbody id="updates-tbody">
                         <tr>
-                            <td colspan="5" class="compose-text-muted" style="text-align:center;padding:12px;">_(Loading stacks...)_</td>
+                            <td colspan="5" class="compose-text-muted" style="text-align:center;padding:12px;">_(正在加载栈...)_</td>
                         </tr>
                     </tbody>
                 </table>
@@ -3121,71 +3023,63 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
 
 <!-- Backup / Restore Tab -->
 <div id="compose-tab-backup" class="compose-tab-content">
-    <blockquote class="inline_help" style="margin-bottom:20px;">
-        <strong>Backup Tab</strong> — Create, schedule, and restore backups of your Compose stack configurations and override files. Backups are independent from docker container data and volumes.
-    </blockquote>
+    <blockquote class="inline_help" style="margin-bottom:20px;"><strong>备份标签页</strong> — 创建、计划并恢复 Compose 栈配置与覆盖文件的备份。备份与 docker 容器数据和数据卷相互独立。</blockquote>
 
     <!-- Backup Settings Section -->
     <div class="backup-section">
-        <div class="title"><span class="left"><i class="fa fa-download icon"></i>_(Backup Configuration)_</span></div>
+        <div class="title"><span class="left"><i class="fa fa-download icon"></i>_(备份配置)_</span></div>
         <p style="margin:0 0 15px 0;color:var(--dynamix-sb-title-text-color);font-size:0.95em;">Configure backup storage location, retention policy, and create scheduled backups.</p>
 
         <dl>
-            <dt style="cursor: help;" onclick="toggleHelp(this)">_(Backup Destination)_:</dt>
+            <dt style="cursor: help;" onclick="toggleHelp(this)">_(备份目标)_:</dt>
             <dd>
                 <input type="text" id="BACKUP_DESTINATION" autocomplete="off" spellcheck="false"
                     value="<?= $cfg['BACKUP_DESTINATION'] ?? '' ?>"
                     placeholder="/boot/config/plugins/compose.manager/backups"
                     class="backup-dest-input"
                     data-pickroot="/" data-picktop="/boot/config/plugins/compose.manager" data-pickfolders="true" data-pickcloseonfile="true">
-                <blockquote class="inline_help">
-                    Path where backup archives will be stored.<br>
-                    Leave blank to use the default: <code>/boot/config/plugins/compose.manager/backups</code>
-                </blockquote>
+                <blockquote class="inline_help">存放备份归档的路径。<br> 留空则使用默认值：<code>/boot/config/plugins/compose.manager/backups</code></blockquote>
             </dd>
         </dl>
 
         <dl>
-            <dt style="cursor: help;" onclick="toggleHelp(this)">_(Backups to Keep)_:</dt>
+            <dt style="cursor: help;" onclick="toggleHelp(this)">_(保留备份数)_:</dt>
             <dd>
                 <input type="number" id="BACKUP_RETENTION" min="0" max="100" step="1"
                     value="<?= $cfg['BACKUP_RETENTION'] ?? '5' ?>" style="width:80px;">
-                <blockquote class="inline_help">
-                    Number of backup archives to retain. After a successful backup, the oldest archives<br>
-                    exceeding this count will be automatically deleted. Set to 0 for unlimited retention.
-                </blockquote>
+                <blockquote class="inline_help">保留的备份归档数量。备份成功后，超出该数量的最旧归档<br> 会被自动删除。设为 0 表示不限制保留数量。</blockquote>
             </dd>
         </dl>
 
         <dl>
-            <dt>_(Scheduled Backup)_:</dt>
+            <dt>_(定时备份)_:</dt>
             <dd>
                 <input type="checkbox" id="BACKUP_SCHEDULE_ENABLED" class="compose-toggle"
                     <?= ($cfg['BACKUP_SCHEDULE_ENABLED'] ?? 'false') == 'true' ? 'checked' : '' ?>
                     onchange="toggleBackupSchedule()">
                 <div id="backup-schedule-options" class="schedule-options" style="margin-top:8px;">
-                    <label>_(Frequency)_:
+                    <label>_(频率)_:
                         <select id="BACKUP_SCHEDULE_FREQUENCY" onchange="toggleScheduleDay()"
                             <?= ($cfg['BACKUP_SCHEDULE_ENABLED'] ?? 'false') != 'true' ? 'disabled' : '' ?>>
-                            <option value="daily" <?= ($cfg['BACKUP_SCHEDULE_FREQUENCY'] ?? 'daily') == 'daily' ? 'selected' : '' ?>>_(Daily)_</option>
-                            <option value="weekly" <?= ($cfg['BACKUP_SCHEDULE_FREQUENCY'] ?? 'daily') == 'weekly' ? 'selected' : '' ?>>_(Weekly)_</option>
+                            <option value="daily" <?= ($cfg['BACKUP_SCHEDULE_FREQUENCY'] ?? 'daily') == 'daily' ? 'selected' : '' ?>>_(每天)_</option>
+                            <option value="weekly" <?= ($cfg['BACKUP_SCHEDULE_FREQUENCY'] ?? 'daily') == 'weekly' ? 'selected' : '' ?>>_(每周)_</option>
                         </select>
                     </label>
-                    <label>_(Day)_:
+                    <label>_(日)_:
                         <select id="BACKUP_SCHEDULE_DAY"
                             <?php $schedEnabled = ($cfg['BACKUP_SCHEDULE_ENABLED'] ?? 'false') == 'true';
                             $schedFreq = $cfg['BACKUP_SCHEDULE_FREQUENCY'] ?? 'daily';
                             echo (!$schedEnabled || $schedFreq != 'weekly') ? 'disabled' : ''; ?>>
-                            <option value="0" <?= ($cfg['BACKUP_SCHEDULE_DAY'] ?? '1') == '0' ? 'selected' : '' ?>>_(Sunday)_</option>
-                            <option value="1" <?= ($cfg['BACKUP_SCHEDULE_DAY'] ?? '1') == '1' ? 'selected' : '' ?>>_(Monday)_</option>
-                            <option value="2" <?= ($cfg['BACKUP_SCHEDULE_DAY'] ?? '1') == '2' ? 'selected' : '' ?>>_(Tuesday)_</option>
-                            <option value="3" <?= ($cfg['BACKUP_SCHEDULE_DAY'] ?? '1') == '3' ? 'selected' : '' ?>>_(Wednesday)_</option>
-                            <option value="4" <?= ($cfg['BACKUP_SCHEDULE_DAY'] ?? '1') == '4' ? 'selected' : '' ?>>_(Thursday)_</option>
-                            <option value="5" <?= ($cfg['BACKUP_SCHEDULE_DAY'] ?? '1') == '5' ? 'selected' : '' ?>>_(Friday)_</option>
-                            <option value="6" <?= ($cfg['BACKUP_SCHEDULE_DAY'] ?? '1') == '6' ? 'selected' : '' ?>>_(Saturday)_</option>
+                            <option value="0" <?= ($cfg['BACKUP_SCHEDULE_DAY'] ?? '1') == '0' ? 'selected' : '' ?>>_(周日)_</option>
+                            <option value="1" <?= ($cfg['BACKUP_SCHEDULE_DAY'] ?? '1') == '1' ? 'selected' : '' ?>>_(周一)_</option>
+                            <option value="2" <?= ($cfg['BACKUP_SCHEDULE_DAY'] ?? '1') == '2' ? 'selected' : '' ?>>_(周二)_</option>
+                            <option value="3" <?= ($cfg['BACKUP_SCHEDULE_DAY'] ?? '1') == '3' ? 'selected' : '' ?>>_(周三)_</option>
+                            <option value="4" <?= ($cfg['BACKUP_SCHEDULE_DAY'] ?? '1') == '4' ? 'selected' : '' ?>>_(周四)_</option>
+                            <option value="5" <?= ($cfg['BACKUP_SCHEDULE_DAY'] ?? '1') == '5' ? 'selected' : '' ?>>_(周五)_</option>
+                            <option value="6" <?= ($cfg['BACKUP_SCHEDULE_DAY'] ?? '1') == '6' ? 'selected' : '' ?>>_(周六)_</option>
                         </select>
                     </label>
-                    <label>_(Time)_:
+                    <label>_(时间)_:
                         <input type="time" id="BACKUP_SCHEDULE_TIME"
                             value="<?= $cfg['BACKUP_SCHEDULE_TIME'] ?? '03:00' ?>"
                             <?= ($cfg['BACKUP_SCHEDULE_ENABLED'] ?? 'false') != 'true' ? 'disabled' : '' ?>>
@@ -3198,8 +3092,8 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
             <dt>&nbsp;</dt>
             <dd>
                 <div class="backup-actions">
-                    <input type="button" id="btn-save-backup-settings" value="_(Save Settings)_" onclick="saveBackupSettings()" class="orange-button settings-actions-hidden">
-                    <input type="button" id="btn-create-backup" value="_(Backup Now)_" onclick="createBackupNow()">
+                    <input type="button" id="btn-save-backup-settings" value="_(保存设置)_" onclick="saveBackupSettings()" class="orange-button settings-actions-hidden">
+                    <input type="button" id="btn-create-backup" value="_(立即备份)_" onclick="createBackupNow()">
                     <i class="fa fa-spinner fa-spin spinner"></i>
                 </div>
                 <div id="backup-create-status" class="backup-status"></div>
@@ -3209,42 +3103,42 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
 
     <!-- Restore Operations Section -->
     <div class="backup-section">
-        <div class="title"><span class="left"><i class="fa fa-upload icon"></i>_(Restore Operations)_</span></div>
+        <div class="title"><span class="left"><i class="fa fa-upload icon"></i>_(恢复操作)_</span></div>
 
         <dl>
-            <dt>_(Available Backups)_:</dt>
+            <dt>_(可用备份)_:</dt>
             <dd>
                 <div class="backup-archive-list">
                     <table>
                         <thead>
                             <tr>
                                 <th style="width:30px;"></th>
-                                <th style="width:auto;">_(Filename)_</th>
-                                <th style="width:100px;">_(Size)_</th>
-                                <th style="width:200px;">_(Date)_</th>
+                                <th style="width:auto;">_(文件名)_</th>
+                                <th style="width:100px;">_(大小)_</th>
+                                <th style="width:200px;">_(日期)_</th>
                             </tr>
                         </thead>
                         <tbody id="backup-archive-list">
                             <tr>
-                                <td colspan="4" class="compose-text-muted" style="text-align:center;padding:15px;">_(Switch to this tab to load backup list.)_</td>
+                                <td colspan="4" class="compose-text-muted" style="text-align:center;padding:15px;">_(切换到该标签页以加载备份列表。)_</td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
                 <div style="margin-top:5px; display:flex; gap:8px;">
-                    <input type="button" value="_(Refresh)_" onclick="loadBackupArchives()">
-                    <input type="button" value="_(Upload Archive...)_" onclick="$('#backup-upload-input').click()">
+                    <input type="button" value="_(刷新)_" onclick="loadBackupArchives()">
+                    <input type="button" value="_(上传归档...)_" onclick="$('#backup-upload-input').click()">
                     <input type="file" id="backup-upload-input" accept=".tar.gz,.tgz" style="display:none;" onchange="uploadBackupArchive(this)">
-                    <input type="button" value="_(Delete Selected)_" onclick="deleteSelectedBackup()">
+                    <input type="button" value="_(删除所选)_" onclick="deleteSelectedBackup()">
                 </div>
             </dd>
         </dl>
 
         <dl>
-            <dt>_(Stacks in Archive)_:</dt>
+            <dt>_(归档中的栈)_:</dt>
             <dd>
                 <div class="backup-stack-checklist" id="restore-stack-checklist">
-                    <span class="compose-text-muted" style="text-align:center;display:block;padding:15px;font-size:0.85em;">_(Select a backup archive above to see its contents.)_</span>
+                    <span class="compose-text-muted" style="text-align:center;display:block;padding:15px;font-size:0.85em;">_(请在上方选择一个备份归档以查看内容。)_</span>
                 </div>
             </dd>
         </dl>
@@ -3253,7 +3147,7 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
             <dt>&nbsp;</dt>
             <dd>
                 <div class="backup-actions">
-                    <input type="button" id="btn-restore-stacks" value="_(Restore Selected)_" onclick="restoreSelectedStacks()" class="orange-button" disabled>
+                    <input type="button" id="btn-restore-stacks" value="_(恢复所选)_" onclick="restoreSelectedStacks()" class="orange-button" disabled>
                     <i class="fa fa-spinner fa-spin spinner"></i>
                     <span id="restore-selected-count" class="compose-text-muted"></span>
                 </div>
@@ -3266,21 +3160,19 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
 
 <div id="global-settings-actions" class="compose-global-actions">
     <div class="settings-actions-row">
-        <input type="button" id="global-settings-default" class="settings-action-btn" value="_(Default)_">
-        <input type="button" id="global-settings-apply" class="settings-action-btn" value="_(Apply)_" disabled>
-        <input type="button" id="global-settings-reset" class="settings-action-btn" value="_(Reset)_" disabled>
+        <input type="button" id="global-settings-default" class="settings-action-btn" value="_(默认)_">
+        <input type="button" id="global-settings-apply" class="settings-action-btn" value="_(应用)_" disabled>
+        <input type="button" id="global-settings-reset" class="settings-action-btn" value="_(重置)_" disabled>
         <span class="settings-actions-meta" id="global-settings-change-count">0 tabs changed | 0 settings changed</span>
     </div>
 </div>
 
 <!-- Log Tab -->
 <div id="compose-tab-log" class="compose-tab-content">
-    <blockquote class="inline_help" style="margin-bottom:20px;">
-        <strong>Log Tab</strong> — View system log entries generated by Compose Manager. Enable "Debug Logging" in the Settings tab to capture detailed command information. Logs help troubleshoot issues and verify operations.
-    </blockquote>
+    <blockquote class="inline_help" style="margin-bottom:20px;"><strong>日志标签页</strong> — 查看 Compose Manager 产生的系统日志条目。在「设置」标签页启用「调试日志」可捕获详细的命令信息。日志有助于排查问题并确认操作结果。</blockquote>
 
     <div class="log-controls">
-        <label>_(Lines)_:
+        <label>_(行数)_:
             <select id="log-lines" onchange="loadLogs()">
                 <option value="50">50</option>
                 <option value="100" selected>100</option>
@@ -3289,52 +3181,46 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
                 <option value="1000">1000</option>
             </select>
         </label>
-        <label>_(Refresh)_:
+        <label>_(刷新)_:
             <select id="log-refresh" onchange="startLogRefresh()">
-                <option value="0">_(Manual)_</option>
+                <option value="0">_(手动)_</option>
                 <option value="5">5s</option>
                 <option value="10">10s</option>
                 <option value="30">30s</option>
                 <option value="60">60s</option>
             </select>
         </label>
-        <label>_(Filter)_:
-            <input type="text" id="log-filter" placeholder="_(Search logs...)_" onkeyup="if(event.keyCode==13)loadLogs()">
+        <label>_(筛选)_:
+            <input type="text" id="log-filter" placeholder="_(搜索日志...)_" onkeyup="if(event.keyCode==13)loadLogs()">
         </label>
-        <input type="button" value="_(Refresh)_" onclick="loadLogs()">
-        <input type="button" value="_(Download)_" onclick="downloadLogs()">
+        <input type="button" value="_(刷新)_" onclick="loadLogs()">
+        <input type="button" value="_(下载)_" onclick="downloadLogs()">
         <label style="display: flex; align-items: center; gap: 5px;">
-            <input type="checkbox" id="log-autoscroll" checked onchange="toggleAutoScroll()"> _(Auto-scroll)_
+            <input type="checkbox" id="log-autoscroll" checked onchange="toggleAutoScroll()"> _(自动滚动)_
         </label>
         <span id="log-line-count"></span>
     </div>
     <div id="compose-log-container">
-        <span class="compose-text-muted">_(Loading logs...)_</span>
+        <span class="compose-text-muted">_(正在加载日志...)_</span>
     </div>
-    <blockquote class="inline_help">
-        <p>This log shows compose-related entries from the system log.</p>
-        <p>Enable <strong>Debug Logging</strong> in Settings to capture detailed compose command information.</p>
-        <p>Log entries are generated by the <code>logger</code> command when compose operations are performed.</p>
-    </blockquote>
+    <blockquote class="inline_help"><p>此日志显示系统日志中与 compose 相关的条目。</p> <p>在「设置」中启用 <strong>调试日志</strong> 可捕获详细的 compose 命令信息。</p> <p>执行 compose 操作时，日志条目由 <code>logger</code> 命令生成。</p></blockquote>
 </div>
 
 <!-- Credits Tab -->
 <div id="compose-tab-credits" class="compose-tab-content">
-    <blockquote class="inline_help" style="margin-bottom:20px;">
-        <strong>Credits Tab</strong> — View plugin version information, acknowledgments of upstream projects, included libraries, and contributors. Links to GitHub repositories and project homepages.
-    </blockquote>
+    <blockquote class="inline_help" style="margin-bottom:20px;"><strong>致谢标签页</strong> — 查看插件版本信息、上游项目致谢、内置库与贡献者，以及 GitHub 仓库和项目主页链接。</blockquote>
 
-    <div class="title"><span class="left"><i class="fa fa-star icon"></i>_(About Compose Manager)_</span></div>
+    <div class="title"><span class="left"><i class="fa fa-star icon"></i>_(关于 Compose Manager)_</span></div>
 
     <div class="credits-section" style="padding:16px 12px;border-bottom:1px solid var(--dynamix-sb-border-color, #ccc);">
-        <span style="font-size:1.2em;font-weight:bold;">Plugin Version: <?= htmlspecialchars($pluginVersion) ?></span><br>
+        <span style="font-size:1.2em;font-weight:bold;">插件版本：<?= htmlspecialchars($pluginVersion) ?></span><br>
         <?php if ($composeCliVersion): ?>
-            <span style="font-size:1.2em;font-weight:bold;">Docker Compose: v<?= htmlspecialchars($composeCliVersion) ?></span>
+            <span style="font-size:1.2em;font-weight:bold;">Docker Compose：v<?= htmlspecialchars($composeCliVersion) ?></span>
         <?php endif; ?>
     </div>
 
     <div class="credits-section" style="padding:12px;">
-        <p><strong>Original GitHub repository:</strong> <a href="https://github.com/dcflachs/compose_plugin" target="_blank" rel="noopener noreferrer">dcflachs/compose_plugin</a></p>
+        <p><strong>原始 GitHub 仓库：</strong> <a href="https://github.com/dcflachs/compose_plugin" target="_blank" rel="noopener noreferrer">dcflachs/compose_plugin</a></p>
         <p>Thanks to the original authors and all contributors for their work on the upstream project.</p>
     </div>
 
@@ -3342,13 +3228,13 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
         <p>
             <strong>Ace:</strong>
             <a href="https://github.com/ajaxorg/ace" target="_blank" rel="noopener noreferrer">https://github.com/ajaxorg/ace</a>
-            &nbsp;&mdash;&nbsp;Version: <span id="ace-version">detecting...</span>
+            &nbsp;&mdash;&nbsp;Version: <span id="ace-version">检测中...</span>
         </p>
         <p>Used for the built-in YAML editor in stack configuration. Thanks to the Ace team for providing this powerful editor component.</p>
     </div>
 
     <div class="credits-section" style="padding:12px;">
-        <h3>Libraries</h3>
+        <h3>第三方库</h3>
         <ul>
             <li><a href="https://github.com/nodeca/js-yaml" target="_blank" rel="noopener noreferrer">js-yaml</a> — client-side YAML parsing.</li>
             <li><a href="https://jquery.com/" target="_blank" rel="noopener noreferrer">jQuery</a> — DOM and AJAX utilities.</li>
@@ -3369,10 +3255,10 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
     </div>
 
     <div class="credits-section" style="padding:12px;">
-        <h3>Contributors</h3>
-        <a href="https://github.com/mstrhakr/compose_plugin/graphs/contributors" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+        <h3>贡献者</h3>
+        <a href="https://github.com/mstrhakr/compose_plugin/graphs/contributors" target="_blank" rel="noopener noreferrer">在 GitHub 上查看</a>
         <div id="contributors-list">
-            <div class="credits-loading"><i class="fa fa-spinner fa-spin"></i> Loading contributors...</div>
+            <div class="credits-loading"><i class="fa fa-spinner fa-spin"></i>正在加载贡献者...</div>
         </div>
         <p>Thank you to everyone who has contributed code, issues, testing, and documentation.</p>
     </div>
@@ -3391,7 +3277,7 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
             $.getJSON('https://api.github.com/repos/' + repo + '/contributors?per_page=' + perPage)
                 .done(function(data) {
                     if (!data || !data.length) {
-                        $list.html('<p>No contributors found. <a href="https://github.com/' + repo + '/graphs/contributors" target="_blank" rel="noopener noreferrer">View on GitHub</a></p>');
+                        $list.html('<p>未找到贡献者。<a href="https://github.com/' + repo + '/graphs/contributors" target="_blank" rel="noopener noreferrer">在 GitHub 上查看</a></p>');
                         return;
                     }
 
@@ -3420,7 +3306,7 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
     </script>
 
     <div class="credits-section" style="padding:12px;">
-        <h3>Build &amp; Packaging</h3>
+        <h3>构建与打包</h3>
         <ul>
             <li>`pkg_build.sh` — packaging helper used when assembling plugin releases.</li>
             <li><a href="https://github.com/ajaxorg/ace-builds" target="_blank" rel="noopener noreferrer">ace-builds</a> — Ace editor (provided by Unraid 7.0.0+ via Dynamix; downloaded during install on older versions).</li>

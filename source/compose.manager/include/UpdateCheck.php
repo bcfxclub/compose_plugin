@@ -9,7 +9,7 @@ require_once '/usr/local/emhttp/plugins/dynamix.docker.manager/include/DockerCli
  *
  * Compares platform-specific image config digests instead of top-level
  * index/manifest-list digests. This eliminates the false-positive
- * "update ready" indicator that occurs for multi-arch tags when a
+ * "有可用更新" indicator that occurs for multi-arch tags when a
  * registry republishes the index over identical layer content (a routine
  * occurrence on Docker Hub for redis, postgres, alpine, and many others).
  *

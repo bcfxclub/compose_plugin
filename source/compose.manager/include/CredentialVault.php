@@ -52,7 +52,7 @@ final class CredentialVault
                 throw new InvalidArgumentException('Name, registry, username, and token are required.');
             }
             if (!in_array($provider, ['github', 'docker', 'gitlab', 'quay', 'aws', 'azure', 'gcr', 'generic', 'git', 'git-ssh'], true)) {
-                throw new InvalidArgumentException('Unsupported credential provider.');
+                throw new InvalidArgumentException('不支持的凭据提供方。');
             }
             // A stack using the credential would break at its next run: a git stack needs a git
             // credential, and a registry login is never a git one. Changes among registry kinds
@@ -69,7 +69,7 @@ final class CredentialVault
                 throw new InvalidArgumentException('A git credential needs the repository host only, such as github.com.');
             }
             if (!in_array($authMethod, ['manual', 'oauth_device'], true)) {
-                throw new InvalidArgumentException('Unsupported credential authentication method.');
+                throw new InvalidArgumentException('不支持的凭据认证方式。');
             }
 
             $now = gmdate('c');
@@ -118,7 +118,7 @@ final class CredentialVault
     {
         $lockDir = dirname(COMPOSE_CREDENTIAL_VAULT_FILE);
         if (!is_dir($lockDir) && !mkdir($lockDir, 0700, true) && !is_dir($lockDir)) {
-            throw new RuntimeException('Unable to create credential storage directory.');
+            throw new RuntimeException('无法创建凭据存储目录。');
         }
         $handle = fopen($lockDir . '/credential-assignments.lock', 'c+');
         if ($handle === false || !flock($handle, LOCK_EX)) {
@@ -427,18 +427,18 @@ final class CredentialVault
         }
         $payload = json_decode((string) file_get_contents(COMPOSE_CREDENTIAL_VAULT_FILE), true);
         if (!is_array($payload) || !isset($payload['ciphertext'])) {
-            throw new RuntimeException('Credential vault is invalid.');
+            throw new RuntimeException('凭据库无效。');
         }
         $ciphertext = base64_decode((string) $payload['ciphertext'], true);
         if ($ciphertext === false) {
-            throw new RuntimeException('Credential vault is invalid.');
+            throw new RuntimeException('凭据库无效。');
         }
 
         if (($payload['algorithm'] ?? '') === self::CIPHER) {
             $iv = base64_decode((string) ($payload['iv'] ?? ''), true);
             $tag = base64_decode((string) ($payload['tag'] ?? ''), true);
             if ($iv === false || $tag === false || !function_exists('openssl_decrypt')) {
-                throw new RuntimeException('Credential vault is invalid.');
+                throw new RuntimeException('凭据库无效。');
             }
             $plaintext = openssl_decrypt($ciphertext, self::CIPHER, $this->loadKey(), OPENSSL_RAW_DATA, $iv, $tag);
         } else {
@@ -460,19 +460,19 @@ final class CredentialVault
     {
         $directory = dirname(COMPOSE_CREDENTIAL_VAULT_FILE);
         if (!is_dir($directory) && !mkdir($directory, 0700, true) && !is_dir($directory)) {
-            throw new RuntimeException('Unable to create credential storage directory.');
+            throw new RuntimeException('无法创建凭据存储目录。');
         }
         if (!function_exists('openssl_encrypt')) {
-            throw new RuntimeException('Credential encryption requires the PHP OpenSSL extension.');
+            throw new RuntimeException('凭据加密需要 PHP OpenSSL 扩展。');
         }
         $ivLength = openssl_cipher_iv_length(self::CIPHER);
         if ($ivLength === false) {
-            throw new RuntimeException('Credential encryption is unavailable.');
+            throw new RuntimeException('凭据加密不可用。');
         }
         $iv = random_bytes($ivLength);
         $plaintext = json_encode(array_values($credentials), JSON_UNESCAPED_SLASHES);
         if ($plaintext === false) {
-            throw new RuntimeException('Unable to encode credential vault.');
+            throw new RuntimeException('无法编码凭据库。');
         }
         $tag = '';
         $ciphertext = openssl_encrypt($plaintext, self::CIPHER, $this->loadKey(), OPENSSL_RAW_DATA, $iv, $tag);
@@ -487,7 +487,7 @@ final class CredentialVault
             'ciphertext' => base64_encode($ciphertext),
         ], JSON_UNESCAPED_SLASHES);
         if ($payload === false) {
-            throw new RuntimeException('Unable to encode credential vault.');
+            throw new RuntimeException('无法编码凭据库。');
         }
         self::atomicWrite(COMPOSE_CREDENTIAL_VAULT_FILE, $payload, 0600, 'Unable to save credential vault.');
     }
@@ -499,14 +499,14 @@ final class CredentialVault
             if ($key !== false && strlen($key) === self::KEY_BYTES) {
                 return $key;
             }
-            throw new RuntimeException('Credential encryption key is invalid.');
+            throw new RuntimeException('凭据加密密钥无效。');
         }
         $directory = dirname(COMPOSE_CREDENTIAL_KEY_FILE);
         if (!is_dir($directory) && !mkdir($directory, 0700, true) && !is_dir($directory)) {
-            throw new RuntimeException('Unable to create credential storage directory.');
+            throw new RuntimeException('无法创建凭据存储目录。');
         }
         $key = random_bytes(self::KEY_BYTES);
-        self::atomicWrite(COMPOSE_CREDENTIAL_KEY_FILE, base64_encode($key), 0600, 'Unable to save credential encryption key.');
+        self::atomicWrite(COMPOSE_CREDENTIAL_KEY_FILE, base64_encode($key), 0600, '无法保存凭据加密密钥。');
         return $key;
     }
 
@@ -568,7 +568,7 @@ final class CredentialVault
     {
         $lockDir = dirname(COMPOSE_CREDENTIAL_VAULT_FILE);
         if (!is_dir($lockDir) && !mkdir($lockDir, 0700, true) && !is_dir($lockDir)) {
-            throw new RuntimeException('Unable to create credential storage directory.');
+            throw new RuntimeException('无法创建凭据存储目录。');
         }
         $lockFile = $lockDir . '/credentials.lock';
         $handle = fopen($lockFile, 'c+');

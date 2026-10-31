@@ -59,7 +59,7 @@ function emitError(string $message, string $format): void
 
 if ($composeRoot === '' || $project === '' || $action === '') {
     fwrite(STDERR, "Usage: compose_args.php --compose-root <dir> --project <name> --action <up|down|update|pull|stop|logs> [--stack-path <path>]\n");
-    emitError('Missing required arguments', $format);
+    emitError('缺少必需参数', $format);
     exit(2);
 }
 

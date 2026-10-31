@@ -1517,14 +1517,14 @@ class StackInfoTest extends TestCase
     public function testCreateNewThrowsOnEmptyName(): void
     {
         $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('Stack name cannot be empty');
+        $this->expectExceptionMessage('栈名称不能为空');
         \StackInfo::createNew($this->tempRoot, '');
     }
 
     public function testCreateNewThrowsOnWhitespaceName(): void
     {
         $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('Stack name cannot be empty');
+        $this->expectExceptionMessage('栈名称不能为空');
         \StackInfo::createNew($this->tempRoot, '   ');
     }
 

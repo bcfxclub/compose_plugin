@@ -325,24 +325,24 @@ foreach ($stackInfos as $stackInfo) {
             $years = floor($days / 365);
 
             if ($mins < 120) {
-                $stackUptime = $mins . " min" . ($mins !== 1 ? "s" : "");
+                $stackUptime = $mins . " 分钟";
             } elseif ($hours < 48) {
-                $stackUptime = $hours . " hour" . ($hours !== 1 ? "s" : "");
+                $stackUptime = $hours . " 小时";
             } elseif ($days < 14) {
-                $stackUptime = $days . " day" . ($days !== 1 ? "s" : "");
+                $stackUptime = $days . " 天";
             } elseif ($weeks < 8) {
-                $stackUptime = $weeks . " week" . ($weeks !== 1 ? "s" : "");
+                $stackUptime = $weeks . " 周";
             } elseif ($months < 24) {
-                $stackUptime = $months . " month" . ($months !== 1 ? "s" : "");
+                $stackUptime = $months . " 个月";
             } else {
-                $stackUptime = $years . " year" . ($years !== 1 ? "s" : "");
+                $stackUptime = $years . " 年";
             }
         }
     }
     if (!$stackUptime && $isrunning) {
         $stackUptime = "Uptime: running";
     } elseif (!$stackUptime) {
-        $stackUptime = "stopped";
+        $stackUptime = "已停止";
     }
 
     // Escape webui URL for HTML attribute
@@ -399,7 +399,7 @@ foreach ($stackInfos as $stackInfo) {
     if ($git !== null) {
         $o .= "<div class='compose-text-muted compose-git-line' style='font-size:0.85em;text-align:left;'><i class='fa fa-code-fork'></i> ";
         if ($git['problem'] !== null) {
-            $o .= "<span class='orange-text' title='" . htmlspecialchars($git['problem'], ENT_QUOTES, 'UTF-8') . "'>git settings cannot be read</span>";
+            $o .= "<span class='orange-text' title='" . htmlspecialchars($git['problem'], ENT_QUOTES, 'UTF-8') . "'>无法读取 Git 设置</span>";
         } else {
             $o .= "<span style='white-space:nowrap;'>" . htmlspecialchars((string) $git['branch'], ENT_QUOTES, 'UTF-8') . ' @ ';
             $o .= $git['deployedCommit'] === null
@@ -408,15 +408,15 @@ foreach ($stackInfos as $stackInfo) {
                     . htmlspecialchars(substr($git['deployedCommit'], 0, 7), ENT_QUOTES, 'UTF-8') . '</span>';
             $o .= '</span>';
             if ($git['behind']) {
-                $o .= " <span class='orange-text' title='A newer commit on the branch changes this stack.'>behind</span>";
+                $o .= " <span class='orange-text' title='分支上有更新的提交会改动该栈。'>落后</span>";
             }
             if ($git['failedCommit'] !== null) {
                 $failedTitle = 'The deploy of commit ' . substr($git['failedCommit'], 0, 12) . ' failed. Fix it and deploy again.';
-                $o .= " <span class='red-text' title='" . htmlspecialchars($failedTitle, ENT_QUOTES, 'UTF-8') . "'>failed</span>";
+                $o .= " <span class='red-text' title='" . htmlspecialchars($failedTitle, ENT_QUOTES, 'UTF-8') . "'>失败</span>";
             } elseif ($git['failedAutomaticCommit'] !== null) {
                 $failedTitle = 'The automatic deploy of commit ' . substr($git['failedAutomaticCommit'], 0, 12)
                     . ' failed before any container was started. Fix it and deploy again, or resume automatic deploys to try again.';
-                $o .= " <span class='red-text' title='" . htmlspecialchars($failedTitle, ENT_QUOTES, 'UTF-8') . "'>failed</span>";
+                $o .= " <span class='red-text' title='" . htmlspecialchars($failedTitle, ENT_QUOTES, 'UTF-8') . "'>失败</span>";
             }
         }
         $o .= "</div>";
@@ -431,9 +431,9 @@ foreach ($stackInfos as $stackInfo) {
     // Update column (like Docker tab) - default to "not checked" until update check runs
     $updateCell = "<td class='col-update compose-updatecolumn'>";
     if ($isrunning) {
-        $updateCell .= "<span class='grey-text' style='white-space:nowrap;cursor:default;' title='Click Check for Updates to check'><i class='fa fa-question-circle fa-fw'></i> not checked</span>";
+        $updateCell .= "<span class='grey-text' style='white-space:nowrap;cursor:default;' title='点击「检查更新」进行查询'><i class='fa fa-question-circle fa-fw'></i>未检查</span>";
     } else {
-        $updateCell .= "<span class='grey-text' style='white-space:nowrap;'><i class='fa fa-stop fa-fw'></i> stopped</span>";
+        $updateCell .= "<span class='grey-text' style='white-space:nowrap;'><i class='fa fa-stop fa-fw'></i>已停止</span>";
     }
     $updateCell .= "</td>";
     $stackCells['update'] = $updateCell;
@@ -449,7 +449,7 @@ foreach ($stackInfos as $stackInfo) {
     $stackCells['uptime'] = "<td class='col-uptime'><span class='$uptimeClass'>$uptimeDisplay</span></td>";
 
     // Health column (updated from detailed inspect data by frontend; initial fallback here)
-    $healthDisplay = $isrunning ? 'n/a' : 'stopped';
+    $healthDisplay = $isrunning ? 'n/a' : '已停止';
     $healthClass = $isrunning ? 'compose-text-muted' : 'grey-text';
     $stackCells['health'] = "<td class='col-health'><span class='$healthClass'>$healthDisplay</span></td>";
 

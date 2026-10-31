@@ -43,7 +43,7 @@ function sanitizeStatsValue(raw) {
     return value.trim();
 }
 
-// Parse docker stats memory string "used / limit" into bytes.
+// Parse docker stats memory string "已用 / 上限" into bytes.
 function parseMemUsagePair(memStr) {
     if (!memStr) return {
         used: 0,
@@ -221,7 +221,7 @@ function updateAddStackFieldsForSource() {
 function fillGitCredentialSelect($select) {
     var showUnreadable = function(message) {
         $select.append($('<option>').val('').prop('disabled', true)
-            .text('Could not read the credentials' + (message ? ': ' + message : '')));
+            .text('无法读取凭据' + (message ? ': ' + message : '')));
     };
     $.post(caURL, { action: 'listCredentials' }).then(function(data) {
         var response = tryParseJson(data);
@@ -266,7 +266,7 @@ function showGitDeployKeyPanel($panel, publicKey, details, buttonName) {
         } catch (e) {
             copied = false;
         }
-        $copy.text(copied ? 'Copied' : 'Select the key and copy it');
+        $copy.text(copied ? 'Copied' : '选择密钥并复制');
     });
     $panel.empty().append(
         $('<div class="compose-git-deploy-key-panel-title">').append(
@@ -352,7 +352,7 @@ function submitGitStackFromAddStackModal(name, desc, overrideManagementAutomatic
             type: 'success'
         });
     }).fail(function() {
-        showError('Request failed. If the repository is large, the clone may still be running: '
+        showError('请求失败。若仓库较大，克隆可能仍在进行：'
             + 'refresh the stack list before trying again.');
     });
 }
@@ -421,7 +421,7 @@ function updateDiscoveryModeUI(scope, suppressChangeTracking) {
     var isDefault = $checkbox.is(':checked');
     if ($badge.length) {
         if (isDefault) {
-            $badge.text('Discovery mode: Docker Compose default');
+            $badge.text('发现模式：Docker Compose 默认');
         } else {
             $badge.html('Discovery mode: Explicit <code>-f</code> flags');
         }
@@ -430,7 +430,7 @@ function updateDiscoveryModeUI(scope, suppressChangeTracking) {
         if (locked) {
             $toggle.hide();
         } else {
-            $toggle.text(isDefault ? 'Use explicit -f flags' : 'Use default discovery').show();
+            $toggle.text(isDefault ? 'Use explicit -f flags' : '使用默认发现').show();
         }
     }
 }
@@ -783,7 +783,7 @@ function composeLoadlist() {
         });
 
         composeTimers.load = setTimeout(function() {
-            showComposeSpinner('Loading stack list...');
+            showComposeSpinner('正在加载栈列表...');
         }, 500);
 
         function finalizeComposeLoadlist(resolvePayload) {
@@ -900,13 +900,13 @@ function composeLoadlist() {
             .done(function(metaRaw) {
                 var meta = tryParseJson(metaRaw);
                 if (!meta || meta.result !== 'success' || !Array.isArray(meta.projects)) {
-                    composeLogger('Invalid stack meta response', {
+                    composeLogger('无效的栈元数据响应', {
                         response: metaRaw
                     }, 'user', 'error', 'composeLoadlist');
                     $('#compose_list').html('<tr><td colspan="14" class="compose-status-danger" style="text-align:center;padding:20px;">Failed to load stack list. Please refresh the page.</td></tr>');
                     clearTimeout(composeTimers.load);
                     hideComposeSpinner();
-                    reject(new Error('Invalid stack list response'));
+                    reject(new Error('无效的栈列表响应'));
                     return;
                 }
 
@@ -934,7 +934,7 @@ function composeLoadlist() {
                     '<td colspan="14" style="text-align:center;padding:12px;border:none;background:transparent;">' +
                     '<span class="compose-text-muted" style="display:inline-flex;align-items:center;gap:8px;">' +
                     '<i class="fa fa-refresh fa-spin"></i>' +
-                    '<span>Loading stacks... <span id="compose-load-progress-count">0/' + projects.length + '</span></span>' +
+                    '<span>正在加载栈...<span id="compose-load-progress-count">0/' + projects.length + '</span></span>' +
                     '</span>' +
                     '</td>' +
                     '</tr>';
@@ -1393,7 +1393,7 @@ function updateModalOffset() {
 // Initialize editor modal
 function initEditorModal() {
     if (typeof ace === 'undefined') {
-        composeLogger('Ace editor not available. Stack editor is unavailable.', null, 'user', 'warn', 'initEditorModal');
+        composeLogger('Ace 编辑器不可用，栈编辑器无法使用。', null, 'user', 'warn', 'initEditorModal');
         return;
     }
     // Initialize Ace editors for compose and env tabs only
@@ -1546,7 +1546,7 @@ function initEditorModal() {
             return;
         }
         if (!isValidWebUIUrl(url)) {
-            setSettingsFieldError('webui-url', 'Invalid WebUI URL. Must be http:// or https:// (supports [IP] and [PORT:xxxx] placeholders).');
+            setSettingsFieldError('webui-url', 'WebUI 地址无效：必须以 http:// 或 https:// 开头（支持 [IP] 与 [PORT:xxxx] 占位符）。');
             return;
         }
         if (/\[PORT\]/i.test(url)) {
@@ -1578,7 +1578,7 @@ function initEditorModal() {
         // Warn (and block Apply) if the selected file lives inside the stack project folder
         var stackPath = (editorModal.filePaths.stackMeta || '').replace(/\/$/, '');
         if (filePath && stackPath && filePath.startsWith(stackPath + '/')) {
-            setSettingsFieldError('external-compose-file', 'This file is inside the stack project folder. The path must be external to this stack.');
+            setSettingsFieldError('external-compose-file', '该文件位于栈项目目录内，路径必须在该栈之外。');
         } else {
             clearSettingsFieldError('external-compose-file');
         }
@@ -1674,7 +1674,7 @@ function initEditorModal() {
 function switchTab(tabName) {
     var validTabs = ['compose', 'env', 'labels', 'sources', 'settings'];
     if (validTabs.indexOf(tabName) === -1) {
-        composeLogger('Invalid tab name: ' + tabName, null, 'user', 'error', 'switchTab');
+        composeLogger('无效的标签页名称：' + tabName, null, 'user', 'error', 'switchTab');
         return;
     }
 
@@ -1707,7 +1707,7 @@ function switchTab(tabName) {
             editorModal.editors[tabName].renderer.updateFull();
             editorModal.editors[tabName].focus();
         } catch (e) {
-            composeLogger('Editor resize failed', {
+            composeLogger('编辑器调整尺寸失败', {
                 error: e && e.toString(),
                 tab: type
             }, 'user', 'warn', 'switchTab');
@@ -2166,7 +2166,7 @@ function loadSavedUpdateStatus() {
                     });
                 }
             } catch (e) {
-                composeLogger('Failed to load saved update status', {
+                composeLogger('加载已保存的更新状态失败', {
                     error: e && e.toString()
                 }, 'user', 'error', 'loadSavedUpdateStatus');
                 checkPendingRechecks(function(hadPendingRechecks) {
@@ -2186,7 +2186,7 @@ function loadSavedUpdateStatus() {
     }).fail(function(xhr, status, error) {
         // Reset flag on transport failure so retries can work
         savedUpdateStatusLoaded = false;
-        composeLogger('Failed to load saved update status', { status: status, error: error }, 'user', 'error', 'update-check');
+        composeLogger('加载已保存的更新状态失败', { status: status, error: error }, 'user', 'error', 'update-check');
     });
 }
 
@@ -2252,11 +2252,11 @@ function checkAutoUpdateIfNeeded(stacks) {
     // If we have a lastChecked time and it's within the interval, don't check
     if (latestCheck > 0 && (now - latestCheck) < intervalSeconds) {
         needsCheck = false;
-        composeLogger('Last check was ' + Math.round((now - latestCheck) / 60) + ' minutes ago, interval is ' + Math.round(intervalSeconds / 60) + ' minutes. Skipping.', null, 'user', 'debug', 'update-check');
+        composeLogger('上次检查于' + Math.round((now - latestCheck) / 60) + ' minutes ago, interval is ' + Math.round(intervalSeconds / 60) + ' minutes. Skipping.', null, 'user', 'debug', 'update-check');
     }
 
     if (needsCheck) {
-        composeLogger('Running automatic update check...', null, 'user', 'debug', 'update-check');
+        composeLogger('正在执行自动更新检查...', null, 'user', 'debug', 'update-check');
         checkAllUpdates();
     }
 }
@@ -2296,21 +2296,21 @@ function checkAllUpdates() {
                     updateUpdateAllButton();
                 }
             } catch (e) {
-                composeLogger('Failed to parse update check response', {
+                composeLogger('解析更新检查响应失败', {
                     error: e && e.toString()
                 }, 'user', 'error', 'checkAllUpdates');
             }
         }
-        $('#checkUpdatesBtn').prop('disabled', false).val('Check for Updates');
+        $('#checkUpdatesBtn').prop('disabled', false).val('检查更新');
     }).fail(function() {
-        $('#checkUpdatesBtn').prop('disabled', false).val('Check for Updates');
+        $('#checkUpdatesBtn').prop('disabled', false).val('检查更新');
         $('#updateAllBtn').prop('disabled', true);
         // Reset update columns to not checked state - scope to compose_stacks
         $('#compose_stacks .compose-updatecolumn').each(function() {
             var $cell = $(this);
             if (!$cell.find('.grey-text').length || $cell.find('.fa-docker').length === 0) {
                 // Only reset running stacks (not the "stopped" ones)
-                $cell.html('<span class="grey-text" style="white-space:nowrap;cursor:default;"><i class="fa fa-exclamation-circle fa-fw"></i> check failed</span>');
+                $cell.html('<span class="grey-text" style="white-space:nowrap;cursor:default;"><i class="fa fa-exclamation-circle fa-fw"></i>检查失败</span>');
             }
         });
     });
@@ -2365,7 +2365,7 @@ function updateAllStacks() {
     if (stacks.length === 0) {
         swal({
             title: 'No Updates Available',
-            text: autostartOnly ? 'No stacks with Autostart enabled have updates available.' : 'No stacks have updates available.',
+            text: autostartOnly ? 'No stacks with Autostart enabled have updates available.' : '没有栈有可用更新。',
             type: 'info'
         });
         return;
@@ -2374,12 +2374,12 @@ function updateAllStacks() {
     var stackNames = stacks.map(function(s) {
         return composeEscapeHtml(s.projectName);
     }).join('<br>');
-    var title = autostartOnly ? 'Update Autostart Stacks?' : 'Update All Stacks?';
+    var title = autostartOnly ? 'Update Autostart Stacks?' : '更新所有栈？';
     var confirmText = 'Yes, update ' + stacks.length + ' stack' + (stacks.length > 1 ? 's' : '');
 
     var bgCheckboxHtml = '<div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--dynamix-box-inner-div-border-color);display:flex;align-items:center;gap:8px;">' +
         '<input type="checkbox" id="swal-run-bg-updateall" style="width:16px;height:16px;cursor:pointer;">' +
-        '<label for="swal-run-bg-updateall" style="cursor:pointer;user-select:none;margin:0;font-size:0.95em;">Run in background</label>' +
+        '<label for="swal-run-bg-updateall" style="cursor:pointer;user-select:none;margin:0;font-size:0.95em;">后台运行</label>' +
         '</div>';
 
     getConfig().then(function(pluginCfg) {
@@ -2394,7 +2394,7 @@ function updateAllStacks() {
         swal({
             title: title,
             html: true,
-            text: '<div style="background:var(--alt-background-color);text-align:left;max-width:400px;margin:0 auto;"><p>The following stacks will be updated:</p><div style="background:var(--background-color);padding:10px;border-radius:4px;max-height:200px;overflow-y:auto;margin:10px 0;">' + stackNames + '</div><p class="compose-status-warning"><i class="fa fa-warning"></i> This will pull new images and recreate containers.</p></div>' + bgCheckboxHtml,
+            text: '<div style="background:var(--alt-background-color);text-align:left;max-width:400px;margin:0 auto;"><p>以下栈将被更新：</p><div style="background:var(--background-color);padding:10px;border-radius:4px;max-height:200px;overflow-y:auto;margin:10px 0;">' + stackNames + '</div><p class="compose-status-warning"><i class="fa fa-warning"></i>这会拉取新镜像并重建容器。</p></div>' + bgCheckboxHtml,
             type: 'warning',
             showCancelButton: true,
             confirmButtonText: confirmText,
@@ -2441,7 +2441,7 @@ function executeUpdateAllStacks(stacks, background, suppressBackgroundNotificati
     }, function() {
         performComposeAction({
             actionName: 'update',
-            title: 'Update All Stacks',
+            title: '更新所有栈',
             requestUrl: compURL,
             payload: {
                 action: 'composeUpdateMultiple',
@@ -2488,7 +2488,7 @@ function updateStackUpdateUI(stackName, stackInfo) {
 
     if (!isRunning) {
         // Stack is not running - show stopped
-        $updateCell.html('<span class="grey-text" style="white-space:nowrap;"><i class="fa fa-stop fa-fw"></i> stopped</span>');
+        $updateCell.html('<span class="grey-text" style="white-space:nowrap;"><i class="fa fa-stop fa-fw"></i>已停止</span>');
         return;
     }
 
@@ -2506,7 +2506,7 @@ function updateStackUpdateUI(stackName, stackInfo) {
 
     // Update the stack row's update column (match Docker tab style)
     if (updateCount > 0) {
-        // Updates available - orange "update ready" style with clickable link and SHA info
+        // Updates available - orange "有可用更新" style with clickable link and SHA info
         var updateHtml = '<a class="exec" style="cursor:pointer;" onclick="showUpdateWarning(\'' + composeEscapeAttr(stackName) + '\', \'' + composeEscapeAttr(stackId) + '\', \'update\');">';
         updateHtml += '<span class="orange-text" style="white-space:nowrap;"><i class="fa fa-flash fa-fw"></i> ' + updateCount + ' update' + (updateCount > 1 ? 's' : '') + '</span>';
         updateHtml += '</a>';
@@ -2526,7 +2526,7 @@ function updateStackUpdateUI(stackName, stackInfo) {
                 updateHtml += '</div>';
             } else if (updatesWithSha.length > 1) {
                 // Multiple updates - show expand hint
-                updateHtml += '<div class="compose-text-muted" style="font-size:0.8em;margin-top:2px;">Expand for details</div>';
+                updateHtml += '<div class="compose-text-muted" style="font-size:0.8em;margin-top:2px;">展开查看详情</div>';
             }
         }
 
@@ -2539,7 +2539,7 @@ function updateStackUpdateUI(stackName, stackInfo) {
         // No updates - check if all are pinned or up-to-date
         if (pinnedCount > 0 && pinnedCount === totalContainers) {
             // All containers are pinned
-            var html = '<span class="cyan-text" style="white-space:nowrap;"><i class="fa fa-thumb-tack fa-fw"></i> all pinned</span>';
+            var html = '<span class="cyan-text" style="white-space:nowrap;"><i class="fa fa-thumb-tack fa-fw"></i>全部已固定</span>';
             $updateCell.html(html);
         } else if (pinnedCount > 0) {
             // Some containers pinned, rest up-to-date
@@ -2558,7 +2558,7 @@ function updateStackUpdateUI(stackName, stackInfo) {
         // No containers found in update data — stack is running but
         // hasn't been checked yet.  Prompt a check rather than an
         // update so the SHA metadata gets populated first.
-        $updateCell.html('<a class="exec" style="cursor:pointer;" onclick="checkStackUpdates(\'' + composeEscapeAttr(stackName) + '\');"><i class="fa fa-cloud-download fa-fw"></i> check for updates</a>');
+        $updateCell.html('<a class="exec" style="cursor:pointer;" onclick="checkStackUpdates(\'' + composeEscapeAttr(stackName) + '\');"><i class="fa fa-cloud-download fa-fw"></i>检查更新</a>');
     }
 
     // Extra detail elements are controlled by table column visibility classes.
@@ -2638,7 +2638,7 @@ function checkStackUpdates(stackName) {
                     });
                 }
             } catch (e) {
-                composeLogger('Failed to parse update check response', {
+                composeLogger('解析更新检查响应失败', {
                     error: e && e.toString(),
                     stackName: stackName
                 }, 'user', 'error', 'checkStackUpdates');
@@ -2715,7 +2715,7 @@ function loadPersistentContainerCache() {
                 resolve(persistentContainerCache);
             })
             .fail(function() {
-                composeLogger('Failed to load persistent container cache', null, 'user', 'error', 'load-cache');
+                composeLogger('加载持久化容器缓存失败', null, 'user', 'error', 'load-cache');
                 persistentContainerCache = {};
                 resolve(persistentContainerCache);
             });
@@ -2862,8 +2862,8 @@ $(function() {
                                 <center> \
                                 <input type='button' onclick='editName(&quot;" + myID + "&quot;);' value='Edit Name' " + disabled + "> \
                                 <input type='button' onclick='editDesc(&quot;" + myID + "&quot;);' value='Edit Description' > \
-                                <input type='button' onclick='editStack(&quot;" + myID + "&quot;);' value='Edit Stack'> \
-                                <input type='button' onclick='deleteStack(&quot;" + myID + "&quot;);' value='Delete Stack' " + disabled + "> \
+                                <input type='button' onclick='editStack(&quot;" + myID + "&quot;);' value='编辑栈'> \
+                                <input type='button' onclick='deleteStack(&quot;" + myID + "&quot;);' value='删除栈' " + disabled + "> \
                                 <input type='button' onclick='ComposeLogs(&quot;" + myID + "&quot;);' value='Logs' " + notdisabled + "> \
                                 </center>");
         }
@@ -3640,7 +3640,7 @@ function addStack() {
         <div id="compose-stack-modal-overlay" class="compose-modal-overlay" style="display:flex;" onclick="if (event.target === this) closeComposeStackModal();">
             <div class="compose-modal" role="dialog" aria-modal="true" aria-labelledby="compose-stack-modal-title" aria-describedby="compose-stack-modal-desc" tabindex="-1" style="max-width:680px;">
                 <div class="compose-modal-header">
-                    <span id="compose-stack-modal-title">Add New Compose Stack</span>
+                    <span id="compose-stack-modal-title">新建 Compose 栈</span>
                     <button type="button" class="editor-btn editor-btn-cancel" onclick="closeComposeStackModal()" aria-label="Close modal"><i class="fa fa-times"></i></button>
                 </div>
                 <div class="compose-modal-body">
@@ -3648,14 +3648,14 @@ function addStack() {
                     <div id="compose-stack-git-deploy-key-panel" class="compose-git-deploy-key-panel" style="display:none;"></div>
 
                     <div class="settings-section">
-                        <div class="settings-section-title"><i class="fa fa-info-circle"></i> Stack Identity</div>
+                        <div class="settings-section-title"><i class="fa fa-info-circle"></i>栈标识</div>
 
                         <div class="settings-field">
-                            <label for="compose-stack-name">Stack Name</label>
+                            <label for="compose-stack-name">栈名称</label>
                             <input type="text" id="compose-stack-name" placeholder="e.g. My Compose Stack" autofocus>
                             <div id="compose-stack-name-error" class="compose-status-danger" style="margin-top:6px;display:none;font-size:0.9em;"></div>
                             <div class="settings-field-help" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-                                <span>Display name shown in the UI.</span>
+                                <span>界面中显示的名称。</span>
                                 <span id="compose-stack-name-slug-wrap" style="display:none;">
                                     Project folder: <code id="compose-stack-name-slug" style="font-size:0.95em;"></code>
                                 </span>
@@ -3663,34 +3663,34 @@ function addStack() {
                         </div>
 
                         <div class="settings-field">
-                            <label for="compose-stack-desc" id="compose-stack-modal-desc">Description</label>
-                            <input type="text" id="compose-stack-desc" placeholder="Optional short description">
-                            <div class="settings-field-help">Brief description of what this stack does.</div>
+                            <label for="compose-stack-desc" id="compose-stack-modal-desc">描述</label>
+                            <input type="text" id="compose-stack-desc" placeholder="可选的简短描述">
+                            <div class="settings-field-help">简要说明该栈的用途。</div>
                         </div>
                     </div>
 
                     <div class="settings-section">
-                        <div class="settings-section-title"><i class="fa fa-files-o"></i> Compose Sources &amp; Files</div>
+                        <div class="settings-section-title"><i class="fa fa-files-o"></i>Compose 源与文件</div>
 
                         <div class="settings-field">
-                            <label>Compose Source</label>
-                            <div class="settings-field-help" style="margin-bottom:8px;">Where will this stack's compose file live?</div>
+                            <label>Compose 源</label>
+                            <div class="settings-field-help" style="margin-bottom:8px;">该栈的 compose 文件将放在哪里？</div>
                             <div id="compose-stack-compose-source-radios" style="display:flex;flex-direction:column;gap:6px;">
                                 <label style="display:flex;align-items:center;gap:8px;font-weight:normal;">
                                     <input type="radio" name="compose-stack-compose-source" value="project" checked>
-                                    <span>Project folder <span class="compose-text-muted" style="font-size:0.9em;">(default — plugin creates a folder for you in the compose root)</span></span>
+                                    <span>项目文件夹<span class="compose-text-muted" style="font-size:0.9em;">(default — plugin creates a folder for you in the compose root)</span></span>
                                 </label>
                                 <label style="display:flex;align-items:center;gap:8px;font-weight:normal;">
                                     <input type="radio" name="compose-stack-compose-source" value="folder">
-                                    <span>External folder <span class="compose-text-muted" style="font-size:0.9em;">(use an existing directory that contains a compose file)</span></span>
+                                    <span>外部文件夹<span class="compose-text-muted" style="font-size:0.9em;">(use an existing directory that contains a compose file)</span></span>
                                 </label>
                                 <label style="display:flex;align-items:center;gap:8px;font-weight:normal;">
                                     <input type="radio" name="compose-stack-compose-source" value="file">
-                                    <span>Specific compose file <span class="compose-text-muted" style="font-size:0.9em;">(point at one exact <code>.yml</code>/<code>.yaml</code>)</span></span>
+                                    <span>指定 compose 文件<span class="compose-text-muted" style="font-size:0.9em;">(point at one exact <code>.yml</code>/<code>.yaml</code>)</span></span>
                                 </label>
                                 <label style="display:flex;align-items:center;gap:8px;font-weight:normal;">
                                     <input type="radio" name="compose-stack-compose-source" value="git">
-                                    <span>Git repository <span class="compose-text-muted" style="font-size:0.9em;">(deploy from a branch of a git repository; the plugin keeps its own clone)</span></span>
+                                    <span>Git 仓库<span class="compose-text-muted" style="font-size:0.9em;">(deploy from a branch of a git repository; the plugin keeps its own clone)</span></span>
                                 </label>
                             </div>
 
@@ -3703,26 +3703,26 @@ function addStack() {
                             <div id="compose-stack-external-file-wrap" class="settings-compose-source-input" style="margin-top:10px;display:none;">
                                 <input type="text" id="compose-stack-external-file" placeholder="/mnt/user/appdata/myapp/custom.compose.yml" data-pickroot="/" data-picktop="/mnt" data-pickcloseonfile="true" data-pickfilter="yml,yaml">
                                 <div id="compose-stack-external-file-error" class="compose-status-danger" style="margin-top:6px;display:none;font-size:0.9em;"></div>
-                                <div class="settings-field-help">Must be a <code>.yml</code>/<code>.yaml</code> file under <code>/mnt/</code> or <code>/boot/config/</code>.</div>
+                                <div class="settings-field-help">必须是<code>.yml</code>/<code>.yaml</code> file under <code>/mnt/</code> or <code>/boot/config/</code>.</div>
                             </div>
 
                             <div id="compose-stack-git-wrap" class="settings-compose-source-input" style="margin-top:10px;display:none;">
-                                <label for="compose-stack-git-url" style="font-weight:normal;">Repository address</label>
+                                <label for="compose-stack-git-url" style="font-weight:normal;">仓库地址</label>
                                 <input type="text" id="compose-stack-git-url" placeholder="https://github.com/me/stacks.git">
                                 <div id="compose-stack-git-url-error" class="compose-status-danger" style="margin-top:6px;display:none;font-size:0.9em;"></div>
                                 <div class="settings-field-help">An <code>https://</code> address, an ssh address (<code>git@host:me/stacks.git</code>), or the path of a repository under <code>/mnt/</code>. No password or token in it.</div>
                                 <div id="compose-stack-git-ssh-note" class="settings-field-help" style="display:none;">An ssh repository needs no credential: when you select Create, the stack uses the deploy key of another stack of the same repository, or a new key is made and shown here to add to the repository.</div>
 
-                                <label for="compose-stack-git-branch" style="font-weight:normal;margin-top:8px;">Branch</label>
+                                <label for="compose-stack-git-branch" style="font-weight:normal;margin-top:8px;">分支</label>
                                 <input type="text" id="compose-stack-git-branch" value="main" placeholder="main">
 
-                                <label for="compose-stack-git-compose-path" style="font-weight:normal;margin-top:8px;">Compose file in the repository</label>
+                                <label for="compose-stack-git-compose-path" style="font-weight:normal;margin-top:8px;">仓库中的 compose 文件</label>
                                 <input type="text" id="compose-stack-git-compose-path" placeholder="myapp/compose.yaml">
                                 <div id="compose-stack-git-compose-path-error" class="compose-status-danger" style="margin-top:6px;display:none;font-size:0.9em;"></div>
                                 <div class="settings-field-help">The path from the top of the repository.</div>
 
                                 <div id="compose-stack-git-credential-wrap">
-                                    <label for="compose-stack-git-credential" style="font-weight:normal;margin-top:8px;">Credential</label>
+                                    <label for="compose-stack-git-credential" style="font-weight:normal;margin-top:8px;">凭据</label>
                                     <select id="compose-stack-git-credential"><option value="">None (a public repository)</option></select>
                                     <div class="settings-field-help">For a private https repository, first add a git token on the Credentials tab of the plugin's settings, then choose it here. For an ssh repository, no credential is needed: the stack uses its repository's deploy key.</div>
                                 </div>
@@ -3731,36 +3731,36 @@ function addStack() {
                         </div>
 
                         <div class="settings-field">
-                            <label for="compose-stack-env-path">External ENV File Path</label>
-                            <input type="text" id="compose-stack-env-path" placeholder="Default (.env in compose source folder)" data-pickroot="/" data-picktop="/mnt" data-pickcloseonfile="true">
+                            <label for="compose-stack-env-path">外部 ENV 文件路径</label>
+                            <input type="text" id="compose-stack-env-path" placeholder="默认（Compose 源目录中的 .env）" data-pickroot="/" data-picktop="/mnt" data-pickcloseonfile="true">
                             <div class="settings-field-help">Path to an external .env file. Leave empty to use the default .env file in the compose source folder.</div>
                         </div>
 
                         <div class="settings-field">
-                            <label>Compose File Discovery</label>
+                            <label>Compose 文件发现</label>
                             <div id="compose-stack-discovery-mode-row" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-                                <span id="compose-stack-discovery-mode-badge" class="compose-status-info" style="padding:4px 10px;border:1px solid var(--dynamix-box-inner-div-border-color);border-radius:4px;font-size:0.9em;">Discovery mode: Explicit <code>-f</code> flags</span>
-                                <button type="button" id="compose-stack-discovery-mode-toggle" class="btn btn-sm" style="padding:2px 12px;font-size:0.9em;">Use default discovery</button>
+                                <span id="compose-stack-discovery-mode-badge" class="compose-status-info" style="padding:4px 10px;border:1px solid var(--dynamix-box-inner-div-border-color);border-radius:4px;font-size:0.9em;">Discovery mode: Explicit <code>-f</code>参数</span>
+                                <button type="button" id="compose-stack-discovery-mode-toggle" class="btn btn-sm" style="padding:2px 12px;font-size:0.9em;">使用默认发现</button>
                             </div>
                             <div id="compose-stack-default-compose-files-disabled-note" class="compose-status-warning" style="display:none;margin-top:8px;font-size:0.9em;"></div>
-                            <div class="settings-field-help"><strong>Default discovery</strong> lets Docker Compose auto-load <code>compose.override.*</code> and honor <code>COMPOSE_FILE</code> in <code>.env</code>. <strong>Explicit <code>-f</code> flags</strong> is used when the plugin passes each compose file directly. Overrides (Specific compose file, ENV path) require explicit mode.</div>
+                            <div class="settings-field-help"><strong>默认发现</strong> lets Docker Compose auto-load <code>compose.override.*</code> and honor <code>COMPOSE_FILE</code> in <code>.env</code>. <strong>显式<code>-f</code>参数</strong> is used when the plugin passes each compose file directly. Overrides (Specific compose file, ENV path) require explicit mode.</div>
                             <input type="checkbox" id="compose-stack-use-default-compose-files" style="position:absolute;left:-9999px;" tabindex="-1" aria-hidden="true">
                         </div>
                     </div>
 
                     <div class="settings-section">
-                        <div class="settings-section-title"><i class="fa fa-tags"></i> Labels &amp; Overrides</div>
+                        <div class="settings-section-title"><i class="fa fa-tags"></i>标签与覆盖</div>
 
                         <div class="settings-field">
-                            <label>Override File Management</label>
+                            <label>覆盖文件管理</label>
                             <div id="compose-stack-override-management-radios" style="display:flex;flex-direction:column;gap:6px;">
                                 <label style="display:flex;align-items:flex-start;gap:8px;font-weight:normal;">
                                     <input type="radio" name="compose-stack-override-management" value="automatic" checked style="margin-top:3px;">
-                                    <span><strong>Automatic</strong> — plugin manages <code>compose.override.yaml</code>. Labels tab shows the form editor.</span>
+                                    <span><strong>自动</strong> — plugin manages <code>compose.override.yaml</code>. Labels tab shows the form editor.</span>
                                 </label>
                                 <label style="display:flex;align-items:flex-start;gap:8px;font-weight:normal;">
                                     <input type="radio" name="compose-stack-override-management" value="manual" style="margin-top:3px;">
-                                    <span><strong>Manual</strong> — you manage <code>compose.override.yaml</code> directly. Labels tab shows the raw YAML editor and automated edits are blocked.</span>
+                                    <span><strong>手动</strong> — you manage <code>compose.override.yaml</code> directly. Labels tab shows the raw YAML editor and automated edits are blocked.</span>
                                 </label>
                             </div>
                             <div class="settings-field-help">Automatic is recommended for most stacks.</div>
@@ -3768,7 +3768,7 @@ function addStack() {
                     </div>
                 </div>
                 <div class="compose-modal-footer">
-                    <button class="editor-btn editor-btn-cancel" onclick="closeComposeStackModal()">Cancel</button>
+                    <button class="editor-btn editor-btn-cancel" onclick="closeComposeStackModal()">取消</button>
                     <button class="editor-btn editor-btn-save-all" id="compose-stack-create-btn" onclick="submitComposeStackModal()" disabled>Create</button>
                 </div>
             </div>
@@ -3862,7 +3862,7 @@ function addStack() {
         var overrideManagementAutomatic = (overrideRadio && overrideRadio.value === 'manual') ? 'false' : 'true';
         var errorDiv = document.getElementById('compose-stack-modal-error');
         if (!name) {
-            errorDiv.textContent = "Please enter a stack name.";
+            errorDiv.textContent = "请输入栈名称。";
             errorDiv.style.display = "block";
             return;
         }
@@ -3901,12 +3901,12 @@ function addStack() {
                         response = JSON.parse(data);
                     } catch (e) {
                         // Handle invalid or unexpected JSON response
-                        composeLogger('Failed to parse addStack response', {
+                        composeLogger('解析新建栈响应失败', {
                             error: e && e.toString(),
                             data: data
                         }, 'user', 'error', 'addStack');
                         swal({
-                            title: "Failed to create stack",
+                            title: "创建栈失败",
                             text: "Unexpected response from server",
                             type: "error"
                         });
@@ -3917,15 +3917,15 @@ function addStack() {
                         composeLoadlist();
                     } else {
                         swal({
-                            title: "Failed to create stack",
-                            text: response.message || "An error occurred",
+                            title: "创建栈失败",
+                            text: response.message || "发生错误",
                             type: "error"
                         });
                     }
                 } else {
                     swal({
-                        title: "Failed to create stack",
-                        text: "No response from server",
+                        title: "创建栈失败",
+                        text: "服务器无响应",
                         type: "error"
                     });
                 }
@@ -3933,8 +3933,8 @@ function addStack() {
         ).fail(function() {
             window.closeComposeStackModal();
             swal({
-                title: "Failed to create stack",
-                text: "Request failed",
+                title: "创建栈失败",
+                text: "请求失败",
                 type: "error"
             });
         });
@@ -4131,7 +4131,7 @@ function buildRemoveOrphansCheckboxHtml(checkboxId, checked) {
     var checkedAttr = checked ? ' checked' : '';
     return '<div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--dynamix-box-inner-div-border-color);display:flex;align-items:center;gap:8px;">' +
         '<input type="checkbox" id="' + checkboxId + '"' + checkedAttr + ' style="width:16px;height:16px;cursor:pointer;">' +
-        '<label for="' + checkboxId + '" style="cursor:pointer;user-select:none;margin:0;font-size:0.95em;">Remove orphans</label>' +
+        '<label for="' + checkboxId + '" style="cursor:pointer;user-select:none;margin:0;font-size:0.95em;">移除孤立容器</label>' +
         '</div>';
 }
 
@@ -4190,10 +4190,10 @@ function generateProfiles(myID, myProject = null) {
                 }, function(data) {
                     if (!data) {
                         swal({
-                            title: "Failed to update profiles.",
+                            title: "更新配置档失败。",
                             type: "error"
                         });
-                        composeLogger('Failed to update profiles', {
+                        composeLogger('更新配置档失败', {
                             project: project,
                             rawProfiles: rawProfiles,
                             response: data
@@ -4215,7 +4215,7 @@ function editStackSettings(myID) {
         if (rawEnvPath) {
             var rawEnvPath = JSON.parse(rawEnvPath);
             if (rawEnvPath.result == 'success') {
-                var formHtml = `<div class="swal-text" style="font-weight: bold; padding-left: 0px; margin-top: 0px;">ENV File Path</div>`;
+                var formHtml = `<div class="swal-text" style="font-weight: bold; padding-left: 0px; margin-top: 0px;">ENV 文件路径</div>`;
                 formHtml += `<br>`;
                 formHtml += `<input type='text' id='env_path' class='swal-content__input' pattern="(\/mnt\/.*\/.+)" oninput="this.reportValidity()" title="A path under /mnt/user/ or /mnt/cache/ or /mnt/pool/" placeholder=Default value='${rawEnvPath.content}'>`;
                 swal({
@@ -4233,7 +4233,7 @@ function editStackSettings(myID) {
                             envPath: new_env_path,
                             script: project
                         }, function(data) {
-                            var title = "Failed to set stack settings.";
+                            var title = "保存栈设置失败。";
                             var message = "";
                             var type = "error";
                             if (data) {
@@ -4245,7 +4245,7 @@ function editStackSettings(myID) {
                                     message = response.message;
                                     type = response.result;
                                 } catch (e) {
-                                    message = "Invalid server response.";
+                                    message = "服务器响应无效。";
                                 }
                             }
                             swal({
@@ -4293,7 +4293,7 @@ function notifyBackgroundStarted(label, shouldNotify = true) {
     if (!shouldNotify) return;
 
     swal({
-        title: 'Running in background',
+        title: '正在后台运行',
         text: label + ' has been started in the background.\nYou will receive a notification when it completes.',
         type: 'info',
         timer: 3000,
@@ -4353,7 +4353,7 @@ function pollBackgroundCompletion(stackName, refreshDelayMs = 0) {
                     return; // stop scheduling
                 }
             } catch (e) {
-                composeLogger('Parse error', e, 'user', 'error', 'poll');
+                composeLogger('解析错误', e, 'user', 'error', 'poll');
             }
 
             // Schedule next check if still within timeout (30 minutes)
@@ -4362,7 +4362,7 @@ function pollBackgroundCompletion(stackName, refreshDelayMs = 0) {
             if (elapsed < 1800) {
                 timeoutHandle = setTimeout(check, interval);
             } else {
-                composeLogger('Timeout after 30m', {
+                composeLogger('30 分钟后超时', {
                     stack: stackName
                 }, 'user', 'warn', 'poll');
                 setStackActionInProgress(stackName, false);
@@ -4384,10 +4384,10 @@ function composeActionStateText(actionName) {
         pull: 'pulling...',
         update: 'updating...',
         forceUpdate: 'updating...',
-        composeUpPullBuild: 'pulling and rebuilding...',
+        composeUpPullBuild: '正在拉取并重建...',
         gitDeploy: 'deploying...'
     };
-    return map[actionName] || 'checking...';
+    return map[actionName] || '检查中...';
 }
 
 // Stacks imported from the original compose plugin can have two plausible
@@ -4407,7 +4407,7 @@ function composeShowIdentityChooser(info) {
     }
 
     swal({
-        title: 'Compose project identity required',
+        title: '需要 Compose 项目标识',
         text: html,
         html: true,
         type: 'warning',
@@ -4426,8 +4426,8 @@ function composeHandleIdentityError(info) {
 
     var message = (info && info.message)
         ? String(info.message)
-        : 'Compose project identity is unresolved. Resolve each affected stack before retrying.';
-    swal('Compose project identity required', message, 'warning');
+        : 'Compose 项目标识未确定，请先解决受影响的栈再重试。';
+    swal('需要 Compose 项目标识', message, 'warning');
 }
 
 $(document).on('click', '.compose-identity-warning', function (event) {
@@ -4609,7 +4609,7 @@ function ComposeUpConfirmed(path, opts) {
     opts = opts || {};
     confirmedComposeAction(path, {
         actionName: 'up',
-        titlePrefix: 'Compose Up',
+        titlePrefix: '启动',
         requestUrl: compURL,
         payload: {
             action: 'composeUp',
@@ -4635,7 +4635,7 @@ function ComposeRecreateConfirmed(path, profile = "") {
         profile: profile
     }, function(data) {
         if (data) {
-            openBox(data, "Compose Recreate: " + basename(path), height, width, true);
+            openBox(data, "Compose 重建：" + basename(path), height, width, true);
         }
     })
 }
@@ -4648,7 +4648,7 @@ function ComposeDownConfirmed(path, opts) {
     opts = opts || {};
     confirmedComposeAction(path, {
         actionName: 'down',
-        titlePrefix: 'Compose Down',
+        titlePrefix: '停止',
         requestUrl: compURL,
         payload: {
             action: 'composeDown',
@@ -4671,7 +4671,7 @@ function ComposeStopConfirmed(path, opts) {
     opts = opts || {};
     confirmedComposeAction(path, {
         actionName: 'stop',
-        titlePrefix: 'Compose Stop',
+        titlePrefix: '停止',
         requestUrl: compURL,
         payload: {
             action: 'composeStop',
@@ -4693,7 +4693,7 @@ function ComposeRestartConfirmed(path, opts) {
     opts = opts || {};
     confirmedComposeAction(path, {
         actionName: 'restart',
-        titlePrefix: 'Compose Restart',
+        titlePrefix: '重启',
         requestUrl: compURL,
         payload: {
             action: 'composeUpRecreate',
@@ -4728,7 +4728,7 @@ function ForceUpdateStackConfirmed(path, opts) {
             }, done);
         },
         actionName: 'forceUpdate',
-        titlePrefix: 'Force Update',
+        titlePrefix: '强制更新',
         requestUrl: compURL,
         payload: {
             action: 'composeUpPullBuild',
@@ -4755,7 +4755,7 @@ function promptRecreateContainers(closeAfterSave) {
     if (!project) {
         swal({
             title: "Saved!",
-            text: "All changes have been saved.",
+            text: "所有更改已保存。",
             type: "success",
             showConfirmButton: false
         });
@@ -4801,9 +4801,9 @@ function promptRecreateContainers(closeAfterSave) {
     swal({
         title: "Recreate Containers?",
         text: '<div style="text-align:left;max-width:400px;margin:0 auto;">' +
-            '<p>Container labels (icon, WebUI) have been saved.</p>' +
-            '<p class="compose-status-warning"><i class="fa fa-exclamation-triangle"></i> <strong>Containers must be recreated</strong> for these changes to take effect.</p>' +
-            '<p class="compose-text-muted" style="font-size:0.9em;">This will briefly restart the affected containers. Your data will be preserved.</p>' +
+            '<p>容器标签（图标、WebUI）已保存。</p>' +
+            '<p class="compose-status-warning"><i class="fa fa-exclamation-triangle"></i> <strong>容器必须重建</strong>这些更改才会生效。</p>' +
+            '<p class="compose-text-muted" style="font-size:0.9em;">这会短暂重启受影响的容器，你的数据将被保留。</p>' +
             '</div>',
         html: true,
         type: "warning",
@@ -5062,7 +5062,7 @@ function setStackActionInProgress(stackName, inProgress, text) {
         if (text) {
             $state.text(text);
         } else {
-            $state.text('checking...');
+            $state.text('检查中...');
         }
     } else {
         // Restore original icon classes if we saved them
@@ -5143,8 +5143,8 @@ function gitDeployStack(path, project, commit, profile) {
         var response = tryParseJson(data);
         if (!response || response.result !== 'success') {
             swal({
-                title: 'Cannot deploy ' + project,
-                text: (response && response.message) || 'Could not read the git stack.',
+                title: '无法部署：' + project,
+                text: (response && response.message) || '无法读取 Git 栈。',
                 type: 'error'
             });
             return;
@@ -5157,8 +5157,8 @@ function gitDeployStack(path, project, commit, profile) {
         // deploy, so say it here and offer no Deploy, rather than fail in the terminal window.
         if (git.problem) {
             swal({
-                title: 'Cannot deploy ' + project,
-                text: 'Problem found: ' + git.problem + '\n\nDeployed now: ' + deployedNow + '. Nothing was changed.',
+                title: '无法部署：' + project,
+                text: '发现问题：' + git.problem + '\n\nDeployed now: ' + deployedNow + '. Nothing was changed.',
                 type: 'error'
             });
             return;
@@ -5180,10 +5180,10 @@ function gitDeployStack(path, project, commit, profile) {
         // The deploy refuses either kind of change unless it may save and discard it.
         var found = [];
         if (git.commitMadeByHand) {
-            found.push('the checked-out commit ' + gitShortCommit(git.checkedOutCommit) + ' was made in the clone by hand');
+            found.push('当前检出的提交 ' + gitShortCommit(git.checkedOutCommit) + ' was made in the clone by hand');
         }
         if (changes.length > 0) {
-            found.push('these files differ from the repository: ' + changes.join(', '));
+            found.push('这些文件与仓库不一致：' + changes.join(', '));
         }
         swal({
             title: 'Changes made in the clone',
@@ -5199,8 +5199,8 @@ function gitDeployStack(path, project, commit, profile) {
         });
     }).fail(function() {
         swal({
-            title: 'Cannot deploy ' + project,
-            text: 'Could not read the git stack.',
+            title: '无法部署：' + project,
+            text: '无法读取 Git 栈。',
             type: 'error'
         });
     });
@@ -5211,7 +5211,7 @@ function gitDeployStack(path, project, commit, profile) {
 function checkGitStack(path, project) {
     swal({
         title: 'Checking ' + project + '...',
-        text: 'Asking the repository for the latest commit.',
+        text: '正在向仓库查询最新提交。',
         type: 'info',
         showConfirmButton: false
     });
@@ -5232,7 +5232,7 @@ function checkGitStack(path, project) {
         if (check.upToDate) {
             swal({
                 title: project + ' is up to date',
-                text: 'The latest commit on ' + check.branch + ' (' + gitShortCommit(check.remoteCommit) + ') is deployed.',
+                text: '最新提交位于' + check.branch + ' (' + gitShortCommit(check.remoteCommit) + ') is deployed.',
                 type: 'success'
             });
             return;
@@ -5249,10 +5249,10 @@ function checkGitStack(path, project) {
             // A stack at the top of the repository gets this answer only for commits that change no file.
             var unchanged = check.stackFolder
                 ? 'nothing in ' + check.stackFolder + '/, the folder holding this stack\'s compose file. In a repository '
-                    + 'with several stacks, that is usually a commit to another stack.'
-                : 'no files.';
+                    + '存在多个栈时，这通常是另一个栈的提交。'
+                : '没有文件。';
             dialog = {
-                title: 'A newer commit is on ' + check.branch + ', outside this stack\'s folder',
+                title: '有更新的提交位于：' + check.branch + ', outside this stack\'s folder',
                 text: latestLine + '\n' + deployedLine + '.\n'
                     + 'The commits since then change ' + unchanged
                     + '\n\nDeploy it anyway if this stack uses files from outside that folder: '
@@ -5265,16 +5265,16 @@ function checkGitStack(path, project) {
                 title: 'A commit is on ' + check.branch + ' to deploy',
                 text: 'Commit ' + gitShortCommit(check.remoteCommit) + ' on ' + check.branch + ' is ready to deploy.\n'
                     + 'Nothing is currently deployed.',
-                confirmButtonText: 'Pull and Redeploy'
+                confirmButtonText: '拉取并重新部署'
             };
         } else if (check.deployedCommitMissing) {
             // The clone was made again since the deploy (after a force-push, say), so there is
             // nothing to compare the new commit with.
             dialog = {
-                title: 'A newer commit is on ' + check.branch,
+                title: '有更新的提交位于：' + check.branch,
                 text: latestLine + '\n' + deployedLine + ', but it is no longer in the clone, so the changes '
                     + 'cannot be identified.',
-                confirmButtonText: 'Pull and Redeploy'
+                confirmButtonText: '拉取并重新部署'
             };
         } else {
             // The stack's folder is the folder holding its compose file in the repository.
@@ -5282,9 +5282,9 @@ function checkGitStack(path, project) {
                 ? check.stackFolder + '/, this stack\'s folder'
                 : 'this stack\'s files (its compose file is at the top of the repository)';
             dialog = {
-                title: 'A newer commit is on ' + check.branch,
+                title: '有更新的提交位于：' + check.branch,
                 text: latestLine + '\n' + deployedLine + '.\nThe commits since then change ' + changed + '.',
-                confirmButtonText: 'Pull and Redeploy'
+                confirmButtonText: '拉取并重新部署'
             };
         }
         swal({
@@ -5305,7 +5305,7 @@ function checkGitStack(path, project) {
     }).fail(function() {
         swal({
             title: 'Could not check ' + project,
-            text: 'Request failed.',
+            text: '请求失败。',
             type: 'error'
         });
     });
@@ -5333,8 +5333,8 @@ function promptGitDeployCommit(path, project) {
         if (!/^([0-9a-f]{40}|[0-9a-f]{64})$/.test(commit)) {
             setTimeout(function() {
                 swal({
-                    title: 'Not a full commit id',
-                    text: 'Enter the full commit id (40 characters, or 64 in a SHA-256 repository), not a short one or a branch name.',
+                    title: '不是完整的提交 ID',
+                    text: '请输入完整的提交 ID（40 位，SHA-256 仓库为 64 位），不要使用短 ID 或分支名。',
                     type: 'error'
                 });
             }, 200);
@@ -5384,7 +5384,7 @@ function startAllStacks() {
         // Only include stopped stacks
         var $stateEl = $row.find('.state');
         var stateText = $stateEl.text();
-        if (stateText === 'stopped' || !isUp) {
+        if (stateText === 'stopped' || stateText === '已停止' || !isUp) {
             stacks.push({
                 project: project,
                 projectName: projectName,
@@ -5395,8 +5395,8 @@ function startAllStacks() {
 
     if (stacks.length === 0) {
         swal({
-            title: 'No Stacks to Start',
-            text: autostartOnly ? 'No stopped stacks with Autostart enabled found.' : 'No stopped stacks found.',
+            title: '没有要启动的栈',
+            text: autostartOnly ? '没有找到启用了自动启动的已停止栈。' : '没有找到已停止的栈。',
             type: 'info'
         });
         return;
@@ -5405,12 +5405,12 @@ function startAllStacks() {
     var stackNames = stacks.map(function(s) {
         return composeEscapeHtml(s.projectName);
     }).join('<br>');
-    var title = autostartOnly ? 'Start Autostart Stacks?' : 'Start All Stacks?';
+    var title = autostartOnly ? 'Start Autostart Stacks?' : '启动所有栈？';
     var confirmText = autostartOnly ? 'Yes, start ' + stacks.length + ' autostart stack' + (stacks.length > 1 ? 's' : '') : 'Yes, start ' + stacks.length + ' stack' + (stacks.length > 1 ? 's' : '');
 
     var bgCheckboxHtml = '<div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--dynamix-box-inner-div-border-color);display:flex;align-items:center;gap:8px;">' +
         '<input type="checkbox" id="swal-run-bg-startall" style="width:16px;height:16px;cursor:pointer;">' +
-        '<label for="swal-run-bg-startall" style="cursor:pointer;user-select:none;margin:0;font-size:0.95em;">Run in background</label>' +
+        '<label for="swal-run-bg-startall" style="cursor:pointer;user-select:none;margin:0;font-size:0.95em;">后台运行</label>' +
         '</div>';
     getConfig().then(function(pluginCfg) {
         var bgDefault = pluginCfg && pluginCfg.RUN_IN_BACKGROUND_DEFAULT === 'true';
@@ -5431,7 +5431,7 @@ function startAllStacks() {
         swal({
             title: title,
             html: true,
-            text: '<div style="background:var(--alt-background-color);text-align:left;max-width:400px;margin:0 auto;"><p>The following stacks will be started:</p><div style="background:var(--background-color);padding:10px;border-radius:4px;max-height:200px;overflow-y:auto;margin:10px 0;">' + stackNames + '</div>' + removeOrphansHtml + bgCheckboxHtml + '</div>',
+            text: '<div style="background:var(--alt-background-color);text-align:left;max-width:400px;margin:0 auto;"><p>以下栈将被启动：</p><div style="background:var(--background-color);padding:10px;border-radius:4px;max-height:200px;overflow-y:auto;margin:10px 0;">' + stackNames + '</div>' + removeOrphansHtml + bgCheckboxHtml + '</div>',
             type: 'warning',
             showCancelButton: true,
             confirmButtonText: confirmText,
@@ -5489,12 +5489,12 @@ function executeStartAllStacks(opts) {
     }, function(data) {
         var parsed = tryParseJson(data);
         if (parsed && parsed.background) {
-            notifyBackgroundStarted('Start All Stacks', !suppressBackgroundNotification);
+            notifyBackgroundStarted('启动所有栈', !suppressBackgroundNotification);
             stacks.forEach(function(s) {
                 pollBackgroundCompletion(s.project);
             });
         } else if (data) {
-            openBox(data, 'Start All Stacks', height, width, true);
+            openBox(data, '启动所有栈', height, width, true);
         }
     });
 }
@@ -5519,7 +5519,7 @@ function stopAllStacks() {
         // Only include running stacks
         var $stateEl = $row.find('.state');
         var stateText = $stateEl.text();
-        if (stateText !== 'stopped' && isUp) {
+        if (stateText !== 'stopped' && stateText !== '已停止' && isUp) {
             stacks.push({
                 project: project,
                 projectName: projectName,
@@ -5530,8 +5530,8 @@ function stopAllStacks() {
 
     if (stacks.length === 0) {
         swal({
-            title: 'No Stacks to Stop',
-            text: autostartOnly ? 'No running stacks with Autostart enabled found.' : 'No running stacks found.',
+            title: '没有要停止的栈',
+            text: autostartOnly ? '没有找到启用了自动启动的运行中栈。' : '没有找到运行中的栈。',
             type: 'info'
         });
         return;
@@ -5540,12 +5540,12 @@ function stopAllStacks() {
     var stackNames = stacks.map(function(s) {
         return composeEscapeHtml(s.projectName);
     }).join('<br>');
-    var title = autostartOnly ? 'Stop Autostart Stacks?' : 'Stop All Stacks?';
-    var confirmText = autostartOnly ? 'Yes, stop ' + stacks.length + ' autostart stack' + (stacks.length > 1 ? 's' : '') : 'Yes, stop ' + stacks.length + ' stack' + (stacks.length > 1 ? 's' : '');
+    var title = autostartOnly ? '停止自动启动的栈？' : '停止所有栈？';
+    var confirmText = autostartOnly ? '是，停止' + stacks.length + ' autostart stack' + (stacks.length > 1 ? 's' : '') : '是，停止' + stacks.length + ' stack' + (stacks.length > 1 ? 's' : '');
 
     var bgCheckboxHtml = '<div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--dynamix-box-inner-div-border-color);display:flex;align-items:center;gap:8px;">' +
         '<input type="checkbox" id="swal-run-bg-stopall" style="width:16px;height:16px;cursor:pointer;">' +
-        '<label for="swal-run-bg-stopall" style="cursor:pointer;user-select:none;margin:0;font-size:0.95em;">Run in background</label>' +
+        '<label for="swal-run-bg-stopall" style="cursor:pointer;user-select:none;margin:0;font-size:0.95em;">后台运行</label>' +
         '</div>';
     getConfig().then(function(pluginCfg) {
         var bgDefault = pluginCfg && pluginCfg.RUN_IN_BACKGROUND_DEFAULT === 'true';
@@ -5566,7 +5566,7 @@ function stopAllStacks() {
         swal({
             title: title,
             html: true,
-            text: '<div style="background:var(--alt-background-color);text-align:left;max-width:400px;margin:0 auto;"><p>The following stacks will be stopped:</p><div style="background:var(--background-color);padding:10px;border-radius:4px;max-height:200px;overflow-y:auto;margin:10px 0;">' + stackNames + '</div><p class="compose-status-warning" style="margin-top:10px;"><i class="fa fa-exclamation-triangle"></i> Containers will be stopped and removed. Data in volumes will be preserved.</p>' + removeOrphansHtml + bgCheckboxHtml + '</div>',
+            text: '<div style="background:var(--alt-background-color);text-align:left;max-width:400px;margin:0 auto;"><p>以下栈将被停止：</p><div style="background:var(--background-color);padding:10px;border-radius:4px;max-height:200px;overflow-y:auto;margin:10px 0;">' + stackNames + '</div><p class="compose-status-warning" style="margin-top:10px;"><i class="fa fa-exclamation-triangle"></i>容器将被停止并移除，数据卷中的数据会被保留。</p>' + removeOrphansHtml + bgCheckboxHtml + '</div>',
             type: 'warning',
             showCancelButton: true,
             confirmButtonText: confirmText,
@@ -5624,12 +5624,12 @@ function executeStopAllStacks(opts) {
     }, function(data) {
         var parsed = tryParseJson(data);
         if (parsed && parsed.background) {
-            notifyBackgroundStarted('Stop All Stacks', !suppressBackgroundNotification);
+            notifyBackgroundStarted('停止所有栈', !suppressBackgroundNotification);
             stacks.forEach(function(s) {
                 pollBackgroundCompletion(s.project);
             });
         } else if (data) {
-            openBox(data, 'Stop All Stacks', height, width, true);
+            openBox(data, '停止所有栈', height, width, true);
         }
     });
 }
@@ -5831,7 +5831,7 @@ function renderStackActionDialog(action, displayName, path, profile, containers,
             warning: 'Images will be pulled if not present locally.',
             warningIcon: 'info-circle',
             warningColor: window.getComputedStyle(document.documentElement).getPropertyValue('--dynamix-ui-dropdownchecklist-color'),
-            confirmText: 'Compose Up',
+            confirmText: '启动',
             showVersionArrow: false,
             showRemoveOrphans: true,
             confirmedFn: ComposeUpConfirmed
@@ -5843,7 +5843,7 @@ function renderStackActionDialog(action, displayName, path, profile, containers,
             warning: 'Containers will be removed but data in volumes is preserved.',
             warningIcon: 'exclamation-triangle',
             warningColor: window.getComputedStyle(document.documentElement).getPropertyValue('--dynamix-sb-message-link-color'),
-            confirmText: 'Compose Down',
+            confirmText: '停止',
             showVersionArrow: false,
             showRemoveOrphans: true,
             confirmedFn: ComposeDownConfirmed
@@ -5855,7 +5855,7 @@ function renderStackActionDialog(action, displayName, path, profile, containers,
             warning: 'Containers will be stopped but not removed. Use Compose Up to start them again.',
             warningIcon: 'info-circle',
             warningColor: window.getComputedStyle(document.documentElement).getPropertyValue('--dynamix-ui-dropdownchecklist-color'),
-            confirmText: 'Compose Stop',
+            confirmText: '停止',
             showVersionArrow: false,
             confirmedFn: ComposeStopConfirmed
         },
@@ -5866,15 +5866,15 @@ function renderStackActionDialog(action, displayName, path, profile, containers,
             warning: 'Containers will be recreated. Data in volumes is preserved.',
             warningIcon: 'info-circle',
             warningColor: window.getComputedStyle(document.documentElement).getPropertyValue('--dynamix-ui-dropdownchecklist-color'),
-            confirmText: 'Compose Restart',
+            confirmText: '重启',
             showVersionArrow: false,
             confirmedFn: ComposeRestartConfirmed
         },
         'pull': {
             title: pullLabel + ': ' + composeEscapeHtml(displayName),
-            description: 'This will ' + (hasBuild ? 'build images for' : 'pull the latest images for') + ' <b>' + composeEscapeHtml(displayName) + '</b> without starting containers.',
+            description: 'This will ' + (hasBuild ? 'build images for' : '拉取以下栈的最新镜像：') + ' <b>' + composeEscapeHtml(displayName) + '</b> without starting containers.',
             listTitle: 'CONTAINERS',
-            warning: hasBuild ? 'Images will be built from Dockerfile.' : 'Images will be pulled from the registry.',
+            warning: hasBuild ? 'Images will be built from Dockerfile.' : '将从镜像仓库拉取镜像。',
             warningIcon: 'info-circle',
             warningColor: window.getComputedStyle(document.documentElement).getPropertyValue('--dynamix-ui-dropdownchecklist-color'),
             confirmText: pullLabel,
@@ -5899,7 +5899,7 @@ function renderStackActionDialog(action, displayName, path, profile, containers,
             warning: 'All containers will be recreated with freshly pulled images.',
             warningIcon: 'exclamation-triangle',
             warningColor: window.getComputedStyle(document.documentElement).getPropertyValue('--brand-orange') || window.getComputedStyle(document.documentElement).getPropertyValue('--dynamix-sb-message-link-color'),
-            confirmText: 'Force Update',
+            confirmText: '强制更新',
             showVersionArrow: false,
             confirmedFn: ForceUpdateStackConfirmed
         }
@@ -5966,7 +5966,7 @@ function renderStackActionDialog(action, displayName, path, profile, containers,
                     html += '<span class="compose-status-success" title="' + composeEscapeAttr(remoteSha) + '">' + composeEscapeHtml(remoteSha.substring(0, 8)) + '</span>';
                     html += '</div>';
                     if (dockerVersionsInstalled) {
-                        html += '<div style="margin-top:4px;"><a href="#" data-changelog-container="' + composeEscapeAttr(containerName) + '" data-changelog-path="' + composeEscapeAttr(path) + '" data-changelog-profile="' + composeEscapeAttr(profile || '') + '" onclick="showComposeChangelog(this.dataset.changelogContainer,this.dataset.changelogPath,this.dataset.changelogProfile);return false;" style="font-size:0.85em;"><i class="fa fa-list" style="margin-right:3px;"></i>Changelog</a></div>';
+                        html += '<div style="margin-top:4px;"><a href="#" data-changelog-container="' + composeEscapeAttr(containerName) + '" data-changelog-path="' + composeEscapeAttr(path) + '" data-changelog-profile="' + composeEscapeAttr(profile || '') + '" onclick="showComposeChangelog(this.dataset.changelogContainer,this.dataset.changelogPath,this.dataset.changelogProfile);return false;" style="font-size:0.85em;"><i class="fa fa-list" style="margin-right:3px;"></i>更新日志</a></div>';
                     }
                 } else if (localSha) {
                     // No update - just show current SHA (greyed)
@@ -5987,7 +5987,7 @@ function renderStackActionDialog(action, displayName, path, profile, containers,
     if (cfg.showRemoveOrphans) {
         html += '<div id="swal-remove-orphans-wrap" style="display:none;">' +
             buildRemoveOrphansCheckboxHtml('swal-remove-orphans-checkbox') +
-            '<div class="compose-text-muted" style="margin-top:6px;font-size:0.85em;margin-left:24px;">Adds --remove-orphans to the compose command.</div>' +
+            '<div class="compose-text-muted" style="margin-top:6px;font-size:0.85em;margin-left:24px;">在 compose 命令中追加 --remove-orphans。</div>' +
             '</div>';
     }
 
@@ -5995,14 +5995,14 @@ function renderStackActionDialog(action, displayName, path, profile, containers,
     if (action === 'up') {
         followLogsHtml = '<div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--dynamix-box-inner-div-border-color);display:flex;align-items:center;gap:8px;">' +
             '<input type="checkbox" id="swal-follow-logs-checkbox" style="width:16px;height:16px;cursor:pointer;">' +
-            '<label for="swal-follow-logs-checkbox" style="cursor:pointer;user-select:none;margin:0;font-size:0.95em;">Follow stack logs</label>' +
+            '<label for="swal-follow-logs-checkbox" style="cursor:pointer;user-select:none;margin:0;font-size:0.95em;">跟随栈日志</label>' +
             '</div>';
     }
 
     // Run-in-background checkbox (appended after config is fetched below)
     var bgCheckboxHtml = '<div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--dynamix-box-inner-div-border-color);display:flex;align-items:center;gap:8px;">' +
         '<input type="checkbox" id="swal-run-bg-checkbox" style="width:16px;height:16px;cursor:pointer;">' +
-        '<label for="swal-run-bg-checkbox" style="cursor:pointer;user-select:none;margin:0;font-size:0.95em;">Run in background</label>' +
+        '<label for="swal-run-bg-checkbox" style="cursor:pointer;user-select:none;margin:0;font-size:0.95em;">后台运行</label>' +
         '</div>';
     html += followLogsHtml + bgCheckboxHtml;
     html += '</div>';
@@ -6081,14 +6081,14 @@ function ViewLastCmdLog(project, displayName) {
         if (!parsed || parsed.result !== 'success') {
             swal({
                 title: 'Error',
-                text: 'Could not retrieve the log.',
+                text: '无法获取日志。',
                 type: 'error'
             });
             return;
         }
         if (!parsed.log) {
             swal({
-                title: 'No log available',
+                title: '没有可用日志',
                 text: 'No command log has been saved for ' + composeEscapeHtml(displayName) + ' yet.\nRun a command to generate one.',
                 type: 'info'
             });
@@ -6113,7 +6113,7 @@ function ComposePullConfirmed(path, opts) {
     opts = opts || {};
     confirmedComposeAction(path, {
         actionName: 'pull',
-        titlePrefix: 'Compose Pull',
+        titlePrefix: '拉取镜像',
         requestUrl: compURL,
         payload: {
             action: 'composePull',
@@ -6229,7 +6229,7 @@ function openStackActionsMenu(event, stackId) {
 
     // Show/hide certain actions based on state
     // Delete is disabled when stack is running
-    var $deleteBtn = $('.stack-action-item:contains("Delete Stack")');
+    var $deleteBtn = $('.stack-action-item:contains("删除栈")');
     if (isUp) {
         $deleteBtn.addClass('disabled').prop('disabled', true);
     } else {
@@ -6321,20 +6321,20 @@ function showProfileSelector(action, path, profiles, runningProfile, defaultProf
         defaultProfile = '';
     }
     var actionNames = {
-        'up': 'Compose Up',
-        'down': 'Compose Down',
-        'stop': 'Compose Stop',
-        'restart': 'Compose Restart',
+        'up': '启动',
+        'down': '停止',
+        'stop': '停止',
+        'restart': '重启',
         'update': 'Update',
-        'forceUpdate': 'Force Update',
-        'pull': 'Compose Pull',
-        'logs': 'Compose Logs',
+        'forceUpdate': '强制更新',
+        'pull': '拉取镜像',
+        'logs': '查看日志',
         'gitDeploy': 'the git deploy'
     };
 
     // Build profile selection UI:
     // - Default services (no profile) are always included and non-toggleable.
-    // - "All profile-based services" enables every profile via "*".
+    // - "所有基于配置档的服务" enables every profile via "*".
     // - Individual profiles can be multi-selected when all-profiles is off.
     var profileHtml = '<div style="text-align: left;">';
     profileHtml += '<div style="margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid var(--dynamix-box-inner-div-border-color);">';
@@ -6382,8 +6382,8 @@ function showProfileSelector(action, path, profiles, runningProfile, defaultProf
     profileHtml += '</div>';
 
     swal({
-        title: "Select Profiles",
-        text: "Choose which profiles to use for " + actionNames[action] + "<br><br>" + profileHtml,
+        title: "选择配置档",
+        text: "选择要用于以下栈的配置档：" + actionNames[action] + "<br><br>" + profileHtml,
         html: true,
         showCancelButton: true,
         confirmButtonText: "Continue",
@@ -6446,7 +6446,7 @@ function toggleAllProfiles(checkbox) {
 }
 
 function updateProfileCheckboxes() {
-    // If any individual profile is checked, uncheck "all profiles"
+    // If any individual profile is checked, uncheck "所有配置档"
     var anyIndividualChecked = $('.profile_checkbox:checked').length > 0;
     if (anyIndividualChecked) {
         $('#profile_all_profiles').prop('checked', false);
@@ -6456,8 +6456,8 @@ function updateProfileCheckboxes() {
 function openEditorModalByProject(project, projectName, initialTab) {
     if (typeof ace === 'undefined') {
         swal({
-            title: 'Editor Unavailable',
-            text: 'The Ace editor library could not be loaded. Please reload the page or verify the plugin installation.',
+            title: '编辑器不可用',
+            text: 'Ace 编辑器库加载失败，请刷新页面或检查插件安装。',
             type: 'error'
         });
         return;
@@ -6628,7 +6628,7 @@ function switchComposeFile(path) {
             if (!data) return;
             var response = jQuery.parseJSON(data);
             if (response.result !== 'success') {
-                swal({ type: 'error', title: 'Load Failed', text: response.message || 'Unable to load file.' });
+                swal({ type: 'error', title: '加载失败', text: response.message || '无法加载文件。' });
                 $('#compose-file-selector').val(editorModal.filePaths.compose);
                 return;
             }
@@ -6641,7 +6641,7 @@ function switchComposeFile(path) {
             updateEditorFileInfo();
             validateYaml('compose', response.content || '');
         }).fail(function() {
-            swal({ type: 'error', title: 'Load Failed', text: 'Unable to load file (network error).' });
+            swal({ type: 'error', title: '加载失败', text: 'Unable to load file (network error).' });
             $('#compose-file-selector').val(editorModal.filePaths.compose);
         });
     };
@@ -6702,7 +6702,7 @@ function showGitSourceForStack(project, isGitStack) {
             response = { result: 'error', message: 'Unexpected response from server.' };
         }
         if (response.result !== 'success') {
-            $('#settings-git-source-error').text(response.message || 'Could not read the git stack.').show();
+            $('#settings-git-source-error').text(response.message || '无法读取 Git 栈。').show();
             return;
         }
         renderGitSource(response.git);
@@ -6711,7 +6711,7 @@ function showGitSourceForStack(project, isGitStack) {
             return;
         }
         $('#settings-git-source-loading').hide();
-        $('#settings-git-source-error').text('Could not read the git stack.').show();
+        $('#settings-git-source-error').text('无法读取 Git 栈。').show();
     });
 }
 
@@ -6726,7 +6726,7 @@ function showGitLocalChanges($box, git) {
     $box.empty().append(
         $('<div class="compose-git-warning-box-title">').append(
             $('<i class="fa fa-exclamation-triangle">'),
-            $('<span>').text('Changed in the clone')
+            $('<span>').text('克隆目录中有改动')
         )
     );
     if (git.commitMadeByHand) {
@@ -6734,15 +6734,15 @@ function showGitLocalChanges($box, git) {
             + ' was made in the clone by hand, not in the repository.'));
     }
     if (changes.length > 0) {
-        $box.append($('<div>').text('Files changed: ' + changes.join(', ')));
+        $box.append($('<div>').text('已更改的文件：' + changes.join(', ')));
     }
-    $box.append($('<div style="margin-top:6px;">').text('The next deploy stops on these. Pull and Redeploy offers to '
-        + 'save them as a patch in the stack folder and discard them. To keep a change, make it in the repository.'));
+    $box.append($('<div style="margin-top:6px;">').text('下次部署会因此中止。「拉取并重新部署」可选择'
+        + '将它们保存为栈目录中的补丁并丢弃。若要保留改动，请在仓库中修改。'));
     $box.show();
 }
 
 // Turn the stack open in the editor into a git stack (the Sources tab's
-// "Move this stack into git..."), through the same code as compose-git convert.
+// "将该栈迁移到 Git..."), through the same code as compose-git convert.
 function openConvertToGitModal() {
     var project = editorModal.currentProject;
     if (!project) {
@@ -6751,7 +6751,7 @@ function openConvertToGitModal() {
     if (editorModal.modifiedTabs.size + editorModal.modifiedSettings.size + editorModal.modifiedLabels.size > 0) {
         swal({
             title: 'Unsaved changes',
-            text: 'Save or discard the changes in the editor first.',
+            text: '请先保存或放弃编辑器中的更改。',
             type: 'warning'
         });
         return;
@@ -6774,28 +6774,28 @@ function openConvertToGitModal() {
                         alone until the stack is deployed.
                     </div>
                     <div class="settings-field">
-                        <label for="compose-convert-git-url">Repository address</label>
+                        <label for="compose-convert-git-url">仓库地址</label>
                         <input type="text" id="compose-convert-git-url" placeholder="https://github.com/me/stacks.git">
                         <div class="settings-field-help">An <code>https://</code> address, an ssh address (<code>git@host:me/stacks.git</code>), or the path of a repository under <code>/mnt/</code>.</div>
                         <div id="compose-convert-git-ssh-note" class="settings-field-help" style="display:none;">An ssh repository needs no credential: when you select Move into git, the stack uses the deploy key of another stack of the same repository, or a new key is made and shown here to add to the repository.</div>
                     </div>
                     <div class="settings-field">
-                        <label for="compose-convert-git-branch">Branch</label>
+                        <label for="compose-convert-git-branch">分支</label>
                         <input type="text" id="compose-convert-git-branch" value="main" placeholder="main">
                     </div>
                     <div class="settings-field">
-                        <label for="compose-convert-git-compose-path">Compose file in the repository</label>
+                        <label for="compose-convert-git-compose-path">仓库中的 compose 文件</label>
                         <input type="text" id="compose-convert-git-compose-path" placeholder="myapp/compose.yaml">
                     </div>
                     <div class="settings-field" id="compose-convert-git-credential-wrap">
-                        <label for="compose-convert-git-credential">Credential</label>
+                        <label for="compose-convert-git-credential">凭据</label>
                         <select id="compose-convert-git-credential"><option value="">None (a public repository)</option></select>
                         <div class="settings-field-help">For a private https repository, first add a git token on the Credentials tab of the plugin's settings, then choose it here. For an ssh repository, no credential is needed: the stack uses its repository's deploy key.</div>
                     </div>
                 </div>
                 <div class="compose-modal-footer">
-                    <button class="editor-btn editor-btn-cancel" onclick="closeConvertToGitModal()">Cancel</button>
-                    <button class="editor-btn editor-btn-save-all" id="compose-convert-git-btn" onclick="submitConvertToGit()">Move into git</button>
+                    <button class="editor-btn editor-btn-cancel" onclick="closeConvertToGitModal()">取消</button>
+                    <button class="editor-btn editor-btn-save-all" id="compose-convert-git-btn" onclick="submitConvertToGit()">迁移到 Git</button>
                 </div>
             </div>
         </div>
@@ -6847,10 +6847,10 @@ function submitConvertToGit() {
             // What the server said before it stopped (an ssh stack's deploy key hint, say).
             var messages = ((response && response.messages) || []).join('\n\n');
             $buttons.prop('disabled', false);
-            $('#compose-convert-git-btn').text('Move into git');
+            $('#compose-convert-git-btn').text('迁移到 Git');
             if (response && response.deployKey) {
                 showGitDeployKeyPanel($('#compose-convert-git-deploy-key-panel'), response.deployKey,
-                    (messages ? messages + '\n\n' : '') + (response.message || ''), 'Move into git');
+                    (messages ? messages + '\n\n' : '') + (response.message || ''), '迁移到 Git');
                 return;
             }
             $error.text((messages ? messages + '\n\n' : '') + ((response && response.message) || 'Unexpected response from server.')).show();
@@ -6869,13 +6869,13 @@ function submitConvertToGit() {
         });
     }).fail(function() {
         $buttons.prop('disabled', false);
-        $('#compose-convert-git-btn').text('Move into git');
-        $error.text('Request failed. If the repository is large, the clone may still be running: '
-            + 'reopen the stack before trying again.').show();
+        $('#compose-convert-git-btn').text('迁移到 Git');
+        $error.text('请求失败。若仓库较大，克隆可能仍在进行：'
+            + '请重新打开该栈后再试。').show();
     });
 }
 
-// Save the Sources tab's "Automatic deploys" choice at once (it is not part of Apply).
+// Save the Sources tab's "自动部署" choice at once (it is not part of Apply).
 function saveGitAutoDeploy(autoDeploy) {
     var project = editorModal.currentProject;
     var $saved = $('#settings-git-auto-deploy-saved');
@@ -6889,7 +6889,7 @@ function saveGitAutoDeploy(autoDeploy) {
         if (!response || response.result !== 'success') {
             $saved.hide();
             swal({
-                title: 'Automatic deploys not changed',
+                title: '自动部署设置未改变',
                 text: (response && response.message) || 'Unexpected response from server.',
                 type: 'error'
             });
@@ -6899,7 +6899,7 @@ function saveGitAutoDeploy(autoDeploy) {
         $saved.text('Saved').show();
     }).fail(function() {
         $saved.hide();
-        swal({ title: 'Automatic deploys not changed', text: 'Request failed.', type: 'error' });
+        swal({ title: '自动部署设置未改变', text: '请求失败。', type: 'error' });
         showGitSourceForStack(project, true);
     });
 }
@@ -6922,7 +6922,7 @@ function resumeGitStack(project) {
         swal({ title: project, text: (response.messages || []).join('\n'), type: 'success' });
         composeLoadlist();
     }).fail(function() {
-        swal({ title: 'Could not resume ' + project, text: 'Request failed.', type: 'error' });
+        swal({ title: 'Could not resume ' + project, text: '请求失败。', type: 'error' });
     });
 }
 
@@ -7288,7 +7288,7 @@ function loadLabelsData(callback) {
     var project = editorModal.currentProject;
     if (!project) return;
 
-    $('#labels-services-container').html('<div class="labels-empty-state"><i class="fa fa-spinner fa-spin"></i> Loading services...</div>');
+    $('#labels-services-container').html('<div class="labels-empty-state"><i class="fa fa-spinner fa-spin"></i>正在加载服务...</div>');
 
     // Load both compose file and override file to build the labels UI
     var composePromise = $.post(caURL, {
@@ -7306,7 +7306,7 @@ function loadLabelsData(callback) {
             var overrideData = JSON.parse(overrideResult[0]);
 
             if (composeData.result !== 'success') {
-                throw new Error('Failed to load compose file');
+                throw new Error('加载 Compose 文件失败');
             }
 
             var mainDoc = loadComposeYaml(composeData.content) || {
@@ -7350,7 +7350,7 @@ function loadLabelsData(callback) {
             $('#labels-services-container').html('<div class="labels-empty-state"><i class="fa fa-exclamation-triangle"></i> Error loading services: ' + composeEscapeHtml(e.message) + '</div>');
         }
     }).fail(function() {
-        $('#labels-services-container').html('<div class="labels-empty-state"><i class="fa fa-exclamation-triangle"></i> Failed to load compose files</div>');
+        $('#labels-services-container').html('<div class="labels-empty-state"><i class="fa fa-exclamation-triangle"></i>加载 compose 文件失败</div>');
     });
 }
 
@@ -7358,7 +7358,7 @@ function createOverrideTemplate() {
     var project = editorModal.currentProject;
     if (!project) return;
 
-    if (enforcePathSettingsExclusivity('creating override templates')) {
+    if (enforcePathSettingsExclusivity('正在创建覆盖模板')) {
         return;
     }
 
@@ -7379,7 +7379,7 @@ function createOverrideTemplate() {
                 if (handleStaleEditorResponse(response, 'Override file location changed while this dialog was open. Reloading the editor.')) {
                     return;
                 }
-                throw new Error(response.message || 'Failed to create override template.');
+                throw new Error(response.message || '创建覆盖模板失败。');
             }
 
             editorModal.labelsData = editorModal.labelsData || {};
@@ -7401,14 +7401,14 @@ function createOverrideTemplate() {
         } catch (error) {
             swal({
                 title: 'Create Failed',
-                text: error && error.message ? error.message : 'Failed to create override template.',
+                text: error && error.message ? error.message : '创建覆盖模板失败。',
                 type: 'error'
             });
         }
     }).fail(function() {
         swal({
             title: 'Create Failed',
-            text: 'Failed to create override template.',
+            text: '创建覆盖模板失败。',
             type: 'error'
         });
     }).always(function() {
@@ -7438,7 +7438,7 @@ function createEnvTemplate() {
                 if (handleStaleEditorResponse(response, '.env file location changed while this dialog was open. Reloading the editor.')) {
                     return;
                 }
-                throw new Error(response.message || 'Failed to create .env template.');
+                throw new Error(response.message || '创建 .env 模板失败。');
             }
 
             editorModal.envExists = true;
@@ -7458,14 +7458,14 @@ function createEnvTemplate() {
         } catch (error) {
             swal({
                 title: 'Create Failed',
-                text: error && error.message ? error.message : 'Failed to create .env template.',
+                text: error && error.message ? error.message : '创建 .env 模板失败。',
                 type: 'error'
             });
         }
     }).fail(function() {
         swal({
             title: 'Create Failed',
-            text: 'Failed to create .env template.',
+            text: '创建 .env 模板失败。',
             type: 'error'
         });
     }).always(function() {
@@ -7534,7 +7534,7 @@ function renderLabelsUI(mainDoc, overrideDoc) {
         );
         $header.append($('<span>', { 'class': 'labels-service-name' }).text(containerName));
 
-        $fields.append(buildLabeledInput('fa fa-picture-o', 'Icon URL / Path', {
+        $fields.append(buildLabeledInput('fa fa-picture-o', '图标 URL / 路径', {
             type: 'text',
             id: 'label-' + serviceKey + '-icon',
             value: iconValue,
@@ -7546,7 +7546,7 @@ function renderLabelsUI(mainDoc, overrideDoc) {
             'data-pickcloseonfile': 'true',
             'data-pickfilter': 'png,jpg,jpeg,gif,svg,ico,webp'
         }));
-        $fields.append(buildLabeledInput('fa fa-globe', 'WebUI URL', {
+        $fields.append(buildLabeledInput('fa fa-globe', 'WebUI 地址', {
             type: 'text',
             id: 'label-' + serviceKey + '-webui',
             value: webuiValue,
@@ -7893,7 +7893,7 @@ function saveSettingsWithOptionalReload(closeAfterSave) {
             if (closeAfterSave) {
                 doCloseEditorModal();
             } else {
-                reloadEditorModal(reloadTab, 'Stack paths changed. Files were reloaded from the current target.');
+                reloadEditorModal(reloadTab, '栈路径已更改，已从当前目标重新加载文件。');
             }
             if (project) {
                 setTimeout(function() {
@@ -7903,17 +7903,17 @@ function saveSettingsWithOptionalReload(closeAfterSave) {
             return true;
         }
 
-        var errorText = saveErrors.length > 0 ? saveErrors.join('\n') : 'Failed to save stack settings.';
+        var errorText = saveErrors.length > 0 ? saveErrors.join('\n') : '保存栈设置失败。';
         swal({
-            title: 'Save Failed',
+            title: '保存失败',
             text: errorText,
             type: 'error'
         });
         return false;
     }).fail(function() {
         swal({
-            title: 'Save Failed',
-            text: 'Failed to save stack settings.',
+            title: '保存失败',
+            text: '保存栈设置失败。',
             type: 'error'
         });
         return false;
@@ -7934,7 +7934,7 @@ function saveCurrentTab() {
     if (!currentTab) return;
     var saveErrors = [];
 
-    if (currentTab !== 'sources' && enforcePathSettingsExclusivity('saving files')) {
+    if (currentTab !== 'sources' && enforcePathSettingsExclusivity('正在保存文件')) {
         return;
     }
 
@@ -7987,7 +7987,7 @@ function saveCurrentTab() {
 
 function parseSaveResponse(data, saveErrors, saveTarget) {
     if (!data) {
-        if (saveErrors) saveErrors.push('Failed to save ' + saveTarget + '. Empty server response.');
+        if (saveErrors) saveErrors.push('保存失败：' + saveTarget + '. Empty server response.');
         return false;
     }
 
@@ -7998,7 +7998,7 @@ function parseSaveResponse(data, saveErrors, saveTarget) {
             try {
                 response = JSON.parse(trimmed);
             } catch (e) {
-                if (saveErrors) saveErrors.push('Failed to save ' + saveTarget + '. Invalid server response.');
+                if (saveErrors) saveErrors.push('保存失败：' + saveTarget + '. Invalid server response.');
                 return false;
             }
         } else {
@@ -8014,7 +8014,7 @@ function parseSaveResponse(data, saveErrors, saveTarget) {
             if (saveErrors) saveErrors.push('__STALE_PATH__');
             return false;
         }
-        if (saveErrors) saveErrors.push(response.message || ('Failed to save ' + saveTarget + '.'));
+        if (saveErrors) saveErrors.push(response.message || ('保存失败：' + saveTarget + '.'));
         return false;
     }
 
@@ -8078,14 +8078,14 @@ function saveTab(tabName, saveErrors) {
         }
 
         // A git stack's files are in its clone, so saving one changes the clone:
-        // read its state again for the Sources tab and the "Changed in the clone" box.
+        // read its state again for the Sources tab and the "克隆目录中有改动" box.
         if (editorModal.isGitStack) {
             showGitSourceForStack(project, true);
         }
 
         return true;
     }).fail(function() {
-        if (saveErrors) saveErrors.push('Failed to save ' + tabName + ' file.');
+        if (saveErrors) saveErrors.push('保存失败：' + tabName + ' file.');
         return false;
     });
 }
@@ -8108,7 +8108,7 @@ function saveSettings(saveErrors) {
                 editorModal.modifiedSettings.delete('name');
                 return true;
             }).fail(function() {
-                if (saveErrors) saveErrors.push('Failed to save stack name.');
+                if (saveErrors) saveErrors.push('保存栈名称失败。');
                 return false;
             })
         );
@@ -8127,7 +8127,7 @@ function saveSettings(saveErrors) {
                 editorModal.modifiedSettings.delete('description');
                 return true;
             }).fail(function() {
-                if (saveErrors) saveErrors.push('Failed to save description.');
+                if (saveErrors) saveErrors.push('保存描述失败。');
                 return false;
             })
         );
@@ -8171,7 +8171,7 @@ function saveSettings(saveErrors) {
                     try {
                         var response = JSON.parse(data);
                     } catch (e) {
-                        if (saveErrors) saveErrors.push('Invalid server response when saving settings.');
+                        if (saveErrors) saveErrors.push('保存设置时服务器返回无效响应。');
                         return false;
                     }
                     if (response.result === 'success') {
@@ -8201,7 +8201,7 @@ function saveSettings(saveErrors) {
                         editorModal.modifiedSettings.delete('use-default-compose-files');
                         return true;
                     }
-                    if (saveErrors) saveErrors.push(response.message || 'Failed to save stack settings.');
+                    if (saveErrors) saveErrors.push(response.message || '保存栈设置失败。');
                 }
                 return false;
             }).fail(function() {
@@ -8224,7 +8224,7 @@ function saveSettings(saveErrors) {
                     try {
                         var response = JSON.parse(data);
                     } catch (e) {
-                        if (saveErrors) saveErrors.push('Invalid server response when saving override management mode.');
+                        if (saveErrors) saveErrors.push('保存覆盖管理方式时服务器返回无效响应。');
                         return false;
                     }
                     if (response.result === 'success') {
@@ -8234,10 +8234,10 @@ function saveSettings(saveErrors) {
                         toggleLabelsViewMode(labelsViewMode === 'advanced', true);
                         return true;
                     }
-                    if (saveErrors) saveErrors.push(response.message || 'Failed to save override management mode.');
+                    if (saveErrors) saveErrors.push(response.message || '保存覆盖管理方式失败。');
                     return false;
                 }
-                if (saveErrors) saveErrors.push('Failed to save override management mode. Empty server response.');
+                if (saveErrors) saveErrors.push('保存覆盖管理方式失败，服务器返回为空。');
                 return false;
             }).fail(function() {
                 if (saveErrors) saveErrors.push('Failed to save override management mode (network error).');
@@ -8313,7 +8313,7 @@ function saveAllChanges(closeAfterSave) {
             if (allSucceeded) {
                 if (skippedManualLabels) {
                     swal({
-                        title: "Partially Saved",
+                        title: "部分保存",
                         text: "Non-label changes were saved. WebUI label form edits were not saved because Override File Management is set to Manual. Switch to Automatic to save Labels form changes.",
                         type: "warning"
                     });
@@ -8336,7 +8336,7 @@ function saveAllChanges(closeAfterSave) {
                     }
                     swal({
                         title: "Saved!",
-                        text: "All changes have been saved.",
+                        text: "所有更改已保存。",
                         type: "success",
                         showConfirmButton: false
                     });
@@ -8359,8 +8359,8 @@ function saveAllChanges(closeAfterSave) {
                     return;
                 }
                 swal({
-                    title: 'Save Failed',
-                    text: filteredErrors.join('\n') || 'An unknown error occurred while saving.',
+                    title: '保存失败',
+                    text: filteredErrors.join('\n') || '保存时发生未知错误。',
                     type: 'error'
                 });
             }
@@ -8390,8 +8390,8 @@ function saveAllChanges(closeAfterSave) {
 
     if (removedServices.length > 0) {
         swal({
-            title: 'Running Stack Changed',
-            text: 'This stack is running and the compose file no longer defines: ' + removedServices.join(', ') + '. Saving now can leave orphaned containers behind. Stop the stack first, or use Remove orphans from the Compose Up/Down dialog to clean them up.',
+            title: '运行中的栈已变化',
+            text: '该栈正在运行，而 compose 文件不再定义：' + removedServices.join(', ') + '. Saving now can leave orphaned containers behind. Stop the stack first, or use Remove orphans from the Compose Up/Down dialog to clean them up.',
             type: 'warning',
             showCancelButton: true,
             confirmButtonText: 'Save Anyway',
@@ -8468,7 +8468,7 @@ function saveLabels(saveErrors) {
         managed: editorModal.labelsViewMode === 'basic' ? 1 : 0,
         expectedPath: getExpectedSavePathForTab('override')
     }).then(function(data) {
-        if (!parseSaveResponse(data, saveErrors, 'WebUI labels')) {
+        if (!parseSaveResponse(data, saveErrors, 'WebUI 标签')) {
             return false;
         }
 
@@ -8503,8 +8503,8 @@ function saveLabels(saveErrors) {
         return true;
     }).fail(function() {
         swal({
-            title: "Save Failed",
-            text: "Failed to save WebUI labels. Please try again.",
+            title: "保存失败",
+            text: "保存 WebUI 标签失败，请重试。",
             type: "error"
         });
         return false;
@@ -8521,10 +8521,10 @@ function closeEditorModal() {
     if (totalChanges > 0) {
         swal({
             title: "Unsaved Changes",
-            text: "You have unsaved changes. Are you sure you want to close?",
+            text: "你有未保存的更改，确定要关闭吗？",
             type: "warning",
             showCancelButton: true,
-            confirmButtonText: "Discard Changes",
+            confirmButtonText: "放弃更改",
             cancelButtonText: "Cancel"
         }, function(confirmed) {
             if (confirmed) {
@@ -8614,7 +8614,7 @@ function deleteStackByProject(project, projectName) {
         cancelButtonText: "Cancel"
     }, function(confirmed) {
         if (confirmed) {
-            setStackActionInProgress(project, true, 'Deleting stack...');
+            setStackActionInProgress(project, true, '正在删除栈...');
             $.post(caURL, {
                 action: 'deleteStack',
                 stackName: project
@@ -8623,8 +8623,8 @@ function deleteStackByProject(project, projectName) {
                     if (!data) {
                         setStackActionInProgress(project, false);
                         swal({
-                            title: 'Delete Failed',
-                            text: 'Empty response from server while deleting stack.',
+                            title: '删除失败',
+                            text: '删除栈时服务器返回为空。',
                             type: 'error'
                         });
                         return;
@@ -8634,8 +8634,8 @@ function deleteStackByProject(project, projectName) {
                     if (!response || !response.result) {
                         setStackActionInProgress(project, false);
                         swal({
-                            title: 'Delete Failed',
-                            text: 'Unexpected delete response from server.',
+                            title: '删除失败',
+                            text: '删除栈时服务器返回了意外响应。',
                             type: 'error'
                         });
                         return;
@@ -8644,8 +8644,8 @@ function deleteStackByProject(project, projectName) {
                     if (response.result === 'error') {
                         setStackActionInProgress(project, false);
                         swal({
-                            title: 'Delete Failed',
-                            text: response.message || 'Unable to delete stack.',
+                            title: '删除失败',
+                            text: response.message || '无法删除栈。',
                             type: 'error'
                         });
                         return;
@@ -8656,8 +8656,8 @@ function deleteStackByProject(project, projectName) {
                     if (response.result === 'warning') {
                         setTimeout(function() {
                             swal({
-                                title: 'Stack deleted. Files remain on disk.',
-                                text: response.message || 'Some external files were not removed.',
+                                title: '栈已删除，文件仍保留在磁盘上。',
+                                text: response.message || '部分外部文件未被删除。',
                                 type: 'warning'
                             });
                         }, 100);
@@ -8666,7 +8666,7 @@ function deleteStackByProject(project, projectName) {
 
                     setTimeout(function() {
                         swal({
-                            title: 'Stack deleted',
+                            title: '栈已删除',
                             text: composeEscapeHtml(projectName) + ' was removed successfully.',
                             type: 'success',
                             showConfirmButton: false
@@ -8677,13 +8677,13 @@ function deleteStackByProject(project, projectName) {
                     }, 100);
                 } catch (e) {
                     setStackActionInProgress(project, false);
-                    composeLogger('Delete response parse error', {
+                    composeLogger('删除响应解析错误', {
                         project: project,
                         error: e
                     }, 'user', 'error', 'stack-action');
                     swal({
-                        title: 'Delete Failed',
-                        text: 'Could not parse delete response.',
+                        title: '删除失败',
+                        text: '无法解析删除响应。',
                         type: 'error'
                     });
                 }
@@ -8693,8 +8693,8 @@ function deleteStackByProject(project, projectName) {
                     project: project
                 }, 'user', 'error', 'stack-action');
                 swal({
-                    title: 'Delete Failed',
-                    text: 'Network error while deleting stack.',
+                    title: '删除失败',
+                    text: '删除栈时发生网络错误。',
                     type: 'error'
                 });
             });
@@ -8839,8 +8839,8 @@ function updateStackToggleAllButtonState() {
     var allExpanded = hasStacks && expandedCount === stackIds.length;
 
     $button.prop('disabled', !hasStacks);
-    $button.attr('title', allExpanded ? 'Collapse all stacks' : 'Expand all stacks');
-    $button.attr('aria-label', allExpanded ? 'Collapse all stacks' : 'Expand all stacks');
+    $button.attr('title', allExpanded ? '折叠所有栈' : '展开所有栈');
+    $button.attr('aria-label', allExpanded ? '折叠所有栈' : '展开所有栈');
     $button.toggleClass('is-expanded', allExpanded);
 }
 
@@ -8968,7 +8968,7 @@ function loadStackContainerDetails(stackId, project) {
     }, 'user', 'debug', 'container-details');
 
     // Show loading state
-    $container.html('<div class="stack-details-loading"><i class="fa fa-spinner fa-spin"></i> Loading container details...</div>');
+    $container.html('<div class="stack-details-loading"><i class="fa fa-spinner fa-spin"></i>正在加载容器详情...</div>');
 
     function fetchAndRender(finishLoad) {
         $.post(caURL, {
@@ -8988,10 +8988,10 @@ function loadStackContainerDetails(stackId, project) {
             if (parsed && parsed.message) {
                 renderError(parsed.message, finishLoad, 'error');
             } else {
-                renderError('Failed to load container details', finishLoad, 'warning');
+                renderError('加载容器详情失败', finishLoad, 'warning');
             }
         }).fail(function() {
-            renderError('Failed to load container details', finishLoad, 'error');
+            renderError('加载容器详情失败', finishLoad, 'error');
         });
     }
 
@@ -9037,19 +9037,19 @@ function renderContainerDetails(stackId, containers, project) {
     var $container = $('#details-container-' + stackId);
 
     if (!containers || containers.length === 0) {
-        $container.html('<div class="stack-details-empty"><i class="fa fa-info-circle"></i> No containers found. Stack may not be running.</div>');
+        $container.html('<div class="stack-details-empty"><i class="fa fa-info-circle"></i>未找到容器，该栈可能未运行。</div>');
         return;
     }
 
     // Mini Docker table - matches Docker tab columns
     var html = '<table class="tablesorter shift compose-ct-table">';
     html += '<thead><tr>';
-    html += '<th class="ct-col-name">Container</th>';
-    html += '<th class="ct-col-update">Update</th>';
-    html += '<th class="ct-col-health">Health</th>';
-    html += '<th class="ct-col-source">Source</th>';
-    html += '<th class="ct-col-tag">Tag</th>';
-    html += '<th class="ct-col-net">Network</th>';
+    html += '<th class="ct-col-name">容器</th>';
+    html += '<th class="ct-col-update">更新</th>';
+    html += '<th class="ct-col-health">健康</th>';
+    html += '<th class="ct-col-source">来源</th>';
+    html += '<th class="ct-col-tag">标签</th>';
+    html += '<th class="ct-col-net">网络</th>';
     html += '<th class="ct-col-ip">Container IP</th>';
     html += '<th class="ct-col-cpu">CPU</th>';
     html += '<th class="ct-col-memory">Memory</th>';
@@ -9090,7 +9090,7 @@ function renderContainerDetails(stackId, containers, project) {
 
         // Status like Docker tab
         var shape = state === 'running' ? 'play' : (state === 'paused' ? 'pause' : 'square');
-        var statusText = state === 'running' ? 'started' : (state === 'paused' ? 'paused' : 'stopped');
+        var statusText = state === 'running' ? '运行中' : (state === 'paused' ? '已暂停' : '已停止');
         var color = state === 'running' ? 'green-text' : (state === 'paused' ? 'orange-text' : 'grey-text');
         var outerClass = state === 'running' ? 'started' : (state === 'paused' ? 'paused' : 'stopped');
 
@@ -9166,7 +9166,7 @@ function renderContainerDetails(stackId, containers, project) {
                 html += '<div style="font-family:var(--font-bitstream);font-size:0.85em;margin-top:2px;"><span class="compose-status-info">' + composeEscapeHtml(ctPinnedDigest.substring(0, 12)) + '</span></div>';
             }
         } else if (ctHasUpdate) {
-            // Update available - orange "update ready" style with SHA diff
+            // Update available - orange "有可用更新" style with SHA diff
             html += '<a class="exec" style="cursor:pointer;" onclick="showUpdateWarning(\'' + composeEscapeAttr(project) + '\', \'' + composeEscapeAttr(stackId) + '\', \'update\');">';
             html += '<span class="orange-text" style="white-space:nowrap;"><i class="fa fa-flash fa-fw"></i> update ready</span>';
             html += '</a>';
@@ -9187,7 +9187,7 @@ function renderContainerDetails(stackId, containers, project) {
             }
         } else {
             // Unknown/not checked
-            html += '<span class="compose-text-muted" style="white-space:nowrap;"><i class="fa fa-question-circle fa-fw"></i> not checked</span>';
+            html += '<span class="compose-text-muted" style="white-space:nowrap;"><i class="fa fa-question-circle fa-fw"></i>未检查</span>';
         }
         html += '</td>';
 
@@ -9853,7 +9853,7 @@ function addComposeStackContext(elementId) {
 
         // Compose Up (allows starting additional profile-scoped services)
         opts.push({
-            text: 'Compose Up',
+            text: '启动',
             icon: 'fa-play',
             action: function(e) {
                 e.preventDefault();
@@ -9867,7 +9867,7 @@ function addComposeStackContext(elementId) {
 
         // Compose Down (stop and remove containers)
         opts.push({
-            text: 'Compose Down',
+            text: '停止',
             icon: 'fa-stop',
             action: function(e) {
                 e.preventDefault();
@@ -9881,7 +9881,7 @@ function addComposeStackContext(elementId) {
 
         // Compose Stop (stop without removing)
         opts.push({
-            text: 'Compose Stop',
+            text: '停止',
             icon: 'fa-pause',
             action: function(e) {
                 e.preventDefault();
@@ -9895,7 +9895,7 @@ function addComposeStackContext(elementId) {
 
         // Compose Restart
         opts.push({
-            text: 'Compose Restart',
+            text: '重启',
             icon: 'fa-refresh',
             action: function(e) {
                 e.preventDefault();
@@ -9914,7 +9914,7 @@ function addComposeStackContext(elementId) {
         // Update options based on whether updates are available
         if (hasUpdates) {
             // Update (when updates are available)
-            var updateLabel = hasBuild ? 'Update & Rebuild' : 'Update';
+            var updateLabel = hasBuild ? '更新并重建' : 'Update';
             opts.push({
                 text: updateLabel,
                 icon: 'fa-cloud-download',
@@ -9929,7 +9929,7 @@ function addComposeStackContext(elementId) {
             });
         } else {
             // Force Update (when no updates detected)
-            var forceLabel = hasBuild ? 'Force Update & Rebuild' : 'Force Update';
+            var forceLabel = hasBuild ? '强制更新并重建' : '强制更新';
             opts.push({
                 text: forceLabel,
                 icon: 'fa-cloud-download',
@@ -9948,7 +9948,7 @@ function addComposeStackContext(elementId) {
     } else {
         // Compose Up
         opts.push({
-            text: 'Compose Up',
+            text: '启动',
             icon: 'fa-play',
             action: function(e) {
                 e.preventDefault();
@@ -9963,7 +9963,7 @@ function addComposeStackContext(elementId) {
         // Compose Down (only when there are existing resources to remove)
         if (canComposeDownStopped) {
             opts.push({
-                text: 'Compose Down',
+                text: '停止',
                 icon: 'fa-stop',
                 action: function(e) {
                     e.preventDefault();
@@ -9996,7 +9996,7 @@ function addComposeStackContext(elementId) {
         });
 
         // Update (pull/build and start)
-        var updateLabel = hasBuild ? 'Build & Up' : 'Pull & Up';
+        var updateLabel = hasBuild ? '构建并启动' : '拉取并启动';
         opts.push({
             text: updateLabel,
             icon: 'fa-cloud-download',
@@ -10018,7 +10018,7 @@ function addComposeStackContext(elementId) {
     // A git stack deploys from its repository (see docs/git-stacks.md)
     if (isGitStack) {
         opts.push({
-            text: 'Check for Changes',
+            text: '检查变更',
             icon: 'fa-search',
             action: function(e) {
                 e.preventDefault();
@@ -10026,7 +10026,7 @@ function addComposeStackContext(elementId) {
             }
         });
         opts.push({
-            text: 'Pull and Redeploy',
+            text: '拉取并重新部署',
             icon: 'fa-code-fork',
             action: function(e) {
                 e.preventDefault();
@@ -10034,7 +10034,7 @@ function addComposeStackContext(elementId) {
             }
         });
         opts.push({
-            text: 'Deploy Commit...',
+            text: '部署提交...',
             icon: 'fa-history',
             action: function(e) {
                 e.preventDefault();
@@ -10044,7 +10044,7 @@ function addComposeStackContext(elementId) {
         // After a failed deploy, automatic deploys wait until a deploy works or this clears it.
         if (gitDeployFailed) {
             opts.push({
-                text: 'Resume Automatic Deploys',
+                text: '恢复自动部署',
                 icon: 'fa-play-circle',
                 action: function(e) {
                     e.preventDefault();
@@ -10059,7 +10059,7 @@ function addComposeStackContext(elementId) {
 
     // Check for Updates (always available)
     opts.push({
-        text: 'Check for Updates',
+        text: '检查更新',
         icon: 'fa-search',
         action: function(e) {
             e.preventDefault();
@@ -10069,7 +10069,7 @@ function addComposeStackContext(elementId) {
 
     // Edit Stack (always available)
     opts.push({
-        text: 'Edit Stack',
+        text: '编辑栈',
         icon: 'fa-edit',
         action: function(e) {
             e.preventDefault();
@@ -10083,7 +10083,7 @@ function addComposeStackContext(elementId) {
 
     // View Logs (always available)
     opts.push({
-        text: 'View Logs',
+        text: '查看日志',
         icon: 'fa-navicon',
         action: function(e) {
             e.preventDefault();
@@ -10093,7 +10093,7 @@ function addComposeStackContext(elementId) {
 
     // View Last Cmd Log (always available)
     opts.push({
-        text: 'View Last Cmd Log',
+        text: '查看上次命令日志',
         icon: 'fa-list-alt',
         action: function(e) {
             e.preventDefault();
@@ -10108,7 +10108,7 @@ function addComposeStackContext(elementId) {
     // Delete Stack
     if (!isUp) {
         opts.push({
-            text: 'Delete Stack',
+            text: '删除栈',
             icon: 'fa-trash',
             action: function(e) {
                 e.preventDefault();
@@ -10117,7 +10117,7 @@ function addComposeStackContext(elementId) {
         });
     } else {
         opts.push({
-            text: 'Delete Stack (Stop first)',
+            text: '删除栈（需先停止）',
             icon: 'fa-trash',
             disabled: true
         });

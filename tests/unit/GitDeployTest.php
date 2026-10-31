@@ -340,7 +340,7 @@ final class GitDeployTest extends TestCase
     {
         $this->setArrayState('STOPPED');
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('array is not started');
+        $this->expectExceptionMessage('阵列未启动');
         $this->deploy()->prepare('whoami', [], null, false);
     }
 
@@ -853,7 +853,7 @@ final class GitDeployTest extends TestCase
         $this->setArrayState('STOPPED');
 
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('The array is not started');
+        $this->expectExceptionMessage('阵列未启动');
         $this->deploy()->dryRun('whoami', [], null);
     }
 

@@ -112,7 +112,7 @@ final class GitScheduledCheck
     public function run(): int
     {
         if (!GitPathGuard::isArrayStarted()) {
-            ($this->say)('The array is not started, so nothing was checked.');
+            ($this->say)('阵列未启动，因此未执行任何检查。');
             return 0;
         }
         if (!is_dir(COMPOSE_LOCK_DIR)) {
@@ -126,7 +126,7 @@ final class GitScheduledCheck
             return 0;
         }
         if (!flock($lock, LOCK_EX | LOCK_NB)) {
-            ($this->say)('Another scheduled check is still running.');
+            ($this->say)('另一个计划检查仍在运行。');
             // To the syslog too: cron drops what is said, and a pass stuck in a deploy
             // would otherwise stop every stack's checks with nobody told.
             composeLogger("Scheduled git check skipped: the last one is still running ($lockFile).", null, 'daemon', 'warning', 'git');

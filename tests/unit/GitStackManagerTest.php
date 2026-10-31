@@ -1187,7 +1187,7 @@ final class GitStackManagerTest extends TestCase
         (new GitStackState(str_repeat('a', 40), str_repeat('b', 40)))->save($stackDir);
         [, $output, $said] = $this->runCliCapturingOutput(['compose-git', 'resume', $folder]);
         $output .= $said;
-        $this->assertStringContainsString('Cleared the failed deploy of bbbbbbbbbbbb.', $output);
+        $this->assertStringContainsString('已清除失败的部署：bbbbbbbbbbbb.', $output);
         $this->assertStringNotContainsString('resume', $output);
 
         GitStackSettings::load($stackDir)->withAutoDeploy(GitStackSettings::AUTO_DEPLOY_NOTIFY)->save($stackDir);

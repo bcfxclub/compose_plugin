@@ -36,7 +36,7 @@ final class GitHubDeviceAuth
             }
             $existing = $this->vault->getCredentialSummary($renewCredentialId);
             if (($existing['provider'] ?? '') !== 'github' || ($existing['authMethod'] ?? '') !== 'oauth_device') {
-                throw new RuntimeException('Only GitHub OAuth credentials can be renewed with GitHub sign-in.');
+                throw new RuntimeException('只有 GitHub OAuth 凭据可以通过 GitHub 登录来续期。');
             }
         }
         self::sweepExpiredSessions();
@@ -46,7 +46,7 @@ final class GitHubDeviceAuth
         ], []);
         foreach (['device_code', 'user_code', 'verification_uri', 'expires_in'] as $field) {
             if (empty($response[$field])) {
-                throw new RuntimeException('GitHub returned an invalid device authorization response.');
+                throw new RuntimeException('GitHub 返回了无效的设备授权响应。');
             }
         }
         $state = bin2hex(random_bytes(24));
@@ -183,16 +183,16 @@ final class GitHubDeviceAuth
     private function writeState(string $state, array $session): void
     {
         if (!is_dir(COMPOSE_GITHUB_DEVICE_DIR) && !mkdir(COMPOSE_GITHUB_DEVICE_DIR, 0700, true) && !is_dir(COMPOSE_GITHUB_DEVICE_DIR)) {
-            throw new RuntimeException('Unable to create GitHub sign-in session.');
+            throw new RuntimeException('无法创建 GitHub 登录会话。');
         }
         chmod(COMPOSE_GITHUB_DEVICE_DIR, 0700);
         $encoded = json_encode($session);
         if ($encoded === false) {
-            throw new RuntimeException('Unable to serialize GitHub sign-in session.');
+            throw new RuntimeException('无法序列化 GitHub 登录会话。');
         }
         $sessionFile = COMPOSE_GITHUB_DEVICE_DIR . '/' . $state . '.json';
         if (file_put_contents($sessionFile, $encoded, LOCK_EX) === false) {
-            throw new RuntimeException('Unable to create GitHub sign-in session.');
+            throw new RuntimeException('无法创建 GitHub 登录会话。');
         }
         chmod($sessionFile, 0600);
     }

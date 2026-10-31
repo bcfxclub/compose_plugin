@@ -118,7 +118,7 @@ final class GitDeploy
             );
         }
         if ($hasLocalChanges) {
-            throw new GitDeploySkipped('The clone has local changes, so the stack was not deployed automatically.');
+            throw new GitDeploySkipped('克隆中存在本地改动，因此未自动部署该栈。');
         }
         try {
             $running = self::hasRunningContainers($projectName);
@@ -126,7 +126,7 @@ final class GitDeploy
             throw new GitDeploySkipped($error->getMessage() . ' So the stack was not deployed automatically.', 0, $error);
         }
         if (!$running) {
-            throw new GitDeploySkipped('The stack is not running, so it was not deployed automatically.');
+            throw new GitDeploySkipped('栈未运行，因此未自动部署。');
         }
     }
 
@@ -180,7 +180,7 @@ final class GitDeploy
     public function prepare(string $projectName, array $profiles, ?string $commit, bool $saveAndDiscardLocalChanges): string
     {
         if (!GitPathGuard::isArrayStarted()) {
-            throw new RuntimeException('The array is not started, so nothing was deployed.');
+            throw new RuntimeException('阵列未启动，因此未部署任何内容。');
         }
         $settings = $this->loadSettings();
         $clone = new GitClone($settings);
@@ -262,7 +262,7 @@ final class GitDeploy
     public function dryRun(string $projectName, array $profiles, ?string $commit): array
     {
         if (!GitPathGuard::isArrayStarted()) {
-            throw new RuntimeException('The array is not started, so nothing was tried.');
+            throw new RuntimeException('阵列未启动，因此未执行任何操作。');
         }
         $settings = $this->loadSettings();
         $clone = new GitClone($settings);
@@ -665,7 +665,7 @@ final class GitDeploy
             $what = self::describeLocalChanges($changedFiles, $madeByHand, $checkedOut);
             throw new RuntimeException(
                 "The clone has $what, so nothing was deployed. "
-                . 'Deploy again with the option to save them as a patch and discard them, or undo them by hand.'
+                . '请使用「保存为补丁并丢弃」的选项重新部署，或手动撤销这些改动。'
             );
         }
 
@@ -735,7 +735,7 @@ final class GitDeploy
      */
     private function findProblems(GitStackSettings $settings, string $projectName, array $profiles): array
     {
-        ($this->say)('Checking the stack before deploying...');
+        ($this->say)('部署前正在检查栈...');
 
         // The compose file must stay inside the clone, even through a symlink in the repository.
         $composeFile = realpath($settings->composeFileInClone());

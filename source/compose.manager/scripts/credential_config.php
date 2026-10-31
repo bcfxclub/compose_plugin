@@ -12,7 +12,7 @@ try {
     }
     $id = trim((string) ($options['credential-id'] ?? ''));
     if ($id === '') {
-        throw new InvalidArgumentException('Credential ID is required.');
+        throw new InvalidArgumentException('必须提供凭据 ID。');
     }
     $vault = new CredentialVault();
     $directory = $vault->materializeDockerConfig($id);

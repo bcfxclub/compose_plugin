@@ -24,13 +24,13 @@ function updateComposeLockButtonUI() {
     }
 
     if (unlocked) {
-        $button.find('a').prop('title', 'Lock sortable items');
+        $button.find('a').prop('title', '锁定可排序项');
         $button.find('b').removeClass('icon-u-lock green-text').addClass('icon-u-lock-open red-text');
-        $button.find('span').text('Lock sortable items');
+        $button.find('span').text('锁定可排序项');
     } else {
-        $button.find('a').prop('title', 'Unlock sortable items');
+        $button.find('a').prop('title', '解锁可排序项');
         $button.find('b').removeClass('icon-u-lock-open red-text').addClass('icon-u-lock green-text');
-        $button.find('span').text('Unlock sortable items');
+        $button.find('span').text('解锁可排序项');
     }
 }
 

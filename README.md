@@ -1,369 +1,281 @@
 <div align="center">
   <img src="docs/images/banner.png" alt="Compose Manager Plus" width="900">
 
-![GitHub Repo stars](https://img.shields.io/github/stars/mstrhakr/compose_plugin)
-![GitHub branch check runs](https://img.shields.io/github/check-runs/mstrhakr/compose_plugin/main)
-![GitHub Downloads (all assets, latest release)](https://img.shields.io/github/downloads/mstrhakr/compose_plugin/latest/total)
-![GitHub Closed Issues](https://img.shields.io/github/issues-closed/mstrhakr/compose_plugin)
-![GitHub Closed Pull Requests](https://img.shields.io/github/issues-pr-closed/mstrhakr/compose_plugin)
+![GitHub Repo stars](https://img.shields.io/github/stars/bcfxclub/compose_plugin)
+![GitHub Downloads (all assets, latest release)](https://img.shields.io/github/downloads/bcfxclub/compose_plugin/latest/total)
 
 </div>
 
-Compose Manager installs the Docker Compose CLI plugin on your unRAID server and provides a comprehensive web-based interface to create, run, update, back up, and restore Compose stacks directly from the unRAID dashboard. It also supports Git-backed stacks, deploying a compose file from a repository branch, with optional scheduled change notifications or automatic deploys. Other features include per-stack autostart, scheduled image updates, an integrated terminal, background command execution with notifications, optional UI integration to hide Compose-managed containers, and tooling for testing and CI.
+# Compose Manager Plus 简体中文版
 
-## Screenshots
+> 本仓库是 [mstrhakr/compose_plugin](https://github.com/mstrhakr/compose_plugin) 的**简体中文汉化版**。
+> 汉化仅涉及界面文案、提示信息与文档，**未修改任何功能逻辑**。
+
+Compose Manager 会在你的 unRAID 服务器上安装 Docker Compose CLI 插件，并提供一套完整的 Web 界面，让你直接在 unRAID 仪表盘里创建、运行、更新、备份和恢复 Compose 栈。它还支持 **Git 栈**（从仓库分支部署 compose 文件，可选定时检查变更或自动部署）。其他功能包括：每个栈的自动启动、定时镜像更新检查、集成终端、带通知的后台命令执行、可选的 UI 集成（隐藏由 Compose 管理的容器），以及用于测试和 CI 的配套工具。
+
+## 汉化说明
+
+- **汉化范围**：主界面（栈列表、右键菜单、弹窗、表头、状态提示）、栈编辑器各标签页、设置页（常规 / 更新 / 备份 / 日志 / 致谢）、凭据管理、仪表盘磁贴、Git 栈界面与校验提示、插件管理器中的安装信息与变更日志。
+- **未汉化**：源代码注释、系统日志（syslog）中的调试输出、`compose-git` 命令行工具的英文输出，以及部分深层 Git 诊断信息。保留英文是为了便于对照上游排查问题。
+- **技术名词**：`Compose`、`Docker`、`Git`、`ENV`、`WebUI`、`Shell`、`YAML` 等保持原样；`stack` 统一译为「栈」，`profile` 译为「配置档」，`credential` 译为「凭据」。
+- **上游同步**：本仓库基于上游 `v2026.10.27` 汉化。上游更新后重新汉化时，请对照本仓库的提交记录。
+
+## 界面截图
 
 <details>
-  <summary>Screenshots of Compose Manager Plus on Unraid</summary>
+  <summary>点击展开截图</summary>
 
-### Main Compose Manager Interface
+### 主界面
 
-#### Compose Page
+#### Compose 页面
 
 ![Compose Manager UI](docs/images/compose.png)
 
-#### Dashboard Integration
+#### 仪表盘集成
 
 ![Dashboard Stacks](docs/images/dashboard.png)
 
-### Stack Editor
+### 栈编辑器
 
-The built-in editor provides multiple tabs for managing your compose stack:
+编辑器内置多个标签页用于管理 compose 栈：
 
-#### Compose Tab
+#### Compose 标签页
 
 ![Editor - Compose Tab](docs/images/editor-composeFile.png)
 
-#### Env Tab
+#### Env 标签页
 
 ![Editor - Env Tab](docs/images/editor-env.png)
 
-#### WebUI Labels Tab
+#### WebUI 标签页
 
 ![Editor - WebUI Labels Tab](docs/images/editor-webUI.png)
 
-#### Settings Tab
+#### 设置标签页
 
 ![Editor - Settings Tab](docs/images/editor-settings.png)
 
-#### Theme Support
+#### 主题支持
 
 ![Editor - Compose Tab with the Azure theme applied](docs/images/theme-support.png)
 
-### Settings
+### 设置页
 
-#### Settings - Main
+#### 常规设置
 
 ![Settings - Main Tab](docs/images/settings-main.png)
 
-#### Settings - Updates
+#### 更新设置
 
 ![Settings - Updates Tab](docs/images/settings-updates.png)
 
-#### Settings - Backups
+#### 备份设置
 
 ![Settings - Backups Tab](docs/images/settings-backups.png)
 
-#### Settings - Log Viewer
+#### 日志查看
 
 ![Settings - Logs Tab](docs/images/settings-logs.png)
 
 </details>
 
-## Features
+## 功能特性
 
-- **Docker Compose Integration** - Installs the Docker Compose CLI plugin (v5 by default) and manages stacks on your unRAID server.
-- **Web UI Management** - Create, edit, and manage Compose stacks directly from the unRAID dashboard.
-- **Stack Operations** - Start, stop, restart, update, pull/build, and remove stacks with one click (supports profiles and override files).
-- **Context Menu** - Rich context menu on every stack icon with state-aware actions (see [Context Menu](#context-menu) below).
-- **Container Context Menu** - Right-click individual containers to open a WebUI, console, or logs; start, stop, pause, resume, or restart individual containers without touching the whole stack.
-- **Auto-Updates** - Per-stack scheduled image update checks using SHA-256 digest comparison, with a configurable scheduler, bulk "Run Now", and toggle-all controls.
-- **Image Pinning** - Images referenced with a `@sha256:` digest are automatically detected as pinned and will not trigger update alerts.
-- **Background Execution** - Any stack action (up, down, update, pull, etc.) can be dispatched in the background; a notification is shown on completion and the UI polls for when the lock is released.
-- **Expandable Stack Details** - Click a stack row to expand an inline Docker-tab-style container table showing update status, image source/tag, network, IP, and port mapping for each container.
-- **Autostart & Shutdown** - Configurable per-stack autostart with optional force-recreate, wait-for-Docker, and configurable timeouts. Graceful shutdown handling.
-- **Visibility & Filtering** - Optionally hide Compose-managed containers from the native Docker UI and Dashboard tile to avoid duplicate entries (behavior varies by unRAID version).
-- **Backup & Restore** - Manual and scheduled backups with selective restore from the UI.
-- **Web Terminal** - Integrated ttyd terminal for live, colorized compose command output.
-- **Profiles** - Full support for Docker Compose profiles, including multi-profile selection per action.
-- **External Paths** - Compose files and env files can live outside the default projects folder (external compose path and env path per stack).
-- **Override File Management** - Centralized management of override files (`compose.override.yaml`, `compose.override.yml`, `docker-compose.override.yaml`, `docker-compose.override.yml`) with service rename handling.
-- **Stack Editor** - Full-screen modal editor with five tabs: Compose (YAML with live validation), ENV, Web UI Labels (icon/WebUI/shell per service via override file), Sources (compose files, external paths, and Git settings), and Settings (name, description, icon URL, WebUI URL, and default profile). Ctrl+S to save, Esc to close.
-- **Git-Backed Stacks** - Create a stack from a Git repository or move an existing stack into Git. Review branch changes, deploy a selected commit, and optionally receive notifications or deploy new commits automatically. Private repositories support HTTPS credentials and SSH deploy keys. See [Git Stacks](docs/git-stacks.md).
-- **Column Customizer & Layout** - Choose which stack and service columns are visible and in what order; extra detail fields (for example SHA snippets and force-update links) follow your saved layout in the Compose tab.
-- **Compose File Discovery** - Automatically detects all four standard compose file names (`compose.yaml`, `docker-compose.yaml`, `compose.yml`, `docker-compose.yml`).
-- **Filename Preservation** - Existing compose and override filenames are preserved; upgrades do not auto-rename your stack files.
-- **Build Stack Support** - Stacks with a `build:` section in the compose file are detected automatically; context menu and update labels adapt ("Build", "Build & Up", "Update & Rebuild").
-- **Indirect Stack Support** - Register a stack pointing to a compose file stored anywhere on the array (outside the projects folder) using an "Indirect Path".
-- **Security Hardening** - Path traversal prevention, shell injection hardening with safe argument arrays, XSS escaping throughout, and strict input validation.
-- **Developer & Testing Tools** - Unit tests (PHPUnit), shell tests (BATS), live-server browser tests (Playwright), static analysis (PHPStan), and CI workflows.
+- **Docker Compose 集成** —— 安装 Docker Compose CLI 插件（默认 v5），并在 unRAID 上管理栈。
+- **Web 界面管理** —— 直接在 unRAID 仪表盘中创建、编辑和管理 Compose 栈。
+- **栈操作** —— 一键启动、停止、重启、更新、拉取/构建和删除栈（支持 profiles 与覆盖文件）。
+- **右键菜单** —— 每个栈图标都有内容丰富的右键菜单，操作项会随栈状态变化。
+- **容器右键菜单** —— 右键单个容器可打开 WebUI、控制台或日志，也可单独启动、停止、暂停、恢复、重启，无需影响整个栈。
+- **自动更新** —— 按栈定时检查镜像更新（基于 SHA-256 摘要比对），支持可配置调度器、批量「立即运行」和一键全开/全关。
+- **镜像固定** —— 使用 `@sha256:` 摘要引用的镜像会被自动识别为已固定，不会触发更新提醒。
+- **后台执行** —— 任何栈操作（启动、停止、更新、拉取等）都可在后台派发，完成后弹出通知，界面会轮询等待锁释放。
+- **可展开的栈详情** —— 点击栈行即可展开内嵌的容器表格，显示每个容器的更新状态、镜像来源/标签、网络、IP 与端口映射。
+- **自动启动与关机处理** —— 按栈配置自动启动，可选强制重建、等待 Docker 就绪以及自定义超时，支持优雅关机。
+- **可见性与过滤** —— 可将 Compose 管理的容器从原生 Docker 界面与仪表盘磁贴中隐藏，避免重复显示（具体行为随 unRAID 版本而异）。
+- **备份与恢复** —— 支持手动与定时备份，并可在界面中选择性恢复。
+- **Web 终端** —— 集成 ttyd 终端，实时显示带颜色的 compose 命令输出。
+- **Profiles** —— 完整支持 Docker Compose profiles，每次操作可选择多个 profile。
+- **外部路径** —— compose 文件与 env 文件可以放在默认项目目录之外（按栈配置外部 compose 路径与 env 路径）。
+- **覆盖文件管理** —— 集中管理覆盖文件（`compose.override.yaml`、`compose.override.yml`、`docker-compose.override.yaml`、`docker-compose.override.yml`），并处理服务重命名。
+- **栈编辑器** —— 全屏弹窗编辑器，含五个标签页：Compose（YAML 实时校验）、ENV、WebUI 标签（通过覆盖文件为每个服务设置图标/WebUI/Shell）、来源（compose 文件、外部路径与 Git 设置）、设置（名称、描述、图标 URL、WebUI URL 与默认 profile）。Ctrl+S 保存，Esc 关闭。
+- **Git 栈** —— 可从 Git 仓库创建栈，或将现有栈迁移到 Git。可查看分支变更、部署指定提交，并可选接收通知或自动部署新提交。私有仓库支持 HTTPS 凭据与 SSH 部署密钥。
+- **列自定义与布局** —— 可选择显示哪些栈列与服务列及其顺序；额外字段（如 SHA 片段、强制更新链接）会按你保存的布局显示。
+- **Compose 文件发现** —— 自动识别四种标准 compose 文件名（`compose.yaml`、`docker-compose.yaml`、`compose.yml`、`docker-compose.yml`）。
+- **保留文件名** —— 现有 compose 与覆盖文件名会被保留，升级不会自动重命名你的栈文件。
+- **构建栈支持** —— 自动识别含 `build:` 段的栈，右键菜单与更新标签会相应变化（「构建」「构建并启动」「更新并重建」）。
+- **间接栈支持** —— 通过「外部路径」注册指向阵列任意位置（项目目录之外）compose 文件的栈。
+- **安全加固** —— 防止路径穿越、使用安全参数数组防止命令注入、全程 XSS 转义，并做严格的输入校验。
+- **开发与测试工具** —— 单元测试（PHPUnit）、Shell 测试（BATS）、真实浏览器测试（Playwright）、静态分析（PHPStan）与 CI 工作流。
 
-## Installation
+## 安装
 
-### Community Applications
+### 通过插件管理器安装（推荐）
 
-Install via the **Community Applications** plugin in unRAID by going to the 'Apps' tab and searching for 'Compose Manager Plus'.
-
-![Screenshot of both Compose Manager Plus listings in the CA App Store](docs/images/ca-app-store.png)
-
-Once there you will see both the main release and the beta release available to be installed. See below if you have Compose Manager already.
-
-### Manual Install
-
-Install manually by navigating to:
-
-**Plugins → Install Plugin** and entering the plugin URL:
-
-Main Release:
+在 unRAID 中打开 **插件 → 安装插件**，粘贴以下地址：
 
 ```url
-https://raw.githubusercontent.com/mstrhakr/compose_plugin/main/compose.manager.plg
+https://raw.githubusercontent.com/bcfxclub/compose_plugin/main/compose.manager.plg
 ```
 
-Beta Release:
+点击「安装」后，插件会自动下载打包好的安装包并完成部署。
 
-```url
-https://raw.githubusercontent.com/mstrhakr/compose_plugin/dev/compose.manager.plg
-```
+### 安装前须知
 
-### Migrating from the Original Docker Compose Manager
+- 需要 PHP 8 与 Docker 服务（unRAID 6.12.0 及以上自带 PHP 8）。
+- 已在 unRAID 7.2.3 及以上版本验证；更低版本未经验证。
+- **本插件与官方 `Compose Manager Plus` 内部名称相同**，两者不能同时安装。若已安装官方版，请先在插件管理器中卸载，再安装本汉化版。项目目录结构完全一致，卸载重装后已有栈会被自动识别。
 
-When migrating from the original Compose Manager plugin, you can simply press reinstall on Compose Manager Plus to remove the old plugin and install the new one. The plugins both have the same name internally and cannot be installed at the same time. Compose Manager Plus also uses the exact same project folder structure so it will detect all your existing stacks automatically.
+### 从官方版切换到汉化版
 
-#### Safe migration path
+1. 打开 **插件** 页面，找到 `Compose Manager Plus`，点击卸载。
+2. 使用上面的安装地址重新安装。
+3. 打开 **设置 → Compose 管理器 Plus**，确认项目目录指向原来的路径（默认 `/boot/config/plugins/compose.manager/projects`），已有栈会原样出现。
 
-This is usually overkill, but better safe than sorry.
+> 更稳妥的做法：切换前先对所有栈执行「停止」，并备份一次项目目录。
 
-- Compose down for all stacks
-- Backup project directory
-- Uninstall old plugin
-- Install new plugin
-- Start up stacks
+## 配置
 
-#### Standard migration path
+在 unRAID Web 界面进入 **设置 → Compose 管理器 Plus**。主要选项：
 
-The standard way in upgrade.
+- **Compose 项目目录** —— 默认 `/boot/config/plugins/compose.manager/projects`。修改路径不会自动迁移已有项目。
+- **在顶部菜单显示 Compose** —— 在 unRAID 顶部导航栏增加一个 Compose 标签页，并从 Docker 标签页中移除。
+- **显示仪表盘磁贴** —— 在仪表盘上显示 Compose 栈概览磁贴。
+- **自动启动时重建 / 等待 Docker 自动启动** —— 自动启动行为控制，另有「Docker 等待超时」与「栈启动超时」。
+- **默认后台运行** —— 操作对话框默认勾选「后台运行」，完成后发送通知。
+- **默认展开栈 / 仅展开运行中的栈** —— 控制页面加载时栈行的展开方式。
+- **自动检查更新** —— 页面加载时自动检查镜像更新，可设置检查间隔。
+- **在 Docker 页面隐藏 Compose 容器** —— 在 Docker 页面隐藏由 Compose 管理的容器（无标签页的 Docker 模式）。
+- **在 Docker 仪表盘磁贴隐藏 Compose 容器** —— 在仪表盘 Docker 磁贴中隐藏由 Compose 管理的容器。
+- **备份设置** —— 备份目标、保留数量与可选的定时备份。
+- **调试日志** —— 将详细的 compose 命令输出记录到系统日志。
 
-- Go to App Tab (Community Applications/CA)
-- Search for 'Compose Manager Plus'
-- Press (re)install in Community Applications.
+## 使用
 
-> NOTE: I have tested upgrading in place by clicking "reinstall" in the CA app store without stopping the stacks and have has no issues personally. The only time this could be an issue is if your project is running with a project name that is different from the sanitized version of your folder name. Thats why it is safest to stop/down all stacks before migration.
+### 创建栈
 
-### Return to the Original Docker Compose Manager
+1. 进入 **Docker → Compose**（若启用了顶部菜单选项，则点击顶部 **Docker Compose**）。
+2. 点击 **新建栈**。
+3. 输入名称，可选填写描述。
+4. 如需指定 compose 文件位置，展开 **高级** 并填写 **外部路径**。
+5. 栈编辑器会自动打开，填入你的 `compose.yaml` 内容。
+6. 点击 **启动** 运行该栈。
 
-The original dcflachs Docker Compose Manager is deprecated. If you need to return to it, follow these steps:
+### Git 栈
 
-#### Show Deprecated Applications in Community Applications
+在 **新建栈** 对话框中选择 **Git 仓库** 作为 compose 来源，填写仓库地址与 compose 文件路径。插件会把仓库克隆到阵列上；新栈在你点击 **拉取并重新部署** 之前不会部署。若要把现有栈转为 Git 栈，使用 **编辑栈 → 来源 → 将该栈迁移到 Git...**。
 
-- Go to `Apps` tab (Community Applications/CA)
-- Go to `Settings` in the bottom of the left sidebar
-- Set `Hide Deprecated Applications` to `No`.
+在栈菜单中可检查分支变更、部署最新提交或部署指定提交。在编辑器的 **来源** 标签页中，自动部署可设为 **关闭**、**通知** 或 **部署**，每 15 分钟检查一次。私有仓库可使用插件凭据设置中的 HTTPS 令牌或 SSH 部署密钥。请勿把密钥提交到仓库；栈的 `.env` 始终保存在其项目目录中。建议在仓库中修改文件而不是在服务器克隆中修改，因为本地克隆的改动必须在下次部署前处理掉。
 
-![Screenshot of Hide Deprecated Applications setting set to no](docs/images/reinstall-setting.png)
+### 管理栈
 
-#### Remove 'Compose Manager Plus' and reinstall 'Docker Compose Manager'
+#### 右键菜单
 
-- Go to `Apps` tab (Community Applications/CA)
-- Search for `Compose Manager` at the top.
-- Find currently installed version and press `Actions`->`Uninstall` to uninstall.
-- Find `Docker Compose Manager` and press `Actions`->`(Re)Install` to install.
+右键（或左键）点击栈图标打开右键菜单，可用操作取决于栈的当前状态：
 
-![Screenshot of the Actions menu for the deprecated dcflachs Compose Manager plugin](docs/images/reinstall-actions.png)
+**运行中：**
 
-## Requirements
+- **WebUI** —— 在新标签页打开已配置的 WebUI 地址（若已设置）
+- **停止（Down）** —— 停止并移除所有容器
+- **停止（Stop）** —— 仅停止容器，不移除
+- **重启** —— 重新创建容器，不拉取镜像
+- **更新 / 更新并重建** —— 拉取最新镜像并重建（检测到更新时显示；构建栈显示为「更新并重建」）
+- **强制更新 / 强制更新并重建** —— 即使未检测到更新也强制拉取并重建
+- **检查更新** —— 立即对该栈执行 SHA-256 摘要检查
+- **编辑栈** —— 打开完整编辑器
+- **查看日志** —— 打开实时 `docker compose logs -f` 终端窗口
+- **查看上次命令日志** —— 显示该栈上次命令的保存输出
+- **删除栈**（运行中禁用）
 
-- PHP 8 and the Docker service (PHP 8 is included in unRAID 6.12.0 and later).
-- Verified on unRAID 7.2.3 and later; earlier versions are not currently verified.
+**已停止：**
 
-## Configuration
+- **启动（Up）** —— 创建并启动所有容器
+- **拉取 / 构建** —— 仅拉取或构建镜像，不启动
+- **拉取并启动 / 构建并启动** —— 先拉取或构建，再启动
+- **检查更新**、**编辑栈**、**查看日志**、**查看上次命令日志**、**删除栈**
 
-Access **Settings → Compose** in the unRAID web UI. Key options:
+所有支持 Docker Compose profiles 的操作，在定义了 profiles 时会显示 profile 选择器。
 
-- **Rich Terminal Output** — Toggle terminal-style live, colorized output (ttyd) versus simpler text output.
-- **Projects Folder** — Default: `/boot/config/plugins/compose.manager/projects`. Changing it does not move existing projects.
-- **Show Compose in Header Menu** — Adds a Compose tab to the unRAID header navigation and removes it from the Docker tab.
-- **Show Dashboard Tile** — Show or hide the Compose stacks summary tile on the unRAID dashboard.
-- **Recreate During Autostart / Wait for Docker Autostart** — Autostart behavior controls, plus **Docker Wait Timeout** and **Stack Startup Timeout**.
-- **Run in Background by Default** — Action dialogs pre-check "Run in background" and notify on completion.
-- **Expand Stacks by Default / Only Expand Running Stacks** — Control how stack rows expand on page load.
-- **Auto Check for Updates** — Automatically check image updates on page load with a configurable interval.
-- **Hide Compose Containers from Docker** — Hide Compose-managed containers from the Docker page (non-tabbed Docker mode).
-- **Hide Compose Containers from Docker Tile on Dashboard** — Hide Compose-managed containers from the Dashboard Docker tile.
-- **Backup Settings** — Backup destination, retention, and optional scheduled backups.
-- **Debug Logging** — Log detailed compose command output to syslog.
+#### 容器右键菜单
 
-## Usage
+展开栈行后，右键（或左键）点击容器图标：
 
-### Creating a Stack
+- **WebUI** —— 打开容器 WebUI（需已配置且运行中）
+- **控制台** —— 通过 ttyd 在容器内打开交互式终端
+- **停止 / 暂停 / 重启** —— 管理单个容器
+- **启动 / 恢复** —— 针对已停止或已暂停的容器
+- **日志** —— 打开该容器的 `docker logs -f` 终端窗口
 
-1. Navigate to **Docker → Compose** (or **Compose** if the header menu option is enabled)
-2. Click **Add Stack**
-3. Enter a name and optionally a description
-4. Optionally expand **Advanced Options** and enter an **Indirect Path** if the compose file lives outside the default projects folder
-5. The stack editor opens automatically — add your `compose.yaml` content
-6. Click **Compose Up** to start the stack
+#### 操作对话框
 
-### Git-Backed Stacks
+确认栈操作时，对话框会列出所有容器及其当前镜像标签、更新状态，以及待更新项的 SHA-256 差异（当前 → 新）。**后台运行** 复选框可在无终端窗口的情况下派发命令，完成后会弹出通知。
 
-To create a Git-backed stack, choose **Git repository** as the compose source in **Add New Stack**, then enter the repository URL and compose file path. The plugin clones the repository onto the array; the new stack is not deployed until you choose **Pull and Redeploy**. To convert an existing stack, use **Edit Stack → Sources → Move this stack into git...**.
+### 自动更新
 
-From the stack menu, check for branch changes, deploy the latest commit, or deploy a specific commit. In the editor's **Sources** tab, automatic deploys can be set to **Off**, **Notify**, or **Deploy**; checks run every 15 minutes. Private repositories can use an HTTPS token from the plugin's Credentials settings or an SSH deploy key. Keep secrets out of the repository; the stack's `.env` stays in its project folder. Make changes in the repository rather than the server clone, since local clone changes must be resolved before the next deploy.
+在 Compose 页面的工具栏进入 **自动更新** 区域，可配置每个栈的自动更新：
 
-See the [Git Stacks guide](docs/git-stacks.md) for setup, conversion, repository layout, credentials, and deploy behavior.
+- 全局启用或关闭调度器
+- 为每个栈设置计划（每天、每周等）
+- 使用 **全部切换** 一次性启用/关闭所有栈
+- 使用 **立即运行** 立即触发某个栈的更新检查
+- 请求会串行处理，避免给服务器造成压力
 
-### Managing Stacks
+执行器（`autoupdate_runner.php`）由 cron 调用，会先比对镜像摘要再拉取，因此只有真正有新镜像时才会更新。
 
-#### Context Menu
+### 镜像固定
 
-Right-click (or left-click) the stack icon to open the context menu. Available actions depend on the stack's current state:
+如果 `compose.yaml` 中的服务使用带摘要的镜像（例如 `redis:7@sha256:abc123...`），Compose Manager 会自动将其标记为 **已固定**。已固定的容器在更新列显示青色图钉标记，并在更新检查时被跳过。
 
-**When Running:**
+### 批量操作
 
-- **WebUI** — Opens the configured WebUI URL in a new tab (if set)
-- **Compose Down** — Stop and remove all containers
-- **Compose Stop** — Stop containers without removing them
-- **Compose Restart** — Recreate containers without pulling
-- **Update** / **Update & Rebuild** — Pull latest images and recreate (shown when updates are detected; label changes to "Update & Rebuild" for build stacks)
-- **Force Update** / **Force Update & Rebuild** — Pull and recreate even when no updates are detected
-- **Check for Updates** — Run an immediate SHA-256 digest check for this stack
-- **Edit Stack** — Open the full editor modal
-- **View Logs** — Open a live `docker compose logs -f` terminal window
-- **View Last Cmd Log** — Show the saved output of the last command run for this stack
-- **Delete Stack** *(disabled while running)*
+工具栏提供 **全部启动**、**全部停止** 和 **全部更新** 按钮。**仅自动启动** 开关可把操作范围限定为启用了自动启动的栈。
 
-**When Stopped:**
+### 自动启动
 
-- **Compose Up** — Create and start all containers
-- **Pull** / **Build** — Pull or build images without starting (label is "Build" for build stacks)
-- **Pull & Up** / **Build & Up** — Pull/build and then start
-- **Check for Updates**, **Edit Stack**, **View Logs**, **View Last Cmd Log**, **Delete Stack**
+点击栈的自动启动开关即可启用。unRAID 阵列启动时，这些栈会自动启动，可选强制重建并配置等待超时。
 
-All actions that support Docker Compose profiles will show a profile selector when profiles are defined.
+## 文档
 
-#### Container Context Menu
+上游文档位于 [docs](docs/) 目录（英文）：
 
-Expand a stack row and right-click (or left-click) a container's icon:
-
-- **WebUI** — Open the container's WebUI (if configured and running)
-- **Console** — Open a live interactive terminal inside the container via ttyd
-- **Stop / Pause / Restart** — Manage the individual container
-- **Start / Resume** — For stopped or paused containers
-- **Logs** — Open a `docker logs -f` terminal window for this container
-
-#### Action Dialogs
-
-When confirming a stack action, the dialog shows all containers with their current image tag, update status, and a SHA-256 diff (current → new) for any pending updates. A **Run in background** checkbox lets you dispatch the command without a terminal window; a notification pops up when it finishes.
-
-### Auto-Updates
-
-Navigate to the **Auto-Updates** section (toolbar button on the Compose page) to configure per-stack automatic updates:
-
-- Enable or disable the scheduler globally
-- Set a schedule per stack (daily, weekly, etc.)
-- Use **Toggle All** to enable/disable all stacks at once
-- Use **Run Now** to trigger an immediate update check for a stack
-- Requests are serialized to avoid overwhelming the server
-
-The runner (`autoupdate_runner.php`) is invoked by cron and compares image digests before pulling, so updates only happen when a new image is actually available.
-
-### Image Pinning
-
-If a service in your `compose.yaml` references an image with a digest (e.g. `redis:7@sha256:abc123...`), Compose Manager automatically marks it as **pinned**. Pinned containers display a cyan thumbtack badge in the update column and are skipped during update checks.
-
-### Bulk Actions
-
-The toolbar provides **Start All**, **Stop All**, and **Update All** buttons. An **Autostart Only** toggle filters these operations to stacks that have autostart enabled.
-
-### Autostart
-
-Enable autostart for a stack by clicking the autostart toggle. Stacks will automatically start when the unRAID array starts, with optional force-recreate and configurable wait timeouts.
-
-## Documentation
-
-For detailed guides, see the [docs](docs/) folder:
-
-- [Getting Started](docs/getting-started.md)
-- [User Guide](docs/user-guide.md)
-- [Configuration](docs/configuration.md)
+- [快速开始](docs/getting-started.md)
+- [使用指南](docs/user-guide.md)
+- [配置说明](docs/configuration.md)
 - [Profiles](docs/profiles.md)
-- [Git Stacks](docs/git-stacks.md)
+- [Git 栈](docs/git-stacks.md)
 
-## Development & Testing 🔧
+## 开发与测试
 
-Quick start:
+- 安装 PHP 依赖：`composer install`
+- 初始化测试框架子模块：`git submodule update --init --recursive`
+- 运行 PHPUnit：`composer test:unit`（或 `composer test`）
+- 运行单个测试文件：`vendor/bin/phpunit tests/unit/ExampleTest.php`
+- Shell 测试（BATS）位于 `tests/unit`，详见 [测试指南](docs/testing.md)
+- 浏览器测试（Playwright）位于 `tests/e2e`，详见 [E2E 说明](tests/e2e/README.md)
+- 静态分析：`composer run analyse`
 
-- Install PHP dependencies: `composer install`.
-- Initialize the test framework submodule: `git submodule update --init --recursive`.
-- Run PHPUnit tests: `composer test:unit` (or `composer test`).
-- Run one test file: `vendor/bin/phpunit tests/unit/ExampleTest.php`.
+完整开发环境搭建、测试运行与贡献指南见 `docs/development.md`。
 
-Shell tests:
+## 发布流程
 
-- BATS tests are in `tests/unit`; see [the test guide](docs/testing.md) for how to run them.
+上游使用 GitHub Actions 全自动发版，本仓库沿用同一套流程：
 
-Live-server browser tests:
+1. 向 `main`（稳定）或 `dev`（测试）推送改动。
+2. `tag-release.yml` 自动生成基于日期的版本标签（如 `v2026.10.31`），从提交信息生成变更日志并推送标签。
+3. 标签触发 `build.yml`：在 Slackware 容器中构建 TXZ 包 → 创建 GitHub Release → 回写 `.plg` 的版本号与 MD5。
 
-- Playwright tests are in `tests/e2e`; see [the E2E guide](tests/e2e/README.md) for setup and safety notes.
+也可以在 Actions 页面手动触发 `build.yml` 做测试构建。
 
-Static analysis:
+## 授权与致谢
 
-- `composer run analyse` (runs PHPStan configured for this project).
+本项目基于 **mstrhakr/compose_plugin**（原作者 **Nick Szittai / mstrhakr**）汉化，其上游为 **dcflachs/compose_plugin**（原作者 **dcflachs**）。功能实现与设计的全部功劳归两位原作者，本仓库仅做中文翻译。
 
-For full developer setup, test running, and contribution guidelines see `docs/development.md`. (Contains examples for coverage, CI notes, and integration testing tips.)
+请特别注意原项目的授权声明：
 
-## Release Process
+> Original material owned and licensable by **Nick Szittai (mstrhakr)** is offered under the [MIT License](LICENSE). This is **not a blanket license for the plugin**: inherited dcflachs/compose_plugin code and independently owned contributions are excluded, and upstream permission remains unresolved. The complete project is not yet cleared for unrestricted redistribution.
 
-Releases are fully automated via GitHub Actions. **No local scripts or manual tagging required.**
+也就是说，原项目**尚未获准无限制再分发**。本仓库为个人学习与自用目的的中文汉化分支，不主张任何额外权利；如需再分发，请先取得原作者许可。详细授权与来源审计见 [LICENSING.md](source/compose.manager/licenses/LICENSING.md)，第三方组件遵循各自的[许可与声明](source/compose.manager/licenses/THIRD-PARTY-NOTICES.md)。
 
-### How it works
+## 问题反馈
 
-1. **Merge a PR to `main` (stable) or `dev` (beta).**
-2. The `tag-release.yml` workflow automatically:
-   - Generates a date-based version tag (`v2026.03.15` for stable, `v2026.03.15-dev.HHMM` for beta)
-   - Updates the PLG changelog from conventional commit messages
-   - Pushes the tag
-3. The tag triggers `build.yml`, which:
-   - Builds the TXZ package in a Slackware Docker container
-   - Creates a GitHub Release with the package attached
-   - Updates the PLG file version and MD5 hash in the target branch
-
-### Branching model
-
-| Branch | Purpose | Release type | Tag format |
-| ------ | ------- | ------------ | ---------- |
-| `main` | Stable releases | Full release | `v2026.03.15`, `v2026.03.15a` |
-| `dev` | Beta/testing | Pre-release | `v2026.03.15-dev.1430` |
-
-- Work on `dev`, open a PR to `main` when ready to promote to stable.
-- Same-day stable releases get an auto-incrementing letter suffix (`a`, `b`, `c`, ...).
-- Beta releases use a UTC timestamp suffix for uniqueness.
-
-### Manual override
-
-Use the `workflow_dispatch` trigger on `build.yml` in the Actions tab to manually build any version without tagging.
-
-Contributions are welcome — we added issue and PR templates to guide reports and pull requests. Please follow the templates when submitting issues or PRs.
-
-## Support
-
-- [GitHub Issues](https://github.com/mstrhakr/compose_plugin/issues)
-- [unRAID Forums](https://forums.unraid.net/)
-
-## License
-
-Original material owned and licensable by **Nick Szittai (mstrhakr)** is offered
-under the [MIT License](LICENSE). This is **not a blanket license for the plugin**:
-inherited dcflachs/compose_plugin code and independently owned contributions are
-excluded, and upstream permission remains unresolved. Changes to inherited files
-do not relicense their underlying material.
-
-See the [licensing and provenance audit](source/compose.manager/licenses/LICENSING.md)
-for surviving upstream code, scope, and required permissions. Third-party
-components retain their [own licenses and notices](source/compose.manager/licenses/THIRD-PARTY-NOTICES.md).
-The complete project is not yet cleared for unrestricted redistribution.
-
-## Credits
-
-Originally created by **dcflachs**. This fork maintained by **mstrhakr**.
-Huge thanks to the entire Unraid community, without you this would be impossible.
+- 汉化相关问题（翻译错误、漏翻、术语不一致）：请在本仓库提 Issue。
+- 功能性问题：请优先查阅[上游仓库](https://github.com/mstrhakr/compose_plugin/issues)与 [unRAID 论坛帖](https://forums.unraid.net/topic/197334-plugin-compose-manager-plus/)。

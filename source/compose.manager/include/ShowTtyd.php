@@ -101,7 +101,7 @@ $themeSheetJson = json_encode("themes/{$themeFile}.css");
     <?php if ($showDone): ?>
         <p class="centered ui-dialog-buttonpane">
             <span class="ui-dialog-buttonset">
-                <button type="button" id="done-btn">Done</button>
+                <button type="button" id="done-btn">完成</button>
             </span>
         </p>
     <?php endif; ?>

@@ -450,22 +450,22 @@
         html += '<div class="compose-col-section-title">' + title + '</div>';
         html += '<div class="compose-transfer-wrap">';
         html += '<div class="compose-transfer-col">';
-        html += '<label for="compose-col-' + scope + '-hidden">Hidden</label>';
+        html += '<label for="compose-col-' + scope + '-hidden">隐藏</label>';
         html += '<select id="compose-col-' + scope + '-hidden" class="compose-transfer-select" multiple></select>';
         html += '</div>';
         html += '<div class="compose-transfer-actions">';
-        html += '<div class="compose-transfer-btn" role="button" tabindex="0" data-scope="' + scope + '" data-action="selected-right" title="Show selected" aria-label="Show selected">&gt;</div>';
-        html += '<div class="compose-transfer-btn" role="button" tabindex="0" data-scope="' + scope + '" data-action="all-right" title="Show all" aria-label="Show all">&gt;&gt;</div>';
-        html += '<div class="compose-transfer-btn" role="button" tabindex="0" data-scope="' + scope + '" data-action="selected-left" title="Hide selected" aria-label="Hide selected">&lt;</div>';
-        html += '<div class="compose-transfer-btn" role="button" tabindex="0" data-scope="' + scope + '" data-action="all-left" title="Hide all" aria-label="Hide all">&lt;&lt;</div>';
+        html += '<div class="compose-transfer-btn" role="button" tabindex="0" data-scope="' + scope + '" data-action="selected-right" title="显示所选" aria-label="显示所选">&gt;</div>';
+        html += '<div class="compose-transfer-btn" role="button" tabindex="0" data-scope="' + scope + '" data-action="all-right" title="显示全部" aria-label="显示全部">&gt;&gt;</div>';
+        html += '<div class="compose-transfer-btn" role="button" tabindex="0" data-scope="' + scope + '" data-action="selected-left" title="隐藏所选" aria-label="隐藏所选">&lt;</div>';
+        html += '<div class="compose-transfer-btn" role="button" tabindex="0" data-scope="' + scope + '" data-action="all-left" title="隐藏全部" aria-label="隐藏全部">&lt;&lt;</div>';
         html += '</div>';
         html += '<div class="compose-transfer-col">';
-        html += '<label for="compose-col-' + scope + '-visible">Visible</label>';
+        html += '<label for="compose-col-' + scope + '-visible">显示</label>';
         html += '<select id="compose-col-' + scope + '-visible" class="compose-transfer-select" multiple></select>';
         html += '</div>';
         html += '<div class="compose-reorder-actions">';
-        html += '<div class="compose-reorder-btn" role="button" tabindex="0" data-scope="' + scope + '" data-action="move-up" title="Move up" aria-label="Move selected column up">&uarr;</div>';
-        html += '<div class="compose-reorder-btn" role="button" tabindex="0" data-scope="' + scope + '" data-action="move-down" title="Move down" aria-label="Move selected column down">&darr;</div>';
+        html += '<div class="compose-reorder-btn" role="button" tabindex="0" data-scope="' + scope + '" data-action="move-up" title="上移" aria-label="上移所选列">&uarr;</div>';
+        html += '<div class="compose-reorder-btn" role="button" tabindex="0" data-scope="' + scope + '" data-action="move-down" title="下移" aria-label="下移所选列">&darr;</div>';
         html += '</div>';
         html += '</div>';
         html += '</div>';
@@ -476,16 +476,16 @@
         var html = '<div id="compose-col-settings-modal" class="compose-col-modal" style="display:none;">';
         html += '<div class="compose-modal-overlay"></div>';
         html += '<div class="compose-modal-content">';
-        html += '<div class="compose-modal-header"><span>Column Visibility</span>';
+        html += '<div class="compose-modal-header"><span>列可见性</span>';
         html += '<button class="compose-modal-close" type="button" onclick="composeColCustomizer.closeModal();"><i class="fa fa-times"></i></button>';
         html += '</div>';
         html += '<div class="compose-modal-body">';
-        html += buildTransferSection('stack', 'Stack Columns');
-        html += buildTransferSection('service', 'Service Columns');
+        html += buildTransferSection('stack', '栈列');
+        html += buildTransferSection('service', '服务列');
         html += '</div>';
         html += '<div class="compose-modal-footer">';
-        html += '<button class="compose-modal-btn compose-modal-btn-save" type="button" onclick="composeColCustomizer.saveAndClose();">Save</button>';
-        html += '<button class="compose-modal-btn compose-modal-btn-cancel" type="button" onclick="composeColCustomizer.closeModal();">Cancel</button>';
+        html += '<button class="compose-modal-btn compose-modal-btn-save" type="button" onclick="composeColCustomizer.saveAndClose();">保存</button>';
+        html += '<button class="compose-modal-btn compose-modal-btn-cancel" type="button" onclick="composeColCustomizer.closeModal();">取消</button>';
         html += '</div></div></div>';
         return html;
     }
@@ -642,7 +642,7 @@
                 '<div id="compose-col-launcher-wrap" class="ToggleViewMode compose-col-launcher-wrap">' +
                 '<a href="#" class="compose-col-launcher" title="Customize visible columns" onclick="event.preventDefault(); composeColCustomizer.openModal();">' +
                 '<i class="fa fa-sliders fa-rotate-90" aria-hidden="true"></i>' +
-                '<span>Columns</span>' +
+                '<span>列</span>' +
                 '</a>' +
                 '</div>';
 

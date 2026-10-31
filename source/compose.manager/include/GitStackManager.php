@@ -239,7 +239,7 @@ final class GitStackManager
             if ($foldersNextToOldComposeFile !== []) {
                 // The compose file is not parsed here; this is only a reminder.
                 ($this->say)(
-                    'Note: these folders are next to the old compose file: ' . implode(', ', $foldersNextToOldComposeFile)
+                    '注意：这些文件夹与旧的 compose 文件相邻：' . implode(', ', $foldersNextToOldComposeFile)
                     . '. If the compose file mounts any of them with a relative path (such as ./data), that path now'
                     . ' points inside the clone, and the container would start on an empty folder. Use an absolute'
                     . ' path, or move the data, before deploying.'
@@ -593,7 +593,7 @@ final class GitStackManager
             $state = GitStackState::load($stack->path);
             if ($state->failedCommit !== null) {
                 (new GitStackState($state->deployedCommit, null))->save($stack->path);
-                ($this->say)("Cleared the failed deploy of " . substr($state->failedCommit, 0, 12) . '.'
+                ($this->say)("已清除失败的部署：" . substr($state->failedCommit, 0, 12) . '.'
                     . ($checked ? " Automatic deploys of '$folder' resume." : ''));
                 $cleared = true;
             }
@@ -603,7 +603,7 @@ final class GitStackManager
             $failedAutomatic = GitScheduledCheck::failedAutomaticDeploy($stack->path);
             if ($failedAutomatic !== null) {
                 GitScheduledCheck::clearFailedAutomaticDeploy($stack->path);
-                ($this->say)("Cleared the failed automatic deploy of " . substr($failedAutomatic, 0, 12) . '.'
+                ($this->say)("已清除失败的自动部署：" . substr($failedAutomatic, 0, 12) . '.'
                     . ($checked ? " The next scheduled check of '$folder' tries again." : ''));
                 $cleared = true;
             }
@@ -742,7 +742,7 @@ final class GitStackManager
             throw new InvalidArgumentException("The ssh repository address is not valid: $url");
         }
         if ($credentialId !== null) {
-            throw new InvalidArgumentException('An ssh stack uses the deploy key the plugin keeps for its repository, so it cannot be given another credential.');
+            throw new InvalidArgumentException('SSH 栈使用插件为其仓库保存的部署密钥，因此不能指定其他凭据。');
         }
         // The host first: a mistyped host then fails before a deploy key is made for it.
         $knownHosts = GitSsh::scanHostKeys($address['host'], $address['port']);
@@ -1068,7 +1068,7 @@ final class GitStackManager
             } catch (Throwable $error) {
                 if ($movedTo !== null) {
                     if (!file_exists($cloneDir) && @rename($movedTo, $cloneDir)) {
-                        ($this->say)('Moved the old clone back.');
+                        ($this->say)('已将旧克隆移回。');
                     } else {
                         ($this->say)("Could not move the old clone back. It is still at $movedTo.");
                     }
@@ -1171,7 +1171,7 @@ final class GitStackManager
     private function assertArrayStarted(): void
     {
         if (!GitPathGuard::isArrayStarted()) {
-            throw new RuntimeException('The array is not started, so nothing was changed.');
+            throw new RuntimeException('阵列未启动，因此未做任何更改。');
         }
     }
 

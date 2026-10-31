@@ -217,7 +217,7 @@ final class CredentialVaultTest extends TestCase
     public function testRejectsUnsupportedProvider(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Unsupported credential provider.');
+        $this->expectExceptionMessage('不支持的凭据提供方。');
 
         $vault = new CredentialVault();
         $vault->saveCredential([

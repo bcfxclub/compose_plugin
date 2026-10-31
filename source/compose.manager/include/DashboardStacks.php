@@ -64,7 +64,7 @@ foreach (StackInfo::allFromRoot($compose_root) as $stackInfo) {
     $icon = $stackInfo->getIconUrl();
     $webui = $stackInfo->getWebUIUrl();
 
-    // Check update status from central update-status.json file (set by "Check for Updates" button)
+    // Check update status from central update-status.json file (set by "检查更新" button)
     $updateStatus = 'unknown';
     if (isset($savedUpdateStatus[$stackInfo->projectFolder])) {
         $stackUpdateInfo = $savedUpdateStatus[$stackInfo->projectFolder];

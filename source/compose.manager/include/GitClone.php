@@ -33,15 +33,15 @@ final class GitCloneFailedException extends RuntimeException
      * does not know the key. False for anything else: an unreachable host, a wrong host
      * key, a missing branch. Each host words a refusal its own way:
      *  - "Permission denied (publickey)": ssh itself, when no account has the key
-     *  - "Repository not found": GitHub, when the key belongs to another repository
+     *  - "未找到仓库": GitHub, when the key belongs to another repository
      *  - "you don't have permission to view it": GitLab
      *  - "User permission denied": Gitea and Forgejo
-     *  - "repository access denied": Bitbucket
+     *  - "仓库访问被拒绝": Bitbucket
      */
     public function serverRefusedAccess(): bool
     {
         $output = strtolower($this->gitOutput);
-        foreach (['permission denied', 'repository not found', "you don't have permission", 'access denied'] as $wording) {
+        foreach (['permission denied', '未找到仓库', "you don't have permission", 'access denied'] as $wording) {
             if (str_contains($output, $wording)) {
                 return true;
             }
@@ -285,7 +285,7 @@ final class GitClone
             60
         );
         if (!$result->succeeded()) {
-            throw new RuntimeException('Could not read the clone status: ' . $result->errorSummary());
+            throw new RuntimeException('无法读取克隆状态：' . $result->errorSummary());
         }
 
         $paths = [];
@@ -357,7 +357,7 @@ final class GitClone
         $changed = $this->locallyChangedFiles();
         if ($changed !== []) {
             throw new RuntimeException(
-                'The clone has local changes (' . implode(', ', array_slice($changed, 0, 5))
+                '克隆中存在本地改动（' . implode(', ', array_slice($changed, 0, 5))
                 . (count($changed) > 5 ? ', ...' : '') . '). Save or discard them first.'
             );
         }
@@ -480,7 +480,7 @@ final class GitClone
     {
         $this->assertOwned();
         GitPathGuard::assertSafeToWrite($this->settings->cloneDir . '/.git');
-        $this->runOrThrow(['reset', '--quiet', 'HEAD'], 'Could not unstage the staged changes');
+        $this->runOrThrow(['reset', '--quiet', 'HEAD'], '无法取消已暂存的改动');
     }
 
     /**
@@ -496,7 +496,7 @@ final class GitClone
         $this->unstageAll();
         $this->assertDiscardKeepsUntrackedFiles();
         GitPathGuard::assertSafeToWrite($this->settings->cloneDir);
-        $this->runOrThrow(['reset', '--hard', '--quiet', 'HEAD'], 'Could not discard the local changes');
+        $this->runOrThrow(['reset', '--hard', '--quiet', 'HEAD'], '无法丢弃本地改动');
     }
 
     /**
@@ -601,7 +601,7 @@ final class GitClone
             return false;
         }
         if (!$result->succeeded()) {
-            throw new RuntimeException('Could not compare the commit with the branch: ' . $result->errorSummary());
+            throw new RuntimeException('无法将该提交与分支比较：' . $result->errorSummary());
         }
         return true;
     }
@@ -648,7 +648,7 @@ final class GitClone
         }
         $shared = trim($result->stdout);
         if (!$result->succeeded() || !self::isCommitId($shared)) {
-            throw new RuntimeException('Could not compare the commit with the branch: ' . $result->errorSummary());
+            throw new RuntimeException('无法将该提交与分支比较：' . $result->errorSummary());
         }
         return $shared;
     }
@@ -807,7 +807,7 @@ final class GitClone
     {
         if ($this->settings->credentialId === null || $this->settings->sshKnownHosts === null) {
             throw new RuntimeException(
-                'This ssh stack has no deploy key or no pinned host keys in its git.json. Set it up again with compose-git.'
+                '该 SSH 栈没有部署密钥，或其 git.json 中没有固定主机密钥，请使用 compose-git 重新设置。'
             );
         }
         $files = GitSsh::writeRunFiles($this->settings->credentialId, $this->settings->sshKnownHosts);

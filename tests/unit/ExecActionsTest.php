@@ -784,8 +784,8 @@ class ExecActionsTest extends TestCase
 
         $result = json_decode($output, true);
         $this->assertEquals('error', $result['result']);
-        $this->assertStringContainsString('Failed to delete stack folder', $result['message']);
-        $this->assertStringContainsString('Invalid stack name', $result['message']);
+        $this->assertStringContainsString('删除栈目录失败', $result['message']);
+        $this->assertStringContainsString('无效的栈名称', $result['message']);
     }
 
     // ===========================================

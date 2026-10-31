@@ -283,7 +283,7 @@ function echoComposeCommand($action, array $options = [])
         try {
             $stackInfo = StackInfo::fromProject($compose_root, basename($path));
         } catch (\Throwable $e) {
-            composeLogger("Cannot perform action: invalid stack", ['action' => $action, 'path' => $path, 'error' => $e->getMessage()], 'user', 'warning', 'compose');
+            composeLogger("无法执行操作：无效的栈", ['action' => $action, 'path' => $path, 'error' => $e->getMessage()], 'user', 'warning', 'compose');
             echo '';
             return;
         }
@@ -508,8 +508,8 @@ function gitDeployProfilesFromRequest(StackInfo $stack, array $post): array
 }
 
 /**
- * Deploy a git stack from the web UI: the stack menu's "Pull and Redeploy"
- * and "Deploy Commit...". Echoes what echoComposeCommand() does: a ttyd
+ * Deploy a git stack from the web UI: the stack menu's "拉取并重新部署"
+ * and "部署提交...". Echoes what echoComposeCommand() does: a ttyd
  * viewer URL, {"background":true}, or a JSON error.
  *
  * POST parameters:
@@ -543,7 +543,7 @@ function echoGitDeployCommand(array $options = []): void
         $stack = StackInfo::fromProject($compose_root, basename($path));
     } catch (\Throwable $e) {
         composeLogger("Cannot deploy: invalid stack", ['path' => $path, 'error' => $e->getMessage()], 'user', 'warning', 'compose');
-        echo json_encode(['error' => 'git', 'message' => 'There is no such stack.']);
+        echo json_encode(['error' => 'git', 'message' => '没有该栈。']);
         return;
     }
     if (!$stack->isGitStack()) {
@@ -564,7 +564,7 @@ function echoGitDeployCommand(array $options = []): void
     // way the person sees why at once, not in a terminal window.
     require_once '/usr/local/emhttp/plugins/compose.manager/include/GitClone.php';
     if ($commit !== '' && !GitClone::isCommitId($commit)) {
-        echo json_encode(['error' => 'git', 'message' => 'Enter the full commit id (40 characters, or 64 in a SHA-256 repository), not a short one or a branch name.']);
+        echo json_encode(['error' => 'git', 'message' => '请输入完整的提交 ID（40 位，SHA-256 仓库为 64 位），不要使用短 ID 或分支名。']);
         return;
     }
 
@@ -615,7 +615,7 @@ function echoComposeCommandMultiple($action, array $options = [])
 
     if ($unRaidVars['mdState'] != "STARTED") {
         echo $plugin_root . "/scripts/arrayNotStarted.sh";
-        composeLogger("Multi Compose operation aborted: Array not started", null, 'user', 'warning', 'compose-multi');
+        composeLogger("批量 Compose 操作已中止：阵列未启动", null, 'user', 'warning', 'compose-multi');
         return;
     }
 
@@ -717,7 +717,7 @@ function echoComposeCommandMultiple($action, array $options = [])
             echo json_encode([
                 'error' => 'identity',
                 'stacks' => $blockedStacks,
-                'message' => 'Compose project identity is unresolved for: ' . implode(', ', $blockedStacks),
+                'message' => '以下栈的 Compose 项目标识未确定：' . implode(', ', $blockedStacks),
             ]);
             return;
         }

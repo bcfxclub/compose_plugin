@@ -770,7 +770,7 @@ function composeDeleteStackFolder(string $composeRoot, string $stackName, string
     $safeStackName = basename(trim($stackName));
     $meta['safeStackName'] = $safeStackName;
     if ($safeStackName === '' || $safeStackName === '.' || $safeStackName === '..') {
-        $errorMessage = 'Invalid stack name.';
+        $errorMessage = '无效的栈名称。';
         return false;
     }
 
@@ -2841,7 +2841,7 @@ class StackInfo
      *
      * cURL (used by dynamix.docker.manager's native icon resolver) can only
      * fetch a scheme-qualified URL; a bare absolute path like
-     * `/mnt/user/appdata/icons/x.png` fails with "No host part in the URL".
+     * `/mnt/user/appdata/icons/x.png` fails with "URL 中没有主机部分".
      * Prefixing it with `file://` lets the same cURL-based resolver read it
      * directly from disk.
      *
@@ -3982,7 +3982,7 @@ class StackInfo
         // Validate stack name is not empty
         if (trim($stackName) === '') {
             composeLogger("Attempted to create a new stack with an empty name, which is not allowed.", null, 'user', 'error', 'stack');
-            throw new \RuntimeException("Stack name cannot be empty");
+            throw new \RuntimeException("栈名称不能为空");
         }
         $projectName = $stackName;
 
@@ -4000,21 +4000,21 @@ class StackInfo
         $realComposeRoot = realpath($composeRoot);
         if ($realComposeRoot === false) {
             composeLogger("Failed to resolve real path for compose root.", ['composeRoot' => $composeRoot], 'user', 'error', 'stack');
-            throw new \RuntimeException("Invalid compose root directory.");
+            throw new \RuntimeException("无效的 Compose 根目录。");
         }
 
         // For new folders, check that the parent resolves correctly
         $resolvedParent = realpath(dirname($path));
         if ($resolvedParent === false || strpos($resolvedParent, $realComposeRoot) !== 0) {
-            composeLogger("Invalid stack name: path would escape compose root.", ['stackName' => $stackName, 'resolvedParent' => $resolvedParent, 'realComposeRoot' => $realComposeRoot], 'user', 'error', 'stack');
-            throw new \RuntimeException("Invalid stack name: path would escape compose root.");
+            composeLogger("无效的栈名称：路径会超出 Compose 根目录。", ['stackName' => $stackName, 'resolvedParent' => $resolvedParent, 'realComposeRoot' => $realComposeRoot], 'user', 'error', 'stack');
+            throw new \RuntimeException("无效的栈名称：路径会超出 Compose 根目录。");
         }
 
         try {
             // Ensure the project folder is available, handling collisions by appending suffixes if needed (e.g. "my-stack-001", "my-stack-002", etc.)
             $path = self::getAvailablePath($composeRoot, $project);
         } catch (\RuntimeException $e) {
-            composeLogger("Failed to get available path for stack.", ['stackName' => $stackName, 'error' => $e->getMessage()], 'user', 'error', 'stack');
+            composeLogger("获取栈可用路径失败。", ['stackName' => $stackName, 'error' => $e->getMessage()], 'user', 'error', 'stack');
             throw new \RuntimeException("Failed to create stack: " . $e->getMessage());
         }
 
@@ -4362,7 +4362,17 @@ class StackInfo
 
         $label = $state;
         if ($state === 'partial') {
-            $label = "partial ($running/$total)";
+            $label = "部分运行 ($running/$total)";
+        } else {
+            $labelMap = [
+                'stopped'    => '已停止',
+                'started'    => '运行中',
+                'paused'     => '已暂停',
+                'restarting' => '重启中',
+            ];
+            if (isset($labelMap[$state])) {
+                $label = $labelMap[$state];
+            }
         }
 
         switch ($state) {

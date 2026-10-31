@@ -281,7 +281,7 @@
 
     function loadStackContainers(stackId, stackName) {
         var $container = $('#compose-dash-ct-' + stackId);
-        $container.html('<div class="compose-dash-loading"><i class="fa fa-spinner fa-spin"></i> Loading...</div>');
+        $container.html('<div class="compose-dash-loading"><i class="fa fa-spinner fa-spin"></i>加载中...</div>');
 
         $.post(caURL, {action: 'getStackContainers', script: stackName}, function(data) {
             try {
@@ -306,7 +306,7 @@
                         var isRunning = ctState === 'running';
                         var stateIcon = isRunning ? 'fa-play' : 'fa-square';
                         var stateColor = isRunning ? 'green-text' : 'red-text';
-                        var stateText = isRunning ? 'started' : 'stopped';
+                        var stateText = isRunning ? '运行中' : '已停止';
                         var ctElId = 'dash-ct-' + ctIdShort;
                         var imgSrc = composeIconSrc(ctIcon, ctName);
                         var shell = ctShell;
@@ -320,7 +320,7 @@
                         var remoteSha = ctRemoteSha;
                         var updateHtml = '';
                         if (updateStatus === 'up-to-date') {
-                            updateHtml = '<span class="green-text"><i class="fa fa-check"></i> current</span>';
+                            updateHtml = '<span class="green-text"><i class="fa fa-check"></i>当前</span>';
                         } else if (updateStatus === 'update-available' && localSha && remoteSha) {
                             updateHtml = '<span class="orange-text"><span class="sha">' + localSha + '</span> <i class="fa fa-arrow-right"></i> <span class="sha">' + remoteSha + '</span></span>';
                         } else {
@@ -348,11 +348,11 @@
 
                     stackContainerCache[stackId] = true;
                 } else {
-                    $container.html('<div class="compose-dash-loading">No containers</div>');
+                    $container.html('<div class="compose-dash-loading">无容器</div>');
                 }
             } catch(e) {
                 console.error('Error parsing containers:', e);
-                $container.html('<div class="compose-dash-loading">Error loading containers</div>');
+                $container.html('<div class="compose-dash-loading">加载容器出错</div>');
             }
         });
     }
@@ -371,7 +371,7 @@
 
             var html = '';
             if (data.stacks.length === 0) {
-                html = '<div class="compose-dash-loading">No compose stacks defined</div>';
+                html = '<div class="compose-dash-loading">未定义 compose 栈</div>';
             } else {
                 data.stacks.forEach(function(stack, idx) {
                     var stackId = 'stack-' + stack.folder.replace(/[^a-zA-Z0-9_-]/g, '_');
@@ -405,8 +405,8 @@
                     html += '<div class="compose-dash-state ' + stateColor + '"><i class="fa ' + stateIcon + '"></i> ' + stateText + '</div>';
                     html += '</span>';
                     html += '<span class="compose-dash-cols">';
-                    html += '<span class="compose-dash-col update ' + updateColor + '" title="Update status"><i class="fa ' + updateIcon + '"></i> ' + updateText + '</span>';
-                    html += '<span class="compose-dash-col containers" title="Running/Total containers">' + containerText + '</span>';
+                    html += '<span class="compose-dash-col update ' + updateColor + '" title="更新状态"><i class="fa ' + updateIcon + '"></i> ' + updateText + '</span>';
+                    html += '<span class="compose-dash-col containers" title="运行中/总容器">' + containerText + '</span>';
                     html += '<span class="compose-dash-col runtime" title="Uptime">' + uptimeText + '</span>';
                     html += '</span>';
                     html += '</div>';
@@ -456,8 +456,8 @@
 
             debugLog('Loaded', data.stacks.length, 'stacks, context menus attached via onclick');
         }, 'json').fail(function() {
-            $('#compose_stacks_status').text('Stacks -- Error loading');
-            $('#compose_dash_content').html('<div class="compose-dash-loading red-text">Failed to load stacks</div>');
+            $('#compose_stacks_status').text('栈 -- 加载出错');
+            $('#compose_dash_content').html('<div class="compose-dash-loading red-text">加载栈失败</div>');
         });
     }
 
@@ -509,7 +509,7 @@
     function noStacks() {
         if ($('#compose_dash_content .compose-dash-stack:visible').length === 0 && $('#compose_dash_content .compose-dash-stack').length > 0) {
             if (!$('#no_stacks').length) {
-                $('#compose_dash_content').append('<div id="no_stacks" class="compose-dash-loading">No stacks to display</div>');
+                $('#compose_dash_content').append('<div id="no_stacks" class="compose-dash-loading">没有可显示的栈</div>');
             }
             $('#no_stacks').show();
         } else {
@@ -559,7 +559,7 @@
     function setupComposeContainerHiding(containerNames) {
         if (!containerNames || containerNames.length === 0) return;
 
-        debugLog('Setting up compose container hiding for:', containerNames);
+        debugLog('正在为以下对象设置 Compose 容器隐藏：', containerNames);
 
         composeContainerNameSet = {};
         containerNames.forEach(function(n) { composeContainerNameSet[n.toLowerCase()] = true; });
@@ -604,14 +604,14 @@
 
             var name = extractContainerName($el);
             if (name && composeContainerNameSet[name.toLowerCase()]) {
-                debugLog('Hiding Docker tile container:', name);
+                debugLog('正在隐藏 Docker 磁贴容器：', name);
                 $el.addClass('compose-hidden-container');
                 hiddenCount++;
             }
         });
 
         if (hiddenCount > 0) {
-            debugLog('Hidden', hiddenCount, 'compose containers from Docker tile');
+            debugLog('隐藏', hiddenCount, 'compose containers from Docker tile');
             updateDockerTileCounts();
         }
 
@@ -642,7 +642,7 @@
         var started = $('#docker_view').find('span.outer.apps.started').not('.compose-hidden-container').length;
         var stopped = $('#docker_view').find('span.outer.apps.stopped').not('.compose-hidden-container').length;
         var paused  = $('#docker_view').find('span.outer.apps.paused').not('.compose-hidden-container').length;
-        $('.apps.switch').html('Containers -- Started: ' + started + ', Stopped: ' + stopped + ', Paused: ' + paused);
+        $('.apps.switch').html('容器 -- 已启动：' + started + ', Stopped: ' + stopped + ', Paused: ' + paused);
     }
 
     $(function() {
@@ -651,8 +651,8 @@
         if (!$toggle.data('switchbutton-initialized')) {
             $toggle.switchButton({
                 labels_placement: 'right',
-                off_label: 'All Stacks',
-                on_label: 'Started only',
+                off_label: '所有栈',
+                on_label: '仅运行中',
                 checked: cookie.my_stacks === 'startedOnly'
             });
             $toggle.data('switchbutton-initialized', true);

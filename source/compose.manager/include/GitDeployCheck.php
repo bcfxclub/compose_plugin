@@ -16,7 +16,7 @@ require_once '/usr/local/emhttp/plugins/compose.manager/include/DockerCommand.ph
  *    state that outlives fixing it);
  *  - keys listed in the repository's .env.example but missing from the .env;
  *  - external networks and volumes that do not exist (networks only when the
- *    "Create Missing External Networks" setting is off);
+ *    "创建缺失的外部网络" setting is off);
  *  - bind-mount sources under /mnt that are not on a live mount (Docker would
  *    create them in RAM) or whose share (such as /mnt/user/appdata) does not
  *    exist, and sources outside /mnt whose top folder (such as /tmp) does not
@@ -43,7 +43,7 @@ final class GitDeployCheck
      * @param string $cloneDir The stack's clone folder
      * @param string $composeDir The folder of the compose file inside the clone
      * @param string|null $envFile The .env the stack uses, if any
-     * @param bool $missingNetworksWillBeCreated True when the "Create Missing External Networks"
+     * @param bool $missingNetworksWillBeCreated True when the "创建缺失的外部网络"
      *                                           setting is on, so a missing external network is not a problem
      */
     public function __construct(

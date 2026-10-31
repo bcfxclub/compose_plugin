@@ -92,16 +92,16 @@ if (!function_exists('compose_stack_column_meta')) {
     function compose_stack_column_meta(): array
     {
         return [
-            'update' => ['label' => 'Update', 'thClass' => 'col-update'],
-            'containers' => ['label' => 'Containers', 'thClass' => 'col-containers'],
-            'uptime' => ['label' => 'Uptime', 'thClass' => 'col-uptime'],
-            'health' => ['label' => 'Health', 'thClass' => 'col-health'],
+            'update' => ['label' => '更新', 'thClass' => 'col-update'],
+            'containers' => ['label' => '容器', 'thClass' => 'col-containers'],
+            'uptime' => ['label' => '运行时长', 'thClass' => 'col-uptime'],
+            'health' => ['label' => '健康', 'thClass' => 'col-health'],
             'cpu' => ['label' => 'CPU', 'thClass' => 'col-cpu'],
-            'memory' => ['label' => 'Memory', 'thClass' => 'col-memory'],
-            'net_io' => ['label' => 'Net I/O', 'thClass' => 'col-net_io'],
-            'block_io' => ['label' => 'Disk I/O', 'thClass' => 'col-block_io'],
-            'description' => ['label' => 'Description', 'thClass' => 'col-description'],
-            'path' => ['label' => 'Path', 'thClass' => 'col-path'],
+            'memory' => ['label' => '内存', 'thClass' => 'col-memory'],
+            'net_io' => ['label' => '网络 I/O', 'thClass' => 'col-net_io'],
+            'block_io' => ['label' => '磁盘 I/O', 'thClass' => 'col-block_io'],
+            'description' => ['label' => '描述', 'thClass' => 'col-description'],
+            'path' => ['label' => '路径', 'thClass' => 'col-path'],
         ];
     }
 }
@@ -113,18 +113,18 @@ if (!function_exists('compose_service_column_meta')) {
     function compose_service_column_meta(): array
     {
         return [
-            'update' => ['label' => 'Update'],
-            'health' => ['label' => 'Health'],
-            'cpu' => ['label' => 'CPU %'],
-            'memory' => ['label' => 'Memory'],
-            'net_io' => ['label' => 'Network I/O'],
-            'block_io' => ['label' => 'Disk I/O'],
-            'source' => ['label' => 'Source'],
-            'tag' => ['label' => 'Tag'],
-            'net' => ['label' => 'Network'],
+            'update' => ['label' => '更新'],
+            'health' => ['label' => '健康'],
+            'cpu' => ['label' => 'CPU 占用'],
+            'memory' => ['label' => '内存'],
+            'net_io' => ['label' => '网络 I/O'],
+            'block_io' => ['label' => '磁盘 I/O'],
+            'source' => ['label' => '来源'],
+            'tag' => ['label' => '标签'],
+            'net' => ['label' => '网络'],
             'ip' => ['label' => 'IP'],
-            'cport' => ['label' => 'Container Port'],
-            'lport' => ['label' => 'LAN IP:Port'],
+            'cport' => ['label' => '容器端口'],
+            'lport' => ['label' => '局域网 IP:端口'],
         ];
     }
 }
@@ -191,7 +191,7 @@ if (!function_exists('compose_normalize_column_visibility')) {
                         $normalized[$scope][$key] = $boolVal;
                     } elseif (function_exists('composeLogger')) {
                         composeLogger(
-                            'Ignoring non-boolean column visibility value',
+                            '忽略非布尔的列可见性值',
                             ['scope' => $scope, 'column' => $key, 'valueType' => gettype($rawVal)],
                             'user',
                             'debug',
@@ -239,7 +239,7 @@ if (!function_exists('compose_read_column_layout')) {
             if ($raw === false) {
                 if (function_exists('composeLogger')) {
                     composeLogger(
-                        'Failed to read column layout preference file; using defaults',
+                        '读取列布局首选项文件失败，使用默认值',
                         ['file' => COMPOSE_COLUMN_PREF_FILE],
                         'user',
                         'warning',
@@ -252,7 +252,7 @@ if (!function_exists('compose_read_column_layout')) {
                     $saved = $decoded;
                 } elseif (function_exists('composeLogger')) {
                     composeLogger(
-                        'Invalid column layout JSON; using defaults',
+                        '列布局 JSON 无效，使用默认值',
                         [
                             'file' => COMPOSE_COLUMN_PREF_FILE,
                             'jsonError' => json_last_error_msg(),

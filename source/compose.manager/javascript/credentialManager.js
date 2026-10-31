@@ -8,38 +8,38 @@
 
     var PROVIDER_CONFIGS = {
         github: {
-            label: 'GitHub Container Registry (ghcr.io)',
+            label: 'GitHub 容器仓库（ghcr.io）',
             defaultRegistry: 'ghcr.io',
             registryReadonly: true,
-            namePlaceholder: 'e.g. Work GitHub',
-            usernamePlaceholder: 'GitHub username or organisation',
-            secretPlaceholder: 'Personal access token (ghp_... / github_pat_...)',
+            namePlaceholder: '例如：Work GitHub',
+            usernamePlaceholder: 'GitHub 用户名或组织',
+            secretPlaceholder: '个人访问令牌（ghp_... / github_pat_...）',
             tokenUrl: 'https://github.com/settings/tokens/new?scopes=read:packages&description=Unraid%20Compose%20Manager',
-            tokenUrlLabel: 'Generate GitHub Token',
+            tokenUrlLabel: '生成 GitHub 令牌',
             instructions: 'Sign in with the one-click button above, or generate a Personal Access Token with <code>read:packages</code> scope.',
             canOAuth: true
         },
         docker: {
-            label: 'Docker Hub (docker.io)',
+            label: 'Docker Hub（docker.io）',
             defaultRegistry: 'docker.io',
             registryReadonly: true,
-            namePlaceholder: 'e.g. Docker Hub',
-            usernamePlaceholder: 'Docker Hub username (not email)',
-            secretPlaceholder: 'Personal access token (dckr_pat_...)',
+            namePlaceholder: '例如：Docker Hub',
+            usernamePlaceholder: 'Docker Hub 用户名（不是邮箱）',
+            secretPlaceholder: '个人访问令牌（dckr_pat_...）',
             tokenUrl: 'https://app.docker.com/settings/personal-access-tokens/create',
-            tokenUrlLabel: 'Generate Docker Hub PAT',
+            tokenUrlLabel: '生成 Docker Hub 访问令牌',
             instructions: 'Create a Personal Access Token with <b>Read-only</b> permissions in Docker Hub Account Settings. Use your Docker Hub username (not email).',
             canOAuth: false
         },
         gitlab: {
-            label: 'GitLab Container Registry (registry.gitlab.com)',
+            label: 'GitLab 容器仓库（registry.gitlab.com）',
             defaultRegistry: 'registry.gitlab.com',
             registryReadonly: true,
             namePlaceholder: 'e.g. GitLab Registry',
-            usernamePlaceholder: 'GitLab username or deploy token username',
-            secretPlaceholder: 'Personal access token or deploy token secret',
+            usernamePlaceholder: 'GitLab 用户名或部署令牌用户名',
+            secretPlaceholder: '个人访问令牌或部署令牌密钥',
             tokenUrl: 'https://gitlab.com/-/user_settings/personal_access_tokens',
-            tokenUrlLabel: 'Generate GitLab Token',
+            tokenUrlLabel: '生成 GitLab 令牌',
             instructions: 'Create a Personal Access Token with <code>read_registry</code> scope, or use a Project / Group Deploy Token.',
             canOAuth: false
         },
@@ -48,27 +48,27 @@
             defaultRegistry: 'quay.io',
             registryReadonly: true,
             namePlaceholder: 'e.g. Quay Registry',
-            usernamePlaceholder: 'Robot account name (e.g. org+bot) or username',
-            secretPlaceholder: 'Robot account token or password',
+            usernamePlaceholder: '机器人账号名（如 org+bot）或用户名',
+            secretPlaceholder: '机器人账号令牌或密码',
             tokenUrl: 'https://quay.io/organization/',
-            tokenUrlLabel: 'Open Quay Organization Settings',
+            tokenUrlLabel: '打开 Quay 组织设置',
             instructions: 'Create a Robot Account with read permissions or an application token in Quay Settings.',
             canOAuth: false
         },
         aws: {
-            label: 'AWS Elastic Container Registry (ECR)',
+            label: 'AWS 弹性容器仓库（ECR）',
             defaultRegistry: 'public.ecr.aws',
             registryReadonly: false,
             namePlaceholder: 'e.g. AWS ECR',
             usernamePlaceholder: 'AWS',
-            secretPlaceholder: 'Auth token (from aws ecr get-login-password)',
+            secretPlaceholder: '认证令牌（来自 aws ecr get-login-password）',
             tokenUrl: 'https://console.aws.amazon.com/ecr/',
-            tokenUrlLabel: 'Open AWS ECR Console',
+            tokenUrlLabel: '打开 AWS ECR 控制台',
             instructions: 'For private ECR, set registry to <code>&lt;account&gt;.dkr.ecr.&lt;region&gt;.amazonaws.com</code>, username to <code>AWS</code>, and token from <code>aws ecr get-login-password</code>.',
             canOAuth: false
         },
         azure: {
-            label: 'Azure Container Registry (ACR)',
+            label: 'Azure 容器仓库（ACR）',
             defaultRegistry: '',
             registryReadonly: false,
             namePlaceholder: 'e.g. Azure ACR',
@@ -135,9 +135,9 @@
         $('body').append(
             '<div id="compose-credential-modal" class="credential-modal-backdrop" style="display:none;">' +
                 '<div class="credential-modal" role="dialog" aria-modal="true" aria-labelledby="credential-modal-title">' +
-                    '<div class="credential-modal-header"><h3 id="credential-modal-title">Add credential</h3><button type="button" class="credential-close" title="Close"><i class="fa fa-times"></i></button></div>' +
+                    '<div class="credential-modal-header"><h3 id="credential-modal-title">添加凭据</h3><button type="button" class="credential-close" title="Close"><i class="fa fa-times"></i></button></div>' +
                     '<input type="hidden" id="credential-id">' +
-                    '<label for="credential-provider">Provider</label><select id="credential-provider">' +
+                    '<label for="credential-provider">提供方</label><select id="credential-provider">' +
                         '<option value="github">GitHub Container Registry (ghcr.io)</option>' +
                         '<option value="docker">Docker Hub (docker.io)</option>' +
                         '<option value="gitlab">GitLab Container Registry (registry.gitlab.com)</option>' +
@@ -149,12 +149,12 @@
                         '<option value="git">Git repository (HTTPS token, for git stacks)</option>' +
                     '</select>' +
                     '<div id="credential-github-oauth-section">' +
-                        '<button type="button" id="credential-github-signin"><i class="fa fa-github"></i> Sign in with GitHub</button>' +
+                        '<button type="button" id="credential-github-signin"><i class="fa fa-github"></i>使用 GitHub 登录</button>' +
                         '<div id="credential-github-device" style="display:none;">' +
                             '<p>Enter this code on GitHub:</p>' +
                             '<div class="credential-github-code-row">' +
                                 '<strong id="credential-github-code"></strong>' +
-                                '<button type="button" id="credential-github-copy" title="Copy code"><i class="fa fa-copy"></i> Copy</button>' +
+                                '<button type="button" id="credential-github-copy" title="复制代码"><i class="fa fa-copy"></i>复制</button>' +
                             '</div>' +
                             '<p class="credential-github-url">Go to <a id="credential-github-link" target="_blank" rel="noopener noreferrer"></a> on this or any other device</p>' +
                             '<div id="credential-github-qr-wrap"><div id="credential-github-qr"></div><span>Or scan with your phone</span></div>' +
@@ -175,9 +175,9 @@
                         '<label for="credential-registry">Registry Host</label><input id="credential-registry" type="text" autocomplete="off" placeholder="ghcr.io">' +
                         '<label for="credential-username">Username</label><input id="credential-username" type="text" autocomplete="username">' +
                     '</div>' +
-                    '<div id="credential-secret-wrap"><label for="credential-secret">Access token / Password</label><input id="credential-secret" type="password" autocomplete="new-password" placeholder="Required for new credentials"><div class="credential-help">Use a read-only token whenever possible. Existing tokens are encrypted and never shown.</div></div>' +
+                    '<div id="credential-secret-wrap"><label for="credential-secret">Access token / Password</label><input id="credential-secret" type="password" autocomplete="new-password" placeholder="新建凭据时必填"><div class="credential-help">Use a read-only token whenever possible. Existing tokens are encrypted and never shown.</div></div>' +
                     '<div id="credential-modal-error" class="compose-status-danger" style="display:none;"></div>' +
-                    '<div class="credential-modal-actions"><button type="button" class="credential-cancel">Cancel</button><button type="button" class="credential-save">Save credential</button></div>' +
+                    '<div class="credential-modal-actions"><button type="button" class="credential-cancel">取消</button><button type="button" class="credential-save">Save credential</button></div>' +
                 '</div>' +
             '</div>'
         );
@@ -263,7 +263,7 @@
 
         $('#credential-name').attr('placeholder', config.namePlaceholder);
         $('#credential-username').attr('placeholder', config.usernamePlaceholder);
-        $('#credential-secret').attr('placeholder', isNewCredential ? config.secretPlaceholder : 'Leave empty to keep existing token');
+        $('#credential-secret').attr('placeholder', isNewCredential ? config.secretPlaceholder : '留空则保留现有令牌');
 
         if (config.registryReadonly) {
             $('#credential-registry').val(config.defaultRegistry).prop('readonly', true);
@@ -344,16 +344,16 @@
             var device = response.device;
             $('#credential-github-code').text(device.userCode);
             $('#credential-github-link').attr('href', device.verificationUri).text(device.verificationUri);
-            $('#credential-github-status').text('Waiting for authorization...');
+            $('#credential-github-status').text('正在等待授权...');
             $('#credential-github-device').show();
             renderGitHubQr(device.verificationUriComplete || device.verificationUri);
             copyGitHubCode(device.userCode, function() {
-                $('#credential-github-status').text('Code copied. Waiting for authorization...');
+                $('#credential-github-status').text('代码已复制，正在等待授权...');
             });
             window.open(device.verificationUri, '_blank', 'noopener');
             pollGitHubSignIn(device.state, device.interval || 5, credentialId);
         }).fail(function() {
-            $('#credential-modal-error').text('Unable to reach GitHub sign-in service.').show();
+            $('#credential-modal-error').text('无法连接 GitHub 登录服务。').show();
             $button.prop('disabled', false);
         });
     }
@@ -365,7 +365,7 @@
                 var response;
                 try { response = typeof data === 'string' ? JSON.parse(data) : data; } catch (error) { response = {}; }
                 if (response.result !== 'success') {
-                    $('#credential-github-status').text(response.message || 'GitHub sign-in failed.');
+                    $('#credential-github-status').text(response.message || 'GitHub 登录失败。');
                     $button.prop('disabled', false);
                     return;
                 }
@@ -382,10 +382,10 @@
                     });
                     return;
                 }
-                $('#credential-github-status').text(auth.status === 'denied' ? 'Authorization was denied.' : 'Authorization expired. Try again.');
+                $('#credential-github-status').text(auth.status === 'denied' ? '授权被拒绝。' : '授权已过期，请重试。');
                 $button.prop('disabled', false);
             }).fail(function() {
-                $('#credential-github-status').text('Unable to check authorization. Retrying...');
+                $('#credential-github-status').text('无法检查授权，正在重试...');
                 pollGitHubSignIn(state, interval, credentialId);
             });
         }, Math.max(5, interval) * 1000);
@@ -400,7 +400,7 @@
         options = options || {};
         activeCredential = credential;
         onSaved = callback || null;
-        $('#credential-modal-title').text(credential.id ? 'Edit credential' : 'Add credential');
+        $('#credential-modal-title').text(credential.id ? '编辑凭据' : '添加凭据');
         $('#credential-id').val(credential.id || '');
         // A saved credential cannot change between a registry login and a git credential (a
         // stack using it would break), so Edit offers neither change.
@@ -434,13 +434,13 @@
             var response;
             try { response = typeof data === 'string' ? JSON.parse(data) : data; } catch (error) { response = {}; }
             if (response.result !== 'success') {
-                $('#credential-modal-error').text(response.message || 'Unable to save credential.').show();
+                $('#credential-modal-error').text(response.message || '无法保存凭据。').show();
                 return;
             }
             closeModal();
             loadCredentials(function() { if (onSaved) onSaved(response.credential); });
         }).fail(function() {
-            $('#credential-modal-error').text('Unable to reach credential service.').show();
+            $('#credential-modal-error').text('无法连接凭据服务。').show();
         }).always(function() { $button.prop('disabled', false); });
     }
 
@@ -476,7 +476,7 @@
             $row.append($('<td>').text(credential.username));
             $row.append($('<td>').text((credential.stacks || []).join(', ') || 'Not assigned'));
             var $actions = $('<td class="credential-list-actions">');
-            $('<button type="button" title="Test credential"><i class="fa fa-plug"></i></button>').on('click', function() { testCredential(credential, $(this)); }).appendTo($actions);
+            $('<button type="button" title="测试凭据"><i class="fa fa-plug"></i></button>').on('click', function() { testCredential(credential, $(this)); }).appendTo($actions);
             // A git stack's deploy key is a key pair compose-git made; there is nothing to edit.
             if (credential.provider !== 'git-ssh') {
                 $('<button type="button" title="Edit"><i class="fa fa-pencil"></i></button>').on('click', function() { openModal(credential); }).appendTo($actions);
@@ -492,7 +492,7 @@
             var response;
             try { response = typeof data === 'string' ? JSON.parse(data) : data; } catch (error) { response = {}; }
             if (response.result !== 'success') {
-                swal({ title: 'Unable to test credential', text: response.message || 'Unknown error.', type: 'error' });
+                swal({ title: '无法测试凭据', text: response.message || 'Unknown error.', type: 'error' });
                 return;
             }
             if (response.valid) {
@@ -507,7 +507,7 @@
                     text: response.message || 'The repository refused this token.',
                     type: 'warning',
                     showCancelButton: true,
-                    confirmButtonText: 'Edit credential',
+                    confirmButtonText: '编辑凭据',
                     cancelButtonText: 'Later'
                 }, function(confirmed) {
                     if (!confirmed) return;
@@ -521,7 +521,7 @@
                     text: (response.message || 'The registry rejected this credential.') + ' It may have expired or been revoked.',
                     type: 'warning',
                     showCancelButton: true,
-                    confirmButtonText: isOAuth ? 'Renew access' : 'Edit credential',
+                    confirmButtonText: isOAuth ? 'Renew access' : '编辑凭据',
                     cancelButtonText: 'Later'
                 }, function(confirmed) {
                     if (!confirmed) return;
@@ -534,7 +534,7 @@
                 });
             }
         }).fail(function() {
-            swal({ title: 'Unable to test credential', text: 'Could not reach the credential service.', type: 'error' });
+            swal({ title: '无法测试凭据', text: 'Could not reach the credential service.', type: 'error' });
         }).always(function() {
             $button.prop('disabled', false);
             $icon.removeClass('fa-spinner fa-spin').addClass('fa-plug');
@@ -556,7 +556,7 @@
                 }
                 loadCredentials();
             }).fail(function() {
-                showDeleteError('Unable to reach credential service.');
+                showDeleteError('无法连接凭据服务。');
                 loadCredentials();
             });
         });
@@ -565,12 +565,12 @@
     function showDeleteError(message) {
         // Wait for the confirm dialog to finish closing, or SweetAlert can hide this one with it.
         setTimeout(function() {
-            swal({ title: 'Unable to delete credential', text: message, type: 'error' });
+            swal({ title: '无法删除凭据', text: message, type: 'error' });
         }, 300);
     }
 
     function populateSelect($select, selectedId) {
-        $select.empty().append($('<option value="">').text('Anonymous / no credential'));
+        $select.empty().append($('<option value="">').text('匿名或无凭据'));
         credentials.forEach(function(credential) {
             // Git repository credentials are not registry logins; git stacks choose theirs elsewhere.
             if (credential.provider === 'git' || credential.provider === 'git-ssh') return;

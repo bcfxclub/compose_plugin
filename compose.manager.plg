@@ -9,7 +9,7 @@
 <!ENTITY pkgBUILD    "1108">
 <!ENTITY packageName "&name;-&packageVER;-noarch-&pkgBUILD;">
 <!ENTITY packagefile "&packageName;.txz">
-<!ENTITY github "mstrhakr/compose_plugin">
+<!ENTITY github "bcfxclub/compose_plugin">
 <!ENTITY pluginURL "https://raw.githubusercontent.com/&github;/main/&name;.plg">
 <!ENTITY packageURL "https://github.com/&github;/releases/download/v&version;/&packagefile;">
 <!ENTITY pluginsPATH "/boot/config/plugins">
@@ -31,8 +31,8 @@
          icon="cubes"
          min="6.12.0"
          support="https://forums.unraid.net/topic/197334-plugin-compose-manager-plus/"
-         project="https://github.com/mstrhakr/compose_plugin"
-         readme="https://github.com/mstrhakr/compose_plugin#readme"
+         project="https://github.com/bcfxclub/compose_plugin"
+         readme="https://github.com/bcfxclub/compose_plugin#readme"
 >
 
 <CHANGES>
@@ -183,11 +183,11 @@ mkdir -p &pluginLOC;/projects
 echo ""
 echo "----------------------------------------------------"
 echo ""
-echo "  Ace editor v&aceVER; will only be downloaded and"
-echo "       installed for pre-7.0 Unraid versions."
+echo "  Ace 编辑器 v&aceVER; 仅在 Unraid 7.0 之前的版本中"
+echo "       才会被下载并安装。"
 echo ""
-echo "  If on 7.0 or later, Ace editor files are included"
-echo "      by default and skips will be shown below."
+echo "  如果使用 7.0 或更高版本，Ace 编辑器文件已默认内置，"
+echo "       下方会显示跳过安装的提示。"
 echo ""
 echo "----------------------------------------------------"
 echo ""
@@ -219,8 +219,8 @@ rm -f /tmp/ace-editor-install.sh
 echo ""
 echo "----------------------------------------------------"
 echo ""
-echo "      Compose Manager Plus has been installed."
-echo "               Version: &version;"
+echo "      Compose Manager Plus 已安装完成。"
+echo "               版本：&version;"
 echo ""
 echo "----------------------------------------------------"
 echo ""

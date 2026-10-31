@@ -302,7 +302,7 @@ final class GitStackSettings
         CredentialVault::withCredentialAssignmentLock(function () use ($stackDir): void {
             if ($this->credentialId !== null && !(new CredentialVault())->hasCredential($this->credentialId)) {
                 throw new RuntimeException(
-                    'The credential was deleted while the repository was being reached, so the stack settings were not saved.'
+                    '连接仓库期间凭据被删除，因此栈设置未保存。'
                 );
             }
             $this->save($stackDir);
@@ -433,7 +433,7 @@ final class GitStackSettings
         // Lower case only: git matches the transport name exactly, and refuses "HTTPS".
         if (!str_starts_with($url, 'https://')) {
             throw new InvalidArgumentException(
-                "The repository address must start with https:// or ssh:// (or be git@host:path), or be a path under "
+                "仓库地址必须以 https:// 或 ssh:// 开头（或为 git@host:path 形式），或为以下路径下的路径："
                 . COMPOSE_GIT_MNT_DIR . " for a repository on this server: $url"
             );
         }

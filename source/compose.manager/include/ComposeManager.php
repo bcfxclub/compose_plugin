@@ -419,17 +419,17 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
             <thead>
                 <tr>
                     <th class="col-arrow">
-                        <div type="button" class="compose-stack-toggle-all" id="compose-stack-toggle-all" role="button" tabindex="0" onclick="toggleAllStackDetails(); return false;" title="Expand all stacks" aria-label="Expand all stacks">
+                        <div type="button" class="compose-stack-toggle-all" id="compose-stack-toggle-all" role="button" tabindex="0" onclick="toggleAllStackDetails(); return false;" title="展开所有栈" aria-label="展开所有栈">
                             <i class="fa fa-angle-double-down"></i>
                         </div>
                     </th>
                     <th class="col-icon"></th>
-                    <th class="col-name">Stack</th>
+                    <th class="col-name">栈</th>
 <?php foreach ($stackColumnOrder as $stackCol): ?>
 <?php if (!isset($stackColumnMeta[$stackCol])) continue; ?>
                     <th class="<?php echo $stackColumnMeta[$stackCol]['thClass']; ?>"><?php echo htmlspecialchars($stackColumnMeta[$stackCol]['label'], ENT_QUOTES, 'UTF-8'); ?></th>
 <?php endforeach; ?>
-                    <th class="nine col-autostart">Autostart</th>
+                    <th class="nine col-autostart">自动启动</th>
                 </tr>
             </thead>
             <tbody id="compose_list">
@@ -443,11 +443,11 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
         <input type='button' value='Add New Stack' onclick='addStack();'>
         <input type='button' value='Start All' onclick='startAllStacks();' id='startAllBtn'>
         <input type='button' value='Stop All' onclick='stopAllStacks();' id='stopAllBtn'>
-        <input type='button' value='Check for Updates' onclick='checkAllUpdates();' id='checkUpdatesBtn'>
+        <input type='button' value='检查更新' onclick='checkAllUpdates();' id='checkUpdatesBtn'>
         <input type='button' value='Update All' onclick='updateAllStacks();' id='updateAllBtn' disabled title='Show dialog with run-in-background checkbox, then update selected stacks'>
-        <label style='margin-left:10px;cursor:pointer;vertical-align:middle;' title='When enabled, only stacks with Autostart enabled will be affected'>
+        <label style='margin-left:10px;cursor:pointer;vertical-align:middle;' title='启用后仅影响启用了自动启动的栈'>
             <input type='checkbox' id='autostartOnlyToggle' style='vertical-align:middle;'>
-            <span style='vertical-align:middle;'>Autostart only</span>
+            <span style='vertical-align:middle;'>仅自动启动</span>
         </label>
         <a href='/Settings/compose.manager.settings' style='margin-left:20px;'><input type='button' value='Settings'></a>
     </span><br>
@@ -455,7 +455,7 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
     <!-- Stack Actions Modal -->
     <div id="stack-actions-modal" class="stack-actions-modal" style="display:none;">
         <div class="stack-actions-modal-header">
-            <span class="stack-actions-modal-title">Stack Actions</span>
+            <span class="stack-actions-modal-title">栈操作</span>
             <button class="stack-actions-modal-close" onclick="closeStackActionsMenu();">
                 <i class="fa fa-times"></i>
             </button>
@@ -506,8 +506,8 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
         <div class="editor-modal">
             <!-- Modal Header -->
             <div class="editor-modal-header">
-                <h2 class="editor-modal-title" id="editor-modal-title">Edit Stack</h2>
-                <button class="editor-modal-close" onclick="closeEditorModal()" aria-label="Close editor modal">
+                <h2 class="editor-modal-title" id="editor-modal-title">编辑栈</h2>
+                <button class="editor-modal-close" onclick="closeEditorModal()" aria-label="关闭编辑器">
                     <i class="fa fa-times"></i>
                 </button>
             </div>
@@ -526,7 +526,7 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
                 </button>
                 <button class="editor-tab" id="editor-tab-labels" onclick="switchTab('labels')" role="tab" aria-selected="false" aria-controls="editor-panel-labels">
                     <i class="fa fa-tags" aria-hidden="true"></i>
-                    <span id="editor-tab-labels-text">Labels</span>
+                    <span id="editor-tab-labels-text">标签</span>
                     <span class="editor-tab-modified" aria-hidden="true"></span>
                 </button>
                 <button class="editor-tab" id="editor-tab-sources" onclick="switchTab('sources')" role="tab" aria-selected="false" aria-controls="editor-panel-sources">
@@ -545,11 +545,11 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
             <div class="editor-panel active" id="editor-panel-compose" role="group" aria-labelledby="editor-tab-compose">
                 <div class="editor-modal-body">
                     <div id="editor-compose-git-banner" class="compose-status-warning" style="display:none;padding:6px 12px;font-size:0.9em;">
-                        <i class="fa fa-code-fork"></i> <strong>This is a git stack.</strong> This file is in the plugin's clone of the repository: change it in the repository, then use Pull and Redeploy. An edit saved here is a local change, which the next deploy stops on (it can save it as a patch and discard it). Changes that must survive deploys belong in the Labels tab (the plugin's override) or the .env tab.
+                        <i class="fa fa-code-fork"></i> <strong>这是一个 Git 栈。</strong> This file is in the plugin's clone of the repository: change it in the repository, then use Pull and Redeploy. An edit saved here is a local change, which the next deploy stops on (it can save it as a patch and discard it). Changes that must survive deploys belong in the Labels tab (the plugin's override) or the .env tab.
                     </div>
                     <div id="editor-compose-git-changed" class="compose-git-warning-box" style="display:none;margin:6px 12px;"></div>
                     <div id="compose-file-selector-wrap" style="display:none;align-items:center;gap:8px;padding:6px 12px;">
-                        <label for="compose-file-selector" style="margin:0;">File:</label>
+                        <label for="compose-file-selector" style="margin:0;">文件：</label>
                         <select id="compose-file-selector" onchange="switchComposeFile(this.value)"></select>
                     </div>
                     <div class="editor-container active" id="editor-container-compose">
@@ -565,8 +565,8 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
             <div class="editor-panel" id="editor-panel-env" role="group" aria-labelledby="editor-tab-env">
                 <div class="editor-modal-body">
                     <div class="editor-empty-state" id="env-empty-state">
-                        <p>No <code>.env</code> file exists at this location yet.</p>
-                        <button class="editor-action-btn" onclick="createEnvTemplate()">Create .env Template</button>
+                        <p>否<code>.env</code>该位置尚无文件。</p>
+                        <button class="editor-action-btn" onclick="createEnvTemplate()">创建 .env 模板</button>
                     </div>
                     <div class="editor-file-wrap" id="env-editor-wrap">
                         <div class="editor-container active" id="editor-container-env">
@@ -606,8 +606,8 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
                         </div>
                     </div>
                     <div class="editor-empty-state" id="labels-override-empty-state">
-                        <p>No override file exists at this location yet.</p>
-                        <button class="editor-action-btn" onclick="createOverrideTemplate()">Create Override Template</button>
+                        <p>该位置尚无覆盖文件。</p>
+                        <button class="editor-action-btn" onclick="createOverrideTemplate()">创建覆盖模板</button>
                     </div>
                     <div class="editor-file-wrap labels-override-editor-wrap" id="labels-override-editor-wrap">
                         <div id="editor-override" style="width:100%;height:100%;"></div>
@@ -623,33 +623,33 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
                 <div class="settings-panel">
                     <!-- Compose Sources & Files -->
                     <div class="settings-section">
-                        <div class="settings-section-title"><i class="fa fa-files-o"></i> Compose Sources &amp; Files</div>
+                        <div class="settings-section-title"><i class="fa fa-files-o"></i>Compose 源与文件</div>
 
                         <!-- Shown instead of Compose Source for a git stack -->
                         <div class="settings-field" id="settings-git-source" style="display:none;">
-                            <label>Git Repository</label>
+                            <label>Git 仓库</label>
                             <div class="settings-field-help" style="margin-bottom:8px;">This stack is deployed from a git repository. Its compose file is the one in the plugin's clone of the repository.</div>
-                            <div id="settings-git-source-loading" class="compose-text-muted">Loading...</div>
+                            <div id="settings-git-source-loading" class="compose-text-muted">加载中...</div>
                             <div id="settings-git-source-error" class="compose-status-danger" style="display:none;"></div>
                             <table id="settings-git-source-table" class="settings-git-source-table" style="display:none;">
                                 <tbody>
-                                    <tr><th>Repository</th><td><code id="settings-git-url"></code></td></tr>
-                                    <tr><th>Branch</th><td><code id="settings-git-branch"></code></td></tr>
+                                    <tr><th>仓库</th><td><code id="settings-git-url"></code></td></tr>
+                                    <tr><th>分支</th><td><code id="settings-git-branch"></code></td></tr>
                                     <tr><th>Compose file</th><td><code id="settings-git-compose-path"></code></td></tr>
-                                    <tr><th>Clone</th><td><code id="settings-git-clone-dir"></code></td></tr>
-                                    <tr id="settings-git-credential-row"><th>Credential</th><td id="settings-git-credential"></td></tr>
-                                    <tr><th>Deployed commit</th><td id="settings-git-deployed"></td></tr>
-                                    <tr id="settings-git-failed-row"><th>Failed commit</th><td id="settings-git-failed" class="compose-status-danger"></td></tr>
-                                    <tr id="settings-git-failed-automatic-row"><th>Failed automatic deploy</th><td id="settings-git-failed-automatic" class="compose-status-danger"></td></tr>
-                                    <tr><th>Checked out</th><td id="settings-git-checked-out"></td></tr>
+                                    <tr><th>克隆</th><td><code id="settings-git-clone-dir"></code></td></tr>
+                                    <tr id="settings-git-credential-row"><th>凭据</th><td id="settings-git-credential"></td></tr>
+                                    <tr><th>已部署提交</th><td id="settings-git-deployed"></td></tr>
+                                    <tr id="settings-git-failed-row"><th>失败的提交</th><td id="settings-git-failed" class="compose-status-danger"></td></tr>
+                                    <tr id="settings-git-failed-automatic-row"><th>自动部署失败</th><td id="settings-git-failed-automatic" class="compose-status-danger"></td></tr>
+                                    <tr><th>已检出</th><td id="settings-git-checked-out"></td></tr>
                                 </tbody>
                             </table>
                             <div style="margin-top:10px;">
-                                <label for="settings-git-auto-deploy" style="font-weight:normal;">Automatic deploys</label>
+                                <label for="settings-git-auto-deploy" style="font-weight:normal;">自动部署</label>
                                 <select id="settings-git-auto-deploy" onchange="saveGitAutoDeploy(this.value)">
-                                    <option value="off">Off</option>
-                                    <option value="notify">Notify me when a new commit changes this stack</option>
-                                    <option value="deploy">Deploy a new commit that changes this stack</option>
+                                    <option value="off">关闭</option>
+                                    <option value="notify">有新提交改动该栈时通知我</option>
+                                    <option value="deploy">部署改动该栈的新提交</option>
                                 </select>
                                 <span id="settings-git-auto-deploy-saved" class="compose-text-muted" style="display:none;margin-left:8px;"></span>
                                 <div class="settings-field-help">Checked every 15 minutes. Saved as soon as it is changed. A failed deploy pauses automatic deploys until a deploy works, or Resume Automatic Deploys in the stack menu.</div>
@@ -663,20 +663,20 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
                         </div>
 
                         <div class="settings-field" id="settings-compose-source-field">
-                            <label>Compose Source</label>
-                            <div class="settings-field-help" style="margin-bottom:8px;">Where does this stack's compose file live?</div>
+                            <label>Compose 源</label>
+                            <div class="settings-field-help" style="margin-bottom:8px;">该栈的 compose 文件位于何处？</div>
                             <div id="settings-compose-source-radios" style="display:flex;flex-direction:column;gap:6px;">
                                 <label style="display:flex;align-items:center;gap:8px;font-weight:normal;">
                                     <input type="radio" name="settings-compose-source" value="project" checked>
-                                    <span>Project folder <span class="compose-text-muted" style="font-size:0.9em;">(default — file lives in the stack's project directory)</span></span>
+                                    <span>项目文件夹<span class="compose-text-muted" style="font-size:0.9em;">(default — file lives in the stack's project directory)</span></span>
                                 </label>
                                 <label style="display:flex;align-items:center;gap:8px;font-weight:normal;">
                                     <input type="radio" name="settings-compose-source" value="folder">
-                                    <span>External folder <span class="compose-text-muted" style="font-size:0.9em;">(choose a directory containing a compose file)</span></span>
+                                    <span>外部文件夹<span class="compose-text-muted" style="font-size:0.9em;">(choose a directory containing a compose file)</span></span>
                                 </label>
                                 <label style="display:flex;align-items:center;gap:8px;font-weight:normal;">
                                     <input type="radio" name="settings-compose-source" value="file">
-                                    <span>Specific compose file <span class="compose-text-muted" style="font-size:0.9em;">(point at one exact <code>.yml</code>/<code>.yaml</code>)</span></span>
+                                    <span>指定 compose 文件<span class="compose-text-muted" style="font-size:0.9em;">(point at one exact <code>.yml</code>/<code>.yaml</code>)</span></span>
                                 </label>
                             </div>
 
@@ -687,24 +687,24 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
 
                             <div id="settings-external-compose-file-wrap" class="settings-compose-source-input" style="margin-top:10px;display:none;">
                                 <input type="text" id="settings-external-compose-file" placeholder="/mnt/user/appdata/myapp/custom.compose.yml" data-pickroot="/" data-picktop="/mnt" data-pickcloseonfile="true" data-pickfilter="yml,yaml">
-                                <div class="settings-field-help">Path must be outside this stack's project folder.</div>
+                                <div class="settings-field-help">路径必须在该栈的项目文件夹之外。</div>
                             </div>
 
                             <div id="settings-invalid-indirect-warning" class="compose-status-danger" style="margin-top:8px;display:none;padding:8px 12px;border-radius:4px;">
-                                <span class="compose-status-danger" style="font-size:0.9em;"><i class="fa fa-exclamation-triangle"></i> <strong>Invalid external path.</strong> The path shown above is broken or the target was not found. Correct the path and save to restore the stack, or switch back to Project folder.</span>
+                                <span class="compose-status-danger" style="font-size:0.9em;"><i class="fa fa-exclamation-triangle"></i> <strong>无效的外部路径。</strong> The path shown above is broken or the target was not found. Correct the path and save to restore the stack, or switch back to Project folder.</span>
                             </div>
                             <div id="settings-external-compose-info" style="margin-top:8px;display:none;">
                                 <span class="compose-status-warning" style="font-size:0.9em;"><i class="fa fa-info-circle"></i> This stack uses an external compose source. The Compose editor tab loads and saves from that location.</span>
                             </div>
                             <div id="settings-external-compose-file-error" class="compose-status-danger" style="margin-top:6px;display:none;font-size:0.9em;"></div>
                             <div id="settings-convert-to-git" style="margin-top:12px;">
-                                <button type="button" class="btn btn-sm" style="padding:2px 12px;font-size:0.9em;" onclick="openConvertToGitModal()"><i class="fa fa-code-fork"></i> Move this stack into git...</button>
+                                <button type="button" class="btn btn-sm" style="padding:2px 12px;font-size:0.9em;" onclick="openConvertToGitModal()"><i class="fa fa-code-fork"></i>将该栈迁移到 Git...</button>
                                 <div class="settings-field-help">Deploy this stack from a git repository from now on. Put its compose file in the repository first.</div>
                             </div>
                         </div>
 
                         <div class="settings-field">
-                            <label for="settings-extra-compose-candidates">Additional Compose Files</label>
+                            <label for="settings-extra-compose-candidates">附加 Compose 文件</label>
                             <div id="settings-extra-compose-candidates" style="display:none;"></div>
                             <div id="settings-extra-compose-none" class="settings-field-help" style="display:none;">No additional compose files found in the compose source folder (looking for <code>*compose*.yml</code> / <code>*compose*.yaml</code>).</div>
                             <details id="settings-extra-compose-external-wrap" style="margin-top:8px;">
@@ -715,30 +715,30 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
                         </div>
 
                         <div class="settings-field">
-                            <label for="settings-env-path">External ENV File Path</label>
-                            <input type="text" id="settings-env-path" placeholder="Default (uses .env in compose source folder)" data-pickroot="/" data-picktop="/mnt" data-pickcloseonfile="true">
+                            <label for="settings-env-path">外部 ENV 文件路径</label>
+                            <input type="text" id="settings-env-path" placeholder="默认（使用 compose 源目录中的 .env）" data-pickroot="/" data-picktop="/mnt" data-pickcloseonfile="true">
                             <div class="settings-field-help">Path to an external .env file (e.g., /mnt/user/appdata/myapp/.env). Leave empty to use the default .env file in the compose source folder (project folder or indirect folder).</div>
                         </div>
 
                         <div class="settings-field">
-                            <label>Compose File Discovery</label>
+                            <label>Compose 文件发现</label>
                             <div id="settings-discovery-mode-row" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-                                <span id="settings-discovery-mode-badge" class="compose-status-info" style="padding:4px 10px;border:1px solid var(--dynamix-box-inner-div-border-color);border-radius:4px;font-size:0.9em;">Discovery mode: Explicit <code>-f</code> flags</span>
-                                <button type="button" id="settings-discovery-mode-toggle" class="btn btn-sm" style="padding:2px 12px;font-size:0.9em;">Use default discovery</button>
+                                <span id="settings-discovery-mode-badge" class="compose-status-info" style="padding:4px 10px;border:1px solid var(--dynamix-box-inner-div-border-color);border-radius:4px;font-size:0.9em;">Discovery mode: Explicit <code>-f</code>参数</span>
+                                <button type="button" id="settings-discovery-mode-toggle" class="btn btn-sm" style="padding:2px 12px;font-size:0.9em;">使用默认发现</button>
                             </div>
                             <div id="settings-default-compose-files-disabled-note" class="compose-status-warning" style="display:none;margin-top:8px;font-size:0.9em;"></div>
-                            <div class="settings-field-help"><strong>Default discovery</strong> lets Docker Compose auto-load <code>compose.override.*</code> and honor <code>COMPOSE_FILE</code> in <code>.env</code>. <strong>Explicit <code>-f</code> flags</strong> is used when the plugin passes each compose file directly. Overrides (external compose, additional files, external env path) require explicit mode.</div>
+                            <div class="settings-field-help"><strong>默认发现</strong> lets Docker Compose auto-load <code>compose.override.*</code> and honor <code>COMPOSE_FILE</code> in <code>.env</code>. <strong>显式<code>-f</code>参数</strong> is used when the plugin passes each compose file directly. Overrides (external compose, additional files, external env path) require explicit mode.</div>
                             <input type="checkbox" id="settings-use-default-compose-files" style="position:absolute;left:-9999px;" tabindex="-1" aria-hidden="true">
                         </div>
 
                         <div class="settings-field">
-                            <label>Effective Command</label>
+                            <label>实际执行的命令</label>
                             <div id="settings-effective-command-wrap" class="settings-effective-command-wrap">
-                                <pre id="settings-effective-command" class="settings-effective-command">Loading…</pre>
+                                <pre id="settings-effective-command" class="settings-effective-command">加载中…</pre>
                             </div>
                             <div class="settings-field-help settings-effective-command-note">
-                                <span>Reflects the currently <strong>saved</strong> configuration.</span>
-                                <span id="settings-effective-command-dirty" class="compose-status-warning settings-effective-command-dirty"><i class="fa fa-pencil"></i> Unsaved changes — apply to refresh.</span>
+                                <span>反映当前<strong>已保存</strong>的配置。</span>
+                                <span id="settings-effective-command-dirty" class="compose-status-warning settings-effective-command-dirty"><i class="fa fa-pencil"></i>有未保存的更改，应用后刷新。</span>
                             </div>
                         </div>
                     </div>
@@ -750,31 +750,31 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
                 <div class="settings-panel">
                     <!-- Stack Identity -->
                     <div class="settings-section">
-                        <div class="settings-section-title"><i class="fa fa-info-circle"></i> Stack Identity</div>
+                        <div class="settings-section-title"><i class="fa fa-info-circle"></i>栈标识</div>
 
                         <div class="settings-field">
-                            <label for="settings-name">Stack Name</label>
+                            <label for="settings-name">栈名称</label>
                             <input type="text" id="settings-name" placeholder="Enter stack name">
-                            <div class="settings-field-help">Display name shown in the UI. Does not affect the project folder name.</div>
+                            <div class="settings-field-help">界面中显示的名称，不影响项目文件夹名。</div>
                         </div>
 
                         <div class="settings-field">
-                            <label for="settings-description">Description</label>
-                            <textarea id="settings-description" placeholder="Enter description for this stack"></textarea>
-                            <div class="settings-field-help">Brief description of what this stack does.</div>
+                            <label for="settings-description">描述</label>
+                            <textarea id="settings-description" placeholder="输入该栈的描述"></textarea>
+                            <div class="settings-field-help">简要说明该栈的用途。</div>
                         </div>
                     </div>
 
                     <!-- Appearance -->
                     <div class="settings-section">
-                        <div class="settings-section-title"><i class="fa fa-picture-o"></i> Appearance</div>
+                        <div class="settings-section-title"><i class="fa fa-picture-o"></i>外观</div>
 
                         <div class="settings-field">
-                            <label for="settings-icon-url">Icon URL / Path</label>
+                            <label for="settings-icon-url">图标 URL / 路径</label>
                             <input type="text" id="settings-icon-url" placeholder="https://example.com/icon.png or /path/to/icon.png" data-pickroot="/" data-picktop="/boot/config/plugins/compose.manager/projects" data-pickcloseonfile="true" data-pickfilter="png,jpg,jpeg,gif,svg,ico,webp">
                             <div class="settings-field-help">URL or local path to a custom icon for this stack. Use the file picker or enter a URL. Leave empty to use the default icon.</div>
                             <div class="settings-field-icon-preview" id="settings-icon-preview" style="display:none;">
-                                <span>Preview:</span>
+                                <span>预览：</span>
                                 <img id="settings-icon-preview-img" src="" alt="Icon preview" onerror="this.parentElement.style.display='none';">
                             </div>
                         </div>
@@ -782,15 +782,15 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
 
                     <!-- Stack WebUI -->
                     <div class="settings-section">
-                        <div class="settings-section-title"><i class="fa fa-globe"></i> Stack WebUI</div>
+                        <div class="settings-section-title"><i class="fa fa-globe"></i>栈 WebUI</div>
 
                         <div class="settings-field">
-                            <label for="settings-webui-url">WebUI URL</label>
+                            <label for="settings-webui-url">WebUI 地址</label>
                             <input type="text" id="settings-webui-url" placeholder="http://tower.local:8080/">
                             <div class="settings-field-help">URL to the main WebUI for this stack. This adds a "WebUI" option to the stack's context menu. </div>
                             <div id="settings-webui-url-error" class="compose-status-danger" style="margin-top:6px;display:none;font-size:0.9em;"></div>
                             <div id="settings-webui-suggestion" style="display:none; margin-top:4px; padding:6px 10px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,165,0,0.3); border-radius:4px; font-size:0.9em;">
-                                <span style="color:#aaa;">Detected: </span><code id="settings-webui-detected-url" style="user-select:all;"></code>
+                                <span style="color:#aaa;">检测到：</span><code id="settings-webui-detected-url" style="user-select:all;"></code>
                                 <span id="settings-webui-detected-source" style="color:#888; margin-left:6px; font-size:0.85em;"></span>
                                 <button type="button" id="settings-webui-use-btn" class="btn btn-sm" style="margin-left:8px; padding:1px 10px; font-size:0.85em;">Use</button>
                             </div>
@@ -799,32 +799,32 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
 
                     <!-- Runtime Defaults -->
                     <div class="settings-section">
-                        <div class="settings-section-title"><i class="fa fa-cogs"></i> Runtime Defaults</div>
+                        <div class="settings-section-title"><i class="fa fa-cogs"></i>运行时默认值</div>
 
                         <div class="settings-field">
                             <label for="settings-default-profile">Default Profile(s)</label>
-                            <input type="text" id="settings-default-profile" placeholder="Leave empty for all services">
+                            <input type="text" id="settings-default-profile" placeholder="留空表示所有服务">
                             <div class="settings-field-help">
                                 Comma-separated list of profiles to use by default for Autostart and multi-stack operations (e.g., "production,monitoring").
                                 <br>Leave empty to start all services. Available profiles are auto-detected from your compose file.
                             </div>
                             <div id="settings-available-profiles" style="margin-top:8px;display:none;">
-                                <span class="compose-text-muted" style="font-size:0.9em;">Available profiles: </span>
+                                <span class="compose-text-muted" style="font-size:0.9em;">可用配置档：</span>
                                 <span id="settings-profiles-list" style="font-family:var(--font-bitstream);"></span>
                             </div>
                         </div>
 
                         <div class="settings-field">
-                            <label for="settings-credential-id">Registry Credential</label>
+                            <label for="settings-credential-id">镜像仓库凭据</label>
                             <div style="display:flex;gap:8px;align-items:center;">
-                                <select id="settings-credential-id" style="flex:1;"><option value="">Anonymous / no credential</option></select>
-                                <button type="button" id="settings-add-credential" title="Add credential"><i class="fa fa-plus"></i></button>
+                                <select id="settings-credential-id" style="flex:1;"><option value="">匿名或无凭据</option></select>
+                                <button type="button" id="settings-add-credential" title="添加凭据"><i class="fa fa-plus"></i></button>
                             </div>
-                            <div class="settings-field-help">Used only for pull-capable operations for this stack.</div>
+                            <div class="settings-field-help">仅用于该栈可拉取镜像的操作。</div>
                         </div>
 
                         <div class="settings-field">
-                            <label for="settings-wait-for-healthy">Wait for Healthy</label>
+                            <label for="settings-wait-for-healthy">等待健康检查</label>
                             <label style="display:flex;align-items:center;gap:8px;font-weight:normal;">
                                 <input type="checkbox" id="settings-wait-for-healthy">
                                 <span>Use <code>docker compose up --wait</code> for this stack</span>
@@ -833,16 +833,16 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
                         </div>
 
                         <div class="settings-field">
-                            <label for="settings-wait-timeout">Wait Timeout</label>
+                            <label for="settings-wait-timeout">等待超时</label>
                             <input type="number" id="settings-wait-timeout" min="10" max="1800" step="10" placeholder="300">
                             <div class="settings-field-help">Seconds to wait for the stack to become healthy. Leave empty to use the global default timeout.</div>
                         </div>
 
                         <div class="settings-field">
-                            <label for="settings-build-on-update">Rebuild Images on Update</label>
+                            <label for="settings-build-on-update">更新时重建镜像</label>
                             <label style="display:flex;align-items:center;gap:8px;font-weight:normal;">
                                 <input type="checkbox" id="settings-build-on-update">
-                                <span>Add <code>--build</code> to <code>docker compose up</code> when updating</span>
+                                <span>添加<code>--build</code> to <code>docker compose up</code>更新时</span>
                             </label>
                             <div class="settings-field-help">Enable only for stacks whose images are built locally. Leave unchecked for stacks that publish an image alongside a <code>build:</code> section &mdash; those are pulled instead, matching plain <code>docker compose up</code>.</div>
                         </div>
@@ -850,17 +850,17 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
 
                     <!-- Labels & Overrides -->
                     <div class="settings-section">
-                        <div class="settings-section-title"><i class="fa fa-tags"></i> Labels &amp; Overrides</div>
+                        <div class="settings-section-title"><i class="fa fa-tags"></i>标签与覆盖</div>
 
                         <div class="settings-field">
-                            <label for="settings-override-management">Override File Management</label>
+                            <label for="settings-override-management">覆盖文件管理</label>
                             <label style="display:flex;align-items:center;gap:8px;font-weight:normal;">
                                 <input type="checkbox" id="settings-override-management">
-                                <span id="settings-override-management-label">Automatic</span>
+                                <span id="settings-override-management-label">自动</span>
                             </label>
-                            <div class="settings-field-help"><strong>Automatic:</strong> plugin manages <code>compose.override.yaml</code> in the project directory and the Labels tab shows the form editor. <strong>Manual:</strong> you own the override file, automated edits are blocked, and the Labels tab shows the raw YAML editor.</div>
+                            <div class="settings-field-help"><strong>自动：</strong> plugin manages <code>compose.override.yaml</code> in the project directory and the Labels tab shows the form editor. <strong>手动：</strong> you own the override file, automated edits are blocked, and the Labels tab shows the raw YAML editor.</div>
                             <div id="settings-effective-override-path" style="margin-top:8px;display:none;">
-                                <span class="compose-text-muted" style="font-size:0.9em;">Effective override file: </span>
+                                <span class="compose-text-muted" style="font-size:0.9em;">生效的覆盖文件：</span>
                                 <code id="settings-effective-override-path-value" style="font-size:0.9em;user-select:all;"></code>
                             </div>
                         </div>
@@ -873,11 +873,11 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
                 <div class="editor-footer-left">
                     <div class="editor-paths" id="editor-file-info">
                         <div class="editor-path-row">
-                            <span class="editor-path-label">Project Dir</span>
+                            <span class="editor-path-label">项目目录</span>
                             <span class="editor-path-value" id="editor-project-dir"></span>
                         </div>
                         <div class="editor-path-row">
-                            <span class="editor-path-label">Editing File</span>
+                            <span class="editor-path-label">正在编辑文件</span>
                             <span class="editor-path-value" id="editor-edit-file"></span>
                         </div>
                     </div>
@@ -887,9 +887,9 @@ $acePath = file_exists('/usr/local/emhttp/plugins/dynamix/javascript/ace/ace.js'
                 </div>
                 <div class="editor-footer-right">
                     <span class="editor-change-count" id="editor-change-count">0 changes</span>
-                    <button class="editor-btn editor-btn-save-all" id="editor-btn-okay" onclick="handleOkayAction()">Okay</button>
-                    <button class="editor-btn editor-btn-save-all" id="editor-btn-apply" onclick="saveAllChanges(false)" disabled>Apply</button>
-                    <button class="editor-btn editor-btn-cancel" id="editor-btn-close" onclick="closeEditorModal()">Close</button>
+                    <button class="editor-btn editor-btn-save-all" id="editor-btn-okay" onclick="handleOkayAction()">确定</button>
+                    <button class="editor-btn editor-btn-save-all" id="editor-btn-apply" onclick="saveAllChanges(false)" disabled>应用</button>
+                    <button class="editor-btn editor-btn-cancel" id="editor-btn-close" onclick="closeEditorModal()">关闭</button>
                 </div>
             </div>
         </div>

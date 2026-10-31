@@ -26,7 +26,7 @@ final class ProcessResult
     public function errorSummary(): string
     {
         if ($this->timedOut) {
-            return 'The command did not finish in time and was stopped.';
+            return '命令未在限定时间内完成，stopped。';
         }
         $lines = array_values(array_filter(
             array_map('trim', explode("\n", $this->stderr)),

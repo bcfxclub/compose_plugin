@@ -58,7 +58,7 @@ if (!function_exists('rejectStaleClientPath')) {
         echo json_encode([
             'result' => 'error',
             'errorCode' => 'stale_path',
-            'message' => 'The target path changed while the editor was open. Reload the editor and try again.',
+            'message' => '编辑器打开期间目标路径已更改，请重新加载编辑器后再试。',
             'expectedPath' => $expectedPath,
             'actualPath' => $actualPath,
         ]);
@@ -313,7 +313,7 @@ switch ($_POST['action']) {
                 'jsonError' => json_last_error_msg(),
                 'payloadLength' => strlen((string)$raw),
             ], 'user', 'warning', 'column-layout');
-            echo json_encode(['result' => 'error', 'message' => 'Invalid visibility payload.']);
+            echo json_encode(['result' => 'error', 'message' => '无效的可见性数据。']);
             break;
         }
 
@@ -321,10 +321,10 @@ switch ($_POST['action']) {
 
         if (!is_dir($prefDir)) {
             if (!@mkdir($prefDir, 0777, true) && !is_dir($prefDir)) {
-                composeLogger('Failed to create column layout preference directory', [
+                composeLogger('创建列布局首选项目录失败', [
                     'dir' => $prefDir,
                 ], 'user', 'error', 'column-layout');
-                echo json_encode(['result' => 'error', 'message' => 'Failed to persist column visibility.']);
+                echo json_encode(['result' => 'error', 'message' => '保存列可见性失败。']);
                 break;
             }
         }
@@ -340,7 +340,7 @@ switch ($_POST['action']) {
                 'renameOk' => $renameOk,
             ], 'user', 'error', 'column-layout');
             @unlink($tmp);
-            echo json_encode(['result' => 'error', 'message' => 'Failed to persist column visibility.']);
+            echo json_encode(['result' => 'error', 'message' => '保存列可见性失败。']);
             break;
         }
 
@@ -395,7 +395,7 @@ switch ($_POST['action']) {
         $indirectDir = isset($_POST['stackPath']) ? trim($_POST['stackPath']) : '';
         $indirectFile = isset($_POST['stackFilePath']) ? trim($_POST['stackFilePath']) : '';
         if ($indirectDir !== '' && $indirectFile !== '') {
-            echo json_encode(['result' => 'error', 'message' => 'Set either Indirect Path or Indirect Compose File, not both.']);
+            echo json_encode(['result' => 'error', 'message' => '外部路径与外部 Compose 文件只能设置其中一个。']);
             break;
         }
 
@@ -404,17 +404,17 @@ switch ($_POST['action']) {
             $realIndirect = realpath($indirectDir);
             if ($realIndirect === false) {
                 composeLogger("Failed to create stack: Could not resolve indirect path: $indirectDir", null, 'user', 'error', 'stack');
-                echo json_encode(['result' => 'error', 'message' => 'Stack path is invalid or does not exist.']);
+                echo json_encode(['result' => 'error', 'message' => '栈路径无效或不存在。']);
                 break;
             }
             if (!Path::isAllowedPath($realIndirect, ['/mnt', '/boot/config'])) {
                 composeLogger("Failed to create stack: Invalid indirect path: $indirectDir", null, 'user', 'error', 'stack');
-                echo json_encode(['result' => 'error', 'message' => 'Stack path must be under /mnt/ or /boot/config/.']);
+                echo json_encode(['result' => 'error', 'message' => '栈路径必须位于 /mnt/ 或 /boot/config/ 下。']);
                 break;
             }
             if (!is_dir($realIndirect)) {
                 composeLogger("Failed to create stack: Indirect stack path does not exist: $indirectDir", null, 'user', 'error', 'stack');
-                echo json_encode(['result' => 'error', 'message' => 'Indirect stack path does not exist.']);
+                echo json_encode(['result' => 'error', 'message' => '外部栈路径不存在。']);
                 break;
             }
             // Preserve the user-provided path (e.g. /mnt/user/...) instead of
@@ -424,16 +424,16 @@ switch ($_POST['action']) {
             $realFile = realpath($indirectFile);
             if ($realFile === false || !is_file($realFile)) {
                 composeLogger("Failed to create stack: Indirect compose file does not exist: $indirectFile", null, 'user', 'error', 'stack');
-                echo json_encode(['result' => 'error', 'message' => 'Indirect compose file does not exist.']);
+                echo json_encode(['result' => 'error', 'message' => '外部 Compose 文件不存在。']);
                 break;
             }
             if (!Path::isAllowedPath($realFile, ['/mnt', '/boot/config'])) {
                 composeLogger("Failed to create stack: Invalid indirect compose file path: $indirectFile", null, 'user', 'error', 'stack');
-                echo json_encode(['result' => 'error', 'message' => 'Indirect compose file must be under /mnt/ or /boot/config/.']);
+                echo json_encode(['result' => 'error', 'message' => '外部 Compose 文件必须位于 /mnt/ 或 /boot/config/ 下。']);
                 break;
             }
             if (preg_match('/\.ya?ml$/i', basename($realFile)) !== 1) {
-                echo json_encode(['result' => 'error', 'message' => 'Indirect compose file must be a .yml or .yaml file.']);
+                echo json_encode(['result' => 'error', 'message' => '外部 Compose 文件必须是 .yml 或 .yaml 文件。']);
                 break;
             }
             // Preserve the originally-entered file path so /mnt/user is retained.
@@ -449,12 +449,12 @@ switch ($_POST['action']) {
             composeLogger('Failed to create stack: ' . $e->getMessage(), null, 'user', 'error', 'stack');
             // Return user-safe messages; avoid exposing filesystem paths
             $userMessage = match (true) {
-                str_contains($e->getMessage(), 'cannot be empty') => 'Stack name cannot be empty.',
-                str_contains($e->getMessage(), 'empty folder name') => 'Invalid stack name.',
-                str_contains($e->getMessage(), 'unique folder name') => 'Could not create a unique folder for this stack.',
-                str_contains($e->getMessage(), 'escape compose root') => 'Invalid stack name.',
-                str_contains($e->getMessage(), 'Invalid compose root') => 'Server configuration error.',
-                default => 'Failed to create stack. Check server logs for details.',
+                str_contains($e->getMessage(), '栈名称不能为空') => '栈名称不能为空。',
+                str_contains($e->getMessage(), 'empty folder name') => '无效的栈名称。',
+                str_contains($e->getMessage(), 'unique folder name') => '无法为该栈创建唯一的目录。',
+                str_contains($e->getMessage(), '超出 Compose 根目录') => '无效的栈名称。',
+                str_contains($e->getMessage(), '无效的 Compose 根目录') => '服务器配置错误。',
+                default => '创建栈失败，请查看服务器日志。',
             };
             echo json_encode(['result' => 'error', 'message' => $userMessage]);
             break;
@@ -517,7 +517,7 @@ switch ($_POST['action']) {
         if ($result['result'] === 'success') {
             composeLogger('Created git stack: ' . $result['project'], null, 'user', 'info', 'stack');
         } else {
-            composeLogger('Failed to create git stack: ' . $result['message'], null, 'user', 'error', 'stack');
+            composeLogger('创建 Git 栈失败：' . $result['message'], null, 'user', 'error', 'stack');
         }
         echo json_encode($result);
         break;
@@ -525,7 +525,7 @@ switch ($_POST['action']) {
         $stackName = isset($_POST['stackName']) ? basename(trim($_POST['stackName'])) : "";
         if (!$stackName) {
             composeLogger("Stack deletion failed: Stack name not specified.", null, 'user', 'error', 'stack');
-            echo json_encode(['result' => 'error', 'message' => 'Stack not specified.']);
+            echo json_encode(['result' => 'error', 'message' => '未指定栈。']);
             break;
         }
         $folderName = "$compose_root/$stackName";
@@ -552,7 +552,7 @@ switch ($_POST['action']) {
         $deleteSuccess = composeDeleteStackFolder($compose_root, $stackName, $deleteError, $deleteMeta);
         $folderStillExists = is_dir($folderName);
         if (!$deleteSuccess || $folderStillExists) {
-            composeLogger("Stack folder delete failed", [
+            composeLogger("删除栈目录失败", [
                 'stackName' => $stackName,
                 'folderName' => $folderName,
                 'deleteError' => $deleteError,
@@ -560,7 +560,7 @@ switch ($_POST['action']) {
                 'folderStillExists' => $folderStillExists,
                 'filesRemain' => $filesRemain
             ], 'user', 'error', 'stack');
-            $msg = "Failed to delete stack folder. " .
+            $msg = "删除栈目录失败：" .
                 ($deleteError !== '' ? "$deleteError " : "") .
                 ($folderStillExists ? "Folder still exists after delete. " : "") .
                 (isset($deleteMeta['failedPath']) ? "Path: " . $deleteMeta['failedPath'] . ". " : "");
@@ -608,7 +608,7 @@ switch ($_POST['action']) {
     case 'getDescription':
         $script = getPostScript();
         if (!$script) {
-            echo json_encode(['result' => 'error', 'message' => 'Stack not specified.']);
+            echo json_encode(['result' => 'error', 'message' => '未指定栈。']);
             break;
         }
         $fileName = "$compose_root/$script/description";
@@ -625,7 +625,7 @@ switch ($_POST['action']) {
         // Optional explicit file selection (e.g. additional compose files)
         $requestedFile = resolveRequestedComposeFile($stackInfo);
         if ($requestedFile === false) {
-            echo json_encode(['result' => 'error', 'message' => 'Requested file is not part of this stack.']);
+            echo json_encode(['result' => 'error', 'message' => '请求的文件不属于该栈。']);
             break;
         }
         if ($requestedFile !== null) {
@@ -677,25 +677,25 @@ switch ($_POST['action']) {
 
         $envDir = dirname($envPath);
         if (!is_dir($envDir)) {
-            echo json_encode(['result' => 'error', 'message' => 'Target directory does not exist.']);
+            echo json_encode(['result' => 'error', 'message' => '目标目录不存在。']);
             break;
         }
 
         if (is_dir($envPath)) {
-            echo json_encode(['result' => 'error', 'message' => 'Target .env path is a directory.']);
+            echo json_encode(['result' => 'error', 'message' => '目标 .env 路径是一个目录。']);
             break;
         }
 
         if (!is_file($envPath)) {
             $written = @file_put_contents($envPath, OverrideInfo::buildEnvTemplateContent());
             if ($written === false) {
-                echo json_encode(['result' => 'error', 'message' => 'Failed to create .env template.']);
+                echo json_encode(['result' => 'error', 'message' => '创建 .env 模板失败。']);
                 break;
             }
         }
 
         if (!is_file($envPath)) {
-            echo json_encode(['result' => 'error', 'message' => 'Failed to create .env template.']);
+            echo json_encode(['result' => 'error', 'message' => '创建 .env 模板失败。']);
             break;
         }
 
@@ -739,31 +739,31 @@ switch ($_POST['action']) {
         }
 
         if ($overridePath === null) {
-            echo json_encode(['result' => 'error', 'message' => 'Unable to resolve override path']);
+            echo json_encode(['result' => 'error', 'message' => '无法解析覆盖文件路径']);
             break;
         }
 
         $overrideDir = dirname($overridePath);
         if (!is_dir($overrideDir)) {
-            echo json_encode(['result' => 'error', 'message' => 'Override target directory does not exist.']);
+            echo json_encode(['result' => 'error', 'message' => '覆盖文件的目标目录不存在。']);
             break;
         }
 
         if (is_dir($overridePath)) {
-            echo json_encode(['result' => 'error', 'message' => 'Override target path is a directory.']);
+            echo json_encode(['result' => 'error', 'message' => '覆盖文件的目标路径是一个目录。']);
             break;
         }
 
         if (!is_file($overridePath)) {
             $written = @file_put_contents($overridePath, OverrideInfo::buildTemplateContent());
             if ($written === false) {
-                echo json_encode(['result' => 'error', 'message' => 'Failed to create override template.']);
+                echo json_encode(['result' => 'error', 'message' => '创建覆盖模板失败。']);
                 break;
             }
         }
 
         if (!is_file($overridePath)) {
-            echo json_encode(['result' => 'error', 'message' => 'Failed to create override template.']);
+            echo json_encode(['result' => 'error', 'message' => '创建覆盖模板失败。']);
             break;
         }
 
@@ -787,7 +787,7 @@ switch ($_POST['action']) {
         // Optional explicit file selection (e.g. additional compose files)
         $requestedFile = resolveRequestedComposeFile($stackInfo);
         if ($requestedFile === false) {
-            echo json_encode(['result' => 'error', 'message' => 'Requested file is not part of this stack.']);
+            echo json_encode(['result' => 'error', 'message' => '请求的文件不属于该栈。']);
             break;
         }
         $isMainComposeFile = $requestedFile === null || Path::refersToSamePath($requestedFile, $composeFilePath);
@@ -840,7 +840,7 @@ switch ($_POST['action']) {
         }
 
         if ($overridePath === null) {
-            echo json_encode(['result' => 'error', 'message' => 'Unable to resolve override path']);
+            echo json_encode(['result' => 'error', 'message' => '无法解析覆盖文件路径']);
             break;
         }
 
@@ -851,7 +851,7 @@ switch ($_POST['action']) {
         $script = getPostScript();
         $services = json_decode($_POST['services'] ?? '[]', true);
         if (!$script || !is_array($services) || empty($services)) {
-            echo json_encode(['result' => 'error', 'message' => 'Missing project or services.']);
+            echo json_encode(['result' => 'error', 'message' => '缺少项目或服务。']);
             break;
         }
 
@@ -892,7 +892,7 @@ switch ($_POST['action']) {
         if ($iconUrl !== null) {
             $pluginCachePath = compose_get_icon_cache_path($iconUrl);
             if (@unlink($pluginCachePath)) {
-                composeLogger('Cleared plugin icon cache', ['project' => $script, 'cache' => $pluginCachePath], 'system', 'debug', 'icon-cache');
+                composeLogger('已清除插件图标缓存', ['project' => $script, 'cache' => $pluginCachePath], 'system', 'debug', 'icon-cache');
             }
         }
 
@@ -901,7 +901,7 @@ switch ($_POST['action']) {
     case 'updateAutostart':
         $script = getPostScript();
         if (!$script) {
-            echo json_encode(['result' => 'error', 'message' => 'Stack not specified.']);
+            echo json_encode(['result' => 'error', 'message' => '未指定栈。']);
             break;
         }
         $autostart = isset($_POST['autostart']) ? trim($_POST['autostart']) : "false";
@@ -916,7 +916,7 @@ switch ($_POST['action']) {
     case 'saveStackOrder':
         $projects = $_POST['projects'] ?? [];
         if (!is_array($projects)) {
-            echo json_encode(['result' => 'error', 'message' => 'Invalid projects payload']);
+            echo json_encode(['result' => 'error', 'message' => '无效的项目数据']);
             break;
         }
 
@@ -944,7 +944,7 @@ switch ($_POST['action']) {
         }
 
         if (!saveComposeStackOrder($compose_root, $orderedProjects)) {
-            echo json_encode(['result' => 'error', 'message' => 'Failed to save stack order']);
+            echo json_encode(['result' => 'error', 'message' => '保存栈顺序失败']);
             break;
         }
 
@@ -997,7 +997,7 @@ switch ($_POST['action']) {
     case 'setEnvPath':
         $script = getPostScript();
         if (!$script) {
-            echo json_encode(['result' => 'error', 'message' => 'Stack not specified.']);
+            echo json_encode(['result' => 'error', 'message' => '未指定栈。']);
             break;
         }
         $fileContent = isset($_POST['envPath']) ? trim($_POST['envPath']) : "";
@@ -1012,7 +1012,7 @@ switch ($_POST['action']) {
                 ($realComposeRoot !== false && strpos($realEnvDir, $realComposeRoot) === 0)
             );
             if (!$allowed) {
-                echo json_encode(['result' => 'error', 'message' => 'Env file path must be under /mnt/, /boot/config/, or the compose root.']);
+                echo json_encode(['result' => 'error', 'message' => '环境变量文件路径必须位于 /mnt/、/boot/config/ 或 Compose 根目录下。']);
                 break;
             }
         }
@@ -1027,7 +1027,7 @@ switch ($_POST['action']) {
     case 'getEnvPath':
         $script = getPostScript();
         if (!$script) {
-            echo json_encode(['result' => 'error', 'message' => 'Stack not specified.']);
+            echo json_encode(['result' => 'error', 'message' => '未指定栈。']);
             break;
         }
         $fileName = "$compose_root/$script/envpath";
@@ -1048,8 +1048,8 @@ switch ($_POST['action']) {
             unset($credential);
             echo json_encode(['result' => 'success', 'credentials' => $credentials]);
         } catch (\Throwable $error) {
-            composeLogger('Unable to list credentials', ['error' => $error->getMessage()], 'user', 'error', 'credentials');
-            echo json_encode(['result' => 'error', 'message' => 'Unable to read credential vault.']);
+            composeLogger('无法列出凭据', ['error' => $error->getMessage()], 'user', 'error', 'credentials');
+            echo json_encode(['result' => 'error', 'message' => '无法读取凭据库。']);
         }
         break;
     case 'startGitHubDeviceAuth':
@@ -1093,8 +1093,8 @@ switch ($_POST['action']) {
         } catch (\InvalidArgumentException $error) {
             echo json_encode(['result' => 'error', 'message' => $error->getMessage()]);
         } catch (\Throwable $error) {
-            composeLogger('Unable to save credential', ['error' => $error->getMessage()], 'user', 'error', 'credentials');
-            echo json_encode(['result' => 'error', 'message' => 'Unable to save credential.']);
+            composeLogger('无法保存凭据', ['error' => $error->getMessage()], 'user', 'error', 'credentials');
+            echo json_encode(['result' => 'error', 'message' => '无法保存凭据。']);
         }
         break;
     case 'deleteCredential':
@@ -1111,7 +1111,7 @@ switch ($_POST['action']) {
                 }
                 $stacks = composeBuildCredentialStackMap($compose_root)[$credentialId] ?? [];
                 if (!empty($stacks)) {
-                    throw new RuntimeException('Credential is assigned to: ' . implode(', ', $stacks));
+                    throw new RuntimeException('凭据已分配给：' . implode(', ', $stacks));
                 }
                 // A git stack whose git.json cannot be read may use this credential: do not delete
                 // it from under that stack. Registry credentials are never in a git.json.
@@ -1127,7 +1127,7 @@ switch ($_POST['action']) {
                     : [];
                 if (count($unreadable) === 1) {
                     $refusal = "The git settings (git.json) of {$unreadable[0]} could not be read, so it may use this credential. "
-                        . "Fix the file first: the stack's Sources tab, or compose-git status, shows the error.";
+                        . "请先修复该文件：栈的「来源」标签页或 compose-git status 会显示错误。";
                     return false;
                 }
                 if (count($unreadable) > 1) {
@@ -1142,23 +1142,23 @@ switch ($_POST['action']) {
                 break;
             }
             if ($deleted) {
-                composeLogger('Deleted credential', ['id' => $credentialId], 'user', 'info', 'credential');
+                composeLogger('已删除凭据', ['id' => $credentialId], 'user', 'info', 'credential');
             }
             echo json_encode(['result' => $deleted ? 'success' : 'error', 'message' => $deleted ? '' : 'Credential not found.']);
         } catch (\Throwable $error) {
-            if (str_starts_with($error->getMessage(), 'Credential is assigned to: ')) {
+            if (str_starts_with($error->getMessage(), '凭据已分配给：')) {
                 $stacks = composeBuildCredentialStackMap($compose_root)[$credentialId] ?? [];
                 echo json_encode(['result' => 'error', 'message' => $error->getMessage(), 'stacks' => $stacks]);
                 break;
             }
-            composeLogger('Unable to delete credential', ['error' => $error->getMessage()], 'user', 'error', 'credentials');
-            echo json_encode(['result' => 'error', 'message' => 'Unable to delete credential.']);
+            composeLogger('无法删除凭据', ['error' => $error->getMessage()], 'user', 'error', 'credentials');
+            echo json_encode(['result' => 'error', 'message' => '无法删除凭据。']);
         }
         break;
     case 'testCredential':
         $credentialId = trim((string) ($_POST['id'] ?? ''));
         if ($credentialId === '') {
-            echo json_encode(['result' => 'error', 'message' => 'Credential ID is required.']);
+            echo json_encode(['result' => 'error', 'message' => '必须提供凭据 ID。']);
             break;
         }
         try {
@@ -1167,8 +1167,8 @@ switch ($_POST['action']) {
                 require_once("/usr/local/emhttp/plugins/compose.manager/include/GitStackManager.php");
                 $test = (new GitStackManager($compose_root))->testCredential($credentialId);
                 if ($test === null) {
-                    echo json_encode(['result' => 'error', 'message' => 'No git stack uses this credential yet. '
-                        . 'It is tested by reaching a repository: choose it for a git stack (when adding the stack, or with compose-git), then test it again.']);
+                    echo json_encode(['result' => 'error', 'message' => '尚无 Git 栈使用该凭据。'
+                        . '测试时会连接仓库：请先为某个 Git 栈选择该凭据（新建栈时或使用 compose-git），然后再测试。']);
                     break;
                 }
             } else {
@@ -1183,21 +1183,21 @@ switch ($_POST['action']) {
             );
             echo json_encode(['result' => 'success'] + $test);
         } catch (\Throwable $error) {
-            composeLogger('Unable to test credential', ['error' => $error->getMessage()], 'user', 'error', 'credentials');
-            echo json_encode(['result' => 'error', 'message' => 'Unable to test credential.']);
+            composeLogger('无法测试凭据', ['error' => $error->getMessage()], 'user', 'error', 'credentials');
+            echo json_encode(['result' => 'error', 'message' => '无法测试凭据。']);
         }
         break;
     case 'getStackSettings':
         $script = getPostScript();
         if (!$script) {
-            echo json_encode(['result' => 'error', 'message' => 'Stack not specified.']);
+            echo json_encode(['result' => 'error', 'message' => '未指定栈。']);
             break;
         }
 
         try {
             $stackInfo = StackInfo::fromProject($compose_root, $script);
         } catch (\Throwable $e) {
-            echo json_encode(['result' => 'error', 'message' => 'Unable to load stack settings.']);
+            echo json_encode(['result' => 'error', 'message' => '无法加载栈设置。']);
             break;
         }
         // Get env path
@@ -1339,7 +1339,7 @@ switch ($_POST['action']) {
     case 'getGitStackStatus':
         $script = getPostScript();
         if (!$script) {
-            echo json_encode(['result' => 'error', 'message' => 'Stack not specified.']);
+            echo json_encode(['result' => 'error', 'message' => '未指定栈。']);
             break;
         }
         echo json_encode((new GitStackWebActions($compose_root))->status($script));
@@ -1347,7 +1347,7 @@ switch ($_POST['action']) {
     case 'convertToGitStack':
         $script = getPostScript();
         if (!$script) {
-            echo json_encode(['result' => 'error', 'message' => 'Stack not specified.']);
+            echo json_encode(['result' => 'error', 'message' => '未指定栈。']);
             break;
         }
         $result = (new GitStackWebActions($compose_root))->convert($script, $_POST);
@@ -1361,7 +1361,7 @@ switch ($_POST['action']) {
     case 'setGitAutoDeploy':
         $script = getPostScript();
         if (!$script) {
-            echo json_encode(['result' => 'error', 'message' => 'Stack not specified.']);
+            echo json_encode(['result' => 'error', 'message' => '未指定栈。']);
             break;
         }
         echo json_encode((new GitStackWebActions($compose_root))->setAutoDeploy($script, trim((string) ($_POST['autoDeploy'] ?? ''))));
@@ -1369,7 +1369,7 @@ switch ($_POST['action']) {
     case 'resumeGitStack':
         $script = getPostScript();
         if (!$script) {
-            echo json_encode(['result' => 'error', 'message' => 'Stack not specified.']);
+            echo json_encode(['result' => 'error', 'message' => '未指定栈。']);
             break;
         }
         echo json_encode((new GitStackWebActions($compose_root))->resume($script));
@@ -1377,7 +1377,7 @@ switch ($_POST['action']) {
     case 'checkGitStack':
         $script = getPostScript();
         if (!$script) {
-            echo json_encode(['result' => 'error', 'message' => 'Stack not specified.']);
+            echo json_encode(['result' => 'error', 'message' => '未指定栈。']);
             break;
         }
         echo json_encode((new GitStackWebActions($compose_root))->check($script));
@@ -1385,13 +1385,13 @@ switch ($_POST['action']) {
     case 'setLabelsViewMode':
         $script = getPostScript();
         if (!$script) {
-            echo json_encode(['result' => 'error', 'message' => 'Stack not specified.']);
+            echo json_encode(['result' => 'error', 'message' => '未指定栈。']);
             break;
         }
 
         $labelsViewMode = isset($_POST['labelsViewMode']) ? strtolower(trim((string) $_POST['labelsViewMode'])) : 'basic';
         if ($labelsViewMode !== 'advanced' && $labelsViewMode !== 'basic') {
-            echo json_encode(['result' => 'error', 'message' => 'Invalid labels view mode.']);
+            echo json_encode(['result' => 'error', 'message' => '无效的标签视图模式。']);
             break;
         }
 
@@ -1409,14 +1409,14 @@ switch ($_POST['action']) {
     case 'previewComposeArgs':
         $script = getPostScript();
         if (!$script) {
-            echo json_encode(['result' => 'error', 'message' => 'Stack not specified.']);
+            echo json_encode(['result' => 'error', 'message' => '未指定栈。']);
             break;
         }
 
         try {
             $stackInfo = StackInfo::fromProject($compose_root, $script);
         } catch (\Throwable $e) {
-            echo json_encode(['result' => 'error', 'message' => 'Unable to load stack.']);
+            echo json_encode(['result' => 'error', 'message' => '无法加载栈。']);
             break;
         }
 
@@ -1436,7 +1436,7 @@ switch ($_POST['action']) {
     case 'detectWebui':
         $script = getPostScript();
         if (!$script) {
-            echo json_encode(['result' => 'error', 'message' => 'Stack not specified.']);
+            echo json_encode(['result' => 'error', 'message' => '未指定栈。']);
             break;
         }
         $detected = detectWebuiUrl($compose_root, $script);
@@ -1445,7 +1445,7 @@ switch ($_POST['action']) {
     case 'setStackSettings':
         $script = getPostScript();
         if (!$script) {
-            echo json_encode(['result' => 'error', 'message' => 'Stack not specified.']);
+            echo json_encode(['result' => 'error', 'message' => '未指定栈。']);
             break;
         }
 
@@ -1459,7 +1459,7 @@ switch ($_POST['action']) {
                 && strpos($iconUrl, '..') === false
                 && (strpos($iconUrl, '/mnt/') === 0 || strpos($iconUrl, '/boot/config/plugins/compose.manager/projects/') === 0);
             if (!$isUrl && !$isDataImageUrl && !$isLocalPath) {
-                echo json_encode(['result' => 'error', 'message' => 'Invalid icon. Must be http(s) URL, data:image URL, or a local path under /mnt/ or /boot/config/plugins/compose.manager/projects/.']);
+                echo json_encode(['result' => 'error', 'message' => '图标无效：必须是 http(s) 地址、data:image 地址，或位于 /mnt/ 或 /boot/config/plugins/compose.manager/projects/ 下的本地路径。']);
                 break;
             }
         }
@@ -1467,11 +1467,11 @@ switch ($_POST['action']) {
         $webuiUrl = isset($_POST['webuiUrl']) ? trim($_POST['webuiUrl']) : "";
         if (!empty($webuiUrl)) {
             if (!isValidWebuiUrl($webuiUrl)) {
-                echo json_encode(['result' => 'error', 'message' => 'Invalid WebUI URL. Must be http:// or https:// (supports [IP] and [PORT:xxxx] placeholders).']);
+                echo json_encode(['result' => 'error', 'message' => 'WebUI 地址无效：必须以 http:// 或 https:// 开头（支持 [IP] 与 [PORT:xxxx] 占位符）。']);
                 break;
             }
             if (preg_match('/\[PORT\]/i', $webuiUrl)) {
-                echo json_encode(['result' => 'error', 'message' => 'Bare [PORT] is not supported at stack level. Use [PORT:xxxx] with a default port (e.g. [PORT:8080]).']);
+                echo json_encode(['result' => 'error', 'message' => '栈级别不支持裸 [PORT]，请使用带默认端口的 [PORT:xxxx]（例如 [PORT:8080]）。']);
                 break;
             }
         }
@@ -1507,17 +1507,17 @@ switch ($_POST['action']) {
         if (!empty($externalComposePath)) {
             $realPath = realpath($externalComposePath) ?: $externalComposePath;
             if (!Path::isAllowedPath($realPath, ['/mnt', '/boot/config'])) {
-                echo json_encode(['result' => 'error', 'message' => 'External compose path must be under /mnt/ or /boot/config/.']);
+                echo json_encode(['result' => 'error', 'message' => '外部 Compose 路径必须位于 /mnt/ 或 /boot/config/ 下。']);
                 break;
             }
             if (!is_dir($externalComposePath)) {
-                echo json_encode(['result' => 'error', 'message' => 'External compose path directory does not exist: ' . $externalComposePath]);
+                echo json_encode(['result' => 'error', 'message' => '外部 Compose 路径目录不存在：' . $externalComposePath]);
                 break;
             }
 
             $projectPath = realpath("$compose_root/$script") ?: rtrim("$compose_root/$script", '/');
             if (Path::refersToSamePath($realPath, $projectPath)) {
-                echo json_encode(['result' => 'error', 'message' => 'External compose path cannot be the stack project folder. Use a path under /mnt/ or /boot/config/ that is external to this stack.']);
+                echo json_encode(['result' => 'error', 'message' => '外部 Compose 路径不能是该栈的项目文件夹，请使用位于 /mnt/ 或 /boot/config/ 下、且在该栈之外的路径。']);
                 break;
             }
         }
@@ -1525,21 +1525,21 @@ switch ($_POST['action']) {
         if (!empty($externalComposeFilePath)) {
             $realFile = realpath($externalComposeFilePath);
             if ($realFile === false || !is_file($realFile)) {
-                echo json_encode(['result' => 'error', 'message' => 'External compose file does not exist: ' . $externalComposeFilePath]);
+                echo json_encode(['result' => 'error', 'message' => '外部 Compose 文件不存在：' . $externalComposeFilePath]);
                 break;
             }
             if (!Path::isAllowedPath($realFile, ['/mnt', '/boot/config'])) {
-                echo json_encode(['result' => 'error', 'message' => 'External compose file must be under /mnt/ or /boot/config/.']);
+                echo json_encode(['result' => 'error', 'message' => '外部 Compose 文件必须位于 /mnt/ 或 /boot/config/ 下。']);
                 break;
             }
             if (preg_match('/\.ya?ml$/i', basename($realFile)) !== 1) {
-                echo json_encode(['result' => 'error', 'message' => 'External compose file must be a .yml or .yaml file.']);
+                echo json_encode(['result' => 'error', 'message' => '外部 Compose 文件必须是 .yml 或 .yaml 文件。']);
                 break;
             }
 
             $projectPath = realpath("$compose_root/$script") ?: rtrim("$compose_root/$script", '/');
             if (Path::refersToSamePath(dirname($realFile), $projectPath)) {
-                echo json_encode(['result' => 'error', 'message' => 'External compose file cannot be inside the stack project folder. Use a path under /mnt/ or /boot/config/ that is external to this stack.']);
+                echo json_encode(['result' => 'error', 'message' => '外部 Compose 文件不能位于该栈的项目文件夹内，请使用位于 /mnt/ 或 /boot/config/ 下、且在该栈之外的路径。']);
                 break;
             }
         }
@@ -1567,7 +1567,7 @@ switch ($_POST['action']) {
                     break;
                 }
                 if (!Path::isAllowedPath($realExtra, ['/mnt', '/boot/config'])) {
-                    $extraComposeFilesError = 'Additional compose files must be under /mnt/ or /boot/config/.';
+                    $extraComposeFilesError = '附加的 Compose 文件必须位于 /mnt/ 或 /boot/config/ 下。';
                     break;
                 }
             } elseif (strpos($extraLine, '..') !== false) {
@@ -1593,7 +1593,7 @@ switch ($_POST['action']) {
                         throw new RuntimeException('Selected credential no longer exists.');
                     }
                     if ($credentialId !== '' && in_array((new CredentialVault())->getCredentialSummary($credentialId)['provider'] ?? '', ['git', 'git-ssh'], true)) {
-                        throw new RuntimeException('A git repository credential cannot be used to pull images.');
+                        throw new RuntimeException('Git 仓库凭据不能用于拉取镜像。');
                     }
                     if ($credentialId === '') {
                         if (is_file($credentialIdFile)) {
@@ -1604,7 +1604,7 @@ switch ($_POST['action']) {
                     }
                 });
             } catch (\Throwable $error) {
-                composeLogger('Unable to update stack credential', ['error' => $error->getMessage()], 'user', 'error', 'credentials');
+                composeLogger('无法更新栈凭据', ['error' => $error->getMessage()], 'user', 'error', 'credentials');
                 echo json_encode(['result' => 'error', 'message' => $error->getMessage()]);
                 break;
             }
@@ -1763,7 +1763,7 @@ switch ($_POST['action']) {
             }
         }
 
-        echo json_encode(['result' => 'success', 'message' => 'Settings saved']);
+        echo json_encode(['result' => 'success', 'message' => '设置已保存']);
         break;
     case 'saveProfiles':
         $script = getPostScript();
@@ -1790,7 +1790,7 @@ switch ($_POST['action']) {
             'caller' => $_SERVER['REMOTE_ADDR'] ?? 'cli',
         ], 'user', 'debug', 'getStackContainers');
         if (!$script) {
-            echo json_encode(['result' => 'error', 'message' => 'Stack not specified.']);
+            echo json_encode(['result' => 'error', 'message' => '未指定栈。']);
             break;
         }
 
@@ -1999,7 +1999,7 @@ switch ($_POST['action']) {
         // --profile flags so compose is the authoritative parser/interpreter.
         $script = getPostScript();
         if (!$script) {
-            echo json_encode(['result' => 'error', 'message' => 'Stack not specified.']);
+            echo json_encode(['result' => 'error', 'message' => '未指定栈。']);
             break;
         }
         $profiles = isset($_POST['profiles']) ? trim($_POST['profiles']) : '';
@@ -2028,13 +2028,13 @@ switch ($_POST['action']) {
         $containerAction = isset($_POST['containerAction']) ? trim($_POST['containerAction']) : "";
 
         if (!$containerName || !$containerAction) {
-            echo json_encode(['result' => 'error', 'message' => 'Container or action not specified.']);
+            echo json_encode(['result' => 'error', 'message' => '未指定容器或操作。']);
             break;
         }
 
         $allowedActions = ['start', 'stop', 'restart', 'pause', 'unpause'];
         if (!in_array($containerAction, $allowedActions)) {
-            echo json_encode(['result' => 'error', 'message' => 'Invalid action.']);
+            echo json_encode(['result' => 'error', 'message' => '无效的操作。']);
             break;
         }
 
@@ -2047,7 +2047,7 @@ switch ($_POST['action']) {
         // Check for updates for all containers in a compose stack
         $script = getPostScript();
         if (!$script) {
-            echo json_encode(['result' => 'error', 'message' => 'Stack not specified.']);
+            echo json_encode(['result' => 'error', 'message' => '未指定栈。']);
             break;
         }
 
@@ -2370,7 +2370,7 @@ switch ($_POST['action']) {
         }
 
         if (!is_file($syslogFile)) {
-            echo json_encode(['result' => 'error', 'message' => 'Syslog file not found']);
+            echo json_encode(['result' => 'error', 'message' => '未找到系统日志文件']);
             break;
         }
 
@@ -2421,7 +2421,7 @@ switch ($_POST['action']) {
         // Return the last command log file for a stack (background or foreground run)
         $script = getPostScript();
         if (!$script) {
-            echo json_encode(['result' => 'error', 'message' => 'Stack not specified.']);
+            echo json_encode(['result' => 'error', 'message' => '未指定栈。']);
             break;
         }
 
@@ -2433,7 +2433,7 @@ switch ($_POST['action']) {
 
         $logContent = @file_get_contents($logFile);
         if ($logContent === false) {
-            echo json_encode(['result' => 'error', 'message' => 'Could not read log file.']);
+            echo json_encode(['result' => 'error', 'message' => '无法读取日志文件。']);
             break;
         }
 
@@ -2444,7 +2444,7 @@ switch ($_POST['action']) {
         // Check if a stack is currently locked (operation in progress)
         $script = getPostScript();
         if (!$script) {
-            echo json_encode(['result' => 'error', 'message' => 'Stack not specified.']);
+            echo json_encode(['result' => 'error', 'message' => '未指定栈。']);
             break;
         }
 
@@ -2467,7 +2467,7 @@ switch ($_POST['action']) {
         // Get the last operation result for a stack
         $script = getPostScript();
         if (!$script) {
-            echo json_encode(['result' => 'error', 'message' => 'Stack not specified.']);
+            echo json_encode(['result' => 'error', 'message' => '未指定栈。']);
             break;
         }
 
@@ -2488,7 +2488,7 @@ switch ($_POST['action']) {
             $stacks = json_decode($stacks, true);
         }
         if (!is_array($stacks) || empty($stacks)) {
-            echo json_encode(['result' => 'error', 'message' => 'No stacks specified.']);
+            echo json_encode(['result' => 'error', 'message' => '未指定栈。']);
             break;
         }
 
@@ -2524,7 +2524,7 @@ switch ($_POST['action']) {
             $stacks = json_decode($stacks, true);
         }
         if (!is_array($stacks) || empty($stacks)) {
-            echo json_encode(['result' => 'error', 'message' => 'No stacks specified.']);
+            echo json_encode(['result' => 'error', 'message' => '未指定栈。']);
             break;
         }
 
@@ -2545,12 +2545,12 @@ switch ($_POST['action']) {
 
     case 'createBackup':
         require_once("/usr/local/emhttp/plugins/compose.manager/include/BackupFunctions.php");
-        composeLogger('Manual backup starting...', null, 'user', 'info', 'backup');
+        composeLogger('手动备份开始...', null, 'user', 'info', 'backup');
         $result = createBackup();
         if ($result['result'] === 'success') {
             composeLogger("Manual backup completed: " . $result['archive'] . " (" . $result['size'] . ", " . $result['stacks'] . " stacks)", null, 'user', 'info', 'backup');
         } else {
-            composeLogger('Manual backup FAILED: ' . ($result['message'] ?? 'Unknown error'), null, 'user', 'error', 'backup');
+            composeLogger('Manual backup FAILED: ' . ($result['message'] ?? '未知错误'), null, 'user', 'error', 'backup');
         }
         echo json_encode($result);
         break;
@@ -2565,15 +2565,15 @@ switch ($_POST['action']) {
     case 'uploadBackup':
         require_once("/usr/local/emhttp/plugins/compose.manager/include/BackupFunctions.php");
         if (!isset($_FILES['file']) || $_FILES['file']['error'] !== UPLOAD_ERR_OK) {
-            $errMsg = 'No file uploaded.';
+            $errMsg = '未上传文件。';
             if (isset($_FILES['file'])) {
                 $uploadErrors = [
-                    UPLOAD_ERR_INI_SIZE => 'File exceeds server upload limit.',
-                    UPLOAD_ERR_FORM_SIZE => 'File exceeds form upload limit.',
-                    UPLOAD_ERR_PARTIAL => 'File only partially uploaded.',
-                    UPLOAD_ERR_NO_FILE => 'No file was uploaded.',
-                    UPLOAD_ERR_NO_TMP_DIR => 'Server missing temp directory.',
-                    UPLOAD_ERR_CANT_WRITE => 'Failed to write to disk.',
+                    UPLOAD_ERR_INI_SIZE => '文件超出服务器上传限制。',
+                    UPLOAD_ERR_FORM_SIZE => '文件超出表单上传限制。',
+                    UPLOAD_ERR_PARTIAL => '文件只上传了一部分。',
+                    UPLOAD_ERR_NO_FILE => '没有文件被上传。',
+                    UPLOAD_ERR_NO_TMP_DIR => '服务器缺少临时目录。',
+                    UPLOAD_ERR_CANT_WRITE => '写入磁盘失败。',
                 ];
                 $errMsg = $uploadErrors[$_FILES['file']['error']] ?? 'Upload error code ' . $_FILES['file']['error'];
             }
@@ -2582,20 +2582,20 @@ switch ($_POST['action']) {
         }
         $filename = basename($_FILES['file']['name']);
         if (!preg_match('/\.(tar\.gz|tgz)$/i', $filename)) {
-            echo json_encode(['result' => 'error', 'message' => 'Invalid file type. Only .tar.gz archives are accepted.']);
+            echo json_encode(['result' => 'error', 'message' => '文件类型无效，只接受 .tar.gz 归档。']);
             break;
         }
         $dest = getBackupDestination();
         if (!is_dir($dest)) {
             if (!@mkdir($dest, 0755, true)) {
-                composeLogger('Failed to create backup destination directory: ' . $dest, null, 'user', 'error', 'backup');
-                echo json_encode(['result' => 'error', 'message' => 'Backup destination does not exist and could not be created: ' . $dest]);
+                composeLogger('创建备份目标目录失败：' . $dest, null, 'user', 'error', 'backup');
+                echo json_encode(['result' => 'error', 'message' => '备份目标不存在且无法创建：' . $dest]);
                 break;
             }
         }
         if (!is_writable($dest)) {
-            composeLogger('Backup destination is not writable: ' . $dest, null, 'user', 'error', 'backup');
-            echo json_encode(['result' => 'error', 'message' => 'Backup destination is not writable: ' . $dest]);
+            composeLogger('备份目标不可写：' . $dest, null, 'user', 'error', 'backup');
+            echo json_encode(['result' => 'error', 'message' => '备份目标不可写：' . $dest]);
             break;
         }
         $targetPath = $dest . '/' . $filename;
@@ -2605,7 +2605,7 @@ switch ($_POST['action']) {
             break;
         }
         if (!move_uploaded_file($_FILES['file']['tmp_name'], $targetPath)) {
-            echo json_encode(['result' => 'error', 'message' => 'Failed to save uploaded file.']);
+            echo json_encode(['result' => 'error', 'message' => '保存上传的文件失败。']);
             break;
         }
         composeLogger('Uploaded backup archive: ' . $filename, null, 'user', 'info', 'backup');
@@ -2617,7 +2617,7 @@ switch ($_POST['action']) {
         $archive = isset($_POST['archive']) ? trim($_POST['archive']) : '';
         $directory = isset($_POST['directory']) && $_POST['directory'] !== '' ? trim($_POST['directory']) : null;
         if (empty($archive)) {
-            echo json_encode(['result' => 'error', 'message' => 'No archive specified.']);
+            echo json_encode(['result' => 'error', 'message' => '未指定归档文件。']);
             break;
         }
         $archivePath = resolveArchivePath($archive, $directory);
@@ -2633,23 +2633,23 @@ switch ($_POST['action']) {
             $stacks = json_decode($stacks, true);
         }
         if (empty($archive)) {
-            echo json_encode(['result' => 'error', 'message' => 'No archive specified.']);
+            echo json_encode(['result' => 'error', 'message' => '未指定归档文件。']);
             break;
         }
         if (!is_array($stacks) || empty($stacks)) {
-            echo json_encode(['result' => 'error', 'message' => 'No stacks selected for restore.']);
+            echo json_encode(['result' => 'error', 'message' => '未选择要恢复的栈。']);
             break;
         }
         composeLogger('Restore starting from archive: ' . $archive . ' with ' . count($stacks) . ' stacks selected', null, 'user', 'info', 'restore');
         $archivePath = resolveArchivePath($archive);
         $result = restoreStacks($archivePath, $stacks);
         if ($result['result'] === 'error') {
-            composeLogger('Restore FAILED: ' . ($result['message'] ?? 'Unknown error'), null, 'user', 'error', 'restore');
+            composeLogger('恢复失败：' . ($result['message'] ?? '未知错误'), null, 'user', 'error', 'restore');
         } else {
             $restoredList = implode(', ', $result['restored'] ?? []);
             composeLogger('Restore completed: ' . count($result['restored']) . ' stacks restored (' . $restoredList . ')', null, 'user', 'info', 'restore');
             if (!empty($result['errors'])) {
-                composeLogger('Restore errors: ' . implode(', ', $result['errors']), null, 'user', 'error', 'restore');
+                composeLogger('恢复错误：' . implode(', ', $result['errors']), null, 'user', 'error', 'restore');
             }
         }
         echo json_encode($result);
@@ -2659,26 +2659,26 @@ switch ($_POST['action']) {
         require_once("/usr/local/emhttp/plugins/compose.manager/include/BackupFunctions.php");
         $archive = isset($_POST['archive']) ? trim($_POST['archive']) : '';
         if (empty($archive)) {
-            echo json_encode(['result' => 'error', 'message' => 'No archive specified.']);
+            echo json_encode(['result' => 'error', 'message' => '未指定归档文件。']);
             break;
         }
         $archivePath = resolveArchivePath($archive);
         if (!file_exists($archivePath)) {
-            echo json_encode(['result' => 'error', 'message' => 'Archive not found.']);
+            echo json_encode(['result' => 'error', 'message' => '未找到归档文件。']);
             break;
         }
         @unlink($archivePath);
         composeLogger('Deleted backup archive: ' . $archive, null, 'user', 'info', 'backup');
-        echo json_encode(['result' => 'success', 'message' => 'Backup deleted.']);
+        echo json_encode(['result' => 'success', 'message' => '备份已删除。']);
         break;
 
     case 'updateBackupCron':
         require_once("/usr/local/emhttp/plugins/compose.manager/include/BackupFunctions.php");
         if (updateBackupCron()) {
-            echo json_encode(['result' => 'success', 'message' => 'Backup schedule updated.']);
+            echo json_encode(['result' => 'success', 'message' => '备份计划已更新。']);
         } else {
             http_response_code(500);
-            echo json_encode(['result' => 'error', 'message' => 'Failed to update backup schedule.']);
+            echo json_encode(['result' => 'error', 'message' => '更新备份计划失败。']);
         }
         break;
 
@@ -2689,7 +2689,7 @@ switch ($_POST['action']) {
             $settings = json_decode($settings, true);
         }
         if (!is_array($settings)) {
-            echo json_encode(['result' => 'error', 'message' => 'Invalid settings data.']);
+            echo json_encode(['result' => 'error', 'message' => '无效的设置数据。']);
             break;
         }
 
@@ -2737,7 +2737,7 @@ switch ($_POST['action']) {
         // Update cron job and log the action
         require_once("/usr/local/emhttp/plugins/compose.manager/include/BackupFunctions.php");
         if (!updateBackupCron()) {
-            composeLogger('Warning: failed to sync cron schedule', null, 'user', 'warning', 'backup');
+            composeLogger('警告：同步定时计划失败', null, 'user', 'warning', 'backup');
         }
 
         // Log the scheduler status
@@ -2762,10 +2762,10 @@ switch ($_POST['action']) {
             $time12 = "{$hour12}:{$minute} {$ampm}";
             composeLogger("Scheduler ENABLED: {$freq}{$day} at {$time12}", null, 'user', 'info', 'backup');
         } else {
-            composeLogger('Scheduler DISABLED', null, 'user', 'info', 'backup');
+            composeLogger('调度器已禁用', null, 'user', 'info', 'backup');
         }
 
-        echo json_encode(['result' => 'success', 'message' => 'Backup settings saved.']);
+        echo json_encode(['result' => 'success', 'message' => '备份设置已保存。']);
         break;
 
     case 'listProjects':
@@ -2804,14 +2804,14 @@ switch ($_POST['action']) {
         $stackName = isset($_POST['stackName']) ? basename(trim($_POST['stackName'])) : '';
         $chosen = isset($_POST['projectName']) ? trim($_POST['projectName']) : '';
         if ($stackName === '' || $chosen === '') {
-            echo json_encode(['result' => 'error', 'message' => 'Stack and project name are required.']);
+            echo json_encode(['result' => 'error', 'message' => '栈名称和项目名称都是必填的。']);
             break;
         }
         try {
             $stackInfo = StackInfo::fromProject($compose_root, $stackName);
             $stackInfo->applyIdentityChoice($chosen);
         } catch (\Throwable $e) {
-            composeLogger('Failed to apply project identity choice', [
+            composeLogger('应用项目标识选择失败', [
                 'stackName' => $stackName,
                 'projectName' => $chosen,
                 'error' => $e->getMessage(),

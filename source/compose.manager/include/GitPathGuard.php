@@ -22,7 +22,7 @@ final class GitPathGuard
     /**
      * Whether the Unraid array is started, read from emhttp's var.ini.
      *
-     * A missing or unreadable file counts as "not started", so the check fails
+     * A missing or unreadable file counts as "未启动", so the check fails
      * closed.
      */
     public static function isArrayStarted(): bool

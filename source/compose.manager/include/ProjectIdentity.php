@@ -148,7 +148,7 @@ final class ProjectIdentity
 
         $probe = self::probe();
         if ($probe === null) {
-            // Docker is unreachable: "no containers found" would be a lie, so
+            // Docker is unreachable: "未找到容器" would be a lie, so
             // refuse to pin anything and block mutations until we can prove it.
             $identity->projectName = $identity->folderCandidate;
             $identity->source = self::SOURCE_UNRESOLVED;
@@ -254,10 +254,10 @@ final class ProjectIdentity
         switch ($this->conflictReason) {
             case self::CONFLICT_AMBIGUOUS:
                 return "Both '$this->folderCandidate' and '$this->legacyCandidate' own live Docker resources. "
-                    . 'Choose which one this stack should use before running any action.';
+                    . '请先选择该栈应使用哪一个，再执行任何操作。';
             case self::CONFLICT_PROBE_FAILED:
-                return 'Docker could not be queried, so the runtime project name of this imported stack cannot be verified. '
-                    . 'Actions are blocked until Docker is reachable.';
+                return '无法查询 Docker，因此无法验证该导入栈的运行时项目名。'
+                    . '在 Docker 可访问之前，操作会被阻止。';
         }
 
         if ($this->source === self::SOURCE_LEGACY_RUNTIME) {

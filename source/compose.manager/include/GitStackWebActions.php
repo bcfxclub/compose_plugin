@@ -116,7 +116,7 @@ final class GitStackWebActions
             return ['result' => 'error', 'message' => $error->getMessage()];
         }
         if (!composeCronManager()->rebuild()) {
-            return ['result' => 'error', 'message' => "The setting was saved, but the plugin's cron file could not be updated."];
+            return ['result' => 'error', 'message' => "设置已保存，但插件的定时任务文件无法更新。"];
         }
         return ['result' => 'success', 'messages' => $messages];
     }

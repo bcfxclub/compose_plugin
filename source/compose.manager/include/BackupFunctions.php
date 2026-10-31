@@ -41,25 +41,25 @@ function createBackup()
 
     // Validate source
     if (!is_dir($source)) {
-        return ['result' => 'error', 'message' => 'Projects folder does not exist: ' . $source];
+        return ['result' => 'error', 'message' => '项目目录不存在：' . $source];
     }
 
     // Ensure destination directory exists
     if (!is_dir($destination)) {
         @mkdir($destination, 0755, true);
         if (!is_dir($destination)) {
-            return ['result' => 'error', 'message' => 'Cannot create backup destination: ' . $destination];
+            return ['result' => 'error', 'message' => '无法创建备份目标：' . $destination];
         }
     }
 
     // Collect stack directories, skipping reserved root-level files (e.g. 'version')
     if (@scandir($source) === false) {
-        return ['result' => 'error', 'message' => 'Cannot read projects folder: ' . $source];
+        return ['result' => 'error', 'message' => '无法读取项目目录：' . $source];
     }
     $stacks = StackInfo::listProjectFolders($source);
 
     if (empty($stacks)) {
-        return ['result' => 'error', 'message' => 'No stacks found to back up.'];
+        return ['result' => 'error', 'message' => '没有找到可备份的栈。'];
     }
 
     // Generate archive filename
@@ -98,7 +98,7 @@ function createBackup()
 
     return [
         'result' => 'success',
-        'message' => "Backup created successfully.",
+        'message' => "备份创建成功。",
         'archive' => $archiveName,
         'size' => $sizeHuman,
         'stacks' => count($stacks)
@@ -173,7 +173,7 @@ function listBackupArchives($directory = null)
 function readArchiveStacks($archivePath)
 {
     if (!file_exists($archivePath)) {
-        return ['result' => 'error', 'message' => 'Archive not found: ' . basename($archivePath)];
+        return ['result' => 'error', 'message' => '未找到归档：' . basename($archivePath)];
     }
 
     // List archive contents and extract top-level directory names
@@ -182,7 +182,7 @@ function readArchiveStacks($archivePath)
     $output = shell_exec($cmd);
 
     if (empty($output)) {
-        return ['result' => 'error', 'message' => 'Cannot read archive contents or archive is empty.'];
+        return ['result' => 'error', 'message' => '无法读取归档内容，或归档为空。'];
     }
 
     $lines = explode("\n", trim($output));
@@ -214,11 +214,11 @@ function restoreStacks($archivePath, $stacks)
     $source = getBackupSource();
 
     if (!file_exists($archivePath)) {
-        return ['result' => 'error', 'message' => 'Archive not found: ' . basename($archivePath)];
+        return ['result' => 'error', 'message' => '未找到归档：' . basename($archivePath)];
     }
 
     if (empty($stacks)) {
-        return ['result' => 'error', 'message' => 'No stacks selected for restore.'];
+        return ['result' => 'error', 'message' => '未选择要恢复的栈。'];
     }
 
     // Ensure projects folder exists

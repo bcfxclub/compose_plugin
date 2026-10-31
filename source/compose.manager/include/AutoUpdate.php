@@ -59,7 +59,7 @@ switch ($action) {
         if (!is_dir($dir)) {
             if (!mkdir($dir, 0755, true)) {
                 http_response_code(500);
-                echo json_encode(array('error' => 'Failed to create config directory'));
+                echo json_encode(array('error' => '创建配置目录失败'));
                 break;
             }
         }
@@ -93,7 +93,7 @@ switch ($action) {
         fclose($handle);
         if ($written === false) {
             http_response_code(500);
-            echo json_encode(array('error' => 'Failed to write config file'));
+            echo json_encode(array('error' => '写入配置文件失败'));
             break;
         }
         echo json_encode(array('ok' => true));
@@ -105,7 +105,7 @@ switch ($action) {
             echo json_encode(array('ok' => true));
         } else {
             http_response_code(500);
-            echo json_encode(array('error' => 'Failed to update cron'));
+            echo json_encode(array('error' => '更新定时任务失败'));
         }
         break;
     case 'removeCron':
@@ -115,7 +115,7 @@ switch ($action) {
             echo json_encode(array('ok' => true));
         } else {
             http_response_code(500);
-            echo json_encode(array('error' => 'Failed to update cron'));
+            echo json_encode(array('error' => '更新定时任务失败'));
         }
         break;
     case 'getCronStatus':
@@ -134,13 +134,13 @@ switch ($action) {
         if (!isAllowedAutoUpdatePath($path)) {
             composeLogger('Rejected invalid path: ' . sanitizeLogText($path), null, 'user', 'error', 'autoupdate');
             http_response_code(403);
-            echo json_encode(array('error' => 'Path not allowed'));
+            echo json_encode(array('error' => '不允许的路径'));
             break;
         }
         $composeFile = findComposeFile($path);
         if (!$composeFile) {
             http_response_code(404);
-            echo json_encode(array('error' => 'Compose file not found'));
+            echo json_encode(array('error' => '未找到 Compose 文件'));
             break;
         }
         // Resolve project name - always use compose-safe sanitized projectName.

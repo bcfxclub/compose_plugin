@@ -148,15 +148,15 @@ jobs:
 
           # Category mapping for conventional commits
           declare -A CATEGORIES=(
-            [feat]="Features"
-            [fix]="Bug Fixes"
-            [perf]="Performance"
-            [refactor]="Refactoring"
-            [docs]="Documentation"
-            [test]="Tests"
-            [build]="Build"
+            [feat]="新功能"
+            [fix]="问题修复"
+            [perf]="性能优化"
+            [refactor]="代码重构"
+            [docs]="文档"
+            [test]="测试"
+            [build]="构建"
             [ci]="CI/CD"
-            [chore]="Chores"
+            [chore]="杂项"
           )
 
           # Ordered category keys

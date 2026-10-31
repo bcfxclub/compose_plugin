@@ -87,7 +87,7 @@ class ComposeCommandBuilder
     {
         $allowed = ['up', 'down', 'update', 'pull', 'stop', 'logs'];
         if (!in_array($action, $allowed, true)) {
-            throw new \InvalidArgumentException('Unsupported compose action: ' . $action);
+            throw new \InvalidArgumentException('不支持的 Compose 操作：' . $action);
         }
     }
 
