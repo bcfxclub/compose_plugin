@@ -36,13 +36,9 @@
 >
 
 <CHANGES>
-###2026.10.31a
-- 新功能 (i18n): 补齐主界面、凭据页与仪表盘残留英文文案
-- 问题修复 (i18n): 修正状态判定回归并同步测试断言为中文
-- 文档: 更新汉化范围说明与 fork 发版前置条件
-- 测试 (i18n): 同步凭据测试的镜像拉取断言
-- 杂项: 移除误提交的临时扫描文件
-- [View all changes](https://github.com/bcfxclub/compose_plugin/compare/v2026.10.31...v2026.10.31a)
+###2026.10.31b
+- 新功能 (i18n): 补齐编辑器、设置页与列表页残留英文
+- [View all changes](https://github.com/bcfxclub/compose_plugin/compare/v2026.10.31a...v2026.10.31b)
 </CHANGES>
 
 <!-- The 'pre-install' script. -->
