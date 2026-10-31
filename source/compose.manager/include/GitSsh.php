@@ -93,7 +93,7 @@ final class GitSsh
             ));
             $reason = $errors === [] ? '没有返回密钥' : $errors[count($errors) - 1];
             throw new RuntimeException(
-                "无法获取 $host（端口 $port）的 SSH 主机密钥：{$reason}。"
+                "无法获取 {$host}（端口 {$port}）的 SSH 主机密钥：{$reason}。"
                 . '请检查地址，并确认本服务器能访问该主机。'
             );
         }

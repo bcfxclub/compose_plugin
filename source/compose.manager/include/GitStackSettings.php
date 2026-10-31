@@ -252,23 +252,23 @@ final class GitStackSettings
         }
         foreach (['url', 'branch', 'composePath', 'cloneId', 'cloneDir'] as $key) {
             if (!is_string($data[$key])) {
-                throw new RuntimeException("$file：'$key' 必须是字符串。");
+                throw new RuntimeException("{$file}：'$key' 必须是字符串。");
             }
         }
         if (!is_bool($data['recreateOnFolderChange'])) {
-            throw new RuntimeException("$file：'recreateOnFolderChange' 必须为 true 或 false。");
+            throw new RuntimeException("{$file}：'recreateOnFolderChange' 必须为 true 或 false。");
         }
         $credentialId = $data['credentialId'] ?? null;
         if ($credentialId !== null && !is_string($credentialId)) {
-            throw new RuntimeException("$file：'credentialId' 必须是字符串。");
+            throw new RuntimeException("{$file}：'credentialId' 必须是字符串。");
         }
         $sshKnownHosts = $data['sshKnownHosts'] ?? null;
         if ($sshKnownHosts !== null && !is_string($sshKnownHosts)) {
-            throw new RuntimeException("$file：'sshKnownHosts' 必须是字符串。");
+            throw new RuntimeException("{$file}：'sshKnownHosts' 必须是字符串。");
         }
         $autoDeploy = $data['autoDeploy'] ?? self::AUTO_DEPLOY_OFF;
         if (!is_string($autoDeploy)) {
-            throw new RuntimeException("$file：'autoDeploy' 必须是字符串。");
+            throw new RuntimeException("{$file}：'autoDeploy' 必须是字符串。");
         }
 
         try {

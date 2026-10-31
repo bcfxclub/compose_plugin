@@ -121,15 +121,15 @@ final class GitScheduledCheck
         $lockFile = COMPOSE_LOCK_DIR . '/' . self::LOCK_NAME;
         $lock = @fopen($lockFile, 'c');
         if ($lock === false) {
-            ($this->say)("无法打开锁文件 $lockFile，因此未执行检查。");
-            composeLogger("已跳过计划的 git 检查：无法打开锁文件 $lockFile。", null, 'daemon', 'warning', 'git');
+            ($this->say)("无法打开锁文件 {$lockFile}，因此未执行检查。");
+            composeLogger("已跳过计划的 git 检查：无法打开锁文件 {$lockFile}。", null, 'daemon', 'warning', 'git');
             return 0;
         }
         if (!flock($lock, LOCK_EX | LOCK_NB)) {
             ($this->say)('另一个计划检查仍在运行。');
             // To the syslog too: cron drops what is said, and a pass stuck in a deploy
             // would otherwise stop every stack's checks with nobody told.
-            composeLogger("已跳过计划的 git 检查：上一次检查仍在运行（$lockFile）。", null, 'daemon', 'warning', 'git');
+            composeLogger("已跳过计划的 git 检查：上一次检查仍在运行（{$lockFile}）。", null, 'daemon', 'warning', 'git');
             fclose($lock);
             return 0;
         }
@@ -172,7 +172,7 @@ final class GitScheduledCheck
         // As the image auto-update does: a stack whose project name is not settled is left alone,
         // so a deploy cannot start it under the wrong name.
         if (!$stack->hasResolvedIdentity()) {
-            ($this->say)("$folder：已跳过，其 compose 项目标识尚未确定。");
+            ($this->say)("{$folder}：已跳过，其 compose 项目标识尚未确定。");
             composeLogger("已跳过 '$folder' 的计划 git 检查：compose 项目标识尚未确定", null, 'daemon', 'warning', 'git');
             return false;
         }
@@ -222,7 +222,7 @@ final class GitScheduledCheck
         if ($newRecord !== $record) {
             self::saveRecord($stack->path, $newRecord);
         }
-        ($this->say)("$folder：" . ($newRecord['stackChanged'] ? '落后于 ' : '已是最新，基于 ') . substr($remote, 0, 12));
+        ($this->say)("{$folder}：" . ($newRecord['stackChanged'] ? '落后于 ' : '已是最新，基于 ') . substr($remote, 0, 12));
         return true;
     }
 
@@ -343,7 +343,7 @@ final class GitScheduledCheck
                 "Git 栈未部署：$name",
                 "分支 {$settings->branch} 上的提交 $short 未部署：" . substr($state->failedCommit, 0, 12)
                 . " 的部署失败，因此 '$name' 的自动部署已暂停。请修复后再部署，或恢复自动部署"
-                . "（栈菜单，或 compose-git resume $name）。",
+                . "（栈菜单，或 compose-git resume {$name}）。",
                 'warning'
             );
             return self::HANDLED_PAUSED;
@@ -372,7 +372,7 @@ final class GitScheduledCheck
             return self::HANDLED_NOT_RUNNING;
         }
 
-        ($this->say)("$name：正在部署 $short...");
+        ($this->say)("{$name}：正在部署 $short...");
         composeLogger("计划部署 Git 栈 '$name' 至 $short", null, 'daemon', 'info', 'git');
         // The background runner logs to the stack's last_cmd.log and notifies whether it worked.
         // The commit compared is the one deployed, even if the branch has moved on since: a newer
@@ -389,7 +389,7 @@ final class GitScheduledCheck
             // Tried once, like every commit, but recorded as failed: the stack list shows it,
             // and Resume Automatic Deploys clears it so the next pass tries again. A failure
             // during up is recorded by compose.sh itself, as failedCommit, and pauses the stack.
-            composeLogger("'$name' 至 $short 的计划部署失败（退出状态 $exitStatus）", null, 'daemon', 'warning', 'git');
+            composeLogger("'$name' 至 $short 的计划部署失败（退出状态 {$exitStatus}）", null, 'daemon', 'warning', 'git');
             return self::HANDLED_FAILED;
         }
         return self::HANDLED_DEPLOYED;
@@ -537,7 +537,7 @@ final class GitScheduledCheck
         $tmpFile = $file . '.tmp-' . bin2hex(random_bytes(4));
         if (file_put_contents($tmpFile, $json) !== strlen($json) || !rename($tmpFile, $file)) {
             @unlink($tmpFile);
-            throw new RuntimeException("无法写入 $file。");
+            throw new RuntimeException("无法写入 {$file}。");
         }
     }
 }

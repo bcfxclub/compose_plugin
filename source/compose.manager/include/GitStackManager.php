@@ -185,7 +185,7 @@ final class GitStackManager
                         . "克隆已创建于 {$settings->cloneDir}。"
                     );
                 }
-                ($this->say)('已将旧的 ' . basename($oldComposeFile) . " 移动到 $backupDir。");
+                ($this->say)('已将旧的 ' . basename($oldComposeFile) . " 移动到 {$backupDir}。");
             }
 
             try {
@@ -1058,7 +1058,7 @@ final class GitStackManager
                 if (file_exists($movedTo) || !@rename($cloneDir, $movedTo)) {
                     throw new RuntimeException("无法将 {$cloneDir} 移到 {$movedTo}。未做任何改动。");
                 }
-                ($this->say)("已将旧克隆移动到 $movedTo。");
+                ($this->say)("已将旧克隆移动到 {$movedTo}。");
             }
 
             try {
@@ -1070,7 +1070,7 @@ final class GitStackManager
                     if (!file_exists($cloneDir) && @rename($movedTo, $cloneDir)) {
                         ($this->say)('已将旧克隆移回。');
                     } else {
-                        ($this->say)("无法将旧克隆移回。它仍在 $movedTo。");
+                        ($this->say)("无法将旧克隆移回。它仍在 {$movedTo}。");
                     }
                 }
                 throw $error instanceof RuntimeException ? $error : new RuntimeException($error->getMessage(), 0, $error);
@@ -1230,7 +1230,7 @@ final class GitStackManager
         $lockFile = COMPOSE_LOCK_DIR . '/' . $stack->projectName . '.lock';
         $handle = @fopen($lockFile, 'c');
         if ($handle === false) {
-            throw new RuntimeException("无法打开锁文件 $lockFile。");
+            throw new RuntimeException("无法打开锁文件 {$lockFile}。");
         }
         if (!flock($handle, LOCK_EX | LOCK_NB)) {
             fclose($handle);

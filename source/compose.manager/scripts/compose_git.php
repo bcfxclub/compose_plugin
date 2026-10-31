@@ -352,7 +352,7 @@ function compose_git_parse(array $args, array $withValue, array $flags): array
                 $options[$name] = $value;
             }
         } else {
-            throw new ComposeGitUsageError("未知选项 --$name。");
+            throw new ComposeGitUsageError("未知选项 --{$name}。");
         }
     }
     return [$positional, $options];
@@ -365,7 +365,7 @@ function compose_git_required(array $options, string $name): string
 {
     $value = $options[$name] ?? null;
     if (!is_string($value) || $value === '') {
-        throw new ComposeGitUsageError("必须提供 --$name。");
+        throw new ComposeGitUsageError("必须提供 --{$name}。");
     }
     return $value;
 }
@@ -505,7 +505,7 @@ function compose_git_dry_run(GitStackManager $manager, string $folder, array $op
 {
     foreach (['save-local-changes', 'wait', 'no-wait', 'wait-timeout'] as $option) {
         if (isset($options[$option])) {
-            throw new ComposeGitUsageError("--dry-run 只能与 --commit 和 --profile 一起使用，不能使用 --$option：试运行不保存任何内容，也不启动任何容器。");
+            throw new ComposeGitUsageError("--dry-run 只能与 --commit 和 --profile 一起使用，不能使用 --{$option}：试运行不保存任何内容，也不启动任何容器。");
         }
     }
     $stack = $manager->gitStack($folder);
@@ -518,9 +518,9 @@ function compose_git_dry_run(GitStackManager $manager, string $folder, array $op
     $target = substr($result['targetCommit'], 0, 12);
 
     if ($result['previousCommit'] === $result['targetCommit']) {
-        echo "试运行 $folder：$target，即当前检出的提交。\n";
+        echo "试运行 {$folder}：{$target}，即当前检出的提交。\n";
     } else {
-        echo "试运行 $folder：从 $previous（当前检出）到 $target。\n";
+        echo "试运行 {$folder}：从 {$previous}（当前检出）到 {$target}。\n";
     }
     // After a failed up the clone holds the commit that failed, not the one that last worked.
     if ($result['deployedCommit'] === null) {
@@ -546,7 +546,7 @@ function compose_git_dry_run(GitStackManager $manager, string $folder, array $op
     } else {
         echo "compose 配置的变化如下（变量按原样显示，不展开取值）：\n" . $result['configDiff'];
     }
-    echo "\n未部署任何内容，克隆已还原到 $previous。\n";
+    echo "\n未部署任何内容，克隆已还原到 {$previous}。\n";
 
     return $result['problems'] === [] ? COMPOSE_GIT_EXIT_OK : COMPOSE_GIT_EXIT_FAILED;
 }
@@ -663,7 +663,7 @@ function compose_git_main(array $argv, string $composeRoot, $errors = null): int
                     isset($options['clones-root']) ? (string) $options['clones-root'] : null,
                     isset($options['credential']) ? $manager->findGitCredential((string) $options['credential']) : null
                 );
-                echo "被替换的文件位于 $backup。\n使用以下命令部署：compose-git deploy $folder\n";
+                echo "被替换的文件位于 {$backup}。\n使用以下命令部署：compose-git deploy $folder\n";
                 return COMPOSE_GIT_EXIT_OK;
 
             case 'credential':
@@ -718,24 +718,24 @@ function compose_git_main(array $argv, string $composeRoot, $errors = null): int
                         $newer = substr($result['remoteCommit'], 0, 12) . " 可在 {$result['branch']} 上获取";
                         $stackFolder = $result['stackFolder'] === '' ? 'the repository' : $result['stackFolder'] . '/';
                         if ($result['upToDate']) {
-                            echo "$folder：已是最新（$deployed）\n";
+                            echo "{$folder}：已是最新（{$deployed}）\n";
                         } elseif ($result['deployedCommit'] === null) {
-                            echo "$folder：$newer（$deployed）\n";
+                            echo "{$folder}：{$newer}（{$deployed}）\n";
                             $anyChanged = true;
                         } elseif ($result['deployedCommitMissing']) {
-                            echo "$folder：$newer（$deployed，但已不在克隆中，因此这些改动"
+                            echo "{$folder}：{$newer}（{$deployed}，但已不在克隆中，因此这些改动"
                                 . "无法判断）\n";
                             $anyChanged = true;
                         } elseif ($result['changesStack'] === true) {
-                            echo "$folder：$newer，改动了 $stackFolder（$deployed）\n";
+                            echo "{$folder}：{$newer}，改动了 {$stackFolder}（{$deployed}）\n";
                             $anyChanged = true;
                         } else {
-                            echo "$folder：$newer，但未改动 $stackFolder（$deployed）中的任何内容；"
+                            echo "{$folder}：{$newer}，但未改动 {$stackFolder}（{$deployed}）中的任何内容；"
                                 . "如果该栈使用了该文件夹之外的文件，仍可部署\n";
                             $anyElsewhere = true;
                         }
                     } catch (RuntimeException | InvalidArgumentException $error) {
-                        echo "$folder：无法检查：" . $error->getMessage() . "\n";
+                        echo "{$folder}：无法检查：" . $error->getMessage() . "\n";
                         $anyFailed = true;
                     }
                 }
@@ -758,7 +758,7 @@ function compose_git_main(array $argv, string $composeRoot, $errors = null): int
                 [$positional] = compose_git_parse($args, [], []);
                 $movedTo = $manager->reclone(compose_git_one_stack($positional));
                 if ($movedTo !== null) {
-                    echo "旧克隆位于 $movedTo。请复制回你需要的内容，然后自行删除它。\n";
+                    echo "旧克隆位于 {$movedTo}。请复制回你需要的内容，然后自行删除它。\n";
                 }
                 return COMPOSE_GIT_EXIT_OK;
 

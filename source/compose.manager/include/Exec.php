@@ -581,7 +581,7 @@ switch ($_POST['action']) {
             echo json_encode(['result' => 'success', 'message' => '', 'cachePurge' => $cachePurgeMeta]);
         } else {
             $message = "栈 '$stackName' 已删除。磁盘上仍保留文件：'$filesRemain'。" . ($filesRemainNote !== '' ? "$filesRemainNote" : '');
-            composeLogger("已删除栈：$stackName（indirect，外部文件仍位于 $filesRemain）", [
+            composeLogger("已删除栈：{$stackName}（indirect，外部文件仍位于 {$filesRemain}）", [
                 'deleteMeta' => $deleteMeta,
                 'filesRemain' => $filesRemain,
                 'cachePurgeMeta' => $cachePurgeMeta,

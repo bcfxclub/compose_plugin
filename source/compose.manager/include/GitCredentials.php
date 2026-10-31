@@ -49,7 +49,7 @@ final class GitCredentials
                 }
                 if (($credential['registry'] ?? '') !== $host) {
                     throw new RuntimeException(
-                        "凭据 '{$credential['name']}' 属于 {$credential['registry']}，但仓库位于 $host。"
+                        "凭据 '{$credential['name']}' 属于 {$credential['registry']}，但仓库位于 {$host}。"
                     );
                 }
                 return 'https://' . rawurlencode($credential['username']) . ':' . rawurlencode($credential['secret'])

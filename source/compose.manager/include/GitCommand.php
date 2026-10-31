@@ -169,7 +169,7 @@ final class GitCommand
     private static function homeDirectoryProblem(string $home): ?string
     {
         if (!file_exists($home) && @readlink($home) === false && !@mkdir($home, 0700, true) && !is_dir($home)) {
-            return "无法为 git 创建 $home。";
+            return "无法为 git 创建 {$home}。";
         }
         clearstatcache(true, $home);
         if (@readlink($home) !== false || !is_dir($home)) {

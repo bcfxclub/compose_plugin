@@ -48,7 +48,7 @@ final class GitStackState
         }
         $content = @file_get_contents($file);
         if ($content === false) {
-            throw new RuntimeException("无法读取 $file。");
+            throw new RuntimeException("无法读取 {$file}。");
         }
         if (str_starts_with($content, "\xEF\xBB\xBF")) {
             $content = substr($content, 3);
@@ -71,7 +71,7 @@ final class GitStackState
         }
         foreach (['deployedCommit', 'failedCommit'] as $key) {
             if ($data[$key] !== null && !is_string($data[$key])) {
-                throw new RuntimeException("$file：'$key' 必须是提交 ID 或 null。");
+                throw new RuntimeException("{$file}：'$key' 必须是提交 ID 或 null。");
             }
         }
 
@@ -102,11 +102,11 @@ final class GitStackState
         // A short write (a full flash) counts as a failure, so a cut-off file never replaces the good one.
         if ($json === false || file_put_contents($tmpFile, $json . "\n") !== strlen($json . "\n")) {
             @unlink($tmpFile);
-            throw new RuntimeException("无法写入 $tmpFile。");
+            throw new RuntimeException("无法写入 {$tmpFile}。");
         }
         if (!rename($tmpFile, $file)) {
             @unlink($tmpFile);
-            throw new RuntimeException("无法替换 $file。");
+            throw new RuntimeException("无法替换 {$file}。");
         }
     }
 }

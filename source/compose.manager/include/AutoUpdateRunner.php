@@ -121,7 +121,7 @@ foreach ($data as $path => $entry) {
         }
 
         // Log the scheduled auto-update trigger
-        composeLogger("已触发计划自动更新：$projectName（$schedule）", null, 'daemon', 'info', 'autoupdate');
+        composeLogger("已触发计划自动更新：{$projectName}（{$schedule}）", null, 'daemon', 'info', 'autoupdate');
 
         $script = $plugin_root . "scripts/compose_autoupdate.sh";
         if ($stackInfo !== null) {
