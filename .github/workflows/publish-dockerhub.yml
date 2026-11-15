@@ -1,0 +1,56 @@
+# .github/workflows/publish-dockerhub.yml
+# 把已发布的插件包 (.txz) 以 OCI artifact 形式推到 Docker Hub:
+#   docker.io/bcfx/compose-manager:<版本>  (如 2026.10.31d)
+#   docker.io/bcfx/compose-manager:latest
+# 需先在仓库 Settings -> Secrets -> Actions 加 DOCKERHUB_TOKEN (Docker Hub 访问令牌, Read & Write)
+# 触发: Release 发布后自动 / Actions 页手动 (填 tag, 如 v2026.10.31d)
+# 注意: fork 仓库需在 Settings -> Actions -> General 启用 Actions,
+#       且 Workflow permissions 设为 Read and write (README 已有提醒)
+name: Publish plugin package to Docker Hub
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag, e.g. v2026.10.31d"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  push-dockerhub:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download release txz
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="${{ inputs.tag || github.event.release.tag_name }}"
+          echo "TAG=${TAG}" >> "$GITHUB_ENV"
+          echo "VERSION=${TAG#v}" >> "$GITHUB_ENV"
+          mkdir -p pkg && cd pkg
+          gh release download "$TAG" --repo "${{ github.repository }}" --pattern "*.txz"
+          ls -la
+
+      - name: Setup oras
+        uses: oras-project/setup-oras@v1
+
+      - name: Login Docker Hub
+        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | oras login docker.io -u "bcfx" --password-stdin
+
+      - name: Push txz as OCI artifact
+        working-directory: pkg
+        run: |
+          FILE=$(ls *.txz | head -1)
+          echo "Pushing $FILE"
+          oras push \
+            --annotation "org.opencontainers.image.title=${FILE}" \
+            "docker.io/bcfx/compose-manager:${VERSION}" \
+            "${FILE}:application/octet-stream"
+          oras tag "docker.io/bcfx/compose-manager:${VERSION}" latest
+          echo "已推送: docker.io/bcfx/compose-manager:${VERSION} 和 :latest"
+          echo "Docker Hub 仓库默认为公开, Tower 可免登录拉取; 匿名拉取有速率限制, 插件靠 /boot 本地缓存, 日常重启不走网络"
