@@ -77,7 +77,7 @@ else
     CHILD=$(echo "$MANIFEST" | grep -o '"digest" *: *"sha256:[a-f0-9]*"' | head -1 | grep -o 'sha256:[a-f0-9]*')
     MANIFEST=$(curl -fsSL -H "Authorization: Bearer $TOKEN" -H "Accept: application/vnd.oci.image.manifest.v1+json" "https://ghcr.io/v2/&ghcrRepo;/manifests/$CHILD")
   fi
-  DIGEST=$(echo "$MANIFEST" | awk '/"digest"/ { d=$0; sub(/.*"(sha256:[a-f0-9]+)".*/, "\\1", d); last=d } /org.opencontainers.image.title/ { print last; exit }')
+  DIGEST=$(echo "$MANIFEST" | tr -d '\n' | sed 's/.*"layers" *: *\[//' | grep -o 'sha256:[a-f0-9]*' | head -1)
   [ -n "$DIGEST" ] || { echo "ERROR: manifest 里找不到 .txz 层"; exit 1; }
   curl -fsSL -H "Authorization: Bearer $TOKEN" "https://ghcr.io/v2/&ghcrRepo;/blobs/$DIGEST" -o "$PKG"
   [ "$(md5sum "$PKG" | cut -d' ' -f1)" = "&packageMD5;" ] || { echo "ERROR: MD5 校验失败"; rm -f "$PKG"; exit 1; }
