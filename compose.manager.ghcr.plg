@@ -1,0 +1,160 @@
+<?xml version='1.0' standalone='yes'?>
+<!DOCTYPE PLUGIN [
+<!ENTITY name "compose.manager">
+<!ENTITY author "mstrhakr">
+<!ENTITY version     "2026.10.31d">
+<!ENTITY launch "Settings/&name;.settings">
+<!ENTITY packageVER "&version;">
+<!ENTITY packageMD5  "36b458298e805dd6b5a0b6f9245f0b60">
+<!ENTITY pkgBUILD    "1046">
+<!ENTITY packageName "&name;-&packageVER;-noarch-&pkgBUILD;">
+<!ENTITY packagefile "&packageName;.txz">
+<!ENTITY github "bcfxclub/compose_plugin">
+<!ENTITY pluginURL "https://raw.githubusercontent.com/&github;/main/&name;.plg">
+<!ENTITY packageURL "https://github.com/&github;/releases/download/v&version;/&packagefile;">
+<!ENTITY ghcrRepo "bcfxclub/compose-manager">
+<!ENTITY pluginsPATH "/boot/config/plugins">
+<!ENTITY pluginLOC "&pluginsPATH;/&name;">
+<!ENTITY emhttpPATH "/usr/local/emhttp/plugins">
+<!ENTITY emhttpLOC "&emhttpPATH;/&name;">
+<!ENTITY pluginsInstalledPATH "/var/log/packages">
+<!ENTITY aceVER    "1.43.5">
+<!ENTITY aceURL    "https://github.com/ajaxorg/ace-builds/archive/refs/tags/v&aceVER;.zip">
+<!ENTITY aceZIP    "ace-v&aceVER;.zip">
+<!ENTITY aceSHA256 "40169719746a5f83dcfb6e73a838221d34b91b75a939569217d62fb7d8175562">
+]>
+
+<PLUGIN  name="&name;"
+         author="&author;"
+         version="&version;"
+         launch="&launch;"
+         pluginURL="&pluginURL;"
+         icon="cubes"
+         min="6.12.0"
+         support="https://forums.unraid.net/topic/197334-plugin-compose-manager-plus/"
+         project="https://github.com/bcfxclub/compose_plugin"
+         readme="https://github.com/bcfxclub/compose_plugin#readme"
+>
+
+<CHANGES>
+###2026.10.31d
+- 新功能 (i18n): 补完第二批界面与日志文案汉化，扩充翻译记忆库
+- 杂项 (i18n): 添加翻译记忆库工具与 EN-&gt;ZH 对照表 [skip ci]
+- [View all changes](https://github.com/bcfxclub/compose_plugin/compare/v2026.10.31c...v2026.10.31d)
+</CHANGES>
+
+<!-- The 'pre-install' script. -->
+<FILE Run="/bin/bash">
+<INLINE>
+# Remove all but current package file and ace zip from plugin root
+rm -f $(ls &pluginLOC;/&name;*.txz 2>/dev/null|grep -v '&packageVER;')
+rm -f $(ls &pluginLOC;/ace-v*.zip 2>/dev/null|grep -v '&aceZIP;')
+
+# Clean up legacy package entries (compose.manager-package-*) left by older builds
+# that used non-standard Slackware naming and weren't removed by upgradepkg
+for pkg in &pluginsInstalledPATH;/&name;-package-*; do
+    [ -e "$pkg" ] &amp;&amp; removepkg "$(basename "$pkg")" 2>/dev/null || true
+done
+
+#Create projects folder if it doesnt exist
+mkdir -p &pluginLOC;/projects
+</INLINE>
+</FILE>
+
+<!-- GHCR fetch: local cache first (offline reboot), GHCR OCI pull via curl if missing -->
+<FILE Run="/bin/bash">
+<INLINE>
+mkdir -p &pluginLOC;
+PKG="&pluginLOC;/&packagefile;"
+if [ -f "$PKG" ] &amp;&amp; [ "$(md5sum "$PKG" | cut -d' ' -f1)" = "&packageMD5;" ]; then
+  echo "本地缓存命中, 跳过 GHCR 下载: $PKG"
+else
+  echo "从 GHCR 拉取插件包 (ghcr.io/&ghcrRepo;:&version;) ..."
+  TOKEN=$(curl -fsSL "https://ghcr.io/token?service=ghcr.io&amp;scope=repository:&ghcrRepo;:pull" | sed -n 's/.*"token" *: *"\([^"]*\)".*/\1/p')
+  [ -n "$TOKEN" ] || { echo "ERROR: GHCR token 获取失败 (包未公开?)"; exit 1; }
+  MANIFEST=$(curl -fsSL -H "Authorization: Bearer $TOKEN" -H "Accept: application/vnd.oci.image.manifest.v1+json, application/vnd.oci.image.index.v1+json" "https://ghcr.io/v2/&ghcrRepo;/manifests/&version;")
+  if echo "$MANIFEST" | grep -q '"manifests"'; then
+    CHILD=$(echo "$MANIFEST" | grep -o '"digest" *: *"sha256:[a-f0-9]*"' | head -1 | grep -o 'sha256:[a-f0-9]*')
+    MANIFEST=$(curl -fsSL -H "Authorization: Bearer $TOKEN" -H "Accept: application/vnd.oci.image.manifest.v1+json" "https://ghcr.io/v2/&ghcrRepo;/manifests/$CHILD")
+  fi
+  DIGEST=$(echo "$MANIFEST" | awk '/"digest"/ { d=$0; sub(/.*"(sha256:[a-f0-9]+)".*/, "\\1", d); last=d } /org.opencontainers.image.title/ { print last; exit }')
+  [ -n "$DIGEST" ] || { echo "ERROR: manifest 里找不到 .txz 层"; exit 1; }
+  curl -fsSL -H "Authorization: Bearer $TOKEN" "https://ghcr.io/v2/&ghcrRepo;/blobs/$DIGEST" -o "$PKG"
+  [ "$(md5sum "$PKG" | cut -d' ' -f1)" = "&packageMD5;" ] || { echo "ERROR: MD5 校验失败"; rm -f "$PKG"; exit 1; }
+  echo "GHCR 拉取完成, MD5 校验通过"
+fi
+</INLINE>
+</FILE>
+
+<!-- The 'install' script. -->
+<FILE Run="/bin/bash">
+<INLINE>
+upgradepkg --install-new &pluginLOC;/&packagefile;
+</INLINE>
+</FILE>
+
+<FILE Run="/bin/bash">
+<INLINE>
+echo ""
+echo "----------------------------------------------------"
+echo ""
+echo "  Ace 编辑器 v&aceVER; 仅在 Unraid 7.0 之前的版本中"
+echo "       才会被下载并安装。"
+echo ""
+echo "  如果使用 7.0 或更高版本，Ace 编辑器文件已默认内置，"
+echo "       下方会显示跳过安装的提示。"
+echo ""
+echo "----------------------------------------------------"
+echo ""
+</INLINE>
+</FILE>
+
+<!-- Ace editor fallback for pre-7.0: download zip to flash cache -->
+<FILE Name="&pluginLOC;/cache-&aceZIP;" Max="6.99.99">
+<URL>&aceURL;</URL>
+<SHA256>&aceSHA256;</SHA256>
+</FILE>
+
+<!-- Ace editor fallback for pre-7.0: copy cached zip to /tmp for extraction -->
+<FILE Name="/tmp/temp-&aceZIP;" Max="6.99.99">
+<LOCAL>&pluginLOC;/cache-&aceZIP;</LOCAL>
+<SHA256>&aceSHA256;</SHA256>
+</FILE>
+
+<!-- Ace editor fallback for pre-7.0: extract needed JS files into plugin dir -->
+<FILE Name="/tmp/ace-editor-install.sh" Run="/bin/bash" Max="6.99.99">
+<INLINE>
+&emhttpLOC;/scripts/install-ace.sh /tmp/temp-&aceZIP; &emhttpLOC; &aceVER;
+rm -f /tmp/ace-editor-install.sh
+</INLINE>
+</FILE>
+
+<FILE Run="/bin/bash">
+<INLINE>
+echo ""
+echo "----------------------------------------------------"
+echo ""
+echo "      Compose Manager Plus 已安装完成。"
+echo "               版本：&version;"
+echo ""
+echo "----------------------------------------------------"
+echo ""
+</INLINE>
+</FILE>
+
+<!-- Uninstall script; plus cleanup old/unused packages -->
+<FILE Run="/bin/bash" Method="remove">
+<INLINE>
+# Remove all Slackware package entries for this plugin.
+# Handles both new naming (compose.manager-VERSION-noarch-1) and
+# legacy naming (compose.manager-package-VERSION) left by older builds.
+for pkg in &pluginsInstalledPATH;/&name;-*; do
+    [ -e "$pkg" ] &amp;&amp; removepkg "$(basename "$pkg")" 2>/dev/null || true
+done
+
+# Remove old package files from flash
+rm -f $(ls &pluginLOC;/&name;*.txz 2>/dev/null|grep -v '&packageVER;')
+</INLINE>
+</FILE>
+
+</PLUGIN>
