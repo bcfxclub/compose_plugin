@@ -1,0 +1,56 @@
+# .github/workflows/publish-ghcr.yml
+# 把已发布的插件包 (.txz) 以 OCI artifact 形式推到 GHCR:
+#   ghcr.io/bcfxclub/compose-manager:<版本>  (如 2026.10.31d)
+#   ghcr.io/bcfxclub/compose-manager:latest
+# 触发: Release 发布后自动 / Actions 页手动 (填 tag, 如 v2026.10.31d)
+# 注意: fork 仓库需在 Settings -> Actions -> General 启用 Actions,
+#       且 Workflow permissions 设为 Read and write (README 已有提醒)
+name: Publish plugin package to GHCR
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag, e.g. v2026.10.31d"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  push-ghcr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download release txz
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="${{ inputs.tag || github.event.release.tag_name }}"
+          echo "TAG=${TAG}" >> "$GITHUB_ENV"
+          echo "VERSION=${TAG#v}" >> "$GITHUB_ENV"
+          mkdir -p pkg && cd pkg
+          gh release download "$TAG" --repo "${{ github.repository }}" --pattern "*.txz"
+          ls -la
+
+      - name: Setup oras
+        uses: oras-project/setup-oras@v1
+
+      - name: Login GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | oras login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+      - name: Push txz as OCI artifact
+        working-directory: pkg
+        run: |
+          FILE=$(ls *.txz | head -1)
+          echo "Pushing $FILE"
+          oras push \
+            --annotation "org.opencontainers.image.title=${FILE}" \
+            "ghcr.io/bcfxclub/compose-manager:${VERSION}" \
+            "${FILE}:application/octet-stream"
+          oras tag "ghcr.io/bcfxclub/compose-manager:${VERSION}" latest
+          echo "已推送: ghcr.io/bcfxclub/compose-manager:${VERSION} 和 :latest"
+          echo "首次推送后请到 GitHub -> Packages -> compose-manager -> Package settings 把可见性改 Public, Tower 才能免登录拉取"
