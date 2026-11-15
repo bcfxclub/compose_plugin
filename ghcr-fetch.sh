@@ -27,14 +27,11 @@ if echo "$MANIFEST" | grep -q '"manifests"'; then
     "https://ghcr.io/v2/${REPO}/manifests/${CHILD}")
 fi
 
-# 从 layers 里取 .txz 那一层的 digest 和标题(文件名); digest 在 title 之前出现
-read -r DIGEST FILENAME <<EOF
-$(echo "$MANIFEST" | awk '
-  /"digest"/ { d=$0; sub(/.*"(sha256:[a-f0-9]+)".*/, "\\1", d); last=d }
-  /org.opencontainers.image.title/ { t=$0; sub(/.*: *"/, "", t); sub(/".*/, "", t); if (t ~ /\.txz$/) { print last, t; exit } }
-  /"layers"/ { inlayers=1 }
-  END { }')
-EOF
+# 从 layers 里取 .txz 那一层 (先压平 JSON, 避免单行 manifest 时取到 config 的 digest)
+FLAT=$(echo "$MANIFEST" | tr -d '\n')
+LAYERPART=$(echo "$FLAT" | sed 's/.*"layers"[[:space:]]*:[[:space:]]*\[//')
+DIGEST=$(echo "$LAYERPART" | grep -o 'sha256:[a-f0-9]*' | head -1)
+FILENAME=$(echo "$LAYERPART" | sed -n 's/.*"org.opencontainers.image.title"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -1)
 [ -n "${DIGEST:-}" ] && [ -n "${FILENAME:-}" ] || { echo "ERROR: manifest 里找不到 .txz 层"; echo "$MANIFEST" | head -c 1000; exit 1; }
 
 echo "拉取 $FILENAME ($DIGEST)"
